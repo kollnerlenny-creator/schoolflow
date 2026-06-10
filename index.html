@@ -91,11 +91,11 @@
             transform: scale(0.95);
         }
 
-        /* Custom Slider-Design */
+        /* Custom Slider-Design optimiert für Touch */
         .custom-range {
             -webkit-appearance: none;
             width: 100%;
-            height: 12px;
+            height: 16px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 9999px;
             outline: none;
@@ -105,8 +105,8 @@
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 26px;
-            height: 26px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #6366f1;
             border: 3px solid #ffffff;
@@ -120,8 +120,8 @@
             background: #818cf8;
         }
         .custom-range::-moz-range-thumb {
-            width: 26px;
-            height: 26px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #6366f1;
             border: 3px solid #ffffff;
@@ -142,46 +142,46 @@
     <div id="app" v-cloak>
         <!-- LOADING SCREEN -->
         <div v-if="authLoading" class="h-screen flex items-center justify-center text-indigo-400">
-            <i data-lucide="loader-2" class="animate-spin w-10 h-10"></i>
+            <i data-lucide="loader-2" class="animate-spin w-12 h-12"></i>
         </div>
 
         <!-- LOGIN / REGISTER SCREEN -->
-        <div v-else-if="!user" class="min-h-screen flex items-center justify-center p-4 font-sans">
+        <div v-else-if="!user" class="min-h-screen flex items-center justify-center p-5 font-sans">
             <div class="w-full max-w-md space-y-8 animate-fade-in max-sm:space-y-6">
-                <div class="text-center space-y-3">
-                    <div class="w-20 h-20 hero-block mx-auto flex items-center justify-center shadow-2xl relative">
-                        <i data-lucide="graduation-cap" class="w-10 h-10 text-white relative z-10"></i>
+                <div class="text-center space-y-4">
+                    <div class="w-24 h-24 hero-block mx-auto flex items-center justify-center shadow-2xl relative">
+                        <i data-lucide="graduation-cap" class="w-12 h-12 text-white relative z-10"></i>
                     </div>
                     <h1 class="text-4xl sm:text-5xl font-black tracking-tighter pt-2 text-white">SchoolFlow</h1>
-                    <p class="text-indigo-400 text-xs sm:text-sm font-extrabold tracking-wide">
+                    <p class="text-indigo-400 text-sm sm:text-base font-extrabold tracking-wide">
                         Noten, Termine, Flow – Alles an einem Ort! 🚀
                     </p>
                 </div>
 
-                <div class="glass-card p-6 md:p-8 space-y-6 max-sm:p-5">
-                    <div class="flex bg-black/40 p-1 rounded-full mb-6 border border-white/5">
-                        <button @click="isRegistering = false" :class="!isRegistering ? 'bg-indigo-600 text-white shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer">Anmelden</button>
-                        <button @click="isRegistering = true" :class="isRegistering ? 'bg-indigo-600 text-white shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer">Registrieren</button>
+                <div class="glass-card p-6 md:p-8 space-y-6 max-sm:p-6">
+                    <div class="flex bg-black/40 p-1.5 rounded-full mb-6 border border-white/5">
+                        <button @click="isRegistering = false" :class="!isRegistering ? 'bg-indigo-600 text-white shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-widest transition-all cursor-pointer">Anmelden</button>
+                        <button @click="isRegistering = true" :class="isRegistering ? 'bg-indigo-600 text-white shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-widest transition-all cursor-pointer">Registrieren</button>
                     </div>
 
-                    <form @submit.prevent="handleAuth" class="space-y-4">
-                        <div class="bg-black/20 border border-white/10 rounded-full flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-sm">
-                            <i data-lucide="mail" class="text-slate-400 mr-3 w-4 h-4 shrink-0"></i>
-                            <input required type="email" placeholder="E-Mail Adresse" v-model="email" class="bg-transparent w-full outline-none text-xs sm:text-sm font-bold text-white placeholder:text-slate-500" />
+                    <form @submit.prevent="handleAuth" class="space-y-5">
+                        <div class="bg-black/20 border border-white/10 rounded-full flex items-center px-5 py-4 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-sm">
+                            <i data-lucide="mail" class="text-slate-400 mr-3 w-5 h-5 shrink-0"></i>
+                            <input required type="email" placeholder="E-Mail Adresse" v-model="email" class="bg-transparent w-full outline-none text-base font-bold text-white placeholder:text-slate-500" />
                         </div>
                         
-                        <div class="bg-black/20 border border-white/10 rounded-full flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-sm relative">
-                            <i data-lucide="lock" class="text-slate-400 mr-3 w-4 h-4 shrink-0"></i>
-                            <input required :type="showPassword ? 'text' : 'password'" placeholder="Passwort" v-model="password" class="bg-transparent w-full outline-none text-xs sm:text-sm font-bold text-white placeholder:text-slate-500 pr-10" />
-                            <button type="button" @click="togglePasswordVisibility" class="absolute right-4 text-slate-400 hover:text-white cursor-pointer transition-colors focus:outline-none">
-                                <i :data-lucide="showPassword ? 'eye-off' : 'eye'" class="w-4 h-4"></i>
+                        <div class="bg-black/20 border border-white/10 rounded-full flex items-center px-5 py-4 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-sm relative">
+                            <i data-lucide="lock" class="text-slate-400 mr-3 w-5 h-5 shrink-0"></i>
+                            <input required :type="showPassword ? 'text' : 'password'" placeholder="Passwort" v-model="password" class="bg-transparent w-full outline-none text-base font-bold text-white placeholder:text-slate-500 pr-10" />
+                            <button type="button" @click="togglePasswordVisibility" class="absolute right-5 text-slate-400 hover:text-white cursor-pointer transition-colors focus:outline-none">
+                                <i :data-lucide="showPassword ? 'eye-off' : 'eye'" class="w-5 h-5"></i>
                             </button>
                         </div>
 
-                        <p v-if="authError" class="text-rose-400 text-xs font-bold text-center bg-rose-500/10 py-3 rounded-full border border-rose-500/20">{{ authError }}</p>
+                        <p v-if="authError" class="text-rose-400 text-sm font-bold text-center bg-rose-500/10 py-3 rounded-full border border-rose-500/20">{{ authError }}</p>
 
-                        <button type="submit" :disabled="loading" class="w-full hero-block hover:opacity-90 text-white py-3.5 sm:py-4 rounded-full font-black uppercase tracking-widest text-[10px] sm:text-xs transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2">
-                            <i v-if="loading" data-lucide="loader-2" class="animate-spin w-4 h-4"></i>
+                        <button type="submit" :disabled="loading" class="w-full hero-block hover:opacity-90 text-white py-4 sm:py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2">
+                            <i v-if="loading" data-lucide="loader-2" class="animate-spin w-5 h-5"></i>
                             {{ isRegistering ? 'Kostenlos starten' : 'Einloggen' }}
                         </button>
                     </form>
@@ -190,43 +190,39 @@
         </div>
 
         <!-- HAUPT APP -->
-        <div v-else class="w-full max-w-md md:max-w-6xl mx-auto px-4 pt-4 md:pt-10">
+        <div v-else class="w-full max-w-md md:max-w-6xl mx-auto px-5 pt-6 md:pt-10">
             <!-- HEADER BEREICH -->
-            <header class="mb-6 flex justify-between items-center">
-                <div class="flex items-center gap-3 cursor-pointer" @click="currentTab = 'home'; selectedSubject = null">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 hero-block flex items-center justify-center rounded-2xl shadow-lg">
-                        <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+            <header class="mb-8 flex justify-between items-center">
+                <div class="flex items-center gap-4 cursor-pointer" @click="currentTab = 'home'; selectedSubject = null">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 hero-block flex items-center justify-center rounded-2xl shadow-lg">
+                        <i data-lucide="graduation-cap" class="w-6 h-6 sm:w-7 sm:h-7 text-white"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">SchoolFlow</h1>
-                        <p class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ user.email.split('@')[0] }}</p>
+                        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">SchoolFlow</h1>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">{{ user.email.split('@')[0] }}</p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-1.5 sm:gap-2">
-                    <!-- Zum Startbildschirm hinzufügen (Install-Symbol) -->
-                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
-                        <i data-lucide="smartphone" class="w-4 h-4"></i>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
+                        <i data-lucide="smartphone" class="w-5 h-5"></i>
                     </button>
-
-                    <!-- App-Einstellungen Zahnrad-Symbol -->
-                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
+                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
                     </button>
-                    
-                    <button @click="handleLogout" title="Abmelden" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors cursor-pointer">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <button @click="handleLogout" title="Abmelden" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors cursor-pointer">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
                     </button>
                 </div>
             </header>
 
             <!-- HALBJAHR SLIDER (Außer im Planer) -->
-            <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-1 flex relative mb-6 z-10 max-w-sm mx-auto">
-                <div class="absolute top-1 bottom-1 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/35"
-                     :style="{ width: 'calc(100% / 4 - 2px)', left: 'calc(' + halfYears.indexOf(selectedHalfYear) + ' * 100% / 4 + 1px)' }"></div>
+            <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-1.5 flex relative mb-8 z-10 max-w-sm mx-auto">
+                <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/35"
+                     :style="{ width: 'calc(100% / 4 - 3px)', left: 'calc(' + halfYears.indexOf(selectedHalfYear) + ' * 100% / 4 + 1.5px)' }"></div>
                 <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
                         :class="selectedHalfYear === s ? 'text-white font-black' : 'text-slate-400 font-bold hover:text-slate-200'"
-                        class="flex-1 py-2 text-[10px] sm:text-[11px] uppercase tracking-wider relative z-10 transition-colors duration-300 cursor-pointer">
+                        class="flex-1 py-3 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors duration-300 cursor-pointer">
                     {{ s }}
                 </button>
             </div>
@@ -234,63 +230,64 @@
             <main class="min-h-[60vh] pb-12">
                 
                 <!-- 1. DASHBOARD / HOME -->
-                <div v-if="currentTab === 'home' && !selectedSubject" class="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-start animate-fade-in">
+                <div v-if="currentTab === 'home' && !selectedSubject" class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start animate-fade-in">
                     
                     <!-- Linke Spalte -->
-                    <div class="md:col-span-5 space-y-5 sm:space-y-6">
-                        <div class="hero-block p-6 sm:p-8 text-center">
+                    <div class="md:col-span-5 space-y-6 sm:space-y-8">
+                        <div class="hero-block p-8 text-center">
                             <div class="hero-shape-1"></div>
                             <div class="hero-shape-2"></div>
                             <div class="relative z-10">
-                                <p class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] text-indigo-200 mb-1">Dein Schnitt in {{ selectedHalfYear }}</p>
-                                <div class="text-6xl sm:text-7xl md:text-8xl font-black tracking-tighter text-white drop-shadow-lg">
+                                <p class="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-indigo-200 mb-2">Dein Schnitt in {{ selectedHalfYear }}</p>
+                                <div class="text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter text-white drop-shadow-lg">
                                     {{ formatNumber(processedData.avgPoints) }}
                                 </div>
-                                <div v-if="processedData.avgGrade" class="mt-3 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-white font-bold text-xs">
+                                <div v-if="processedData.avgGrade" class="mt-4 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2 rounded-full text-white font-bold text-sm">
                                     <span>Ø Note: {{ formatNumber(processedData.avgGrade) }}</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- LK-Bonus Toggle Widget -->
-                        <div @click="lkBonusActive = !lkBonusActive" class="glass-card p-4 sm:p-5 flex justify-between items-center cursor-pointer scale-btn">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                                    <i data-lucide="award" class="w-4.5 h-4.5"></i>
+                        <div @click="lkBonusActive = !lkBonusActive" class="glass-card p-5 flex justify-between items-center cursor-pointer scale-btn">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                    <i data-lucide="award" class="w-6 h-6"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-xs sm:text-sm text-white">Leistungskurs-Faktor</h4>
-                                    <p class="text-[10px] text-slate-400">LKs doppelt werten</p>
+                                    <h4 class="font-bold text-sm sm:text-base text-white">Leistungskurs-Faktor</h4>
+                                    <p class="text-xs text-slate-400">LKs doppelt werten</p>
                                 </div>
                             </div>
-                            <div class="w-9 h-5 rounded-full transition-colors relative" :class="lkBonusActive ? 'bg-indigo-600' : 'bg-slate-700'">
-                                <div class="w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all" :class="lkBonusActive ? 'right-0.75' : 'left-0.75'"></div>
+                            <!-- Eigener größerer Toggle -->
+                            <div class="w-14 h-8 rounded-full transition-colors relative" :class="lkBonusActive ? 'bg-indigo-600' : 'bg-slate-700'">
+                                <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-all" :class="lkBonusActive ? 'right-1' : 'left-1'"></div>
                             </div>
                         </div>
 
                         <!-- Anstehende Aufgaben Vorschau -->
-                        <div class="glass-card p-5">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="font-black text-white text-xs sm:text-sm flex items-center gap-1.5">
-                                    <i data-lucide="bell" class="w-4 h-4 text-indigo-400"></i> Nächste Aufgaben
+                        <div class="glass-card p-5 sm:p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-black text-white text-sm sm:text-base flex items-center gap-2">
+                                    <i data-lucide="bell" class="w-5 h-5 text-indigo-400"></i> Nächste Aufgaben
                                 </h3>
-                                <button @click="currentTab = 'planner'" class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest hover:text-indigo-300">Alle</button>
+                                <button @click="currentTab = 'planner'" class="text-xs font-bold text-indigo-400 uppercase tracking-widest hover:text-indigo-300 px-2 py-1">Alle</button>
                             </div>
-                            <div v-if="upcomingTasks.length === 0" class="text-xs text-slate-500 font-bold text-center py-4 bg-black/20 rounded-2xl border border-white/5">
+                            <div v-if="upcomingTasks.length === 0" class="text-sm text-slate-500 font-bold text-center py-5 bg-black/20 rounded-2xl border border-white/5">
                                 Aktuell keine Aufgaben! 🎉
                             </div>
-                            <div v-else class="space-y-2">
-                                <div v-for="t in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-2 bg-black/20 p-2.5 rounded-2xl border border-white/5">
-                                    <button @click="toggleTaskDone(t)" class="shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
+                            <div v-else class="space-y-3">
+                                <div v-for="t in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3 bg-black/20 p-3.5 rounded-2xl border border-white/5">
+                                    <button @click="toggleTaskDone(t)" class="shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
                                             :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
-                                        <i v-if="t.done" data-lucide="check" class="w-3.5 h-3.5 text-white"></i>
+                                        <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
                                     </button>
                                     <div class="flex-1 overflow-hidden">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="w-1.5 h-1.5 rounded-full shrink-0" :style="{backgroundColor: t.subject.color}"></span>
-                                            <h4 class="font-bold text-white text-xs truncate" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-2 h-2 rounded-full shrink-0" :style="{backgroundColor: t.subject.color}"></span>
+                                            <h4 class="font-bold text-white text-sm truncate" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
                                         </div>
-                                        <p class="text-[9px] text-slate-400 uppercase tracking-wider mt-0.5">{{ t.type }} • {{ formatDate(t.date) }}</p>
+                                        <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">{{ t.type }} • {{ formatDate(t.date) }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -298,156 +295,156 @@
                     </div>
 
                     <!-- Rechte Spalte (Fächer Raster) -->
-                    <div class="md:col-span-7 space-y-4 sm:space-y-6">
-                        <div class="flex items-center justify-between px-1">
-                            <h2 class="text-sm sm:text-base font-black text-white">Fächer (Nach Note sortiert)</h2>
-                            <button @click="currentTab = 'subjects'" class="text-indigo-400 text-[10px] font-bold uppercase flex items-center gap-1 hover:text-indigo-300">Alle <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+                    <div class="md:col-span-7 space-y-5 sm:space-y-6">
+                        <div class="flex items-center justify-between px-2">
+                            <h2 class="text-base sm:text-lg font-black text-white">Fächer (Nach Note)</h2>
+                            <button @click="currentTab = 'subjects'" class="text-indigo-400 text-xs font-bold uppercase flex items-center gap-1.5 hover:text-indigo-300 px-2 py-1">Alle <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div class="grid grid-cols-2 gap-4">
                             <div v-for="s in sortedSubjectsList.slice(0, 6)" :key="s.id" @click="selectedSubject = s" 
-                                 class="glass-card p-4 sm:p-5 cursor-pointer hover:scale-[1.01] transition-transform flex flex-col justify-between min-h-[120px] sm:min-h-[140px] relative overflow-hidden group">
-                                <div class="absolute -right-6 -top-6 w-20 h-20 rounded-full opacity-10 transition-transform group-hover:scale-150" :style="{ backgroundColor: s.color }"></div>
+                                 class="glass-card p-5 sm:p-6 cursor-pointer hover:scale-[1.01] transition-transform flex flex-col justify-between min-h-[140px] sm:min-h-[160px] relative overflow-hidden group">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 transition-transform group-hover:scale-150" :style="{ backgroundColor: s.color }"></div>
                                 <div>
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-slate-400">{{ s.isLK ? 'LK' : 'GK' }}</span>
-                                    <h3 class="text-sm sm:text-base font-black text-white leading-tight mt-0.5 line-clamp-2">{{ s.name }}</h3>
+                                    <span class="text-xs font-black uppercase tracking-wider text-slate-400">{{ s.isLK ? 'LK' : 'GK' }}</span>
+                                    <h3 class="text-base sm:text-lg font-black text-white leading-tight mt-1 line-clamp-2">{{ s.name }}</h3>
                                 </div>
-                                <div class="mt-3 flex items-end justify-between">
-                                    <div class="text-2xl sm:text-3xl font-black text-slate-100">
-                                        <span v-if="s.reportCardGrade !== null" class="flex items-center gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
+                                <div class="mt-4 flex items-end justify-between">
+                                    <div class="text-3xl sm:text-4xl font-black text-slate-100">
+                                        <span v-if="s.reportCardGrade !== null" class="flex items-center gap-1.5"><i data-lucide="award" class="w-5 h-5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
                                         <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '-' }}</span>
                                     </div>
-                                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: s.color }"></span>
+                                    <span class="w-3 h-3 rounded-full mb-1" :style="{ backgroundColor: s.color }"></span>
                                 </div>
                             </div>
 
                             <!-- Fach Hinzufügen Card -->
-                            <div @click="openAddSubjectModal" class="border-2 border-dashed border-indigo-500/30 bg-indigo-500/5 rounded-[1.8rem] sm:rounded-[2.2rem] p-4 sm:p-5 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-500/10 transition-colors min-h-[120px] sm:min-h-[140px] scale-btn">
-                                <div class="w-8 h-8 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-400 mb-1.5">
-                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                            <div @click="openAddSubjectModal" class="border-2 border-dashed border-indigo-500/30 bg-indigo-500/5 rounded-[2rem] sm:rounded-[2.2rem] p-5 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-500/10 transition-colors min-h-[140px] sm:min-h-[160px] scale-btn">
+                                <div class="w-12 h-12 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-400 mb-2">
+                                    <i data-lucide="plus" class="w-6 h-6"></i>
                                 </div>
-                                <span class="text-[9px] font-black uppercase tracking-wider text-indigo-400">Neues Fach</span>
+                                <span class="text-xs font-black uppercase tracking-wider text-indigo-400">Neues Fach</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 2. FÄCHER LISTE -->
-                <div v-if="currentTab === 'subjects' && !selectedSubject" class="space-y-4 max-w-3xl mx-auto animate-fade-in">
-                    <div class="flex justify-between items-end px-1 mb-1">
+                <div v-if="currentTab === 'subjects' && !selectedSubject" class="space-y-5 max-w-3xl mx-auto animate-fade-in">
+                    <div class="flex justify-between items-end px-2 mb-2">
                         <div>
-                            <h2 class="text-2xl sm:text-3xl font-black text-white">Fächerliste</h2>
-                            <p class="text-[10px] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">{{ processedData.semesterSubjects.length }} Fächer angelegt</p>
+                            <h2 class="text-3xl sm:text-4xl font-black text-white">Fächerliste</h2>
+                            <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{{ processedData.semesterSubjects.length }} Fächer angelegt</p>
                         </div>
-                        <button @click="openAddSubjectModal" class="w-10 h-10 sm:w-12 sm:h-12 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
-                            <i data-lucide="plus" class="w-4 sm:w-5 h-4 sm:h-5 text-white"></i>
+                        <button @click="openAddSubjectModal" class="w-12 h-12 sm:w-14 sm:h-14 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
+                            <i data-lucide="plus" class="w-6 h-6 text-white"></i>
                         </button>
                     </div>
 
-                    <div class="space-y-2">
+                    <div class="space-y-3">
                         <div v-for="s in sortedSubjectsList" :key="s.id" @click="selectedSubject = s" 
-                             class="glass-card p-3.5 sm:p-4 flex items-center justify-between cursor-pointer hover:border-white/20 transition-all shadow-sm relative overflow-hidden">
-                            <div class="w-1 absolute left-0 top-5 bottom-5 rounded-r-full" :style="{ backgroundColor: s.color }"></div>
+                             class="glass-card p-4 sm:p-5 flex items-center justify-between cursor-pointer hover:border-white/20 transition-all shadow-sm relative overflow-hidden">
+                            <div class="w-1.5 absolute left-0 top-5 bottom-5 rounded-r-full" :style="{ backgroundColor: s.color }"></div>
                             
-                            <div class="flex items-center gap-3 pl-2 overflow-hidden">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-[10px] shrink-0" :style="{ backgroundColor: s.color + '20', color: s.color }">
+                            <div class="flex items-center gap-4 pl-3 overflow-hidden">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-xs shrink-0" :style="{ backgroundColor: s.color + '20', color: s.color }">
                                     {{ s.isLK ? 'LK' : 'GK' }}
                                 </div>
                                 <div class="overflow-hidden">
-                                    <h3 class="text-sm sm:text-base font-black text-white truncate pr-2">{{ s.name }}</h3>
-                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{{ s.semesterGrades ? s.semesterGrades.length : 0 }} Noten</p>
+                                    <h3 class="text-base sm:text-lg font-black text-white truncate pr-2">{{ s.name }}</h3>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{{ s.semesterGrades ? s.semesterGrades.length : 0 }} Noten</p>
                                 </div>
                             </div>
                             
                             <div class="flex items-center gap-3 shrink-0">
                                 <div class="text-right">
-                                    <div class="text-xl sm:text-2xl font-black text-white">
-                                        <span v-if="s.reportCardGrade !== null" class="flex items-center justify-end gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
+                                    <div class="text-2xl sm:text-3xl font-black text-white">
+                                        <span v-if="s.reportCardGrade !== null" class="flex items-center justify-end gap-1.5"><i data-lucide="award" class="w-5 h-5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
                                         <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '-' }}</span>
                                     </div>
-                                    <div v-if="s.finalPoints !== null && s.reportCardGrade === null" class="text-[9px] font-bold text-slate-400 mt-0.5">Ø {{ formatNumber(s.finalGrade) }}</div>
+                                    <div v-if="s.finalPoints !== null && s.reportCardGrade === null" class="text-xs font-bold text-slate-400 mt-1">Ø {{ formatNumber(s.finalGrade) }}</div>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+                                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-500"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. DETAILANSICHT EINES FACHS (Inklusive anstehender Tests) -->
-                <div v-if="selectedSubject" class="space-y-4 sm:space-y-6 animate-fade-in">
-                    <button @click="selectedSubject = null" class="glass-pill px-3.5 py-1.5 flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white w-fit cursor-pointer">
-                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Zurück
+                <!-- 3. DETAILANSICHT EINES FACHS -->
+                <div v-if="selectedSubject" class="space-y-5 sm:space-y-8 animate-fade-in">
+                    <button @click="selectedSubject = null" class="glass-pill px-4 py-2 flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white w-fit cursor-pointer">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Zurück
                     </button>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
                         
                         <!-- Linke Spalte -->
-                        <div class="lg:col-span-7 space-y-4 sm:space-y-6">
+                        <div class="lg:col-span-7 space-y-5 sm:space-y-6">
                             <!-- Fach Header -->
-                            <div class="hero-block p-5 sm:p-8" :style="{ background: `linear-gradient(135deg, ${selectedSubject.color} 0%, ${adjustColor(selectedSubject.color, -50)} 100%)` }">
+                            <div class="hero-block p-6 sm:p-8" :style="{ background: `linear-gradient(135deg, ${selectedSubject.color} 0%, ${adjustColor(selectedSubject.color, -50)} 100%)` }">
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <span class="bg-white/20 text-white px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-md">
+                                        <span class="bg-white/20 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md">
                                             {{ selectedSubject.isLK ? 'Leistungskurs' : 'Grundkurs' }}
                                         </span>
-                                        <h2 class="text-2xl sm:text-4xl font-black text-white mt-2 mb-0.5 break-words">{{ selectedSubject.name }}</h2>
-                                        <p class="text-white/75 text-[10px] sm:text-xs font-bold">{{ selectedSubject.examWeight }}% Klausuranteil</p>
+                                        <h2 class="text-3xl sm:text-5xl font-black text-white mt-3 mb-1 break-words">{{ selectedSubject.name }}</h2>
+                                        <p class="text-white/80 text-xs sm:text-sm font-bold">{{ selectedSubject.examWeight }}% Klausuranteil</p>
                                     </div>
-                                    <div class="flex flex-col gap-1.5 sm:gap-2 shrink-0">
-                                        <button @click="openSettingsModal" class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md hover:bg-white/30 transition-colors cursor-pointer">
-                                            <i data-lucide="settings" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                    <div class="flex flex-col gap-2 shrink-0">
+                                        <button @click="openSettingsModal" class="w-11 h-11 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md hover:bg-white/30 transition-colors cursor-pointer">
+                                            <i data-lucide="settings" class="w-5 h-5"></i>
                                         </button>
-                                        <button @click="openReportCardModal" class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md hover:bg-white/30 transition-colors relative cursor-pointer">
-                                            <i data-lucide="award" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-                                            <span v-if="activeSubjectData?.reportCardGrade !== null" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-[#8b5cf6]"></span>
+                                        <button @click="openReportCardModal" class="w-11 h-11 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md hover:bg-white/30 transition-colors relative cursor-pointer">
+                                            <i data-lucide="award" class="w-5 h-5"></i>
+                                            <span v-if="activeSubjectData?.reportCardGrade !== null" class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-[#8b5cf6]"></span>
                                         </button>
                                     </div>
                                 </div>
                                 
-                                <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/20 flex justify-between items-end">
+                                <div class="mt-8 pt-5 border-t border-white/20 flex justify-between items-end">
                                     <div>
-                                        <p class="text-[9px] font-black uppercase tracking-wider text-white/75">Schnitt</p>
-                                        <div class="text-4xl sm:text-5xl font-black text-white mt-0.5">{{ activeSubjectData?.finalPoints !== null ? formatNumber(activeSubjectData.finalPoints) : '-' }}</div>
+                                        <p class="text-xs font-black uppercase tracking-wider text-white/80">Schnitt</p>
+                                        <div class="text-5xl sm:text-6xl font-black text-white mt-1">{{ activeSubjectData?.finalPoints !== null ? formatNumber(activeSubjectData.finalPoints) : '-' }}</div>
                                     </div>
-                                    <div v-if="activeSubjectData?.finalPoints !== null" class="text-xs font-bold text-white/95 bg-white/20 px-3 py-1 rounded-full backdrop-blur-md">
+                                    <div v-if="activeSubjectData?.finalPoints !== null" class="text-sm font-bold text-white/95 bg-white/20 px-4 py-1.5 rounded-full backdrop-blur-md">
                                         Note {{ formatNumber(activeSubjectData.finalGrade) }}
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="glass-card p-4 sm:p-6">
-                                <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-1.5">
-                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-indigo-400"></i> Verlauf
+                            <div class="glass-card p-5 sm:p-6">
+                                <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-5 flex items-center gap-2">
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-indigo-400"></i> Verlauf
                                 </p>
-                                <div class="h-40 sm:h-56 md:h-64 w-full relative">
+                                <div class="h-48 sm:h-64 w-full relative">
                                     <canvas id="trendChart"></canvas>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Rechte Spalte (Notenliste & anstehende Tests aus Planer) -->
+                        <!-- Rechte Spalte (Notenliste) -->
                         <div class="lg:col-span-5 space-y-4">
-                            <div class="flex justify-between items-center px-1">
-                                <h3 class="text-base sm:text-lg font-black text-white">Eingetragene Noten</h3>
-                                <button @click="openAddGradeModal" class="text-indigo-400 text-xs font-bold flex items-center gap-1 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-full hover:bg-indigo-500/20 cursor-pointer">
-                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Neu
+                            <div class="flex justify-between items-center px-2">
+                                <h3 class="text-lg sm:text-xl font-black text-white">Eingetragene Noten</h3>
+                                <button @click="openAddGradeModal" class="text-indigo-400 text-sm font-bold flex items-center gap-1.5 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-full hover:bg-indigo-500/20 cursor-pointer">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> Neu
                                 </button>
                             </div>
 
-                            <p class="text-[9px] text-slate-500 italic px-1">💡 Noten nach links wischen zum Löschen.</p>
+                            <p class="text-xs text-slate-500 italic px-2">💡 Noten nach links wischen zum Löschen.</p>
 
-                            <div class="space-y-2 relative overflow-hidden px-0.5 py-0.5">
-                                <div v-if="sortedGrades.length === 0" class="text-center py-6 text-slate-500 font-bold text-xs">
+                            <div class="space-y-3 relative overflow-hidden px-1 py-1">
+                                <div v-if="sortedGrades.length === 0" class="text-center py-8 text-slate-500 font-bold text-sm">
                                     Keine Noten in diesem Halbjahr.
                                 </div>
 
-                                <div v-for="g in sortedGrades" :key="g.id" class="relative group overflow-hidden rounded-[1.4rem]">
-                                    <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-5 z-0">
-                                        <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
-                                        <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
+                                <div v-for="g in sortedGrades" :key="g.id" class="relative group overflow-hidden rounded-[1.6rem]">
+                                    <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-6 z-0">
+                                        <i data-lucide="trash-2" class="text-white w-5 h-5"></i>
+                                        <i data-lucide="trash-2" class="text-white w-5 h-5"></i>
                                     </div>
                                     
-                                    <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.4rem]"
+                                    <div class="p-4.5 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.6rem]"
                                          @touchstart="!g.isFromPlanner && startSwipe($event, g.id)"
                                          @touchmove="!g.isFromPlanner && moveSwipe($event)"
                                          @touchend="!g.isFromPlanner && endSwipe($event, g)"
@@ -458,29 +455,26 @@
                                          :ref="el => { if(el && !g.isFromPlanner) swipeRefs[g.id] = el }"
                                          style="touch-action: pan-y;">
                                         
-                                        <div class="flex items-center gap-3 overflow-hidden">
-                                            <!-- Anzeige für offene Planer-Einträge ("Ergebnis noch nicht bekannt") -->
-                                            <div v-if="g.isFromPlanner" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0">
-                                                <i data-lucide="clock" class="w-4 h-4 animate-pulse"></i>
+                                        <div class="flex items-center gap-4 overflow-hidden">
+                                            <div v-if="g.isFromPlanner" class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0">
+                                                <i data-lucide="clock" class="w-5 h-5 animate-pulse"></i>
                                             </div>
-                                            <div v-else-if="g.pending" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0">
-                                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                            <div v-else-if="g.pending" class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0">
+                                                <i data-lucide="clock" class="w-5 h-5"></i>
                                             </div>
-                                            <div v-else class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-black shrink-0" :style="{ backgroundColor: selectedSubject.color + '15', color: selectedSubject.color }">
+                                            <div v-else class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-black shrink-0" :style="{ backgroundColor: selectedSubject.color + '15', color: selectedSubject.color }">
                                                 {{ g.points }}
                                             </div>
                                             <div class="overflow-hidden">
-                                                <p class="font-black text-white text-xs sm:text-sm truncate leading-tight pr-1">{{ g.label || g.type }}</p>
-                                                <!-- Status-Indikator -->
-                                                <p v-if="g.isFromPlanner" class="text-[8px] font-black text-amber-400 uppercase tracking-wider mt-0.5">Ergebnis noch nicht bekannt</p>
-                                                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">{{ formatDate(g.date) }}</p>
+                                                <p class="font-black text-white text-sm sm:text-base truncate leading-tight pr-1">{{ g.label || g.type }}</p>
+                                                <p v-if="g.isFromPlanner" class="text-[10px] font-black text-amber-400 uppercase tracking-wider mt-1">Ergebnis noch nicht bekannt</p>
+                                                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">{{ formatDate(g.date) }}</p>
                                             </div>
                                         </div>
-                                        <div class="flex gap-1.5 shrink-0">
-                                            <span v-if="g.pending && !g.isFromPlanner" class="text-[8px] font-black uppercase bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20 self-center">Ausstehend</span>
-                                            <!-- Bearbeiten-Weiterleitung für Planer-Einträge oder Standard-Noteneditierung -->
-                                            <button @click.stop="g.isFromPlanner ? openEditTaskFromPlanner(g.id) : openEditGradeModal(g)" class="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
-                                                <i data-lucide="edit-2" class="w-3 h-3"></i>
+                                        <div class="flex gap-2 shrink-0">
+                                            <span v-if="g.pending && !g.isFromPlanner" class="text-[10px] font-black uppercase bg-amber-500/15 text-amber-400 px-3 py-1 rounded-full border border-amber-500/20 self-center">Ausstehend</span>
+                                            <button @click.stop="g.isFromPlanner ? openEditTaskFromPlanner(g.id) : openEditGradeModal(g)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
+                                                <i data-lucide="edit-2" class="w-4 h-4"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -490,50 +484,48 @@
                     </div>
                 </div>
 
-                <!-- 4. PLANER (Aufgaben / Prüfungen) -->
-                <div v-if="currentTab === 'planner' && !selectedSubject" class="space-y-4 max-w-3xl mx-auto animate-fade-in">
-                    <div class="flex justify-between items-end px-1 mb-1">
+                <!-- 4. PLANER -->
+                <div v-if="currentTab === 'planner' && !selectedSubject" class="space-y-5 max-w-3xl mx-auto animate-fade-in">
+                    <div class="flex justify-between items-end px-2 mb-2">
                         <div>
-                            <h2 class="text-2xl sm:text-3xl font-black text-white">Planer</h2>
-                            <p class="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">Klausuren & Aufgaben</p>
+                            <h2 class="text-3xl sm:text-4xl font-black text-white">Planer</h2>
+                            <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">Klausuren & Aufgaben</p>
                         </div>
-                        <button @click="openTaskModal" class="w-10 h-10 sm:w-12 sm:h-12 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
-                            <i data-lucide="plus" class="w-4 sm:w-5 h-4 sm:h-5 text-white"></i>
+                        <button @click="openTaskModal" class="w-12 h-12 sm:w-14 sm:h-14 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
+                            <i data-lucide="plus" class="w-6 h-6 text-white"></i>
                         </button>
                     </div>
 
                     <!-- Planner Sub-Tabs -->
-                    <div class="glass-pill p-1 flex relative z-10 max-w-full overflow-x-auto no-scrollbar">
-                        <div class="absolute top-1 bottom-1 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md"
-                             :style="{ width: 'calc(100% / 3 - 2px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 1px)' }"></div>
-                        <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-2">Anstehend</button>
-                        <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-2">Vergangen</button>
-                        <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-2">Kalender</button>
+                    <div class="glass-pill p-1.5 flex relative z-10 max-w-full overflow-x-auto no-scrollbar">
+                        <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md"
+                             :style="{ width: 'calc(100% / 3 - 3px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 1.5px)' }"></div>
+                        <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-3">Anstehend</button>
+                        <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-3">Vergangen</button>
+                        <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-3">Kalender</button>
                     </div>
 
-                    <!-- Planer Filter-Pills für Tests & Klausuren (Nur in Listenansichten sichtbar) -->
-                    <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="flex gap-1.5 justify-center mt-1 px-1 flex-wrap">
-                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-3.5 py-1 rounded-full text-[9px] uppercase tracking-wider cursor-pointer transition-all scale-btn">Alle</button>
-                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-3.5 py-1 rounded-full text-[9px] uppercase tracking-wider cursor-pointer transition-all scale-btn">Nur Tests</button>
-                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-3.5 py-1 rounded-full text-[9px] uppercase tracking-wider cursor-pointer transition-all scale-btn">Klausuren</button>
+                    <!-- Planer Filter-Pills -->
+                    <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="flex gap-2 justify-center mt-2 px-2 flex-wrap">
+                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4 py-2 rounded-full text-xs uppercase tracking-wider cursor-pointer transition-all scale-btn">Alle</button>
+                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4 py-2 rounded-full text-xs uppercase tracking-wider cursor-pointer transition-all scale-btn">Nur Tests</button>
+                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4 py-2 rounded-full text-xs uppercase tracking-wider cursor-pointer transition-all scale-btn">Klausuren</button>
                     </div>
 
-                    <!-- Listenansichten (Anstehend / Vergangenheit gefiltert) -->
-                    <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="space-y-3">
-                        <p v-if="(plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks).length === 0" class="text-center py-10 text-slate-500 font-bold text-xs">
+                    <!-- Listenansichten -->
+                    <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="space-y-4">
+                        <p v-if="(plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks).length === 0" class="text-center py-12 text-slate-500 font-bold text-sm">
                             Keine Aufgaben in dieser Ansicht.
                         </p>
 
-                        <div class="space-y-2 relative overflow-hidden px-0.5 py-0.5">
-                            <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" class="relative group overflow-hidden rounded-[1.4rem]">
-                                <!-- Roter Hintergrund (Löschen) -->
-                                <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-5 z-0">
-                                    <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
-                                    <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
+                        <div class="space-y-3 relative overflow-hidden px-1 py-1">
+                            <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" class="relative group overflow-hidden rounded-[1.6rem]">
+                                <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-6 z-0">
+                                    <i data-lucide="trash-2" class="text-white w-5 h-5"></i>
+                                    <i data-lucide="trash-2" class="text-white w-5 h-5"></i>
                                 </div>
                                 
-                                <!-- Vordergrund Card -->
-                                <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.4rem]"
+                                <div class="p-4.5 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.6rem]"
                                      @touchstart="startTaskSwipe($event, t.id)"
                                      @touchmove="moveTaskSwipe($event)"
                                      @touchend="endTaskSwipe($event, t)"
@@ -544,25 +536,25 @@
                                      :ref="el => { if(el) taskSwipeRefs[t.id] = el }"
                                      style="touch-action: pan-y;">
                                     
-                                    <div class="flex items-center gap-3 overflow-hidden">
-                                        <button @click.stop="toggleTaskDone(t)" class="shrink-0 w-6.5 h-6.5 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
+                                    <div class="flex items-center gap-4 overflow-hidden">
+                                        <button @click.stop="toggleTaskDone(t)" class="shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
                                                 :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
-                                            <i v-if="t.done" data-lucide="check" class="w-3.5 h-3.5 text-white"></i>
+                                            <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
                                         </button>
                                         <div class="overflow-hidden">
-                                            <div class="flex items-center gap-1.5 overflow-hidden">
-                                                <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
-                                                <span class="text-[9px] font-black uppercase text-slate-400 truncate pr-1">{{ t.subject.name }}</span>
+                                            <div class="flex items-center gap-2 overflow-hidden">
+                                                <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
+                                                <span class="text-xs font-black uppercase text-slate-400 truncate pr-1">{{ t.subject.name }}</span>
                                             </div>
-                                            <h4 class="font-black text-white text-sm mt-0.5 leading-tight truncate pr-1" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
-                                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                                            <h4 class="font-black text-white text-base mt-1 leading-tight truncate pr-1" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
+                                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
                                                 {{ t.type }} • {{ formatDate(t.date) }}
                                             </p>
                                         </div>
                                     </div>
                                     <div class="flex shrink-0">
-                                        <button @click.stop="openEditTaskModal(t)" class="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
-                                            <i data-lucide="edit-2" class="w-3 h-3"></i>
+                                        <button @click.stop="openEditTaskModal(t)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
+                                            <i data-lucide="edit-2" class="w-4 h-4"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -571,35 +563,34 @@
                     </div>
 
                     <!-- Kalenderansicht -->
-                    <div v-if="plannerTab === 'calendar'" class="glass-card p-4 sm:p-5 animate-fade-in">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-black text-white text-base sm:text-lg">{{ monthNames[calMonth] }} {{ calYear }}</h3>
-                            <div class="flex gap-1.5">
-                                <button @click="prevMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                                <button @click="nextMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <div v-if="plannerTab === 'calendar'" class="glass-card p-5 sm:p-6 animate-fade-in">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="font-black text-white text-lg sm:text-xl">{{ monthNames[calMonth] }} {{ calYear }}</h3>
+                            <div class="flex gap-2">
+                                <button @click="prevMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <button @click="nextMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                             </div>
                         </div>
 
                         <!-- Wochentage -->
-                        <div class="grid grid-cols-7 gap-1 text-center mb-1">
-                            <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[9px] font-black uppercase text-slate-500 py-0.5">{{ d }}</div>
+                        <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                            <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] font-black uppercase text-slate-500 py-1">{{ d }}</div>
                         </div>
 
                         <!-- Tage Grid -->
                         <div class="grid grid-cols-7 gap-1">
                             <div v-for="(day, idx) in calendarDays" :key="idx" 
-                                 class="aspect-square rounded-lg sm:rounded-xl flex flex-col items-center justify-center relative p-0.5 transition-colors border"
+                                 class="aspect-square rounded-xl flex flex-col items-center justify-center relative p-1 transition-colors border"
                                  :class="[
                                     day.isCurrentMonth ? 'bg-black/20 text-white border-white/5 hover:border-indigo-500/50 cursor-pointer' : 'bg-transparent text-slate-600 border-transparent',
                                     isToday(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/10' : ''
                                  ]"
                                  @click="day.isCurrentMonth && (day.tasks?.length ? handleCalendarClick(day.date) : openTaskModalWithDate(day.date))">
-                                <span class="font-bold text-[11px] sm:text-xs z-10">{{ day.day }}</span>
+                                <span class="font-bold text-sm z-10">{{ day.day }}</span>
                                 
-                                <!-- Indikatoren für Aufgaben am Tag -->
-                                <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-0.5 mt-0.5 justify-center flex-wrap max-w-[80%]">
-                                    <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
-                                    <span v-if="day.tasks.length > 3" class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-slate-400"></span>
+                                <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-1 mt-1 justify-center flex-wrap max-w-[80%]">
+                                    <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
+                                    <span v-if="day.tasks.length > 3" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                                 </div>
                             </div>
                         </div>
@@ -608,43 +599,43 @@
 
                 <!-- 5. ABITURRECHNER -->
                 <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in">
-                    <div class="px-1">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white">Abiturrechner</h2>
-                        <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">Zeugnisübersicht aller Halbjahre</p>
+                    <div class="px-2">
+                        <h2 class="text-3xl sm:text-4xl font-black text-white">Abiturrechner</h2>
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">Zeugnisübersicht aller Halbjahre</p>
                     </div>
 
-                    <div class="glass-card p-4 sm:p-6 overflow-hidden">
-                        <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-indigo-400 mb-3 flex items-center gap-2">
-                            <i data-lucide="table" class="w-4 h-4"></i> Zeugnisnoten aller Halbjahre
+                    <div class="glass-card p-5 sm:p-6 overflow-hidden">
+                        <h3 class="text-sm font-black uppercase tracking-wider text-indigo-400 mb-4 flex items-center gap-2">
+                            <i data-lucide="table" class="w-5 h-5"></i> Zeugnisnoten
                         </h3>
-                        <p class="text-[11px] text-slate-400 mb-4 leading-relaxed">Hier siehst du alle Kursergebnisse deiner Fächer. Ein <span class="text-amber-400">Award-Symbol</span> markiert manuell festgelegte Zeugnisnoten.</p>
+                        <p class="text-xs text-slate-400 mb-5 leading-relaxed">Hier siehst du alle Kursergebnisse. Ein <span class="text-amber-400 inline-flex items-center gap-1"><i data-lucide="award" class="w-3 h-3"></i>Award-Symbol</span> markiert festgesetzte Zeugnisnoten.</p>
                         
-                        <div class="overflow-x-auto no-scrollbar">
-                            <table class="w-full text-left border-collapse min-w-[450px]">
+                        <div class="overflow-x-auto no-scrollbar pb-2">
+                            <table class="w-full text-left border-collapse min-w-[500px]">
                                 <thead>
-                                    <tr class="border-b border-white/10 text-[9px] font-black uppercase text-slate-400">
-                                        <th class="py-2.5 pr-2">Fach</th>
-                                        <th class="py-2.5 text-center w-10">LK</th>
-                                        <th class="py-2.5 text-center w-12">11/1</th>
-                                        <th class="py-2.5 text-center w-12">11/2</th>
-                                        <th class="py-2.5 text-center w-12">12/1</th>
-                                        <th class="py-2.5 text-center w-12">12/2</th>
+                                    <tr class="border-b border-white/10 text-xs font-black uppercase text-slate-400">
+                                        <th class="py-3 pr-3">Fach</th>
+                                        <th class="py-3 text-center w-12">LK</th>
+                                        <th class="py-3 text-center w-14">11/1</th>
+                                        <th class="py-3 text-center w-14">11/2</th>
+                                        <th class="py-3 text-center w-14">12/1</th>
+                                        <th class="py-3 text-center w-14">12/2</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="s in sortedSubjectsList" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-xs font-bold text-white">
-                                        <td class="py-2.5 pr-2 flex items-center gap-1.5 overflow-hidden max-w-[120px]">
-                                            <span class="w-2 h-2 rounded-full inline-block shrink-0" :style="{ backgroundColor: s.color }"></span>
+                                    <tr v-for="s in sortedSubjectsList" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-sm font-bold text-white">
+                                        <td class="py-3.5 pr-2 flex items-center gap-2 overflow-hidden max-w-[140px]">
+                                            <span class="w-2.5 h-2.5 rounded-full inline-block shrink-0" :style="{ backgroundColor: s.color }"></span>
                                             <span class="truncate">{{ s.name }}</span>
                                         </td>
-                                        <td class="py-2.5 text-center">
-                                            <span v-if="s.isLK" class="text-indigo-400 font-extrabold uppercase text-[9px]">LK</span>
-                                            <span v-else class="text-slate-500 font-normal">GK</span>
+                                        <td class="py-3.5 text-center">
+                                            <span v-if="s.isLK" class="text-indigo-400 font-extrabold uppercase text-xs">LK</span>
+                                            <span v-else class="text-slate-500 font-normal text-xs">GK</span>
                                         </td>
-                                        <td v-for="hy in halfYears" :key="hy" class="py-2.5 text-center font-extrabold text-[13px]">
-                                            <div class="inline-flex items-center gap-0.5 justify-center">
-                                                <span v-if="s.reportCardGrades?.[hy] !== undefined" class="text-amber-400 flex items-center gap-0.5">
-                                                    <i data-lucide="award" class="w-3 h-3"></i>
+                                        <td v-for="hy in halfYears" :key="hy" class="py-3.5 text-center font-extrabold text-base">
+                                            <div class="inline-flex items-center gap-1 justify-center">
+                                                <span v-if="s.reportCardGrades?.[hy] !== undefined" class="text-amber-400 flex items-center gap-1">
+                                                    <i data-lucide="award" class="w-4 h-4"></i>
                                                     {{ s.reportCardGrades[hy] }}
                                                 </span>
                                                 <span v-else class="text-slate-200">
@@ -661,12 +652,12 @@
 
                 <!-- 6. STATS -->
                 <div v-if="currentTab === 'stats' && !selectedSubject" class="space-y-6 max-w-3xl mx-auto animate-fade-in">
-                    <div class="px-1">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white">Statistik</h2>
+                    <div class="px-2">
+                        <h2 class="text-3xl sm:text-4xl font-black text-white">Statistik</h2>
                     </div>
-                    <div class="glass-card p-5 relative overflow-hidden">
-                        <p class="text-[9px] font-black uppercase tracking-wider text-slate-400 mb-4">Punkteverteilung im Halbjahr {{ selectedHalfYear }}</p>
-                        <div class="h-56 sm:h-64 w-full relative z-10">
+                    <div class="glass-card p-6 relative overflow-hidden">
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-5">Punkteverteilung ({{ selectedHalfYear }})</p>
+                        <div class="h-64 sm:h-72 w-full relative z-10">
                             <canvas id="barChart"></canvas>
                         </div>
                     </div>
@@ -674,30 +665,30 @@
 
             </main>
 
-            <!-- NAVIGATION BOTTOM BAR (Flüssiger Sliding Indicator 5 Tabs) -->
-            <div class="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none animate-slide-up">
-                <div class="glass-pill p-1 flex relative pointer-events-auto w-full max-w-md">
-                    <div class="absolute top-1 bottom-1 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/40"
+            <!-- NAVIGATION BOTTOM BAR -->
+            <div class="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-5 pointer-events-none animate-slide-up">
+                <div class="glass-pill p-1.5 flex relative pointer-events-auto w-full max-w-md">
+                    <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/40"
                          :style="{ 
-                             width: 'calc(20% - 2px)', 
-                             left: `calc(${['home', 'subjects', 'planner', 'abitur', 'stats'].indexOf(currentTab)} * 20% + 1px)` 
+                             width: 'calc(20% - 3px)', 
+                             left: `calc(${['home', 'subjects', 'planner', 'abitur', 'stats'].indexOf(currentTab)} * 20% + 1.5px)` 
                          }">
                     </div>
                     
-                    <button @click="currentTab = 'home'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'home' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
-                        <i data-lucide="home" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    <button @click="currentTab = 'home'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'home' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="home" class="w-6 h-6 sm:w-7 sm:h-7"></i>
                     </button>
-                    <button @click="currentTab = 'subjects'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
-                        <i data-lucide="layout-grid" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    <button @click="currentTab = 'subjects'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="layout-grid" class="w-6 h-6 sm:w-7 sm:h-7"></i>
                     </button>
-                    <button @click="currentTab = 'planner'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
-                        <i data-lucide="calendar-check" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    <button @click="currentTab = 'planner'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="calendar-check" class="w-6 h-6 sm:w-7 sm:h-7"></i>
                     </button>
-                    <button @click="currentTab = 'abitur'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
-                        <i data-lucide="graduation-cap" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    <button @click="currentTab = 'abitur'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="graduation-cap" class="w-6 h-6 sm:w-7 sm:h-7"></i>
                     </button>
-                    <button @click="currentTab = 'stats'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
-                        <i data-lucide="trending-up" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    <button @click="currentTab = 'stats'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="trending-up" class="w-6 h-6 sm:w-7 sm:h-7"></i>
                     </button>
                 </div>
             </div>
@@ -705,195 +696,195 @@
 
         <!-- MODALS -->
         <!-- Fach Modal -->
-        <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
-                <button @click="closeSubjectModal" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+        <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-3 md:p-6 animate-fade-in pb-10 md:pb-6">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
+                <button @click="closeSubjectModal" class="absolute top-6 right-6 w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
+                <h2 class="text-2xl font-black text-white mb-6">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
                 
-                <form @submit.prevent="handleSaveSubject" class="space-y-4">
-                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5">
-                        <label class="text-[9px] font-black uppercase text-slate-400 ml-2">Fachname</label>
-                        <input type="text" required v-model="subjectForm.name" class="w-full bg-transparent text-base sm:text-lg font-bold text-white outline-none ml-2 mt-1" />
+                <form @submit.prevent="handleSaveSubject" class="space-y-5">
+                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-2">Fachname</label>
+                        <!-- text-base verhindert Zoom -->
+                        <input type="text" required v-model="subjectForm.name" class="w-full bg-transparent text-base sm:text-lg font-bold text-white outline-none ml-2 mt-2" />
                     </div>
                     
-                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5 flex items-center justify-between">
-                        <div class="ml-2"><p class="font-black text-white text-xs sm:text-sm">Leistungskurs</p></div>
-                        <button type="button" @click="subjectForm.isLK = !subjectForm.isLK" :class="subjectForm.isLK ? 'bg-indigo-600' : 'bg-slate-700'" class="relative inline-flex h-6.5 w-11 rounded-full transition-all cursor-pointer">
-                            <span :class="subjectForm.isLK ? 'translate-x-5.5' : 'translate-x-1'" class="inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform mt-1 shadow-sm"></span>
+                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5 flex items-center justify-between">
+                        <div class="ml-2"><p class="font-black text-white text-sm">Leistungskurs</p></div>
+                        <button type="button" @click="subjectForm.isLK = !subjectForm.isLK" :class="subjectForm.isLK ? 'bg-indigo-600' : 'bg-slate-700'" class="relative inline-flex h-8 w-14 rounded-full transition-all cursor-pointer">
+                            <span :class="subjectForm.isLK ? 'translate-x-7' : 'translate-x-1'" class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform mt-1 shadow-sm"></span>
                         </button>
                     </div>
 
-                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5 space-y-2">
+                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5 space-y-3">
                         <div class="flex justify-between items-center ml-2">
-                            <p class="font-bold text-white text-xs sm:text-sm">Klausurgewichtung</p>
-                            <span class="font-black text-indigo-400 text-xs sm:text-sm">{{ subjectForm.examWeight }}% Klausur</span>
+                            <p class="font-bold text-white text-sm">Klausurgewichtung</p>
+                            <span class="font-black text-indigo-400 text-sm">{{ subjectForm.examWeight }}% Klausur</span>
                         </div>
                         <input type="range" min="0" max="100" v-model.number="subjectForm.examWeight" class="custom-range" />
                     </div>
 
-                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5">
-                        <label class="text-[9px] font-black uppercase text-slate-400 ml-2 block mb-2.5">Prüfungsfach (Abitur)</label>
-                        <div class="grid grid-cols-6 gap-1">
-                            <button type="button" @click="subjectForm.abiType = null" :class="!subjectForm.abiType ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-1.5 rounded-xl text-[9px] font-black cursor-pointer">X</button>
-                            <button type="button" v-for="t in ['P1','P2','P3','P4','P5']" :key="t" @click="subjectForm.abiType = t" :class="subjectForm.abiType === t ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-1.5 rounded-xl text-[9px] font-black cursor-pointer">{{t}}</button>
+                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-2 block mb-3">Prüfungsfach (Abitur)</label>
+                        <div class="grid grid-cols-6 gap-2">
+                            <button type="button" @click="subjectForm.abiType = null" :class="!subjectForm.abiType ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-2.5 rounded-xl text-xs font-black cursor-pointer">X</button>
+                            <button type="button" v-for="t in ['P1','P2','P3','P4','P5']" :key="t" @click="subjectForm.abiType = t" :class="subjectForm.abiType === t ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-2.5 rounded-xl text-xs font-black cursor-pointer">{{t}}</button>
                         </div>
                     </div>
 
-                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5">
-                        <p class="font-black text-white text-xs sm:text-sm ml-2 mb-2.5">Fachfarbe</p>
-                        <div class="grid grid-cols-8 gap-2 sm:gap-3 px-2 py-1">
-                            <button type="button" v-for="c in colorOptions" :key="c" @click="subjectForm.color = c" :style="{ backgroundColor: c }" class="w-6.5 h-6.5 sm:w-8 sm:h-8 rounded-full shrink-0 transition-transform cursor-pointer scale-btn" :class="subjectForm.color === c ? 'scale-120 ring-2 ring-indigo-500' : ''"></button>
+                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5">
+                        <p class="font-black text-white text-sm ml-2 mb-3">Fachfarbe</p>
+                        <div class="grid grid-cols-8 gap-3 px-2 py-1">
+                            <button type="button" v-for="c in colorOptions" :key="c" @click="subjectForm.color = c" :style="{ backgroundColor: c }" class="w-8 h-8 rounded-full shrink-0 transition-transform cursor-pointer scale-btn" :class="subjectForm.color === c ? 'scale-120 ring-2 ring-indigo-500' : ''"></button>
                         </div>
                     </div>
 
-                    <div class="pt-2 flex gap-3">
-                        <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3 sm:py-4 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Speichern</button>
-                        <button type="button" v-if="isSettingsModalOpen" @click="handleDeleteSubject" class="w-12 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <div class="pt-3 flex gap-4">
+                        <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-full font-black uppercase text-sm cursor-pointer">Speichern</button>
+                        <button type="button" v-if="isSettingsModalOpen" @click="handleDeleteSubject" class="w-14 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Noten Modal (Optimiert mit Custom-Kalender) -->
-        <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
-                <button @click="isGradeModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+        <!-- Noten Modal -->
+        <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-3 md:p-6 animate-fade-in pb-10 md:pb-6">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
+                <button @click="isGradeModalOpen = false" class="absolute top-6 right-6 w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
+                <h2 class="text-2xl font-black text-white mb-6">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
                 
-                <div class="space-y-4">
-                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl flex justify-between items-center border border-white/5">
-                        <p class="font-black text-white text-xs sm:text-sm ml-2">Ergebnis ausstehend</p>
-                        <button type="button" @click="gradeForm.pending = !gradeForm.pending" :class="gradeForm.pending ? 'bg-amber-500' : 'bg-slate-700'" class="relative inline-flex h-6.5 w-11 rounded-full transition-all cursor-pointer">
-                            <span :class="gradeForm.pending ? 'translate-x-5.5' : 'translate-x-1'" class="inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform mt-1"></span>
+                <div class="space-y-5">
+                    <div class="bg-black/20 p-4 rounded-3xl flex justify-between items-center border border-white/5">
+                        <p class="font-black text-white text-sm ml-2">Ergebnis ausstehend</p>
+                        <button type="button" @click="gradeForm.pending = !gradeForm.pending" :class="gradeForm.pending ? 'bg-amber-500' : 'bg-slate-700'" class="relative inline-flex h-8 w-14 rounded-full transition-all cursor-pointer">
+                            <span :class="gradeForm.pending ? 'translate-x-7' : 'translate-x-1'" class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform mt-1"></span>
                         </button>
                     </div>
 
-                    <div v-if="!gradeForm.pending" class="bg-black/20 p-3.5 sm:p-4 rounded-3xl text-center border border-white/5">
-                        <div class="text-5xl sm:text-6xl font-black text-indigo-400 mb-3">{{ gradeForm.points }}</div>
+                    <div v-if="!gradeForm.pending" class="bg-black/20 p-5 rounded-3xl text-center border border-white/5">
+                        <div class="text-6xl sm:text-7xl font-black text-indigo-400 mb-4">{{ gradeForm.points }}</div>
                         <input type="range" min="0" max="15" v-model.number="gradeForm.points" class="custom-range">
                     </div>
 
-                    <div class="flex gap-2 bg-black/20 p-1 rounded-full border border-white/5">
-                        <button @click="gradeForm.type = 'Klausur'" :class="gradeForm.type === 'Klausur' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 sm:py-3 rounded-full text-[10px] sm:text-xs font-black uppercase cursor-pointer">Klausur</button>
-                        <button @click="gradeForm.type = 'Sonstige Leistung'" :class="gradeForm.type === 'Sonstige Leistung' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 sm:py-3 rounded-full text-[10px] sm:text-xs font-black uppercase cursor-pointer">Sonstiges</button>
+                    <div class="flex gap-2 bg-black/20 p-1.5 rounded-full border border-white/5">
+                        <button @click="gradeForm.type = 'Klausur'" :class="gradeForm.type === 'Klausur' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-3.5 rounded-full text-xs font-black uppercase cursor-pointer">Klausur</button>
+                        <button @click="gradeForm.type = 'Sonstige Leistung'" :class="gradeForm.type === 'Sonstige Leistung' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-3.5 rounded-full text-xs font-black uppercase cursor-pointer">Sonstiges</button>
                     </div>
 
-                    <input type="text" placeholder="Beschreibung (optional)" v-model="gradeForm.label" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm outline-none text-white placeholder:text-slate-600" />
+                    <!-- text-base für iPhone-Zoom-Schutz -->
+                    <input type="text" placeholder="Beschreibung (optional)" v-model="gradeForm.label" class="w-full bg-black/20 border border-white/5 p-4.5 rounded-3xl font-bold text-base outline-none text-white placeholder:text-slate-600" />
                     
-                    <!-- Custom Kalender Trigger-Feld -->
-                    <div @click="openDatePicker('grade')" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm text-white flex justify-between items-center cursor-pointer hover:border-white/20 transition-all">
+                    <div @click="openDatePicker('grade')" class="w-full bg-black/20 border border-white/5 p-4.5 rounded-3xl font-bold text-base text-white flex justify-between items-center cursor-pointer hover:border-white/20 transition-all">
                         <span>{{ gradeForm.date ? formatDate(gradeForm.date) : 'Datum auswählen' }}</span>
-                        <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
+                        <i data-lucide="calendar" class="w-5 h-5 text-indigo-400"></i>
                     </div>
 
-                    <div class="pt-2 flex gap-3">
-                        <button @click="handleSaveGrade" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Speichern</button>
-                        <button v-if="gradeForm.id" @click="handleDeleteGrade(gradeForm.id)" class="w-12 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <div class="pt-3 flex gap-4">
+                        <button @click="handleSaveGrade" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-full font-black uppercase text-sm cursor-pointer">Speichern</button>
+                        <button v-if="gradeForm.id" @click="handleDeleteGrade(gradeForm.id)" class="w-14 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Zeugnis Modal -->
-        <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative">
-                <button @click="isReportCardModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+        <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-3 md:p-6 animate-fade-in pb-10 md:pb-6">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative">
+                <button @click="isReportCardModalOpen = false" class="absolute top-6 right-6 w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">Zeugnisnote festlegen</h2>
+                <h2 class="text-2xl font-black text-white mb-6">Zeugnisnote festlegen</h2>
                 
                 <div class="space-y-6">
-                    <div class="bg-black/20 border border-white/5 p-5 sm:p-6 rounded-3xl text-center">
-                        <div class="text-6xl sm:text-7xl font-black text-white mb-4 sm:mb-6">{{ tempReportCardPoints === null ? '-' : tempReportCardPoints }}</div>
+                    <div class="bg-black/20 border border-white/5 p-6 rounded-3xl text-center">
+                        <div class="text-7xl font-black text-white mb-6">{{ tempReportCardPoints === null ? '-' : tempReportCardPoints }}</div>
                         <input type="range" min="0" max="15" v-model.number="tempReportCardPoints" class="custom-range">
                     </div>
-                    <div class="flex gap-2 sm:gap-3">
-                        <button @click="handleSaveReportCardGrade(tempReportCardPoints)" class="flex-1 bg-indigo-600 text-white py-3 sm:py-4 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Festlegen</button>
-                        <button @click="handleSaveReportCardGrade(null)" class="flex-1 bg-white/5 border border-white/10 text-slate-400 py-3 sm:py-4 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Zurücksetzen</button>
+                    <div class="flex gap-3">
+                        <button @click="handleSaveReportCardGrade(tempReportCardPoints)" class="flex-1 bg-indigo-600 text-white py-4 rounded-full font-black uppercase text-sm cursor-pointer">Festlegen</button>
+                        <button @click="handleSaveReportCardGrade(null)" class="flex-1 bg-white/5 border border-white/10 text-slate-400 py-4 rounded-full font-black uppercase text-sm cursor-pointer">Zurücksetzen</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Aufgabe/Prüfung Modal -->
-        <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
-                <button @click="isTaskModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+        <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-3 md:p-6 animate-fade-in pb-10 md:pb-6">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
+                <button @click="isTaskModalOpen = false" class="absolute top-6 right-6 w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
+                <h2 class="text-2xl font-black text-white mb-6">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
                 
-                <div v-if="subjects.length === 0" class="text-center py-6 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-xs sm:text-sm animate-pulse">
+                <div v-if="subjects.length === 0" class="text-center py-8 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-sm animate-pulse">
                     Bitte erstelle zuerst ein Fach unter "Fächer", bevor du Aufgaben eintragen kannst.
                 </div>
                 
-                <div v-else class="space-y-4">
-                    <input type="text" placeholder="Titel (z.B. Vokabeln, Analysis Test)" required v-model="taskForm.title" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm outline-none text-white placeholder:text-slate-600" />
+                <div v-else class="space-y-5">
+                    <input type="text" placeholder="Titel (z.B. Vokabeln, Analysis Test)" required v-model="taskForm.title" class="w-full bg-black/20 border border-white/5 p-4.5 rounded-3xl font-bold text-base outline-none text-white placeholder:text-slate-600" />
                     
-                    <div class="flex gap-2 bg-black/20 p-1 rounded-full border border-white/5">
-                        <button @click="taskForm.type = 'Hausaufgabe'" :class="taskForm.type === 'Hausaufgabe' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase cursor-pointer">Hausaufgabe</button>
-                        <button @click="taskForm.type = 'Test'" :class="taskForm.type === 'Test' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase cursor-pointer">Test</button>
-                        <button @click="taskForm.type = 'Klausur'" :class="taskForm.type === 'Klausur' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase cursor-pointer">Klausur</button>
+                    <div class="flex gap-2 bg-black/20 p-1.5 rounded-full border border-white/5">
+                        <button @click="taskForm.type = 'Hausaufgabe'" :class="taskForm.type === 'Hausaufgabe' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-3 rounded-full text-[11px] sm:text-xs font-black uppercase cursor-pointer">Hausaufg.</button>
+                        <button @click="taskForm.type = 'Test'" :class="taskForm.type === 'Test' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-3 rounded-full text-[11px] sm:text-xs font-black uppercase cursor-pointer">Test</button>
+                        <button @click="taskForm.type = 'Klausur'" :class="taskForm.type === 'Klausur' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-3 rounded-full text-[11px] sm:text-xs font-black uppercase cursor-pointer">Klausur</button>
                     </div>
 
-                    <div class="bg-black/20 border border-white/5 p-3.5 sm:p-4 rounded-3xl">
-                        <label class="text-[9px] font-black uppercase text-slate-400 ml-1 block mb-2">Fach auswählen</label>
-                        <div class="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto no-scrollbar">
+                    <div class="bg-black/20 border border-white/5 p-4.5 rounded-3xl">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1 block mb-3">Fach auswählen</label>
+                        <div class="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto no-scrollbar">
                             <button v-for="s in subjects" :key="s.id" @click="taskForm.subjectId = s.id"
-                                    class="p-2.5 sm:p-3 rounded-xl border text-left flex items-center gap-2 transition-colors cursor-pointer"
+                                    class="p-3 sm:p-4 rounded-xl border text-left flex items-center gap-2.5 transition-colors cursor-pointer"
                                     :class="taskForm.subjectId === s.id ? 'bg-white/10 border-indigo-500' : 'bg-transparent border-white/5 hover:border-white/20'">
-                                <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: s.color }"></span>
-                                <span class="font-bold text-xs text-white truncate">{{ s.name }}</span>
+                                <span class="w-3 h-3 rounded-full shrink-0" :style="{ backgroundColor: s.color }"></span>
+                                <span class="font-bold text-sm text-white truncate">{{ s.name }}</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Custom Kalender Trigger-Feld -->
-                    <div @click="openDatePicker('task')" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm text-white flex justify-between items-center cursor-pointer hover:border-white/20 transition-all">
+                    <div @click="openDatePicker('task')" class="w-full bg-black/20 border border-white/5 p-4.5 rounded-3xl font-bold text-base text-white flex justify-between items-center cursor-pointer hover:border-white/20 transition-all">
                         <span>{{ taskForm.date ? formatDate(taskForm.date) : 'Datum auswählen' }}</span>
-                        <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
+                        <i data-lucide="calendar" class="w-5 h-5 text-indigo-400"></i>
                     </div>
 
-                    <div class="pt-2 flex gap-3">
-                        <button @click="handleSaveTask" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Speichern</button>
-                        <button v-if="taskForm.id" @click="handleDeleteTask(taskForm.id)" class="w-12 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <div class="pt-3 flex gap-4">
+                        <button @click="handleSaveTask" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-full font-black uppercase text-sm cursor-pointer">Speichern</button>
+                        <button v-if="taskForm.id" @click="handleDeleteTask(taskForm.id)" class="w-14 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- APP-EINSTELLUNGEN MODAL -->
-        <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-md rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative">
-                <button @click="isAppSettingsModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+        <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-md rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative">
+                <button @click="isAppSettingsModalOpen = false" class="absolute top-6 right-6 w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="settings" class="w-5 h-5 text-indigo-400"></i> App-Einstellungen
+                <h2 class="text-2xl font-black text-white mb-5 flex items-center gap-3">
+                    <i data-lucide="settings" class="w-6 h-6 text-indigo-400"></i> Einstellungen
                 </h2>
                 
-                <div class="space-y-4">
-                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5 space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
-                        <p class="text-[11px] text-slate-400 leading-normal">Bestimmt die automatische Berechnung des Halbjahres für alle Termine und Noten.</p>
+                <div class="space-y-5">
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                        <label class="text-xs font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
+                        <p class="text-xs text-slate-400 leading-normal">Bestimmt die automatische Berechnung des Halbjahres für alle Termine und Noten.</p>
                         
-                        <div class="grid grid-cols-3 gap-2 pt-2">
+                        <div class="grid grid-cols-3 gap-2.5 pt-3">
                             <button v-for="year in [2023, 2024, 2025, 2026, 2027, 2028]" :key="year"
                                     @click="tempStartYear = year"
                                     :class="tempStartYear === year ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'"
-                                    class="py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer transition-all scale-btn">
+                                    class="py-3 rounded-xl text-sm cursor-pointer transition-all scale-btn">
                                 {{ year }}
                             </button>
                         </div>
                     </div>
 
-                    <div class="pt-2">
-                        <button @click="saveAppSettings" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer flex items-center justify-center gap-2">
-                            <i data-lucide="save" class="w-4 h-4"></i> Einstellungen speichern
+                    <div class="pt-3">
+                        <button @click="saveAppSettings" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-full font-black uppercase text-sm cursor-pointer flex items-center justify-center gap-2">
+                            <i data-lucide="save" class="w-5 h-5"></i> Einstellungen speichern
                         </button>
                     </div>
                 </div>
@@ -902,32 +893,29 @@
 
         <!-- CUSTOM CALENDAR DATE PICKER POP-UP -->
         <div v-if="isDatePickerOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative">
-                <button @click="isDatePickerOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
+                <button @click="isDatePickerOpen = false" class="absolute top-6 right-6 w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-                <h3 class="text-lg sm:text-xl font-black text-white mb-3 sm:mb-4 flex items-center gap-2">
-                    <i data-lucide="calendar" class="w-4.5 h-4.5 sm:w-5 sm:h-5 text-indigo-400"></i> Datum wählen
+                <h3 class="text-xl font-black text-white mb-5 flex items-center gap-2.5">
+                    <i data-lucide="calendar" class="w-6 h-6 text-indigo-400"></i> Datum wählen
                 </h3>
                 
-                <!-- Monat & Navigation -->
-                <div class="flex justify-between items-center mb-4 bg-black/20 p-2.5 sm:p-3 rounded-2xl border border-white/5">
-                    <span class="font-black text-white text-xs sm:text-sm">{{ monthNames[calSelectMonth] }} {{ calSelectYear }}</span>
-                    <div class="flex gap-1.5">
-                        <button type="button" @click="prevSelectMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
-                        <button type="button" @click="nextSelectMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+                <div class="flex justify-between items-center mb-5 bg-black/20 p-3 rounded-2xl border border-white/5">
+                    <span class="font-black text-white text-sm px-2">{{ monthNames[calSelectMonth] }} {{ calSelectYear }}</span>
+                    <div class="flex gap-2">
+                        <button type="button" @click="prevSelectMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <button type="button" @click="nextSelectMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                     </div>
                 </div>
 
-                <!-- Wochentage -->
-                <div class="grid grid-cols-7 gap-1 text-center mb-1">
-                    <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[9px] font-black uppercase text-slate-500 py-0.5">{{ d }}</div>
+                <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                    <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] font-black uppercase text-slate-500 py-1">{{ d }}</div>
                 </div>
 
-                <!-- Tage-Grid -->
                 <div class="grid grid-cols-7 gap-1">
                     <div v-for="(day, idx) in datepickerDays" :key="idx" 
-                         class="aspect-square rounded-lg sm:rounded-xl flex items-center justify-center relative p-0.5 transition-all border text-[11px] sm:text-xs"
+                         class="aspect-square rounded-xl flex items-center justify-center relative p-1 transition-all border text-sm"
                          :class="[
                             day.isCurrentMonth ? 'bg-black/20 text-white border-white/5 hover:border-indigo-500 cursor-pointer font-bold' : 'bg-transparent text-slate-700 border-transparent pointer-events-none',
                             isSelectedDate(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/20 text-indigo-300' : ''
@@ -939,36 +927,36 @@
             </div>
         </div>
 
-        <!-- PWA INSTALL GUIDE MODAL (Für Safari iOS / sonstige Browser) -->
+        <!-- PWA INSTALL GUIDE MODAL -->
         <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative text-center">
-                <button @click="isInstallGuideModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
+                <button @click="isInstallGuideModalOpen = false" class="absolute top-6 right-6 w-10 h-10 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
-                <div class="w-16 h-16 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="smartphone" class="w-8 h-8"></i>
+                <div class="w-20 h-20 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-5">
+                    <i data-lucide="smartphone" class="w-10 h-10"></i>
                 </div>
-                <h3 class="text-lg sm:text-xl font-black text-white mb-2">SchoolFlow als App</h3>
-                <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                    Du kannst SchoolFlow ganz einfach zu deinem Startbildschirm hinzufügen, um sie wie eine echte App zu nutzen!
+                <h3 class="text-xl font-black text-white mb-2">SchoolFlow als App</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-5">
+                    Füge SchoolFlow zu deinem Startbildschirm hinzu, um sie wie eine echte App im Vollbild zu nutzen!
                 </p>
                 
-                <div class="bg-black/25 border border-white/5 rounded-2xl p-4 text-left space-y-3">
-                    <div class="flex items-start gap-2 text-xs text-slate-300">
-                        <span class="w-5 h-5 bg-white/5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0">1</span>
-                        <p>Öffne die veröffentlichte URL in deinem Browser (z.B. <strong>Safari</strong> auf iOS).</p>
+                <div class="bg-black/25 border border-white/5 rounded-2xl p-5 text-left space-y-4">
+                    <div class="flex items-start gap-3 text-sm text-slate-300">
+                        <span class="w-6 h-6 bg-white/5 rounded-full flex items-center justify-center font-bold text-xs shrink-0">1</span>
+                        <p>Öffne die URL in deinem Browser (z.B. <strong>Safari</strong>).</p>
                     </div>
-                    <div class="flex items-start gap-2 text-xs text-slate-300">
-                        <span class="w-5 h-5 bg-white/5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0">2</span>
-                        <p>Tippe auf das <strong>Teilen-Symbol</strong> <i data-lucide="share" class="inline w-3.5 h-3.5 text-indigo-400"></i> unten in der Leiste.</p>
+                    <div class="flex items-start gap-3 text-sm text-slate-300">
+                        <span class="w-6 h-6 bg-white/5 rounded-full flex items-center justify-center font-bold text-xs shrink-0">2</span>
+                        <p>Tippe auf das <strong>Teilen-Symbol</strong> <i data-lucide="share" class="inline w-4 h-4 text-indigo-400"></i> in der Leiste.</p>
                     </div>
-                    <div class="flex items-start gap-2 text-xs text-slate-300">
-                        <span class="w-5 h-5 bg-white/5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0">3</span>
-                        <p>Wähle <strong>"Zum Home-Bildschirm"</strong> aus.</p>
+                    <div class="flex items-start gap-3 text-sm text-slate-300">
+                        <span class="w-6 h-6 bg-white/5 rounded-full flex items-center justify-center font-bold text-xs shrink-0">3</span>
+                        <p>Wähle <strong>"Zum Home-Bildschirm"</strong>.</p>
                     </div>
                 </div>
                 
-                <button @click="isInstallGuideModalOpen = false" class="mt-5 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-full font-black uppercase text-xs cursor-pointer">Alles klar!</button>
+                <button @click="isInstallGuideModalOpen = false" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-full font-black uppercase text-sm cursor-pointer">Alles klar!</button>
             </div>
         </div>
 
@@ -989,10 +977,8 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Dynamisches PWA Manifest & Dummy Service Worker für perfekte Chrome Installability im Single-File-Layout
         if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
             try {
-                // Dynamisch generiertes Manifest
                 const manifest = {
                     name: "SchoolFlow",
                     short_name: "SchoolFlow",
@@ -1020,7 +1006,6 @@
                 link.href = manifestURL;
                 document.head.appendChild(link);
 
-                // Dummy Service Worker via Blob-URL (zwingend nötig für Chrome App-Install)
                 const swCode = `
                     self.addEventListener('install', (e) => self.skipWaiting());
                     self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
@@ -1061,9 +1046,9 @@
                 const showPassword = ref(false);
 
                 // TABS & STATE
-                const currentTab = ref('home'); // home, subjects, planner, abitur, stats
-                const plannerTab = ref('upcoming'); // upcoming, past, calendar
-                const plannerFilter = ref('all'); // all, Test, Klausur
+                const currentTab = ref('home');
+                const plannerTab = ref('upcoming');
+                const plannerFilter = ref('all');
                 const selectedHalfYear = ref('11/1');
                 const selectedSubject = ref(null);
                 const lkBonusActive = ref(true);
@@ -1085,7 +1070,7 @@
                 const tempReportCardPoints = ref(10);
                 
                 // APP SETTINGS
-                const startYear = ref(2025); // Standard-Startjahr der 11. Klasse (wird in Firestore gespeichert)
+                const startYear = ref(2025);
                 const tempStartYear = ref(2025);
                 
                 // DATA
@@ -1101,7 +1086,7 @@
                 const calYear = ref(new Date().getFullYear());
                 const calSelectMonth = ref(new Date().getMonth());
                 const calSelectYear = ref(new Date().getFullYear());
-                const datePickerTarget = ref(''); // grade oder task
+                const datePickerTarget = ref('');
                 const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 
                 // SWIPE LOGIC
@@ -1117,7 +1102,6 @@
                 const togglePasswordVisibility = () => { showPassword.value = !showPassword.value; refreshIcons(); };
 
                 onMounted(() => {
-                    // PWA-Installations-Event abfangen
                     window.addEventListener('beforeinstallprompt', (e) => {
                         e.preventDefault();
                         deferredPrompt.value = e;
@@ -1136,7 +1120,6 @@
                     });
                 });
 
-                // APP SETTINGS LADEN / SPEICHERN
                 const loadAppSettings = async (uid) => {
                     const snap = await getDoc(doc(db, 'users', uid, 'settings', 'config'));
                     if (snap.exists()) {
@@ -1146,7 +1129,6 @@
                             tempStartYear.value = data.startYear;
                         }
                     }
-                    // Nach dem Laden (oder Fallback) das aktuelle Halbjahr automatisch ermitteln und vorauswählen
                     autoSetCurrentHalfYear();
                 };
 
@@ -1157,7 +1139,6 @@
                         startYear: startYear.value
                     }, { merge: true });
                     isAppSettingsModalOpen.value = false;
-                    // Nach einer Änderung das Halbjahr neu anpassen
                     autoSetCurrentHalfYear();
                 };
 
@@ -1203,7 +1184,6 @@
 
                 const handleLogout = async () => { await signOut(auth); selectedSubject.value = null; };
 
-                // SMART PWA INSTALLATION TRIGGER
                 const triggerInstall = async () => {
                     if (deferredPrompt.value) {
                         deferredPrompt.value.prompt();
@@ -1216,20 +1196,18 @@
                     }
                 };
 
-                // DATUMS-BASIERTE SEMESTER-AUTOMATIK (Deutsche Schule: August bis Juli)
                 const determineSemesterFromDate = (dateStr) => {
                     if (!dateStr) return selectedHalfYear.value;
                     const d = new Date(dateStr);
                     const y = d.getFullYear();
-                    const m = d.getMonth() + 1; // 1-12
+                    const m = d.getMonth() + 1;
                     
                     const dateVal = y * 100 + m;
                     const startY = startYear.value;
                     
-                    // Grenzen (Jahr & Monat als komprimierter Wert)
-                    const lim11_2_start = (startY + 1) * 100 + 2;  // Feb Jahr 2 (Klasse 11 Halbjahr 2)
-                    const lim12_1_start = (startY + 1) * 100 + 8;  // Aug Jahr 2 (Klasse 12 Halbjahr 1)
-                    const lim12_2_start = (startY + 2) * 100 + 2;  // Feb Jahr 3 (Klasse 12 Halbjahr 2)
+                    const lim11_2_start = (startY + 1) * 100 + 2; 
+                    const lim12_1_start = (startY + 1) * 100 + 8;
+                    const lim12_2_start = (startY + 2) * 100 + 2;
                     
                     if (dateVal < lim11_2_start) {
                         return '11/1';
@@ -1242,13 +1220,11 @@
                     }
                 };
 
-                // Auto-Auswahl des aktuellen Halbjahrs basierend auf dem heutigen Datum
                 const autoSetCurrentHalfYear = () => {
                     const todayStr = new Date().toISOString().split('T')[0];
                     selectedHalfYear.value = determineSemesterFromDate(todayStr);
                 };
 
-                // TASKS COMPUTED & FILTER
                 const enrichedTasks = computed(() => {
                     return tasks.value.map(t => {
                         const subject = subjects.value.find(s => s.id === t.subjectId) || { name: 'Unbekannt', color: '#94a3b8' };
@@ -1284,7 +1260,6 @@
                     return list;
                 });
 
-                // CALENDAR DAYS GENERATOR
                 const calendarDays = computed(() => {
                     const days = [];
                     const firstDay = new Date(calYear.value, calMonth.value, 1);
@@ -1319,7 +1294,6 @@
                     plannerTab.value = new Date(dateStr) >= today ? 'upcoming' : 'past';
                 };
 
-                // DATE PICKER LOGIC
                 const datepickerDays = computed(() => {
                     const days = [];
                     const firstDay = new Date(calSelectYear.value, calSelectMonth.value, 1);
@@ -1378,7 +1352,6 @@
                 const nextSelectMonth = () => { if(calSelectMonth.value === 11) { calSelectMonth.value = 0; calSelectYear.value++; } else { calSelectMonth.value++; } };
                 const prevSelectMonth = () => { if(calSelectMonth.value === 0) { calSelectMonth.value = 11; calSelectYear.value--; } else { calSelectMonth.value--; } };
 
-                // TASKS ACTIONS
                 const openTaskModal = () => {
                     taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false };
                     isTaskModalOpen.value = true;
@@ -1423,7 +1396,6 @@
                     await updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: !task.done });
                 };
 
-                // NOTEN & SCHNITT-BERECHNUNG
                 const pointsToGrade = (p) => {
                     if (p === null || isNaN(p)) return null;
                     return Math.max(1.0, Math.min(6.0, (17 - p) / 3));
@@ -1485,11 +1457,9 @@
 
                 const activeSubjectData = computed(() => processedData.value.semesterSubjects.find(s => s.id === selectedSubject.value?.id));
                 
-                // Kombination aus echten Noten und noch anstehenden Planer-Tests (Ergebnis noch nicht bekannt)
                 const sortedGrades = computed(() => {
                     const dbGrades = [...(activeSubjectData.value?.semesterGrades || [])];
                     
-                    // Zukünftige oder unerledigte Tests / Klausuren aus dem Planer für dieses Fach UND das aktuelle Halbjahr integrieren!
                     const plannerUpcoming = tasks.value
                         .filter(t => {
                             const belongsToSubject = t.subjectId === selectedSubject.value?.id;
@@ -1545,7 +1515,6 @@
                         const snap = await t.get(ref);
                         const grades = snap.data().grades || [];
                         
-                        // VOLLAUTOMATISCH: Semester anhand des gewählten Datums und des Startjahrs berechnen!
                         const calculatedSemester = determineSemesterFromDate(gradeForm.value.date);
                         
                         const ng = { 
@@ -1575,7 +1544,6 @@
                     }
                 };
 
-                // SWIPE TO DELETE LOGIC (Noten)
                 const startSwipe = (e, id) => {
                     if(isGradeModalOpen.value) return;
                     swipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, currentX: 0, isDragging: true };
@@ -1607,7 +1575,6 @@
                     swipeState.value = { id: null, startX: 0, currentX: 0, isDragging: false };
                 };
 
-                // SWIPE TO DELETE LOGIC (Aufgaben)
                 const startTaskSwipe = (e, id) => {
                     if(isTaskModalOpen.value) return;
                     taskSwipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, currentX: 0, isDragging: true };
@@ -1700,15 +1667,11 @@
                     openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal,
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
                     examScores, adjustColor,
-                    // PLANNER
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, calMonth, calYear, monthNames,
                     nextMonth, prevMonth, handleCalendarClick, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone,
-                    // DATE PICKER
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
-                    // SWIPES
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe,
                     getCalculatedSemesterPoints,
-                    // INSTALL GUIDE / APP CONFIG
                     isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings
                 };
             }
