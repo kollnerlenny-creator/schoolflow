@@ -17,6 +17,17 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Frühes Abfangen des Chrome Installations-Events, damit es nicht verloren geht
+        window.earlyDeferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.earlyDeferredPrompt = e;
+            if (window.setDeferredPrompt) {
+                window.setDeferredPrompt(e);
+            }
+        });
+    </script>
     <style>
         [v-cloak] { display: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -353,7 +364,7 @@
                 
                 <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
                     <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 active:scale-90 transition-all cursor-pointer">
-                        <i data-lucide="smartphone" class="w-5.5 h-5.5"></i>
+                        <i data-lucide="download" class="w-5.5 h-5.5"></i>
                     </button>
                     <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 active:scale-90 transition-all cursor-pointer">
                         <i data-lucide="settings" class="w-5.5 h-5.5"></i>
@@ -1425,6 +1436,15 @@
                 });
 
                 onMounted(() => {
+                    // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
+                    if (window.earlyDeferredPrompt) {
+                        deferredPrompt.value = window.earlyDeferredPrompt;
+                    }
+                    // Falls das Event erst nach onMounted feuert, registrieren wir diese Funktion im globalen Scope
+                    window.setDeferredPrompt = (e) => {
+                        deferredPrompt.value = e;
+                    };
+
                     window.addEventListener('beforeinstallprompt', (e) => {
                         e.preventDefault();
                         deferredPrompt.value = e;
