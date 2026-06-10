@@ -4,7 +4,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GradeFlow">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link class="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -61,6 +61,11 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
             border-radius: 2.2rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.25);
+            box-shadow: 0 20px 40px -5px rgba(99, 102, 241, 0.1);
         }
 
         .glass-pill {
@@ -70,6 +75,27 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
             border-radius: 9999px;
+        }
+
+        /* Liquid Glass Buttons */
+        .liquid-glass-btn {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #818cf8;
+            box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .liquid-glass-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.35);
+            color: #a5b4fc;
+            box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.15);
+            transform: translateY(-2px);
+        }
+        .liquid-glass-btn:active {
+            transform: scale(0.95);
         }
 
         /* Fester Header Block */
@@ -90,81 +116,96 @@
         .swipe-item { transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         .swipe-item.dragging { transition: none; }
 
-        /* Task done animation - shrinks from top to bottom, smooth collapse */
+        /* Task done animation - smooth collapse */
         @keyframes task-shrink-out {
-            0%   { max-height: 120px; opacity: 1; transform: scaleY(1) translateY(0); margin-bottom: 0.75rem; padding-top: 0; }
-            20%  { max-height: 120px; opacity: 1; transform: scaleY(1) translateY(0); margin-bottom: 0.75rem; }
-            60%  { max-height: 60px;  opacity: 0.3; transform: scaleY(0.5) translateY(-10%); margin-bottom: 0.4rem; }
-            100% { max-height: 0px;   opacity: 0;   transform: scaleY(0) translateY(-20%);  margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-width: 0; }
+            0%   { max-height: 120px; opacity: 1; transform: scaleY(1) translateY(0); margin-bottom: 0.75rem; }
+            30%  { max-height: 120px; opacity: 0.8; transform: scaleY(1) translateY(0); }
+            100% { max-height: 0px; opacity: 0; transform: scaleY(0.1) translateY(-20px); margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-width: 0; }
         }
+        
         .task-done-btn {
-            transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .task-done-btn:active {
-            transform: scale(0.88);
+            transform: scale(0.8);
         }
+        
         .task-item-leaving {
             overflow: hidden;
             transform-origin: top center;
-            animation: task-shrink-out 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: task-shrink-out 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             pointer-events: none;
             will-change: max-height, opacity, transform;
+        }
+
+        /* Sanfte Seitenübergänge */
+        .animate-fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.215, 0.610, 0.355, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Smooth scale hover effects */
         .scale-btn {
             transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+        .scale-btn:hover {
+            transform: translateY(-2px);
+        }
         .scale-btn:active {
             transform: scale(0.95);
         }
 
-        /* Custom Slider-Design optimiert für Touch */
+        /* Custom Slider-Design - Jetzt breiter und mit STAB-Griff */
         .custom-range {
             -webkit-appearance: none;
+            appearance: none;
             width: 100%;
-            height: 16px;
+            height: 24px; /* Breitere Schiebespur */
             background: rgba(255, 255, 255, 0.08);
             border-radius: 9999px;
             outline: none;
             transition: background 0.3s;
             cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 16px; /* Als stabiler Stab (Schieberiegel) */
+            height: 36px; /* Längliche Höhe für einfache Bedienung */
+            border-radius: 6px; /* Leicht abgerundet */
             background: #6366f1;
-            border: 3px solid #ffffff;
-            box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.8);
             cursor: grab;
-            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
+            transition: transform 0.1s ease, background-color 0.2s;
         }
         .custom-range::-webkit-slider-thumb:active {
             cursor: grabbing;
-            transform: scale(1.3);
+            transform: scaleX(1.2) scaleY(1.05);
             background: #818cf8;
         }
         .custom-range::-moz-range-thumb {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 16px;
+            height: 36px;
+            border-radius: 6px;
             background: #6366f1;
-            border: 3px solid #ffffff;
-            box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.8);
             cursor: grab;
-            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
+            transition: transform 0.1s ease, background-color 0.2s;
         }
         .custom-range::-moz-range-thumb:active {
             cursor: grabbing;
-            transform: scale(1.3);
+            transform: scaleX(1.2) scaleY(1.05);
             background: #818cf8;
         }
     </style>
 </head>
-<body class="font-sans selection:bg-indigo-500/30 overflow-x-hidden antialiased" style="padding-bottom: calc(7rem + env(safe-area-inset-bottom));">
+<body class="font-sans selection:bg-indigo-500/30 overflow-x-hidden antialiased pb-32">
     <div class="grid-bg"></div>
 
     <div id="app" v-cloak>
@@ -239,18 +280,21 @@
                     </div>
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">SchoolFlow</h1>
-                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">{{ user.email.split('@')[0] }}</p>
+                        <!-- Personalisierte Begrüßung mit Name -->
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">
+                            {{ welcomeMessage }}
+                        </p>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
+                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-all cursor-pointer scale-btn">
                         <i data-lucide="smartphone" class="w-5 h-5"></i>
                     </button>
-                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
+                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-all cursor-pointer scale-btn">
                         <i data-lucide="settings" class="w-5 h-5"></i>
                     </button>
-                    <button @click="handleLogout" title="Abmelden" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors cursor-pointer">
+                    <button @click="handleLogout" title="Abmelden" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-all cursor-pointer scale-btn">
                         <i data-lucide="log-out" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -267,7 +311,8 @@
                 </button>
             </div>
 
-            <main class="min-h-[60vh] pb-12">
+            <!-- MAIN INHALT (Inklusive Extra Padding unten für die fixierte Navigationsleiste) -->
+            <main class="min-h-[60vh] pb-32">
                 
                 <!-- 1. DASHBOARD / HOME -->
                 <div v-if="currentTab === 'home' && !selectedSubject" class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start animate-fade-in">
@@ -366,7 +411,7 @@
 
                             <!-- Fach Hinzufügen Card -->
                             <div @click="openAddSubjectModal" class="border-2 border-dashed border-indigo-500/30 bg-indigo-500/5 rounded-[2rem] sm:rounded-[2.2rem] p-5 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-500/10 transition-colors min-h-[140px] sm:min-h-[160px] scale-btn">
-                                <div class="w-12 h-12 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-400 mb-2">
+                                <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-indigo-400 mb-2">
                                     <i data-lucide="plus" class="w-6 h-6"></i>
                                 </div>
                                 <span class="text-xs font-black uppercase tracking-wider text-indigo-400">Neues Fach</span>
@@ -382,8 +427,8 @@
                             <h2 class="text-3xl sm:text-4xl font-black text-white">Fächerliste</h2>
                             <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{{ processedData.semesterSubjects.length }} Fächer angelegt</p>
                         </div>
-                        <button @click="openAddSubjectModal" class="w-12 h-12 sm:w-14 sm:h-14 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
-                            <i data-lucide="plus" class="w-6 h-6 text-white"></i>
+                        <button @click="openAddSubjectModal" class="w-12 h-12 sm:w-14 sm:h-14 liquid-glass-btn rounded-full flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
+                            <i data-lucide="plus" class="w-6 h-6"></i>
                         </button>
                     </div>
 
@@ -478,7 +523,7 @@
                         <div class="lg:col-span-5 space-y-4">
                             <div class="flex justify-between items-center px-2">
                                 <h3 class="text-lg sm:text-xl font-black text-white">Eingetragene Noten</h3>
-                                <button @click="openAddGradeModal" class="text-indigo-400 text-sm font-bold flex items-center gap-1.5 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-full hover:bg-indigo-500/20 cursor-pointer">
+                                <button @click="openAddGradeModal" class="text-indigo-300 text-sm font-bold flex items-center gap-1.5 bg-white/5 border border-white/10 px-4 py-2 rounded-full hover:bg-indigo-500/15 hover:border-indigo-500/30 transition-all cursor-pointer">
                                     <i data-lucide="plus" class="w-4 h-4"></i> Neu
                                 </button>
                             </div>
@@ -543,8 +588,8 @@
                             <h2 class="text-3xl sm:text-4xl font-black text-white">Planer</h2>
                             <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">Klausuren & Aufgaben</p>
                         </div>
-                        <button @click="openTaskModal" class="w-12 h-12 sm:w-14 sm:h-14 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
-                            <i data-lucide="plus" class="w-6 h-6 text-white"></i>
+                        <button @click="openTaskModal" class="w-12 h-12 sm:w-14 sm:h-14 liquid-glass-btn rounded-full flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
+                            <i data-lucide="plus" class="w-6 h-6"></i>
                         </button>
                     </div>
 
@@ -618,34 +663,80 @@
                     </div>
 
                     <!-- Kalenderansicht -->
-                    <div v-if="plannerTab === 'calendar'" class="glass-card p-5 sm:p-6 animate-fade-in">
-                        <div class="flex justify-between items-center mb-5">
-                            <h3 class="font-black text-white text-lg sm:text-xl">{{ monthNames[calMonth] }} {{ calYear }}</h3>
-                            <div class="flex gap-2">
-                                <button @click="prevMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                                <button @click="nextMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                    <div v-if="plannerTab === 'calendar'" class="space-y-6">
+                        <div class="glass-card p-5 sm:p-6 animate-fade-in shadow-xl">
+                            <div class="flex justify-between items-center mb-5">
+                                <h3 class="font-black text-white text-lg sm:text-xl">{{ monthNames[calMonth] }} {{ calYear }}</h3>
+                                <div class="flex gap-2">
+                                    <button @click="prevMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                    <button @click="nextMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Wochentage -->
+                            <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                                <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] font-black uppercase text-slate-500 py-1">{{ d }}</div>
+                            </div>
+
+                            <!-- Tage Grid -->
+                            <div class="grid grid-cols-7 gap-1.5">
+                                <div v-for="(day, idx) in calendarDays" :key="idx" 
+                                     class="aspect-square rounded-2xl flex flex-col items-center justify-between relative p-1.5 transition-all border"
+                                     :class="[
+                                        day.isCurrentMonth ? 'bg-black/30 text-white border-white/5 hover:border-indigo-500/60 cursor-pointer' : 'bg-transparent text-slate-700 border-transparent pointer-events-none',
+                                        isToday(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/10 border-indigo-500/30' : '',
+                                        selectedCalendarDate === day.date ? 'border-indigo-400 bg-indigo-500/15' : ''
+                                     ]"
+                                     @click="day.isCurrentMonth && selectCalendarDay(day.date)">
+                                    
+                                    <span class="font-black text-xs sm:text-sm self-start ml-1 mt-0.5" :class="selectedCalendarDate === day.date ? 'text-indigo-300' : ''">{{ day.day }}</span>
+                                    
+                                    <!-- Kleine schicke Punkte für anstehende Aufgaben -->
+                                    <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-1 justify-center w-full pb-1 flex-wrap max-w-[90%]">
+                                        <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" :style="{ backgroundColor: t.subject.color }"></span>
+                                        <span v-if="day.tasks.length > 3" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                    </div>
+                                    <div v-else class="h-2"></div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Wochentage -->
-                        <div class="grid grid-cols-7 gap-1 text-center mb-2">
-                            <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] font-black uppercase text-slate-500 py-1">{{ d }}</div>
-                        </div>
+                        <!-- Direkte Aufgaben-Details des ausgewählten Tages -->
+                        <div class="glass-card p-5 sm:p-6 animate-fade-in">
+                            <h4 class="font-black text-white text-sm sm:text-base uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <i data-lucide="list-todo" class="text-indigo-400 w-5 h-5"></i> 
+                                Aufgaben am {{ formatDate(selectedCalendarDate) }}
+                            </h4>
 
-                        <!-- Tage Grid -->
-                        <div class="grid grid-cols-7 gap-1">
-                            <div v-for="(day, idx) in calendarDays" :key="idx" 
-                                 class="aspect-square rounded-xl flex flex-col items-center justify-center relative p-1 transition-colors border"
-                                 :class="[
-                                    day.isCurrentMonth ? 'bg-black/20 text-white border-white/5 hover:border-indigo-500/50 cursor-pointer' : 'bg-transparent text-slate-600 border-transparent',
-                                    isToday(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/10' : ''
-                                 ]"
-                                 @click="day.isCurrentMonth && (day.tasks?.length ? handleCalendarClick(day.date) : openTaskModalWithDate(day.date))">
-                                <span class="font-bold text-sm z-10">{{ day.day }}</span>
-                                
-                                <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-1 mt-1 justify-center flex-wrap max-w-[80%]">
-                                    <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
-                                    <span v-if="day.tasks.length > 3" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                            <div v-if="selectedDayTasks.length === 0" class="text-center py-6 text-slate-500 font-bold text-sm bg-black/10 rounded-2xl border border-white/5">
+                                Keine Aufgaben an diesem Tag! 🎉
+                                <button @click="openTaskModalWithDate(selectedCalendarDate)" class="block mx-auto mt-2 text-xs font-black text-indigo-400 uppercase tracking-widest hover:underline">+ Neue Aufgabe</button>
+                            </div>
+
+                            <div v-else class="space-y-3">
+                                <div v-for="t in selectedDayTasks" :key="t.id" class="flex items-center justify-between p-4 bg-black/30 border border-white/5 rounded-2xl">
+                                    <div class="flex items-center gap-3">
+                                        <button @click="toggleTaskDone(t)" 
+                                                class="task-done-btn shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
+                                                :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
+                                            <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
+                                        </button>
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: t.subject.color }"></span>
+                                                <span class="text-xs font-black uppercase text-slate-400">{{ t.subject.name }}</span>
+                                            </div>
+                                            <h5 class="font-bold text-white text-sm mt-0.5" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300">
+                                            {{ t.type }}
+                                        </span>
+                                        <button @click="openEditTaskModal(t)" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
+                                            <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -720,9 +811,9 @@
 
             </main>
 
-            <!-- NAVIGATION BOTTOM BAR -->
-            <div class="fixed left-0 right-0 z-50 flex justify-center px-5 pointer-events-none animate-slide-up" style="bottom: calc(1.5rem + env(safe-area-inset-bottom));">
-                <div class="glass-pill p-1.5 flex relative pointer-events-auto w-full max-w-md">
+            <!-- NAVIGATION BOTTOM BAR (Sichere Höheneinstellungen für Smartphones & PWA-Ansichten) -->
+            <div class="fixed left-0 right-0 z-50 flex justify-center px-5 pointer-events-none pb-[calc(1.5rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
+                <div class="glass-pill p-1.5 flex relative pointer-events-auto w-full max-w-md shadow-2xl">
                     <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/40"
                          :style="{ 
                              width: 'calc(20% - 3px)', 
@@ -761,7 +852,7 @@
                 <form @submit.prevent="handleSaveSubject" class="space-y-5">
                     <div class="bg-black/20 p-4 rounded-3xl border border-white/5">
                         <label class="text-xs font-black uppercase text-slate-400 ml-2">Fachname</label>
-                        <!-- text-base verhindert Zoom -->
+                        <!-- text-base verhindert Zoom auf iOS -->
                         <input type="text" required v-model="subjectForm.name" class="w-full bg-transparent text-base sm:text-lg font-bold text-white outline-none ml-2 mt-2" />
                     </div>
                     
@@ -960,6 +1051,18 @@
                 </h2>
                 
                 <div class="space-y-5">
+                    <!-- Namenseingabe für Begrüßung -->
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-2">
+                        <label class="text-xs font-black uppercase text-slate-400 block">Dein Name</label>
+                        <p class="text-xs text-slate-400 leading-normal">Damit dich die App persönlich auf der Startseite begrüßt.</p>
+                        <input
+                            type="text"
+                            placeholder="z.B. Jonas"
+                            v-model="displayName"
+                            class="w-full bg-black/40 border border-white/10 rounded-xl text-white font-bold text-sm px-4 py-3 outline-none focus:border-indigo-500 transition-colors mt-2"
+                        />
+                    </div>
+
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
                         <label class="text-xs font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
                         <p class="text-xs text-slate-400 leading-normal">Bestimmt die automatische Berechnung des Halbjahres für alle Termine und Noten.</p>
@@ -1124,7 +1227,7 @@
                     console.log('SchoolFlow PWA Service-Worker erfolgreich registriert.');
                 });
             } catch (err) {
-                console.warn('PWA Setup abgebrochen (In Frames oder ungesicherten Umgebungen nicht verfügbar):', err);
+                console.warn('PWA Setup abgebrochen:', err);
             }
         }
 
@@ -1182,6 +1285,7 @@
                 // APP SETTINGS
                 const startYear = ref(2025);
                 const tempStartYear = ref(2025);
+                const displayName = ref(''); // Neuer Anzeigename
                 
                 // DATA
                 const examScores = ref({ P1: 0, P2: 0, P3: 0, P4: 0, P5: 0 });
@@ -1191,9 +1295,11 @@
                 // PWA INSTALL TRIGGER STATE
                 const deferredPrompt = ref(null);
 
-                // CALENDAR / DATE PICKER STATE
+                // CALENDAR & SELECTED DAY STATE
                 const calMonth = ref(new Date().getMonth());
                 const calYear = ref(new Date().getFullYear());
+                const selectedCalendarDate = ref(new Date().toISOString().split('T')[0]); // Standardmäßig heute ausgewählt
+
                 const calSelectMonth = ref(new Date().getMonth());
                 const calSelectYear = ref(new Date().getFullYear());
                 const datePickerTarget = ref('');
@@ -1210,6 +1316,14 @@
                 };
 
                 const togglePasswordVisibility = () => { showPassword.value = !showPassword.value; refreshIcons(); };
+
+                // Begrüßungstext computed Eigenschaft
+                const welcomeMessage = computed(() => {
+                    if (displayName.value && displayName.value.trim() !== '') {
+                        return `Hallo, ${displayName.value}! 🚀`;
+                    }
+                    return user.value ? user.value.email.split('@')[0] : 'Benutzer';
+                });
 
                 onMounted(() => {
                     window.addEventListener('beforeinstallprompt', (e) => {
@@ -1238,6 +1352,9 @@
                             startYear.value = data.startYear;
                             tempStartYear.value = data.startYear;
                         }
+                        if (data.displayName) {
+                            displayName.value = data.displayName;
+                        }
                     }
                     autoSetCurrentHalfYear();
                 };
@@ -1246,7 +1363,8 @@
                     if (!user.value) return;
                     startYear.value = tempStartYear.value;
                     await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), {
-                        startYear: startYear.value
+                        startYear: startYear.value,
+                        displayName: displayName.value
                     }, { merge: true });
                     isAppSettingsModalOpen.value = false;
                     autoSetCurrentHalfYear();
@@ -1261,12 +1379,12 @@
                         refreshIcons();
                         triggerCharts();
                     }, (err) => {
-                        // Silently ignore permission/network errors — data stays cached locally
                         if (err.code !== 'permission-denied') console.warn('subjects listener:', err.code);
                     });
                 };
 
-                const leavingTasks = ref(new Set());
+                const animatingDoneTasks = ref(new Set()); // Blockiert das verfrühte Ausblenden
+                const leavingTasks = ref(new Set()); // Aktiviert die Schrumpf-Animation
 
                 let unsubscribeTasks = null;
                 const listenToTasks = (uid) => {
@@ -1274,14 +1392,13 @@
                     const q = collection(db, 'users', uid, 'tasks');
                     unsubscribeTasks = onSnapshot(q, (snapshot) => {
                         const incoming = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        // Preserve optimistic done=true state for tasks currently in leaving animation
+                        // Optimistischen Zustand behalten
                         tasks.value = incoming.map(t => {
-                            if (leavingTasks.value.has(t.id)) return { ...t, done: true };
+                            if (animatingDoneTasks.value.has(t.id)) return { ...t, done: true };
                             return t;
                         });
                         refreshIcons();
                     }, (err) => {
-                        // Silently ignore permission/network errors — data stays cached locally
                         if (err.code !== 'permission-denied') console.warn('tasks listener:', err.code);
                     });
                 };
@@ -1300,14 +1417,12 @@
                     authError.value = ''; loading.value = true;
                     try {
                         if (isRegistering.value) {
-                            // 1. Code-Eingabe prüfen
                             if (!inviteCode.value.trim()) {
                                 authError.value = 'Bitte gib einen Einladungscode ein.';
                                 loading.value = false;
                                 return;
                             }
 
-                            // 2. Code in Firestore nachschlagen
                             const codeRef = doc(db, 'inviteCodes', inviteCode.value.trim().toUpperCase());
                             const codeSnap = await getDoc(codeRef);
 
@@ -1323,10 +1438,8 @@
                                 return;
                             }
 
-                            // 3. Account erstellen
                             const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
 
-                            // 4. Code als benutzt markieren
                             await updateDoc(codeRef, {
                                 used: true,
                                 usedBy: email.value,
@@ -1398,14 +1511,25 @@
                 const upcomingTasks = computed(() => {
                     const today = new Date();
                     today.setHours(0,0,0,0);
-                    // Keep tasks in leavingTasks visible (green check) until animation finishes
-                    return enrichedTasks.value.filter(t => new Date(t.date) >= today && (!t.done || leavingTasks.value.has(t.id)));
+                    // Zeigt die Task, solange sie nicht erledigt ist ODER sich in der Animationsphase befindet
+                    return enrichedTasks.value.filter(t => {
+                        const isFuture = new Date(t.date) >= today;
+                        const isNotDone = !t.done;
+                        const isAnimating = animatingDoneTasks.value.has(t.id);
+                        return isFuture && (isNotDone || isAnimating);
+                    });
                 });
 
                 const pastTasks = computed(() => {
                     const today = new Date();
                     today.setHours(0,0,0,0);
-                    return enrichedTasks.value.filter(t => new Date(t.date) < today || t.done).sort((a, b) => new Date(b.date) - new Date(a.date));
+                    // Zeigt erledigte oder vergangene Tasks, sofern sie nicht gerade animiert werden
+                    return enrichedTasks.value.filter(t => {
+                        const isPast = new Date(t.date) < today;
+                        const isDone = t.done;
+                        const isAnimating = animatingDoneTasks.value.has(t.id);
+                        return (isPast || isDone) && !isAnimating;
+                    }).sort((a, b) => new Date(b.date) - new Date(a.date));
                 });
 
                 const filteredUpcomingTasks = computed(() => {
@@ -1451,12 +1575,18 @@
                     return days;
                 });
 
+                // Aufgaben für den ausgewählten Kalendertag ermitteln
+                const selectedDayTasks = computed(() => {
+                    return enrichedTasks.value.filter(t => t.date === selectedCalendarDate.value);
+                });
+
+                const selectCalendarDay = (dateStr) => {
+                    selectedCalendarDate.value = dateStr;
+                    refreshIcons();
+                };
+
                 const nextMonth = () => { if(calMonth.value === 11) { calMonth.value = 0; calYear.value++; } else { calMonth.value++; } };
                 const prevMonth = () => { if(calMonth.value === 0) { calMonth.value = 11; calYear.value--; } else { calMonth.value--; } };
-                const handleCalendarClick = (dateStr) => { 
-                    const today = new Date(); today.setHours(0,0,0,0);
-                    plannerTab.value = new Date(dateStr) >= today ? 'upcoming' : 'past';
-                };
 
                 const datepickerDays = computed(() => {
                     const days = [];
@@ -1558,29 +1688,39 @@
                 const toggleTaskDone = async (task) => {
                     if (!user.value) return;
                     if (!task.done) {
-                        // 1) Optimistic update: mark done in local state immediately (green check appears instantly)
+                        // 1) Lock in der computed Liste eintragen (verhindert das Flackern bei Firestore-Update)
+                        animatingDoneTasks.value = new Set([...animatingDoneTasks.value, task.id]);
+
+                        // 2) Sofortiges lokales Feedback (Text wird durchgestrichen, Haken grün)
                         const taskIndex = tasks.value.findIndex(t => t.id === task.id);
                         if (taskIndex !== -1) tasks.value[taskIndex].done = true;
 
-                        // 2) Write to Firestore in the background (non-blocking)
+                        // 3) Cloud-Update im Hintergrund abschicken
                         updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: true }).catch(e => {
-                            // Rollback if write fails
+                            // Rollback bei Fehler
+                            animatingDoneTasks.value.delete(task.id);
                             const idx = tasks.value.findIndex(t => t.id === task.id);
                             if (idx !== -1) tasks.value[idx].done = false;
                         });
 
-                        // 3) After 1000ms pause (user sees the green check), trigger shrink animation
+                        // 4) 1000ms Pause zum Betrachten des abgehakten Status
                         setTimeout(() => {
+                            // Sanfte Kollaps-Animation starten
                             leavingTasks.value = new Set([...leavingTasks.value, task.id]);
-                            // 4) Remove from DOM after animation (650ms) completes
+                            
+                            // Nach 500ms (Animationsdauer) endgültig aus dem Speicher & DOM entfernen
                             setTimeout(() => {
-                                const s = new Set(leavingTasks.value);
-                                s.delete(task.id);
-                                leavingTasks.value = s;
-                            }, 700);
+                                const newAnimating = new Set(animatingDoneTasks.value);
+                                newAnimating.delete(task.id);
+                                animatingDoneTasks.value = newAnimating;
+
+                                const newLeaving = new Set(leavingTasks.value);
+                                newLeaving.delete(task.id);
+                                leavingTasks.value = newLeaving;
+                            }, 500);
                         }, 1000);
                     } else {
-                        // Un-check: immediate local update + background Firestore write
+                        // Unchecken geschieht sofort ohne Verzögerung
                         const taskIndex = tasks.value.findIndex(t => t.id === task.id);
                         if (taskIndex !== -1) tasks.value[taskIndex].done = false;
                         updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: false }).catch(() => {
@@ -1862,11 +2002,12 @@
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, calMonth, calYear, monthNames,
-                    nextMonth, prevMonth, handleCalendarClick, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
+                    nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe,
                     getCalculatedSemesterPoints,
-                    isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings
+                    isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings,
+                    displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay
                 };
             }
         }).mount('#app');
