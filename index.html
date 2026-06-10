@@ -51,13 +51,13 @@
             min-height: 100vh;
         }
 
-        /* Feines technisches Grid-Muster im Hintergrund */
+        /* Feines technisches Grid-Muster im Hintergrund - verstärkt */
         .grid-bg {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 48px 48px;
             z-index: -1;
             pointer-events: none;
@@ -357,7 +357,7 @@
                     <div class="min-w-0">
                         <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">SchoolFlow</h1>
                         <p class="text-[11px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest truncate">
-                            {{ welcomeMessage }}
+                            Gymnasiale Oberstufe
                         </p>
                     </div>
                 </div>
@@ -389,106 +389,87 @@
             <!-- MAIN INHALT -->
             <main class="min-h-[60vh] pb-36">
                 
-                <!-- 1. DASHBOARD / HOME (Zweispaltig & Touch-optimiert) -->
-                <div v-if="currentTab === 'home' && !selectedSubject" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start animate-fade-in">
+                <!-- 1. DASHBOARD / HOME (Zweispaltig & Touch-optimiert - Extrem aufgeräumt ohne Fächerliste) -->
+                <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
                     
-                    <!-- Linke Spalte (Dashboard-Stats) -->
-                    <div class="lg:col-span-5 space-y-6 sm:space-y-8">
-                        <div class="hero-block p-8 text-center">
-                            <div class="hero-shape-1"></div>
-                            <div class="hero-shape-2"></div>
-                            <div class="relative z-10">
-                                <p class="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-indigo-200 mb-2">Dein Schnitt in {{ selectedHalfYear }}</p>
-                                <div class="text-6xl xs:text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter text-white drop-shadow-lg">
-                                    {{ formatNumber(processedData.avgPoints) }}
-                                </div>
-                                <div v-if="processedData.avgGrade" class="mt-4 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2 rounded-full text-white font-bold text-sm">
-                                    <span>Ø Note: {{ formatNumber(processedData.avgGrade) }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- LK-Bonus Toggle Widget (Riesige Klickfläche) -->
-                        <div @click="lkBonusActive = !lkBonusActive" class="glass-card p-5 flex justify-between items-center cursor-pointer active:scale-98 transition-transform">
-                            <div class="flex items-center gap-4 min-w-0">
-                                <div class="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
-                                    <i data-lucide="award" class="w-6 h-6"></i>
-                                </div>
-                                <div class="min-w-0">
-                                    <h4 class="font-bold text-sm sm:text-base text-white truncate">Leistungskurs-Faktor</h4>
-                                    <p class="text-xs text-slate-400 truncate">LKs doppelt werten</p>
-                                </div>
-                            </div>
-                            <div class="w-14 h-8 rounded-full transition-colors relative shrink-0" :class="lkBonusActive ? 'bg-indigo-600' : 'bg-slate-700'">
-                                <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-all" :class="lkBonusActive ? 'right-1' : 'left-1'"></div>
-                            </div>
-                        </div>
-
-                        <!-- Anstehende Aufgaben Vorschau -->
-                        <div class="glass-card p-5 sm:p-6">
-                            <div class="flex items-center justify-between mb-5">
-                                <h3 class="font-black text-white text-sm sm:text-base flex items-center gap-2">
-                                    <i data-lucide="bell" class="w-5 h-5 text-indigo-400"></i> Nächste Aufgaben
-                                </h3>
-                                <button @click="currentTab = 'planner'" class="text-xs font-bold text-indigo-400 uppercase tracking-widest hover:text-indigo-300 px-3 py-1.5">Alle</button>
-                            </div>
-                            <div v-if="upcomingTasks.length === 0" class="text-xs sm:text-sm text-slate-500 font-bold text-center py-6 bg-black/20 rounded-2xl border border-white/5">
-                                Aktuell keine Aufgaben! 🎉
-                            </div>
-                            <div v-else class="space-y-3.5">
-                                <div v-for="t in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3.5 bg-black/20 p-4 rounded-2xl border border-white/5">
-                                    <button @click="toggleTaskDone(t)" 
-                                            class="task-done-btn shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
-                                            :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
-                                        <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
-                                    </button>
-                                    <div class="flex-1 overflow-hidden">
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{backgroundColor: t.subject.color}"></span>
-                                            <h4 class="font-bold text-white text-sm truncate" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
-                                        </div>
-                                        <p class="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider mt-1">{{ t.type }} • {{ formatDate(t.date) }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Große, extrem prominente Begrüßung im Vordergrund -->
+                    <div class="text-center py-8 sm:py-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem] relative overflow-hidden backdrop-blur-md shadow-2xl">
+                        <div class="absolute -left-10 -top-10 w-36 h-32 bg-indigo-600/10 rounded-full blur-2xl"></div>
+                        <div class="absolute -right-10 -bottom-10 w-36 h-32 bg-violet-600/10 rounded-full blur-2xl"></div>
+                        <div class="relative z-10 space-y-2">
+                            <span class="text-[11px] font-black uppercase tracking-[0.3em] text-indigo-400">Dashboard</span>
+                            <h2 class="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-md">
+                                {{ welcomeMessage }}
+                            </h2>
+                            <p class="text-slate-400 text-sm sm:text-base font-medium max-w-md mx-auto px-4 leading-relaxed">
+                                Schön, dass du da bist! Dein Schulalltag im perfekten Fluss – alles auf einen Blick. ✨
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Rechte Spalte (Fächer Raster - Bequeme Touch-Flächen) -->
-                    <div class="lg:col-span-7 space-y-5 sm:space-y-6">
-                        <div class="flex items-center justify-between px-2">
-                            <h2 class="text-base sm:text-lg font-black text-white">Fächer (Nach Note)</h2>
-                            <button @click="currentTab = 'subjects'" class="text-indigo-400 text-xs sm:text-sm font-bold uppercase flex items-center gap-1.5 hover:text-indigo-300 px-3 py-1.5">Alle <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
-                        </div>
-
-                        <div class="grid grid-cols-2 xl:grid-cols-3 gap-4">
-                            <div v-for="s in sortedSubjectsList.slice(0, 9)" :key="s.id" @click="selectedSubject = s" 
-                                 class="glass-card p-5 cursor-pointer active:scale-98 transition-all flex flex-col justify-between min-h-[140px] sm:min-h-[170px] relative overflow-hidden group">
-                                <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10" :style="{ backgroundColor: s.color }"></div>
-                                <div class="flex justify-between items-start">
-                                    <div class="min-w-0">
-                                        <span class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-400">{{ s.isLK ? 'LK' : 'GK' }}</span>
-                                        <h3 class="text-sm sm:text-lg font-black text-white leading-tight mt-1 line-clamp-2">{{ s.name }}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+                        <!-- Linke Seite: Schnitt (Ø Points) -->
+                        <div class="md:col-span-6">
+                            <div class="hero-block p-8 text-center h-full flex flex-col justify-center min-h-[260px]">
+                                <div class="hero-shape-1"></div>
+                                <div class="hero-shape-2"></div>
+                                <div class="relative z-10 my-auto">
+                                    <p class="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-indigo-200 mb-2">Dein Schnitt in {{ selectedHalfYear }}</p>
+                                    <div class="text-6xl xs:text-7xl sm:text-8xl font-black tracking-tighter text-white drop-shadow-lg">
+                                        {{ formatNumber(processedData.avgPoints) }}
                                     </div>
-                                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 ml-2" :style="{backgroundColor: s.color + '25', color: s.color}">
-                                        <i :data-lucide="s.icon || 'book-open'" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                                    <div v-if="processedData.avgGrade" class="mt-4 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2 rounded-full text-white font-bold text-sm">
+                                        <span>Ø Note: {{ formatNumber(processedData.avgGrade) }}</span>
                                     </div>
                                 </div>
-                                <div class="mt-4 flex items-end justify-between">
-                                    <div class="text-3xl sm:text-4xl font-black text-slate-100">
-                                        <span v-if="s.reportCardGrade !== null" class="flex items-center gap-1"><i data-lucide="award" class="w-5 h-5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
-                                        <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '-' }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Rechte Seite: LK-Faktor & Nächste Aufgaben -->
+                        <div class="md:col-span-6 space-y-6">
+                            <!-- LK-Bonus Toggle Widget (Riesige Klickfläche) -->
+                            <div @click="lkBonusActive = !lkBonusActive" class="glass-card p-5 flex justify-between items-center cursor-pointer active:scale-98 transition-transform">
+                                <div class="flex items-center gap-4 min-w-0">
+                                    <div class="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
+                                        <i data-lucide="award" class="w-6 h-6"></i>
                                     </div>
-                                    <span class="w-3.5 h-3.5 rounded-full mb-1" :style="{ backgroundColor: s.color }"></span>
+                                    <div class="min-w-0">
+                                        <h4 class="font-bold text-sm sm:text-base text-white truncate">Leistungskurs-Faktor</h4>
+                                        <p class="text-xs text-slate-400 truncate">LKs doppelt werten</p>
+                                    </div>
+                                </div>
+                                <div class="w-14 h-8 rounded-full transition-colors relative shrink-0" :class="lkBonusActive ? 'bg-indigo-600' : 'bg-slate-700'">
+                                    <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-all" :class="lkBonusActive ? 'right-1' : 'left-1'"></div>
                                 </div>
                             </div>
 
-                            <!-- Fach Hinzufügen Card -->
-                            <div @click="openAddSubjectModal" class="border-2 border-dashed border-indigo-500/30 bg-indigo-500/5 rounded-[2.2rem] p-5 flex flex-col items-center justify-center cursor-pointer active:bg-indigo-500/10 active:scale-95 transition-all min-h-[140px] sm:min-h-[170px]">
-                                <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-indigo-400 mb-2">
-                                    <i data-lucide="plus" class="w-6 h-6"></i>
+                            <!-- Anstehende Aufgaben Vorschau -->
+                            <div class="glass-card p-5 sm:p-6">
+                                <div class="flex items-center justify-between mb-5">
+                                    <h3 class="font-black text-white text-sm sm:text-base flex items-center gap-2">
+                                        <i data-lucide="bell" class="w-5 h-5 text-indigo-400"></i> Nächste Aufgaben
+                                    </h3>
+                                    <button @click="currentTab = 'planner'" class="text-xs font-bold text-indigo-400 uppercase tracking-widest hover:text-indigo-300 px-3 py-1.5">Alle</button>
                                 </div>
-                                <span class="text-xs font-black uppercase tracking-wider text-indigo-400">Neues Fach</span>
+                                <div v-if="upcomingTasks.length === 0" class="text-xs sm:text-sm text-slate-500 font-bold text-center py-6 bg-black/20 rounded-2xl border border-white/5">
+                                    Aktuell keine Aufgaben! 🎉
+                                </div>
+                                <div v-else class="space-y-3.5">
+                                    <div v-for="t in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3.5 bg-black/20 p-4 rounded-2xl border border-white/5">
+                                        <button @click="toggleTaskDone(t)" 
+                                                class="task-done-btn shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
+                                                :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
+                                            <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
+                                        </button>
+                                        <div class="flex-1 overflow-hidden">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{backgroundColor: t.subject.color}"></span>
+                                                <h4 class="font-bold text-white text-sm truncate" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
+                                            </div>
+                                            <p class="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider mt-1">{{ t.type }} • {{ formatDate(t.date) }}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -655,8 +636,11 @@
                     </div>
                 </div>
 
-                <!-- 4. PLANER -->
-                <div v-if="currentTab === 'planner' && !selectedSubject" class="space-y-6 max-w-4xl mx-auto animate-fade-in">
+                <!-- 4. PLANER (Mit Touch-Swipe zum Wechseln der Tabs) -->
+                <div v-if="currentTab === 'planner' && !selectedSubject" 
+                     class="space-y-6 max-w-4xl mx-auto animate-fade-in"
+                     @touchstart="handlePlannerTouchStart"
+                     @touchend="handlePlannerTouchEnd">
                     <div class="flex justify-between items-end px-2 mb-2">
                         <div>
                             <h2 class="text-3xl sm:text-4xl font-black text-white">Planer</h2>
@@ -860,7 +844,7 @@
                                             {{ t.type }}
                                         </span>
                                         <button @click="openEditTaskModal(t)" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:bg-indigo-500/10 transition-colors cursor-pointer">
-                                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                            <i data-lucide="edit-2" class="w-4.5 h-4.5"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -1416,11 +1400,42 @@
                 const datePickerTarget = ref('');
                 const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 
-                // SWIPE LOGIC
+                // SWIPE LOGIC FOR PLANER AND NOTEN
                 const swipeRefs = ref({});
                 const swipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
                 const taskSwipeRefs = ref({});
                 const taskSwipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
+
+                // Planner Swiping
+                const plannerTouchStart = ref({ x: 0, y: 0 });
+                const handlePlannerTouchStart = (e) => {
+                    plannerTouchStart.value = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    };
+                };
+                const handlePlannerTouchEnd = (e) => {
+                    if (!plannerTouchStart.value) return;
+                    const diffX = e.changedTouches[0].clientX - plannerTouchStart.value.x;
+                    const diffY = e.changedTouches[0].clientY - plannerTouchStart.value.y;
+
+                    // Nur wischen, wenn horizontale Bewegung dominiert und signifikant ist
+                    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
+                        const tabs = ['upcoming', 'past', 'calendar'];
+                        const currentIndex = tabs.indexOf(plannerTab.value);
+                        if (diffX > 0) {
+                            // Swipe nach rechts -> Vorheriger Tab
+                            if (currentIndex > 0) {
+                                plannerTab.value = tabs[currentIndex - 1];
+                            }
+                        } else {
+                            // Swipe nach links -> Nächster Tab
+                            if (currentIndex < tabs.length - 1) {
+                                plannerTab.value = tabs[currentIndex + 1];
+                            }
+                        }
+                    }
+                };
 
                 const adjustColor = (color, amount) => {
                     return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
@@ -2212,7 +2227,8 @@
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe,
                     getCalculatedSemesterPoints,
                     isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings,
-                    displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay
+                    displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
+                    handlePlannerTouchStart, handlePlannerTouchEnd
                 };
             }
         }).mount('#app');
