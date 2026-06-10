@@ -22,6 +22,17 @@
         [v-cloak] { display: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Android Navigationsleiste im PWA-Modus ausblenden */
+        @media all and (display-mode: standalone), all and (display-mode: fullscreen) {
+            html, body {
+                height: 100%;
+                overscroll-behavior: none;
+            }
+            body {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
         
         /* Premium Dark Mode mit weichen Glüheffekten */
         body { 
@@ -317,9 +328,14 @@
                             <div v-for="s in sortedSubjectsList.slice(0, 6)" :key="s.id" @click="selectedSubject = s" 
                                  class="glass-card p-5 sm:p-6 cursor-pointer hover:scale-[1.01] transition-transform flex flex-col justify-between min-h-[140px] sm:min-h-[160px] relative overflow-hidden group">
                                 <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 transition-transform group-hover:scale-150" :style="{ backgroundColor: s.color }"></div>
-                                <div>
-                                    <span class="text-xs font-black uppercase tracking-wider text-slate-400">{{ s.isLK ? 'LK' : 'GK' }}</span>
-                                    <h3 class="text-base sm:text-lg font-black text-white leading-tight mt-1 line-clamp-2">{{ s.name }}</h3>
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="text-xs font-black uppercase tracking-wider text-slate-400">{{ s.isLK ? 'LK' : 'GK' }}</span>
+                                        <h3 class="text-base sm:text-lg font-black text-white leading-tight mt-1 line-clamp-2">{{ s.name }}</h3>
+                                    </div>
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ml-2 mt-1" :style="{backgroundColor: s.color + '25', color: s.color}">
+                                        <i :data-lucide="s.icon || 'book-open'" class="w-4 h-4"></i>
+                                    </div>
                                 </div>
                                 <div class="mt-4 flex items-end justify-between">
                                     <div class="text-3xl sm:text-4xl font-black text-slate-100">
@@ -359,8 +375,9 @@
                             <div class="w-1.5 absolute left-0 top-5 bottom-5 rounded-r-full" :style="{ backgroundColor: s.color }"></div>
                             
                             <div class="flex items-center gap-4 pl-3 overflow-hidden">
-                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-xs shrink-0" :style="{ backgroundColor: s.color + '20', color: s.color }">
-                                    {{ s.isLK ? 'LK' : 'GK' }}
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
+                                    <i :data-lucide="s.icon || 'book-open'" class="w-5 h-5"></i>
+                                    <span class="absolute -bottom-1 -right-1 text-[9px] font-black px-1 rounded-full" :style="{backgroundColor: s.color, color: '#fff'}">{{ s.isLK ? 'LK' : 'GK' }}</span>
                                 </div>
                                 <div class="overflow-hidden">
                                     <h3 class="text-base sm:text-lg font-black text-white truncate pr-2">{{ s.name }}</h3>
@@ -396,9 +413,14 @@
                             <div class="hero-block p-6 sm:p-8" :style="{ background: `linear-gradient(135deg, ${selectedSubject.color} 0%, ${adjustColor(selectedSubject.color, -50)} 100%)` }">
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <span class="bg-white/20 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md">
-                                            {{ selectedSubject.isLK ? 'Leistungskurs' : 'Grundkurs' }}
-                                        </span>
+                                        <div class="flex items-center gap-3">
+                                            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md">
+                                                {{ selectedSubject.isLK ? 'Leistungskurs' : 'Grundkurs' }}
+                                            </span>
+                                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+                                                <i :data-lucide="selectedSubject.icon || 'book-open'" class="w-4 h-4 text-white"></i>
+                                            </div>
+                                        </div>
                                         <h2 class="text-3xl sm:text-5xl font-black text-white mt-3 mb-1 break-words">{{ selectedSubject.name }}</h2>
                                         <p class="text-white/80 text-xs sm:text-sm font-bold">{{ selectedSubject.examWeight }}% Klausuranteil</p>
                                     </div>
@@ -777,6 +799,18 @@
                         </div>
                     </div>
 
+                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5">
+                        <p class="font-black text-white text-sm ml-2 mb-3">Fach-Symbol</p>
+                        <div class="grid grid-cols-5 gap-2 px-1">
+                            <button type="button" v-for="ic in subjectIcons" :key="ic" @click="subjectForm.icon = ic; refreshIcons()"
+                                :class="subjectForm.icon === ic ? 'ring-2 ring-indigo-500 bg-indigo-500/20 text-indigo-300' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'"
+                                class="flex flex-col items-center justify-center py-2.5 rounded-2xl transition-all cursor-pointer scale-btn">
+                                <i :data-lucide="ic" class="w-5 h-5 mb-1"></i>
+                                <span class="text-[9px] font-bold uppercase tracking-wide leading-tight text-center px-1 truncate w-full text-center">{{ ic.replace(/-/g,' ') }}</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="pt-3 flex gap-4">
                         <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-full font-black uppercase text-sm cursor-pointer">Speichern</button>
                         <button type="button" v-if="isSettingsModalOpen" @click="handleDeleteSubject" class="w-14 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
@@ -1020,7 +1054,7 @@
                     name: "SchoolFlow",
                     short_name: "SchoolFlow",
                     start_url: window.location.origin + window.location.pathname,
-                    display: "standalone",
+                    display: "fullscreen",
                     background_color: "#050508",
                     theme_color: "#6366f1",
                     icons: [
@@ -1072,6 +1106,12 @@
                     '#6366f1', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#14b8a6',
                     '#ff007f', '#00f5ff', '#39ff14', '#ffaa00', '#ff00ff', '#22c55e', '#a855f7', '#06b6d4'
                 ];
+                const subjectIcons = [
+                    'book-open', 'calculator', 'flask-conical', 'globe', 'music', 'palette',
+                    'dumbbell', 'landmark', 'cpu', 'languages', 'leaf', 'atom',
+                    'pen-line', 'drama', 'map', 'microscope', 'binary', 'heart-pulse',
+                    'scale', 'telescope'
+                ];
                 
                 const user = ref(null);
                 const authLoading = ref(true);
@@ -1102,7 +1142,7 @@
                 const isInstallGuideModalOpen = ref(false);
 
                 // FORMS & SETTINGS
-                const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null });
+                const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null, icon: 'book-open' });
                 const gradeForm = ref({ id: null, points: 10, type: 'Klausur', label: '', date: '', pending: false });
                 const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false });
                 const tempReportCardPoints = ref(10);
@@ -1561,7 +1601,7 @@
 
                 const sortedSubjectsList = computed(() => [...processedData.value.semesterSubjects].sort((a, b) => (b.reportCardGrade ?? b.finalPoints ?? 0) - (a.reportCardGrade ?? a.finalPoints ?? 0)));
 
-                const openAddSubjectModal = () => { isSettingsModalOpen.value=false; subjectForm.value={name:'', isLK:false, color:'#6366f1', examWeight:50, abiType:null}; isSubjectModalOpen.value=true; refreshIcons(); };
+                const openAddSubjectModal = () => { isSettingsModalOpen.value=false; subjectForm.value={name:'', isLK:false, color:'#6366f1', examWeight:50, abiType:null, icon:'book-open'}; isSubjectModalOpen.value=true; refreshIcons(); };
                 const openSettingsModal = () => { isSettingsModalOpen.value=true; subjectForm.value={...selectedSubject.value}; isSubjectModalOpen.value=true; refreshIcons(); };
                 const closeSubjectModal = () => { isSubjectModalOpen.value = false; };
                 const openAddGradeModal = () => { gradeForm.value={id:null, points:10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; isGradeModalOpen.value=true; refreshIcons(); };
@@ -1632,7 +1672,7 @@
                     if (!swipeState.value.isDragging || !swipeState.value.id) return;
                     const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                     let diff = currentX - swipeState.value.startX;
-                    if(diff > 40) diff = 40; if(diff < -120) diff = -120;
+                    if(diff > 0) diff = 0; if(diff < -130) diff = -130;
                     swipeState.value.currentX = diff;
                     const el = swipeRefs.value[swipeState.value.id];
                     if (el) el.style.transform = `translateX(${diff}px)`;
@@ -1643,7 +1683,7 @@
                     const el = swipeRefs.value[swipeState.value.id];
                     if (el) {
                         el.classList.remove('dragging');
-                        if (!forceReset && swipeState.value.currentX < -80) {
+                        if (!forceReset && swipeState.value.currentX < -110) {
                             if(confirm(`Möchtest du die Note "${grade.label || grade.type}" wirklich löschen?`)) {
                                 handleDeleteGrade(grade.id);
                             }
@@ -1737,7 +1777,7 @@
                 }, { deep: true });
 
                 return {
-                    halfYears, colorOptions, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
+                    halfYears, colorOptions, subjectIcons, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
