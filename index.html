@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GradeFlow">
@@ -12,8 +11,8 @@
     <title>SchoolFlow - Gymnasiale Oberstufe</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Vue.js 3 CDN -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Vue.js 3 Production Build -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
@@ -28,9 +27,6 @@
             html, body {
                 height: 100%;
                 overscroll-behavior: none;
-            }
-            body {
-                padding-bottom: env(safe-area-inset-bottom);
             }
         }
         
@@ -94,6 +90,27 @@
         .swipe-item { transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         .swipe-item.dragging { transition: none; }
 
+        /* Task done animation - shrinks from top to bottom, smooth collapse */
+        @keyframes task-shrink-out {
+            0%   { max-height: 120px; opacity: 1; transform: scaleY(1) translateY(0); margin-bottom: 0.75rem; padding-top: 0; }
+            20%  { max-height: 120px; opacity: 1; transform: scaleY(1) translateY(0); margin-bottom: 0.75rem; }
+            60%  { max-height: 60px;  opacity: 0.3; transform: scaleY(0.5) translateY(-10%); margin-bottom: 0.4rem; }
+            100% { max-height: 0px;   opacity: 0;   transform: scaleY(0) translateY(-20%);  margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-width: 0; }
+        }
+        .task-done-btn {
+            transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .task-done-btn:active {
+            transform: scale(0.88);
+        }
+        .task-item-leaving {
+            overflow: hidden;
+            transform-origin: top center;
+            animation: task-shrink-out 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            pointer-events: none;
+            will-change: max-height, opacity, transform;
+        }
+
         /* Smooth scale hover effects */
         .scale-btn {
             transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -147,7 +164,7 @@
         }
     </style>
 </head>
-<body class="font-sans selection:bg-indigo-500/30 pb-36 overflow-x-hidden antialiased">
+<body class="font-sans selection:bg-indigo-500/30 overflow-x-hidden antialiased" style="padding-bottom: calc(7rem + env(safe-area-inset-bottom));">
     <div class="grid-bg"></div>
 
     <div id="app" v-cloak>
@@ -301,7 +318,8 @@
                             </div>
                             <div v-else class="space-y-3">
                                 <div v-for="t in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3 bg-black/20 p-3.5 rounded-2xl border border-white/5">
-                                    <button @click="toggleTaskDone(t)" class="shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
+                                    <button @click="toggleTaskDone(t)" 
+                                            class="task-done-btn shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                             :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
                                         <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
                                     </button>
@@ -374,10 +392,10 @@
                              class="glass-card p-4 sm:p-5 flex items-center justify-between cursor-pointer hover:border-white/20 transition-all shadow-sm relative overflow-hidden">
                             <div class="w-1.5 absolute left-0 top-5 bottom-5 rounded-r-full" :style="{ backgroundColor: s.color }"></div>
                             
-                            <div class="flex items-center gap-4 pl-3 overflow-hidden">
-                                <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
+                            <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
+                                <div class="w-14 h-14 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
                                     <i :data-lucide="s.icon || 'book-open'" class="w-5 h-5"></i>
-                                    <span class="absolute -bottom-1 -right-1 text-[9px] font-black px-1 rounded-full" :style="{backgroundColor: s.color, color: '#fff'}">{{ s.isLK ? 'LK' : 'GK' }}</span>
+                                    <span class="absolute bottom-0 right-0 text-[9px] font-black px-1.5 py-0.5 rounded-full leading-tight" :style="{backgroundColor: s.color, color: '#fff'}">{{ s.isLK ? 'LK' : 'GK' }}</span>
                                 </div>
                                 <div class="overflow-hidden">
                                     <h3 class="text-base sm:text-lg font-black text-white truncate pr-2">{{ s.name }}</h3>
@@ -553,7 +571,9 @@
                         </p>
 
                         <div class="space-y-3 relative overflow-hidden px-1 py-1">
-                            <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" class="relative group overflow-hidden rounded-[1.6rem]">
+                            <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" 
+                                 class="relative group rounded-[1.6rem]"
+                                 :class="leavingTasks.has(t.id) ? 'task-item-leaving' : 'overflow-hidden'">
                                 <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-6 z-0">
                                     <i data-lucide="trash-2" class="text-white w-5 h-5"></i>
                                     <i data-lucide="trash-2" class="text-white w-5 h-5"></i>
@@ -571,7 +591,8 @@
                                      style="touch-action: pan-y;">
                                     
                                     <div class="flex items-center gap-4 overflow-hidden">
-                                        <button @click.stop="toggleTaskDone(t)" class="shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
+                                        <button @click.stop="toggleTaskDone(t)" 
+                                                class="task-done-btn shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
                                             <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
                                         </button>
@@ -700,7 +721,7 @@
             </main>
 
             <!-- NAVIGATION BOTTOM BAR -->
-            <div class="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-5 pointer-events-none animate-slide-up">
+            <div class="fixed left-0 right-0 z-50 flex justify-center px-5 pointer-events-none animate-slide-up" style="bottom: calc(1.5rem + env(safe-area-inset-bottom));">
                 <div class="glass-pill p-1.5 flex relative pointer-events-auto w-full max-w-md">
                     <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/40"
                          :style="{ 
@@ -950,6 +971,17 @@
                                     class="py-3 rounded-xl text-sm cursor-pointer transition-all scale-btn">
                                 {{ year }}
                             </button>
+                        </div>
+                        <div class="flex items-center gap-3 pt-2">
+                            <label class="text-xs font-black uppercase text-slate-400 shrink-0">Eigenes Jahr</label>
+                            <input
+                                type="number"
+                                min="2000" max="2099"
+                                v-model.number="tempStartYear"
+                                @input="tempStartYear = parseInt($event.target.value) || tempStartYear"
+                                class="flex-1 bg-black/40 border border-white/10 rounded-xl text-indigo-400 font-black text-sm text-center py-2.5 outline-none focus:border-indigo-500 transition-colors"
+                                placeholder="z.B. 2025"
+                            />
                         </div>
                     </div>
 
@@ -1228,16 +1260,29 @@
                         subjects.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         refreshIcons();
                         triggerCharts();
+                    }, (err) => {
+                        // Silently ignore permission/network errors — data stays cached locally
+                        if (err.code !== 'permission-denied') console.warn('subjects listener:', err.code);
                     });
                 };
+
+                const leavingTasks = ref(new Set());
 
                 let unsubscribeTasks = null;
                 const listenToTasks = (uid) => {
                     if (unsubscribeTasks) unsubscribeTasks();
                     const q = collection(db, 'users', uid, 'tasks');
                     unsubscribeTasks = onSnapshot(q, (snapshot) => {
-                        tasks.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        const incoming = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        // Preserve optimistic done=true state for tasks currently in leaving animation
+                        tasks.value = incoming.map(t => {
+                            if (leavingTasks.value.has(t.id)) return { ...t, done: true };
+                            return t;
+                        });
                         refreshIcons();
+                    }, (err) => {
+                        // Silently ignore permission/network errors — data stays cached locally
+                        if (err.code !== 'permission-denied') console.warn('tasks listener:', err.code);
                     });
                 };
 
@@ -1353,7 +1398,8 @@
                 const upcomingTasks = computed(() => {
                     const today = new Date();
                     today.setHours(0,0,0,0);
-                    return enrichedTasks.value.filter(t => new Date(t.date) >= today && !t.done);
+                    // Keep tasks in leavingTasks visible (green check) until animation finishes
+                    return enrichedTasks.value.filter(t => new Date(t.date) >= today && (!t.done || leavingTasks.value.has(t.id)));
                 });
 
                 const pastTasks = computed(() => {
@@ -1511,7 +1557,37 @@
 
                 const toggleTaskDone = async (task) => {
                     if (!user.value) return;
-                    await updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: !task.done });
+                    if (!task.done) {
+                        // 1) Optimistic update: mark done in local state immediately (green check appears instantly)
+                        const taskIndex = tasks.value.findIndex(t => t.id === task.id);
+                        if (taskIndex !== -1) tasks.value[taskIndex].done = true;
+
+                        // 2) Write to Firestore in the background (non-blocking)
+                        updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: true }).catch(e => {
+                            // Rollback if write fails
+                            const idx = tasks.value.findIndex(t => t.id === task.id);
+                            if (idx !== -1) tasks.value[idx].done = false;
+                        });
+
+                        // 3) After 1000ms pause (user sees the green check), trigger shrink animation
+                        setTimeout(() => {
+                            leavingTasks.value = new Set([...leavingTasks.value, task.id]);
+                            // 4) Remove from DOM after animation (650ms) completes
+                            setTimeout(() => {
+                                const s = new Set(leavingTasks.value);
+                                s.delete(task.id);
+                                leavingTasks.value = s;
+                            }, 700);
+                        }, 1000);
+                    } else {
+                        // Un-check: immediate local update + background Firestore write
+                        const taskIndex = tasks.value.findIndex(t => t.id === task.id);
+                        if (taskIndex !== -1) tasks.value[taskIndex].done = false;
+                        updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: false }).catch(() => {
+                            const idx = tasks.value.findIndex(t => t.id === task.id);
+                            if (idx !== -1) tasks.value[idx].done = true;
+                        });
+                    }
                 };
 
                 const pointsToGrade = (p) => {
@@ -1786,7 +1862,7 @@
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, calMonth, calYear, monthNames,
-                    nextMonth, prevMonth, handleCalendarClick, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone,
+                    nextMonth, prevMonth, handleCalendarClick, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe,
                     getCalculatedSemesterPoints,
