@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SchoolFlow - Gymnasiale Oberstufe</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Vue.js 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        [v-cloak] { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Premium Dark Mode mit weichen Glüheffekten */
+        body { 
+            background-color: #050508;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 90% 85%, rgba(139, 92, 246, 0.12) 0%, transparent 45%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        /* Feines technisches Grid-Muster im Hintergrund */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+            background-size: 56px 56px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Dark Liquid Glassmorphism - Dunkel, tief, edel */
+        .glass-card {
+            background: rgba(20, 20, 30, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
+            border-radius: 2.2rem;
+        }
+
+        .glass-pill {
+            background: rgba(15, 15, 25, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 9999px;
+        }
+
+        /* Fester Header Block */
+        .hero-block {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 40px -10px rgba(79, 70, 229, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .hero-shape-1 { position: absolute; top: -50px; left: -20px; width: 150px; height: 150px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+        .hero-shape-2 { position: absolute; bottom: -80px; right: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+
+        /* Swipe to delete transition */
+        .swipe-item { transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        .swipe-item.dragging { transition: none; }
+
+        /* Smooth scale hover effects */
+        .scale-btn {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .scale-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Custom Slider-Design */
+        .custom-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            outline: none;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+        .custom-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #6366f1;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+            cursor: grab;
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
+        }
+        .custom-range::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.3);
+            background: #818cf8;
+        }
+        .custom-range::-moz-range-thumb {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #6366f1;
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+            cursor: grab;
+            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
+        }
+        .custom-range::-moz-range-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.3);
+            background: #818cf8;
+        }
+    </style>
+</head>
+<body class="font-sans selection:bg-indigo-500/30 pb-36 overflow-x-hidden antialiased">
+    <div class="grid-bg"></div>
+
+    <div id="app" v-cloak>
+        <!-- LOADING SCREEN -->
+        <div v-if="authLoading" class="h-screen flex items-center justify-center text-indigo-400">
+            <i data-lucide="loader-2" class="animate-spin w-10 h-10"></i>
+        </div>
+
+        <!-- LOGIN / REGISTER SCREEN -->
+        <div v-else-if="!user" class="min-h-screen flex items-center justify-center p-4 font-sans">
+            <div class="w-full max-w-md space-y-8 animate-fade-in max-sm:space-y-6">
+                <div class="text-center space-y-3">
+                    <div class="w-20 h-20 hero-block mx-auto flex items-center justify-center shadow-2xl relative">
+                        <i data-lucide="graduation-cap" class="w-10 h-10 text-white relative z-10"></i>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl font-black tracking-tighter pt-2 text-white">SchoolFlow</h1>
+                    <p class="text-indigo-400 text-xs sm:text-sm font-extrabold tracking-wide">
+                        Noten, Termine, Flow – Alles an einem Ort! 🚀
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 md:p-8 space-y-6 max-sm:p-5">
+                    <div class="flex bg-black/40 p-1 rounded-full mb-6 border border-white/5">
+                        <button @click="isRegistering = false" :class="!isRegistering ? 'bg-indigo-600 text-white shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer">Anmelden</button>
+                        <button @click="isRegistering = true" :class="isRegistering ? 'bg-indigo-600 text-white shadow-sm font-black' : 'text-slate-400 font-bold'" class="flex-1 py-2.5 rounded-full text-[10px] sm:text-xs uppercase tracking-widest transition-all cursor-pointer">Registrieren</button>
+                    </div>
+
+                    <form @submit.prevent="handleAuth" class="space-y-4">
+                        <div class="bg-black/20 border border-white/10 rounded-full flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-sm">
+                            <i data-lucide="mail" class="text-slate-400 mr-3 w-4 h-4 shrink-0"></i>
+                            <input required type="email" placeholder="E-Mail Adresse" v-model="email" class="bg-transparent w-full outline-none text-xs sm:text-sm font-bold text-white placeholder:text-slate-500" />
+                        </div>
+                        
+                        <div class="bg-black/20 border border-white/10 rounded-full flex items-center px-4 py-3.5 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-sm relative">
+                            <i data-lucide="lock" class="text-slate-400 mr-3 w-4 h-4 shrink-0"></i>
+                            <input required :type="showPassword ? 'text' : 'password'" placeholder="Passwort" v-model="password" class="bg-transparent w-full outline-none text-xs sm:text-sm font-bold text-white placeholder:text-slate-500 pr-10" />
+                            <button type="button" @click="togglePasswordVisibility" class="absolute right-4 text-slate-400 hover:text-white cursor-pointer transition-colors focus:outline-none">
+                                <i :data-lucide="showPassword ? 'eye-off' : 'eye'" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <p v-if="authError" class="text-rose-400 text-xs font-bold text-center bg-rose-500/10 py-3 rounded-full border border-rose-500/20">{{ authError }}</p>
+
+                        <button type="submit" :disabled="loading" class="w-full hero-block hover:opacity-90 text-white py-3.5 sm:py-4 rounded-full font-black uppercase tracking-widest text-[10px] sm:text-xs transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2">
+                            <i v-if="loading" data-lucide="loader-2" class="animate-spin w-4 h-4"></i>
+                            {{ isRegistering ? 'Kostenlos starten' : 'Einloggen' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- HAUPT APP -->
+        <div v-else class="w-full max-w-md md:max-w-6xl mx-auto px-4 pt-4 md:pt-10">
+            <!-- HEADER BEREICH -->
+            <header class="mb-6 flex justify-between items-center">
+                <div class="flex items-center gap-3 cursor-pointer" @click="currentTab = 'home'; selectedSubject = null">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 hero-block flex items-center justify-center rounded-2xl shadow-lg">
+                        <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-black text-white tracking-tight">SchoolFlow</h1>
+                        <p class="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ user.email.split('@')[0] }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <!-- Zum Startbildschirm hinzufügen (Install-Symbol) -->
+                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
+                        <i data-lucide="smartphone" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- App-Einstellungen Zahnrad-Symbol -->
+                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors cursor-pointer">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <button @click="handleLogout" title="Abmelden" class="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- HALBJAHR SLIDER (Außer im Planer) -->
+            <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-1 flex relative mb-6 z-10 max-w-sm mx-auto">
+                <div class="absolute top-1 bottom-1 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/35"
+                     :style="{ width: 'calc(100% / 4 - 2px)', left: 'calc(' + halfYears.indexOf(selectedHalfYear) + ' * 100% / 4 + 1px)' }"></div>
+                <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
+                        :class="selectedHalfYear === s ? 'text-white font-black' : 'text-slate-400 font-bold hover:text-slate-200'"
+                        class="flex-1 py-2 text-[10px] sm:text-[11px] uppercase tracking-wider relative z-10 transition-colors duration-300 cursor-pointer">
+                    {{ s }}
+                </button>
+            </div>
+
+            <main class="min-h-[60vh] pb-12">
+                
+                <!-- 1. DASHBOARD / HOME -->
+                <div v-if="currentTab === 'home' && !selectedSubject" class="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-start animate-fade-in">
+                    
+                    <!-- Linke Spalte -->
+                    <div class="md:col-span-5 space-y-5 sm:space-y-6">
+                        <div class="hero-block p-6 sm:p-8 text-center">
+                            <div class="hero-shape-1"></div>
+                            <div class="hero-shape-2"></div>
+                            <div class="relative z-10">
+                                <p class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] text-indigo-200 mb-1">Dein Schnitt in {{ selectedHalfYear }}</p>
+                                <div class="text-6xl sm:text-7xl md:text-8xl font-black tracking-tighter text-white drop-shadow-lg">
+                                    {{ formatNumber(processedData.avgPoints) }}
+                                </div>
+                                <div v-if="processedData.avgGrade" class="mt-3 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-white font-bold text-xs">
+                                    <span>Ø Note: {{ formatNumber(processedData.avgGrade) }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LK-Bonus Toggle Widget -->
+                        <div @click="lkBonusActive = !lkBonusActive" class="glass-card p-4 sm:p-5 flex justify-between items-center cursor-pointer scale-btn">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                    <i data-lucide="award" class="w-4.5 h-4.5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-xs sm:text-sm text-white">Leistungskurs-Faktor</h4>
+                                    <p class="text-[10px] text-slate-400">LKs doppelt werten</p>
+                                </div>
+                            </div>
+                            <div class="w-9 h-5 rounded-full transition-colors relative" :class="lkBonusActive ? 'bg-indigo-600' : 'bg-slate-700'">
+                                <div class="w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-all" :class="lkBonusActive ? 'right-0.75' : 'left-0.75'"></div>
+                            </div>
+                        </div>
+
+                        <!-- Anstehende Aufgaben Vorschau -->
+                        <div class="glass-card p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-black text-white text-xs sm:text-sm flex items-center gap-1.5">
+                                    <i data-lucide="bell" class="w-4 h-4 text-indigo-400"></i> Nächste Aufgaben
+                                </h3>
+                                <button @click="currentTab = 'planner'" class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest hover:text-indigo-300">Alle</button>
+                            </div>
+                            <div v-if="upcomingTasks.length === 0" class="text-xs text-slate-500 font-bold text-center py-4 bg-black/20 rounded-2xl border border-white/5">
+                                Aktuell keine Aufgaben! 🎉
+                            </div>
+                            <div v-else class="space-y-2">
+                                <div v-for="t in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-2 bg-black/20 p-2.5 rounded-2xl border border-white/5">
+                                    <button @click="toggleTaskDone(t)" class="shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
+                                            :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
+                                        <i v-if="t.done" data-lucide="check" class="w-3.5 h-3.5 text-white"></i>
+                                    </button>
+                                    <div class="flex-1 overflow-hidden">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full shrink-0" :style="{backgroundColor: t.subject.color}"></span>
+                                            <h4 class="font-bold text-white text-xs truncate" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
+                                        </div>
+                                        <p class="text-[9px] text-slate-400 uppercase tracking-wider mt-0.5">{{ t.type }} • {{ formatDate(t.date) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rechte Spalte (Fächer Raster) -->
+                    <div class="md:col-span-7 space-y-4 sm:space-y-6">
+                        <div class="flex items-center justify-between px-1">
+                            <h2 class="text-sm sm:text-base font-black text-white">Fächer (Nach Note sortiert)</h2>
+                            <button @click="currentTab = 'subjects'" class="text-indigo-400 text-[10px] font-bold uppercase flex items-center gap-1 hover:text-indigo-300">Alle <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                            <div v-for="s in sortedSubjectsList.slice(0, 6)" :key="s.id" @click="selectedSubject = s" 
+                                 class="glass-card p-4 sm:p-5 cursor-pointer hover:scale-[1.01] transition-transform flex flex-col justify-between min-h-[120px] sm:min-h-[140px] relative overflow-hidden group">
+                                <div class="absolute -right-6 -top-6 w-20 h-20 rounded-full opacity-10 transition-transform group-hover:scale-150" :style="{ backgroundColor: s.color }"></div>
+                                <div>
+                                    <span class="text-[9px] font-black uppercase tracking-wider text-slate-400">{{ s.isLK ? 'LK' : 'GK' }}</span>
+                                    <h3 class="text-sm sm:text-base font-black text-white leading-tight mt-0.5 line-clamp-2">{{ s.name }}</h3>
+                                </div>
+                                <div class="mt-3 flex items-end justify-between">
+                                    <div class="text-2xl sm:text-3xl font-black text-slate-100">
+                                        <span v-if="s.reportCardGrade !== null" class="flex items-center gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
+                                        <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '-' }}</span>
+                                    </div>
+                                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: s.color }"></span>
+                                </div>
+                            </div>
+
+                            <!-- Fach Hinzufügen Card -->
+                            <div @click="openAddSubjectModal" class="border-2 border-dashed border-indigo-500/30 bg-indigo-500/5 rounded-[1.8rem] sm:rounded-[2.2rem] p-4 sm:p-5 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-500/10 transition-colors min-h-[120px] sm:min-h-[140px] scale-btn">
+                                <div class="w-8 h-8 bg-indigo-500/10 rounded-full flex items-center justify-center text-indigo-400 mb-1.5">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </div>
+                                <span class="text-[9px] font-black uppercase tracking-wider text-indigo-400">Neues Fach</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. FÄCHER LISTE -->
+                <div v-if="currentTab === 'subjects' && !selectedSubject" class="space-y-4 max-w-3xl mx-auto animate-fade-in">
+                    <div class="flex justify-between items-end px-1 mb-1">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-black text-white">Fächerliste</h2>
+                            <p class="text-[10px] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">{{ processedData.semesterSubjects.length }} Fächer angelegt</p>
+                        </div>
+                        <button @click="openAddSubjectModal" class="w-10 h-10 sm:w-12 sm:h-12 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
+                            <i data-lucide="plus" class="w-4 sm:w-5 h-4 sm:h-5 text-white"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div v-for="s in sortedSubjectsList" :key="s.id" @click="selectedSubject = s" 
+                             class="glass-card p-3.5 sm:p-4 flex items-center justify-between cursor-pointer hover:border-white/20 transition-all shadow-sm relative overflow-hidden">
+                            <div class="w-1 absolute left-0 top-5 bottom-5 rounded-r-full" :style="{ backgroundColor: s.color }"></div>
+                            
+                            <div class="flex items-center gap-3 pl-2 overflow-hidden">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-[10px] shrink-0" :style="{ backgroundColor: s.color + '20', color: s.color }">
+                                    {{ s.isLK ? 'LK' : 'GK' }}
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h3 class="text-sm sm:text-base font-black text-white truncate pr-2">{{ s.name }}</h3>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{{ s.semesterGrades ? s.semesterGrades.length : 0 }} Noten</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="text-right">
+                                    <div class="text-xl sm:text-2xl font-black text-white">
+                                        <span v-if="s.reportCardGrade !== null" class="flex items-center justify-end gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
+                                        <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '-' }}</span>
+                                    </div>
+                                    <div v-if="s.finalPoints !== null && s.reportCardGrade === null" class="text-[9px] font-bold text-slate-400 mt-0.5">Ø {{ formatNumber(s.finalGrade) }}</div>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. DETAILANSICHT EINES FACHS (Inklusive anstehender Tests) -->
+                <div v-if="selectedSubject" class="space-y-4 sm:space-y-6 animate-fade-in">
+                    <button @click="selectedSubject = null" class="glass-pill px-3.5 py-1.5 flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white w-fit cursor-pointer">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Zurück
+                    </button>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+                        
+                        <!-- Linke Spalte -->
+                        <div class="lg:col-span-7 space-y-4 sm:space-y-6">
+                            <!-- Fach Header -->
+                            <div class="hero-block p-5 sm:p-8" :style="{ background: `linear-gradient(135deg, ${selectedSubject.color} 0%, ${adjustColor(selectedSubject.color, -50)} 100%)` }">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <span class="bg-white/20 text-white px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-md">
+                                            {{ selectedSubject.isLK ? 'Leistungskurs' : 'Grundkurs' }}
+                                        </span>
+                                        <h2 class="text-2xl sm:text-4xl font-black text-white mt-2 mb-0.5 break-words">{{ selectedSubject.name }}</h2>
+                                        <p class="text-white/75 text-[10px] sm:text-xs font-bold">{{ selectedSubject.examWeight }}% Klausuranteil</p>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5 sm:gap-2 shrink-0">
+                                        <button @click="openSettingsModal" class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md hover:bg-white/30 transition-colors cursor-pointer">
+                                            <i data-lucide="settings" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                        </button>
+                                        <button @click="openReportCardModal" class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md hover:bg-white/30 transition-colors relative cursor-pointer">
+                                            <i data-lucide="award" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+                                            <span v-if="activeSubjectData?.reportCardGrade !== null" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-[#8b5cf6]"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/20 flex justify-between items-end">
+                                    <div>
+                                        <p class="text-[9px] font-black uppercase tracking-wider text-white/75">Schnitt</p>
+                                        <div class="text-4xl sm:text-5xl font-black text-white mt-0.5">{{ activeSubjectData?.finalPoints !== null ? formatNumber(activeSubjectData.finalPoints) : '-' }}</div>
+                                    </div>
+                                    <div v-if="activeSubjectData?.finalPoints !== null" class="text-xs font-bold text-white/95 bg-white/20 px-3 py-1 rounded-full backdrop-blur-md">
+                                        Note {{ formatNumber(activeSubjectData.finalGrade) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="glass-card p-4 sm:p-6">
+                                <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-1.5">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-indigo-400"></i> Verlauf
+                                </p>
+                                <div class="h-40 sm:h-56 md:h-64 w-full relative">
+                                    <canvas id="trendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rechte Spalte (Notenliste & anstehende Tests aus Planer) -->
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="flex justify-between items-center px-1">
+                                <h3 class="text-base sm:text-lg font-black text-white">Eingetragene Noten</h3>
+                                <button @click="openAddGradeModal" class="text-indigo-400 text-xs font-bold flex items-center gap-1 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-full hover:bg-indigo-500/20 cursor-pointer">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Neu
+                                </button>
+                            </div>
+
+                            <p class="text-[9px] text-slate-500 italic px-1">💡 Noten nach links wischen zum Löschen.</p>
+
+                            <div class="space-y-2 relative overflow-hidden px-0.5 py-0.5">
+                                <div v-if="sortedGrades.length === 0" class="text-center py-6 text-slate-500 font-bold text-xs">
+                                    Keine Noten in diesem Halbjahr.
+                                </div>
+
+                                <div v-for="g in sortedGrades" :key="g.id" class="relative group overflow-hidden rounded-[1.4rem]">
+                                    <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-5 z-0">
+                                        <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
+                                        <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
+                                    </div>
+                                    
+                                    <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.4rem]"
+                                         @touchstart="!g.isFromPlanner && startSwipe($event, g.id)"
+                                         @touchmove="!g.isFromPlanner && moveSwipe($event)"
+                                         @touchend="!g.isFromPlanner && endSwipe($event, g)"
+                                         @mousedown="!g.isFromPlanner && startSwipe($event, g.id)"
+                                         @mousemove="!g.isFromPlanner && moveSwipe($event)"
+                                         @mouseup="!g.isFromPlanner && endSwipe($event, g)"
+                                         @mouseleave="!g.isFromPlanner && endSwipe($event, g, true)"
+                                         :ref="el => { if(el && !g.isFromPlanner) swipeRefs[g.id] = el }"
+                                         style="touch-action: pan-y;">
+                                        
+                                        <div class="flex items-center gap-3 overflow-hidden">
+                                            <!-- Anzeige für offene Planer-Einträge ("Ergebnis noch nicht bekannt") -->
+                                            <div v-if="g.isFromPlanner" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0">
+                                                <i data-lucide="clock" class="w-4 h-4 animate-pulse"></i>
+                                            </div>
+                                            <div v-else-if="g.pending" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0">
+                                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                            </div>
+                                            <div v-else class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-base font-black shrink-0" :style="{ backgroundColor: selectedSubject.color + '15', color: selectedSubject.color }">
+                                                {{ g.points }}
+                                            </div>
+                                            <div class="overflow-hidden">
+                                                <p class="font-black text-white text-xs sm:text-sm truncate leading-tight pr-1">{{ g.label || g.type }}</p>
+                                                <!-- Status-Indikator -->
+                                                <p v-if="g.isFromPlanner" class="text-[8px] font-black text-amber-400 uppercase tracking-wider mt-0.5">Ergebnis noch nicht bekannt</p>
+                                                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">{{ formatDate(g.date) }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-1.5 shrink-0">
+                                            <span v-if="g.pending && !g.isFromPlanner" class="text-[8px] font-black uppercase bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20 self-center">Ausstehend</span>
+                                            <!-- Bearbeiten-Weiterleitung für Planer-Einträge oder Standard-Noteneditierung -->
+                                            <button @click.stop="g.isFromPlanner ? openEditTaskFromPlanner(g.id) : openEditGradeModal(g)" class="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
+                                                <i data-lucide="edit-2" class="w-3 h-3"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. PLANER (Aufgaben / Prüfungen) -->
+                <div v-if="currentTab === 'planner' && !selectedSubject" class="space-y-4 max-w-3xl mx-auto animate-fade-in">
+                    <div class="flex justify-between items-end px-1 mb-1">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-black text-white">Planer</h2>
+                            <p class="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">Klausuren & Aufgaben</p>
+                        </div>
+                        <button @click="openTaskModal" class="w-10 h-10 sm:w-12 sm:h-12 hero-block rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer">
+                            <i data-lucide="plus" class="w-4 sm:w-5 h-4 sm:h-5 text-white"></i>
+                        </button>
+                    </div>
+
+                    <!-- Planner Sub-Tabs -->
+                    <div class="glass-pill p-1 flex relative z-10 max-w-full overflow-x-auto no-scrollbar">
+                        <div class="absolute top-1 bottom-1 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md"
+                             :style="{ width: 'calc(100% / 3 - 2px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 1px)' }"></div>
+                        <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-2">Anstehend</button>
+                        <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-2">Vergangen</button>
+                        <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white' : 'text-slate-400 hover:text-slate-200'" class="flex-1 py-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-2">Kalender</button>
+                    </div>
+
+                    <!-- Planer Filter-Pills für Tests & Klausuren (Nur in Listenansichten sichtbar) -->
+                    <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="flex gap-1.5 justify-center mt-1 px-1 flex-wrap">
+                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-3.5 py-1 rounded-full text-[9px] uppercase tracking-wider cursor-pointer transition-all scale-btn">Alle</button>
+                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-3.5 py-1 rounded-full text-[9px] uppercase tracking-wider cursor-pointer transition-all scale-btn">Nur Tests</button>
+                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-3.5 py-1 rounded-full text-[9px] uppercase tracking-wider cursor-pointer transition-all scale-btn">Klausuren</button>
+                    </div>
+
+                    <!-- Listenansichten (Anstehend / Vergangenheit gefiltert) -->
+                    <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="space-y-3">
+                        <p v-if="(plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks).length === 0" class="text-center py-10 text-slate-500 font-bold text-xs">
+                            Keine Aufgaben in dieser Ansicht.
+                        </p>
+
+                        <div class="space-y-2 relative overflow-hidden px-0.5 py-0.5">
+                            <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" class="relative group overflow-hidden rounded-[1.4rem]">
+                                <!-- Roter Hintergrund (Löschen) -->
+                                <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-5 z-0">
+                                    <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
+                                    <i data-lucide="trash-2" class="text-white w-4 h-4"></i>
+                                </div>
+                                
+                                <!-- Vordergrund Card -->
+                                <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.4rem]"
+                                     @touchstart="startTaskSwipe($event, t.id)"
+                                     @touchmove="moveTaskSwipe($event)"
+                                     @touchend="endTaskSwipe($event, t)"
+                                     @mousedown="startTaskSwipe($event, t.id)"
+                                     @mousemove="moveTaskSwipe($event)"
+                                     @mouseup="endTaskSwipe($event, t)"
+                                     @mouseleave="endTaskSwipe($event, t, true)"
+                                     :ref="el => { if(el) taskSwipeRefs[t.id] = el }"
+                                     style="touch-action: pan-y;">
+                                    
+                                    <div class="flex items-center gap-3 overflow-hidden">
+                                        <button @click.stop="toggleTaskDone(t)" class="shrink-0 w-6.5 h-6.5 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer"
+                                                :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
+                                            <i v-if="t.done" data-lucide="check" class="w-3.5 h-3.5 text-white"></i>
+                                        </button>
+                                        <div class="overflow-hidden">
+                                            <div class="flex items-center gap-1.5 overflow-hidden">
+                                                <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
+                                                <span class="text-[9px] font-black uppercase text-slate-400 truncate pr-1">{{ t.subject.name }}</span>
+                                            </div>
+                                            <h4 class="font-black text-white text-sm mt-0.5 leading-tight truncate pr-1" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
+                                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                                                {{ t.type }} • {{ formatDate(t.date) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex shrink-0">
+                                        <button @click.stop="openEditTaskModal(t)" class="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
+                                            <i data-lucide="edit-2" class="w-3 h-3"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kalenderansicht -->
+                    <div v-if="plannerTab === 'calendar'" class="glass-card p-4 sm:p-5 animate-fade-in">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-black text-white text-base sm:text-lg">{{ monthNames[calMonth] }} {{ calYear }}</h3>
+                            <div class="flex gap-1.5">
+                                <button @click="prevMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                                <button @click="nextMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Wochentage -->
+                        <div class="grid grid-cols-7 gap-1 text-center mb-1">
+                            <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[9px] font-black uppercase text-slate-500 py-0.5">{{ d }}</div>
+                        </div>
+
+                        <!-- Tage Grid -->
+                        <div class="grid grid-cols-7 gap-1">
+                            <div v-for="(day, idx) in calendarDays" :key="idx" 
+                                 class="aspect-square rounded-lg sm:rounded-xl flex flex-col items-center justify-center relative p-0.5 transition-colors border"
+                                 :class="[
+                                    day.isCurrentMonth ? 'bg-black/20 text-white border-white/5 hover:border-indigo-500/50 cursor-pointer' : 'bg-transparent text-slate-600 border-transparent',
+                                    isToday(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/10' : ''
+                                 ]"
+                                 @click="day.isCurrentMonth && (day.tasks?.length ? handleCalendarClick(day.date) : openTaskModalWithDate(day.date))">
+                                <span class="font-bold text-[11px] sm:text-xs z-10">{{ day.day }}</span>
+                                
+                                <!-- Indikatoren für Aufgaben am Tag -->
+                                <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-0.5 mt-0.5 justify-center flex-wrap max-w-[80%]">
+                                    <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
+                                    <span v-if="day.tasks.length > 3" class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-slate-400"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. ABITURRECHNER -->
+                <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in">
+                    <div class="px-1">
+                        <h2 class="text-2xl sm:text-3xl font-black text-white">Abiturrechner</h2>
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">Zeugnisübersicht aller Halbjahre</p>
+                    </div>
+
+                    <div class="glass-card p-4 sm:p-6 overflow-hidden">
+                        <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-indigo-400 mb-3 flex items-center gap-2">
+                            <i data-lucide="table" class="w-4 h-4"></i> Zeugnisnoten aller Halbjahre
+                        </h3>
+                        <p class="text-[11px] text-slate-400 mb-4 leading-relaxed">Hier siehst du alle Kursergebnisse deiner Fächer. Ein <span class="text-amber-400">Award-Symbol</span> markiert manuell festgelegte Zeugnisnoten.</p>
+                        
+                        <div class="overflow-x-auto no-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[450px]">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-[9px] font-black uppercase text-slate-400">
+                                        <th class="py-2.5 pr-2">Fach</th>
+                                        <th class="py-2.5 text-center w-10">LK</th>
+                                        <th class="py-2.5 text-center w-12">11/1</th>
+                                        <th class="py-2.5 text-center w-12">11/2</th>
+                                        <th class="py-2.5 text-center w-12">12/1</th>
+                                        <th class="py-2.5 text-center w-12">12/2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="s in sortedSubjectsList" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-xs font-bold text-white">
+                                        <td class="py-2.5 pr-2 flex items-center gap-1.5 overflow-hidden max-w-[120px]">
+                                            <span class="w-2 h-2 rounded-full inline-block shrink-0" :style="{ backgroundColor: s.color }"></span>
+                                            <span class="truncate">{{ s.name }}</span>
+                                        </td>
+                                        <td class="py-2.5 text-center">
+                                            <span v-if="s.isLK" class="text-indigo-400 font-extrabold uppercase text-[9px]">LK</span>
+                                            <span v-else class="text-slate-500 font-normal">GK</span>
+                                        </td>
+                                        <td v-for="hy in halfYears" :key="hy" class="py-2.5 text-center font-extrabold text-[13px]">
+                                            <div class="inline-flex items-center gap-0.5 justify-center">
+                                                <span v-if="s.reportCardGrades?.[hy] !== undefined" class="text-amber-400 flex items-center gap-0.5">
+                                                    <i data-lucide="award" class="w-3 h-3"></i>
+                                                    {{ s.reportCardGrades[hy] }}
+                                                </span>
+                                                <span v-else class="text-slate-200">
+                                                    {{ getCalculatedSemesterPoints(s, hy) }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. STATS -->
+                <div v-if="currentTab === 'stats' && !selectedSubject" class="space-y-6 max-w-3xl mx-auto animate-fade-in">
+                    <div class="px-1">
+                        <h2 class="text-2xl sm:text-3xl font-black text-white">Statistik</h2>
+                    </div>
+                    <div class="glass-card p-5 relative overflow-hidden">
+                        <p class="text-[9px] font-black uppercase tracking-wider text-slate-400 mb-4">Punkteverteilung im Halbjahr {{ selectedHalfYear }}</p>
+                        <div class="h-56 sm:h-64 w-full relative z-10">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- NAVIGATION BOTTOM BAR (Flüssiger Sliding Indicator 5 Tabs) -->
+            <div class="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none animate-slide-up">
+                <div class="glass-pill p-1 flex relative pointer-events-auto w-full max-w-md">
+                    <div class="absolute top-1 bottom-1 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/40"
+                         :style="{ 
+                             width: 'calc(20% - 2px)', 
+                             left: `calc(${['home', 'subjects', 'planner', 'abitur', 'stats'].indexOf(currentTab)} * 20% + 1px)` 
+                         }">
+                    </div>
+                    
+                    <button @click="currentTab = 'home'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'home' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="home" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    </button>
+                    <button @click="currentTab = 'subjects'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="layout-grid" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    </button>
+                    <button @click="currentTab = 'planner'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="calendar-check" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    </button>
+                    <button @click="currentTab = 'abitur'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="graduation-cap" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    </button>
+                    <button @click="currentTab = 'stats'; selectedSubject = null" class="flex-1 py-3.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer" :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400 hover:text-slate-200'">
+                        <i data-lucide="trending-up" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODALS -->
+        <!-- Fach Modal -->
+        <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
+                <button @click="closeSubjectModal" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
+                
+                <form @submit.prevent="handleSaveSubject" class="space-y-4">
+                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5">
+                        <label class="text-[9px] font-black uppercase text-slate-400 ml-2">Fachname</label>
+                        <input type="text" required v-model="subjectForm.name" class="w-full bg-transparent text-base sm:text-lg font-bold text-white outline-none ml-2 mt-1" />
+                    </div>
+                    
+                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5 flex items-center justify-between">
+                        <div class="ml-2"><p class="font-black text-white text-xs sm:text-sm">Leistungskurs</p></div>
+                        <button type="button" @click="subjectForm.isLK = !subjectForm.isLK" :class="subjectForm.isLK ? 'bg-indigo-600' : 'bg-slate-700'" class="relative inline-flex h-6.5 w-11 rounded-full transition-all cursor-pointer">
+                            <span :class="subjectForm.isLK ? 'translate-x-5.5' : 'translate-x-1'" class="inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform mt-1 shadow-sm"></span>
+                        </button>
+                    </div>
+
+                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5 space-y-2">
+                        <div class="flex justify-between items-center ml-2">
+                            <p class="font-bold text-white text-xs sm:text-sm">Klausurgewichtung</p>
+                            <span class="font-black text-indigo-400 text-xs sm:text-sm">{{ subjectForm.examWeight }}% Klausur</span>
+                        </div>
+                        <input type="range" min="0" max="100" v-model.number="subjectForm.examWeight" class="custom-range" />
+                    </div>
+
+                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5">
+                        <label class="text-[9px] font-black uppercase text-slate-400 ml-2 block mb-2.5">Prüfungsfach (Abitur)</label>
+                        <div class="grid grid-cols-6 gap-1">
+                            <button type="button" @click="subjectForm.abiType = null" :class="!subjectForm.abiType ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-1.5 rounded-xl text-[9px] font-black cursor-pointer">X</button>
+                            <button type="button" v-for="t in ['P1','P2','P3','P4','P5']" :key="t" @click="subjectForm.abiType = t" :class="subjectForm.abiType === t ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-1.5 rounded-xl text-[9px] font-black cursor-pointer">{{t}}</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl border border-white/5">
+                        <p class="font-black text-white text-xs sm:text-sm ml-2 mb-2.5">Fachfarbe</p>
+                        <div class="grid grid-cols-8 gap-2 sm:gap-3 px-2 py-1">
+                            <button type="button" v-for="c in colorOptions" :key="c" @click="subjectForm.color = c" :style="{ backgroundColor: c }" class="w-6.5 h-6.5 sm:w-8 sm:h-8 rounded-full shrink-0 transition-transform cursor-pointer scale-btn" :class="subjectForm.color === c ? 'scale-120 ring-2 ring-indigo-500' : ''"></button>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex gap-3">
+                        <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3 sm:py-4 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Speichern</button>
+                        <button type="button" v-if="isSettingsModalOpen" @click="handleDeleteSubject" class="w-12 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Noten Modal (Optimiert mit Custom-Kalender) -->
+        <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
+                <button @click="isGradeModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-black/20 p-3.5 sm:p-4 rounded-3xl flex justify-between items-center border border-white/5">
+                        <p class="font-black text-white text-xs sm:text-sm ml-2">Ergebnis ausstehend</p>
+                        <button type="button" @click="gradeForm.pending = !gradeForm.pending" :class="gradeForm.pending ? 'bg-amber-500' : 'bg-slate-700'" class="relative inline-flex h-6.5 w-11 rounded-full transition-all cursor-pointer">
+                            <span :class="gradeForm.pending ? 'translate-x-5.5' : 'translate-x-1'" class="inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform mt-1"></span>
+                        </button>
+                    </div>
+
+                    <div v-if="!gradeForm.pending" class="bg-black/20 p-3.5 sm:p-4 rounded-3xl text-center border border-white/5">
+                        <div class="text-5xl sm:text-6xl font-black text-indigo-400 mb-3">{{ gradeForm.points }}</div>
+                        <input type="range" min="0" max="15" v-model.number="gradeForm.points" class="custom-range">
+                    </div>
+
+                    <div class="flex gap-2 bg-black/20 p-1 rounded-full border border-white/5">
+                        <button @click="gradeForm.type = 'Klausur'" :class="gradeForm.type === 'Klausur' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 sm:py-3 rounded-full text-[10px] sm:text-xs font-black uppercase cursor-pointer">Klausur</button>
+                        <button @click="gradeForm.type = 'Sonstige Leistung'" :class="gradeForm.type === 'Sonstige Leistung' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 sm:py-3 rounded-full text-[10px] sm:text-xs font-black uppercase cursor-pointer">Sonstiges</button>
+                    </div>
+
+                    <input type="text" placeholder="Beschreibung (optional)" v-model="gradeForm.label" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm outline-none text-white placeholder:text-slate-600" />
+                    
+                    <!-- Custom Kalender Trigger-Feld -->
+                    <div @click="openDatePicker('grade')" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm text-white flex justify-between items-center cursor-pointer hover:border-white/20 transition-all">
+                        <span>{{ gradeForm.date ? formatDate(gradeForm.date) : 'Datum auswählen' }}</span>
+                        <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+
+                    <div class="pt-2 flex gap-3">
+                        <button @click="handleSaveGrade" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Speichern</button>
+                        <button v-if="gradeForm.id" @click="handleDeleteGrade(gradeForm.id)" class="w-12 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zeugnis Modal -->
+        <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative">
+                <button @click="isReportCardModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">Zeugnisnote festlegen</h2>
+                
+                <div class="space-y-6">
+                    <div class="bg-black/20 border border-white/5 p-5 sm:p-6 rounded-3xl text-center">
+                        <div class="text-6xl sm:text-7xl font-black text-white mb-4 sm:mb-6">{{ tempReportCardPoints === null ? '-' : tempReportCardPoints }}</div>
+                        <input type="range" min="0" max="15" v-model.number="tempReportCardPoints" class="custom-range">
+                    </div>
+                    <div class="flex gap-2 sm:gap-3">
+                        <button @click="handleSaveReportCardGrade(tempReportCardPoints)" class="flex-1 bg-indigo-600 text-white py-3 sm:py-4 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Festlegen</button>
+                        <button @click="handleSaveReportCardGrade(null)" class="flex-1 bg-white/5 border border-white/10 text-slate-400 py-3 sm:py-4 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Zurücksetzen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aufgabe/Prüfung Modal -->
+        <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
+                <button @click="isTaskModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
+                
+                <div v-if="subjects.length === 0" class="text-center py-6 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-xs sm:text-sm animate-pulse">
+                    Bitte erstelle zuerst ein Fach unter "Fächer", bevor du Aufgaben eintragen kannst.
+                </div>
+                
+                <div v-else class="space-y-4">
+                    <input type="text" placeholder="Titel (z.B. Vokabeln, Analysis Test)" required v-model="taskForm.title" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm outline-none text-white placeholder:text-slate-600" />
+                    
+                    <div class="flex gap-2 bg-black/20 p-1 rounded-full border border-white/5">
+                        <button @click="taskForm.type = 'Hausaufgabe'" :class="taskForm.type === 'Hausaufgabe' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase cursor-pointer">Hausaufgabe</button>
+                        <button @click="taskForm.type = 'Test'" :class="taskForm.type === 'Test' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase cursor-pointer">Test</button>
+                        <button @click="taskForm.type = 'Klausur'" :class="taskForm.type === 'Klausur' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase cursor-pointer">Klausur</button>
+                    </div>
+
+                    <div class="bg-black/20 border border-white/5 p-3.5 sm:p-4 rounded-3xl">
+                        <label class="text-[9px] font-black uppercase text-slate-400 ml-1 block mb-2">Fach auswählen</label>
+                        <div class="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto no-scrollbar">
+                            <button v-for="s in subjects" :key="s.id" @click="taskForm.subjectId = s.id"
+                                    class="p-2.5 sm:p-3 rounded-xl border text-left flex items-center gap-2 transition-colors cursor-pointer"
+                                    :class="taskForm.subjectId === s.id ? 'bg-white/10 border-indigo-500' : 'bg-transparent border-white/5 hover:border-white/20'">
+                                <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: s.color }"></span>
+                                <span class="font-bold text-xs text-white truncate">{{ s.name }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Kalender Trigger-Feld -->
+                    <div @click="openDatePicker('task')" class="w-full bg-black/20 border border-white/5 p-4 rounded-3xl font-bold text-xs sm:text-sm text-white flex justify-between items-center cursor-pointer hover:border-white/20 transition-all">
+                        <span>{{ taskForm.date ? formatDate(taskForm.date) : 'Datum auswählen' }}</span>
+                        <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+
+                    <div class="pt-2 flex gap-3">
+                        <button @click="handleSaveTask" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer">Speichern</button>
+                        <button v-if="taskForm.id" @click="handleDeleteTask(taskForm.id)" class="w-12 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP-EINSTELLUNGEN MODAL -->
+        <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/60 backdrop-blur-sm p-2 md:p-6 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-md rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative">
+                <button @click="isAppSettingsModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h2 class="text-xl sm:text-2xl font-black text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="settings" class="w-5 h-5 text-indigo-400"></i> App-Einstellungen
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-black/20 p-4 rounded-3xl border border-white/5 space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
+                        <p class="text-[11px] text-slate-400 leading-normal">Bestimmt die automatische Berechnung des Halbjahres für alle Termine und Noten.</p>
+                        
+                        <div class="grid grid-cols-3 gap-2 pt-2">
+                            <button v-for="year in [2023, 2024, 2025, 2026, 2027, 2028]" :key="year"
+                                    @click="tempStartYear = year"
+                                    :class="tempStartYear === year ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'"
+                                    class="py-2.5 rounded-xl text-xs sm:text-sm cursor-pointer transition-all scale-btn">
+                                {{ year }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button @click="saveAppSettings" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-full font-black uppercase text-[10px] sm:text-xs cursor-pointer flex items-center justify-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Einstellungen speichern
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTOM CALENDAR DATE PICKER POP-UP -->
+        <div v-if="isDatePickerOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative">
+                <button @click="isDatePickerOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <h3 class="text-lg sm:text-xl font-black text-white mb-3 sm:mb-4 flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-4.5 h-4.5 sm:w-5 sm:h-5 text-indigo-400"></i> Datum wählen
+                </h3>
+                
+                <!-- Monat & Navigation -->
+                <div class="flex justify-between items-center mb-4 bg-black/20 p-2.5 sm:p-3 rounded-2xl border border-white/5">
+                    <span class="font-black text-white text-xs sm:text-sm">{{ monthNames[calSelectMonth] }} {{ calSelectYear }}</span>
+                    <div class="flex gap-1.5">
+                        <button type="button" @click="prevSelectMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+                        <button type="button" @click="nextSelectMonth" class="w-7.5 h-7.5 bg-white/5 rounded-full flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
+
+                <!-- Wochentage -->
+                <div class="grid grid-cols-7 gap-1 text-center mb-1">
+                    <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[9px] font-black uppercase text-slate-500 py-0.5">{{ d }}</div>
+                </div>
+
+                <!-- Tage-Grid -->
+                <div class="grid grid-cols-7 gap-1">
+                    <div v-for="(day, idx) in datepickerDays" :key="idx" 
+                         class="aspect-square rounded-lg sm:rounded-xl flex items-center justify-center relative p-0.5 transition-all border text-[11px] sm:text-xs"
+                         :class="[
+                            day.isCurrentMonth ? 'bg-black/20 text-white border-white/5 hover:border-indigo-500 cursor-pointer font-bold' : 'bg-transparent text-slate-700 border-transparent pointer-events-none',
+                            isSelectedDate(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/20 text-indigo-300' : ''
+                         ]"
+                         @click="day.isCurrentMonth && selectDate(day.date)">
+                        <span>{{ day.day }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PWA INSTALL GUIDE MODAL (Für Safari iOS / sonstige Browser) -->
+        <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
+            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 shadow-2xl relative text-center">
+                <button @click="isInstallGuideModalOpen = false" class="absolute top-5 sm:top-6 right-5 sm:right-6 w-8 h-8 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <div class="w-16 h-16 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="smartphone" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-black text-white mb-2">SchoolFlow als App</h3>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                    Du kannst SchoolFlow ganz einfach zu deinem Startbildschirm hinzufügen, um sie wie eine echte App zu nutzen!
+                </p>
+                
+                <div class="bg-black/25 border border-white/5 rounded-2xl p-4 text-left space-y-3">
+                    <div class="flex items-start gap-2 text-xs text-slate-300">
+                        <span class="w-5 h-5 bg-white/5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0">1</span>
+                        <p>Öffne die veröffentlichte URL in deinem Browser (z.B. <strong>Safari</strong> auf iOS).</p>
+                    </div>
+                    <div class="flex items-start gap-2 text-xs text-slate-300">
+                        <span class="w-5 h-5 bg-white/5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0">2</span>
+                        <p>Tippe auf das <strong>Teilen-Symbol</strong> <i data-lucide="share" class="inline w-3.5 h-3.5 text-indigo-400"></i> unten in der Leiste.</p>
+                    </div>
+                    <div class="flex items-start gap-2 text-xs text-slate-300">
+                        <span class="w-5 h-5 bg-white/5 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0">3</span>
+                        <p>Wähle <strong>"Zum Home-Bildschirm"</strong> aus.</p>
+                    </div>
+                </div>
+                
+                <button @click="isInstallGuideModalOpen = false" class="mt-5 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-full font-black uppercase text-xs cursor-pointer">Alles klar!</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, runTransaction, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDD-CByKnBFcCnHpG94VibtXrjVcmgGj8A",
+            authDomain: "gradeflow-637b7.firebaseapp.com",
+            projectId: "gradeflow-637b7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Dynamisches PWA Manifest & Dummy Service Worker für perfekte Chrome Installability im Single-File-Layout
+        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+            try {
+                // Dynamisch generiertes Manifest
+                const manifest = {
+                    name: "SchoolFlow",
+                    short_name: "SchoolFlow",
+                    start_url: window.location.origin + window.location.pathname,
+                    display: "standalone",
+                    background_color: "#050508",
+                    theme_color: "#6366f1",
+                    icons: [
+                        {
+                            src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%236366f1'/><text x='50' y='65' font-size='42' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>SF</text></svg>",
+                            sizes: "192x192",
+                            type: "image/svg+xml"
+                        },
+                        {
+                            src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%236366f1'/><text x='50' y='65' font-size='42' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>SF</text></svg>",
+                            sizes: "512x512",
+                            type: "image/svg+xml"
+                        }
+                    ]
+                };
+                const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+                const manifestURL = URL.createObjectURL(manifestBlob);
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = manifestURL;
+                document.head.appendChild(link);
+
+                // Dummy Service Worker via Blob-URL (zwingend nötig für Chrome App-Install)
+                const swCode = `
+                    self.addEventListener('install', (e) => self.skipWaiting());
+                    self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+                    self.addEventListener('fetch', (e) => {
+                        if (e.request.url.startsWith(self.location.origin)) {
+                            e.respondWith(fetch(e.request).catch(() => new Response("Offline Mode")));
+                        }
+                    });
+                `;
+                const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                const swURL = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swURL).then(() => {
+                    console.log('SchoolFlow PWA Service-Worker erfolgreich registriert.');
+                });
+            } catch (err) {
+                console.warn('PWA Setup abgebrochen (In Frames oder ungesicherten Umgebungen nicht verfügbar):', err);
+            }
+        }
+
+        const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const halfYears = ['11/1', '11/2', '12/1', '12/2'];
+                
+                const colorOptions = [
+                    '#6366f1', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#14b8a6',
+                    '#ff007f', '#00f5ff', '#39ff14', '#ffaa00', '#ff00ff', '#22c55e', '#a855f7', '#06b6d4'
+                ];
+                
+                const user = ref(null);
+                const authLoading = ref(true);
+                const isRegistering = ref(false);
+                const email = ref('');
+                const password = ref('');
+                const authError = ref('');
+                const loading = ref(false);
+                const showPassword = ref(false);
+
+                // TABS & STATE
+                const currentTab = ref('home'); // home, subjects, planner, abitur, stats
+                const plannerTab = ref('upcoming'); // upcoming, past, calendar
+                const plannerFilter = ref('all'); // all, Test, Klausur
+                const selectedHalfYear = ref('11/1');
+                const selectedSubject = ref(null);
+                const lkBonusActive = ref(true);
+
+                // MODALS
+                const isSubjectModalOpen = ref(false);
+                const isSettingsModalOpen = ref(false);
+                const isGradeModalOpen = ref(false);
+                const isReportCardModalOpen = ref(false);
+                const isTaskModalOpen = ref(false);
+                const isDatePickerOpen = ref(false);
+                const isAppSettingsModalOpen = ref(false);
+                const isInstallGuideModalOpen = ref(false);
+
+                // FORMS & SETTINGS
+                const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null });
+                const gradeForm = ref({ id: null, points: 10, type: 'Klausur', label: '', date: '', pending: false });
+                const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false });
+                const tempReportCardPoints = ref(10);
+                
+                // APP SETTINGS
+                const startYear = ref(2025); // Standard-Startjahr der 11. Klasse (wird in Firestore gespeichert)
+                const tempStartYear = ref(2025);
+                
+                // DATA
+                const examScores = ref({ P1: 0, P2: 0, P3: 0, P4: 0, P5: 0 });
+                const subjects = ref([]);
+                const tasks = ref([]);
+
+                // PWA INSTALL TRIGGER STATE
+                const deferredPrompt = ref(null);
+
+                // CALENDAR / DATE PICKER STATE
+                const calMonth = ref(new Date().getMonth());
+                const calYear = ref(new Date().getFullYear());
+                const calSelectMonth = ref(new Date().getMonth());
+                const calSelectYear = ref(new Date().getFullYear());
+                const datePickerTarget = ref(''); // grade oder task
+                const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+                // SWIPE LOGIC
+                const swipeRefs = ref({});
+                const swipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
+                const taskSwipeRefs = ref({});
+                const taskSwipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
+
+                const adjustColor = (color, amount) => {
+                    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+                };
+
+                const togglePasswordVisibility = () => { showPassword.value = !showPassword.value; refreshIcons(); };
+
+                onMounted(() => {
+                    // PWA-Installations-Event abfangen
+                    window.addEventListener('beforeinstallprompt', (e) => {
+                        e.preventDefault();
+                        deferredPrompt.value = e;
+                    });
+
+                    onAuthStateChanged(auth, (currentUser) => {
+                        user.value = currentUser;
+                        authLoading.value = false;
+                        if (currentUser) {
+                            listenToSubjects(currentUser.uid);
+                            listenToTasks(currentUser.uid);
+                            loadExamScores(currentUser.uid);
+                            loadAppSettings(currentUser.uid);
+                        }
+                        refreshIcons();
+                    });
+                });
+
+                // APP SETTINGS LADEN / SPEICHERN
+                const loadAppSettings = async (uid) => {
+                    const snap = await getDoc(doc(db, 'users', uid, 'settings', 'config'));
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        if (data.startYear) {
+                            startYear.value = data.startYear;
+                            tempStartYear.value = data.startYear;
+                        }
+                    }
+                    // Nach dem Laden (oder Fallback) das aktuelle Halbjahr automatisch ermitteln und vorauswählen
+                    autoSetCurrentHalfYear();
+                };
+
+                const saveAppSettings = async () => {
+                    if (!user.value) return;
+                    startYear.value = tempStartYear.value;
+                    await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), {
+                        startYear: startYear.value
+                    }, { merge: true });
+                    isAppSettingsModalOpen.value = false;
+                    // Nach einer Änderung das Halbjahr neu anpassen
+                    autoSetCurrentHalfYear();
+                };
+
+                let unsubscribeSubjects = null;
+                const listenToSubjects = (uid) => {
+                    if (unsubscribeSubjects) unsubscribeSubjects();
+                    const q = collection(db, 'users', uid, 'subjects');
+                    unsubscribeSubjects = onSnapshot(q, (snapshot) => {
+                        subjects.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        refreshIcons();
+                        triggerCharts();
+                    });
+                };
+
+                let unsubscribeTasks = null;
+                const listenToTasks = (uid) => {
+                    if (unsubscribeTasks) unsubscribeTasks();
+                    const q = collection(db, 'users', uid, 'tasks');
+                    unsubscribeTasks = onSnapshot(q, (snapshot) => {
+                        tasks.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        refreshIcons();
+                    });
+                };
+
+                const loadExamScores = async (uid) => {
+                    const snap = await getDoc(doc(db, 'users', uid, 'abitur', 'scores'));
+                    if (snap.exists()) examScores.value = { ...examScores.value, ...snap.data() };
+                };
+
+                const refreshIcons = () => nextTick(() => { if (window.lucide) lucide.createIcons(); });
+                const formatNumber = (num) => (num === null || isNaN(num)) ? '-' : num.toFixed(2).replace('.', ',');
+                const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString('de-DE') : '';
+                const isToday = (dateStr) => { const d = new Date(); return dateStr === `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+
+                const handleAuth = async () => {
+                    authError.value = ''; loading.value = true;
+                    try {
+                        if (isRegistering.value) await createUserWithEmailAndPassword(auth, email.value, password.value);
+                        else await signInWithEmailAndPassword(auth, email.value, password.value);
+                    } catch (err) { authError.value = 'Fehler bei der Anmeldung'; } 
+                    finally { loading.value = false; }
+                };
+
+                const handleLogout = async () => { await signOut(auth); selectedSubject.value = null; };
+
+                // SMART PWA INSTALLATION TRIGGER
+                const triggerInstall = async () => {
+                    if (deferredPrompt.value) {
+                        deferredPrompt.value.prompt();
+                        const { outcome } = await deferredPrompt.value.userChoice;
+                        if (outcome === 'accepted') {
+                            deferredPrompt.value = null;
+                        }
+                    } else {
+                        isInstallGuideModalOpen.value = true;
+                    }
+                };
+
+                // DATUMS-BASIERTE SEMESTER-AUTOMATIK (Deutsche Schule: August bis Juli)
+                const determineSemesterFromDate = (dateStr) => {
+                    if (!dateStr) return selectedHalfYear.value;
+                    const d = new Date(dateStr);
+                    const y = d.getFullYear();
+                    const m = d.getMonth() + 1; // 1-12
+                    
+                    const dateVal = y * 100 + m;
+                    const startY = startYear.value;
+                    
+                    // Grenzen (Jahr & Monat als komprimierter Wert)
+                    const lim11_2_start = (startY + 1) * 100 + 2;  // Feb Jahr 2 (Klasse 11 Halbjahr 2)
+                    const lim12_1_start = (startY + 1) * 100 + 8;  // Aug Jahr 2 (Klasse 12 Halbjahr 1)
+                    const lim12_2_start = (startY + 2) * 100 + 2;  // Feb Jahr 3 (Klasse 12 Halbjahr 2)
+                    
+                    if (dateVal < lim11_2_start) {
+                        return '11/1';
+                    } else if (dateVal < lim12_1_start) {
+                        return '11/2';
+                    } else if (dateVal < lim12_2_start) {
+                        return '12/1';
+                    } else {
+                        return '12/2';
+                    }
+                };
+
+                // Auto-Auswahl des aktuellen Halbjahrs basierend auf dem heutigen Datum
+                const autoSetCurrentHalfYear = () => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    selectedHalfYear.value = determineSemesterFromDate(todayStr);
+                };
+
+                // TASKS COMPUTED & FILTER
+                const enrichedTasks = computed(() => {
+                    return tasks.value.map(t => {
+                        const subject = subjects.value.find(s => s.id === t.subjectId) || { name: 'Unbekannt', color: '#94a3b8' };
+                        return { ...t, subject };
+                    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+                });
+
+                const upcomingTasks = computed(() => {
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+                    return enrichedTasks.value.filter(t => new Date(t.date) >= today && !t.done);
+                });
+
+                const pastTasks = computed(() => {
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+                    return enrichedTasks.value.filter(t => new Date(t.date) < today || t.done).sort((a, b) => new Date(b.date) - new Date(a.date));
+                });
+
+                const filteredUpcomingTasks = computed(() => {
+                    let list = upcomingTasks.value;
+                    if (plannerFilter.value !== 'all') {
+                        list = list.filter(t => t.type === plannerFilter.value);
+                    }
+                    return list;
+                });
+
+                const filteredPastTasks = computed(() => {
+                    let list = pastTasks.value;
+                    if (plannerFilter.value !== 'all') {
+                        list = list.filter(t => t.type === plannerFilter.value);
+                    }
+                    return list;
+                });
+
+                // CALENDAR DAYS GENERATOR
+                const calendarDays = computed(() => {
+                    const days = [];
+                    const firstDay = new Date(calYear.value, calMonth.value, 1);
+                    const lastDay = new Date(calYear.value, calMonth.value + 1, 0);
+                    const startPad = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; 
+
+                    const prevLastDay = new Date(calYear.value, calMonth.value, 0).getDate();
+                    for(let i = startPad - 1; i >= 0; i--) {
+                        const d = new Date(calYear.value, calMonth.value - 1, prevLastDay - i);
+                        days.push({ day: prevLastDay - i, isCurrentMonth: false, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` });
+                    }
+
+                    for(let i = 1; i <= lastDay.getDate(); i++) {
+                        const d = new Date(calYear.value, calMonth.value, i);
+                        const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        days.push({ day: i, isCurrentMonth: true, date: localStr, tasks: dayTasks });
+                    }
+
+                    const remaining = 42 - days.length;
+                    for(let i = 1; i <= remaining; i++) {
+                        const d = new Date(calYear.value, calMonth.value + 1, i);
+                        days.push({ day: i, isCurrentMonth: false, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` });
+                    }
+                    return days;
+                });
+
+                const nextMonth = () => { if(calMonth.value === 11) { calMonth.value = 0; calYear.value++; } else { calMonth.value++; } };
+                const prevMonth = () => { if(calMonth.value === 0) { calMonth.value = 11; calYear.value--; } else { calMonth.value--; } };
+                const handleCalendarClick = (dateStr) => { 
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    plannerTab.value = new Date(dateStr) >= today ? 'upcoming' : 'past';
+                };
+
+                // DATE PICKER LOGIC
+                const datepickerDays = computed(() => {
+                    const days = [];
+                    const firstDay = new Date(calSelectYear.value, calSelectMonth.value, 1);
+                    const lastDay = new Date(calSelectYear.value, calSelectMonth.value + 1, 0);
+                    const startPad = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; 
+
+                    const prevLastDay = new Date(calSelectYear.value, calSelectMonth.value, 0).getDate();
+                    for(let i = startPad - 1; i >= 0; i--) {
+                        const d = new Date(calSelectYear.value, calSelectMonth.value - 1, prevLastDay - i);
+                        days.push({ day: prevLastDay - i, isCurrentMonth: false, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` });
+                    }
+
+                    for(let i = 1; i <= lastDay.getDate(); i++) {
+                        const d = new Date(calSelectYear.value, calSelectMonth.value, i);
+                        const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                        days.push({ day: i, isCurrentMonth: true, date: localStr });
+                    }
+
+                    const remaining = 42 - days.length;
+                    for(let i = 1; i <= remaining; i++) {
+                        const d = new Date(calSelectYear.value, calSelectMonth.value + 1, i);
+                        days.push({ day: i, isCurrentMonth: false, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` });
+                    }
+                    return days;
+                });
+
+                const openDatePicker = (target) => {
+                    datePickerTarget.value = target;
+                    const initialDate = target === 'grade' ? gradeForm.value.date : taskForm.value.date;
+                    if (initialDate) {
+                        const d = new Date(initialDate);
+                        calSelectMonth.value = d.getMonth();
+                        calSelectYear.value = d.getFullYear();
+                    } else {
+                        const d = new Date();
+                        calSelectMonth.value = d.getMonth();
+                        calSelectYear.value = d.getFullYear();
+                    }
+                    isDatePickerOpen.value = true;
+                    refreshIcons();
+                };
+
+                const selectDate = (dateStr) => {
+                    if (datePickerTarget.value === 'grade') {
+                        gradeForm.value.date = dateStr;
+                    } else {
+                        taskForm.value.date = dateStr;
+                    }
+                    isDatePickerOpen.value = false;
+                };
+
+                const isSelectedDate = (dateStr) => {
+                    return datePickerTarget.value === 'grade' ? gradeForm.value.date === dateStr : taskForm.value.date === dateStr;
+                };
+
+                const nextSelectMonth = () => { if(calSelectMonth.value === 11) { calSelectMonth.value = 0; calSelectYear.value++; } else { calSelectMonth.value++; } };
+                const prevSelectMonth = () => { if(calSelectMonth.value === 0) { calSelectMonth.value = 11; calSelectYear.value--; } else { calSelectMonth.value--; } };
+
+                // TASKS ACTIONS
+                const openTaskModal = () => {
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false };
+                    isTaskModalOpen.value = true;
+                    refreshIcons();
+                };
+                const openTaskModalWithDate = (dateStr) => {
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false };
+                    isTaskModalOpen.value = true;
+                    refreshIcons();
+                }
+                const openEditTaskModal = (task) => { taskForm.value = { ...task }; isTaskModalOpen.value = true; refreshIcons(); };
+                
+                const openEditTaskFromPlanner = (compositeId) => {
+                    const taskId = compositeId.replace('task-', '');
+                    const task = tasks.value.find(t => t.id === taskId);
+                    if (task) {
+                        openEditTaskModal(task);
+                    }
+                };
+
+                const handleSaveTask = async () => {
+                    if (!user.value || !taskForm.value.title || !taskForm.value.subjectId) return;
+                    try {
+                        const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done };
+                        if (taskForm.value.id) {
+                            await updateDoc(doc(db, 'users', user.value.uid, 'tasks', taskForm.value.id), taskData);
+                        } else {
+                            await setDoc(doc(collection(db, 'users', user.value.uid, 'tasks')), taskData);
+                        }
+                        isTaskModalOpen.value = false;
+                    } catch(e) { console.error(e); }
+                };
+
+                const handleDeleteTask = async (taskId) => {
+                    if (!user.value) return;
+                    await deleteDoc(doc(db, 'users', user.value.uid, 'tasks', taskId));
+                    isTaskModalOpen.value = false;
+                };
+
+                const toggleTaskDone = async (task) => {
+                    if (!user.value) return;
+                    await updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: !task.done });
+                };
+
+                // NOTEN & SCHNITT-BERECHNUNG
+                const pointsToGrade = (p) => {
+                    if (p === null || isNaN(p)) return null;
+                    return Math.max(1.0, Math.min(6.0, (17 - p) / 3));
+                };
+
+                const getCalculatedSemesterPoints = (subject, sem) => {
+                    const allGrades = subject.grades || [];
+                    const hg = allGrades.filter(g => g.semester === sem && !g.pending);
+                    if (hg.length === 0) return '-';
+                    const ex = hg.filter(g => g.type === 'Klausur');
+                    const ot = hg.filter(g => g.type !== 'Klausur');
+                    const wE = (subject.examWeight || 50) / 100;
+                    
+                    const aE = ex.length ? ex.reduce((a, b) => a + b.points, 0) / ex.length : null;
+                    const aO = ot.length ? ot.reduce((a, b) => a + b.points, 0) / ot.length : null;
+                    
+                    let pts = null;
+                    if (aE !== null && aO !== null) pts = (aE * wE) + (aO * (1 - wE));
+                    else if (aE !== null) pts = aE;
+                    else if (aO !== null) pts = aO;
+
+                    return pts !== null ? pts.toFixed(1).replace('.', ',') : '-';
+                };
+
+                const processedData = computed(() => {
+                    const semesterSubjects = subjects.value.map(s => {
+                        const allGrades = s.grades || [];
+                        const grades = allGrades.filter(g => g.semester === selectedHalfYear.value && !g.pending);
+                        const rawSemGrades = allGrades.filter(g => g.semester === selectedHalfYear.value);
+                        const exams = grades.filter(g => g.type === 'Klausur');
+                        const others = grades.filter(g => g.type !== 'Klausur');
+                        const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
+                        const avgE = exams.length ? exams.reduce((a, b) => a + b.points, 0) / exams.length : null;
+                        const avgO = others.length ? others.reduce((a, b) => a + b.points, 0) / others.length : null;
+                        let final = null;
+                        if (avgE !== null && avgO !== null) final = (avgE * wE) + (avgO * wO);
+                        else if (avgE !== null) final = avgE;
+                        else if (avgO !== null) final = avgO;
+                        const rcg = s.reportCardGrades?.[selectedHalfYear.value] ?? null;
+                        const weight = (s.isLK && lkBonusActive.value) ? 2 : 1;
+                        return { ...s, semesterGrades: rawSemGrades, finalPoints: final, reportCardGrade: rcg, finalGrade: pointsToGrade(final), weight };
+                    });
+
+                    const active = semesterSubjects.filter(s => s.finalPoints !== null || s.reportCardGrade !== null);
+                    const sump = active.reduce((a, b) => a + ((b.reportCardGrade !== null ? b.reportCardGrade : b.finalPoints) * b.weight), 0);
+                    const sumW = active.reduce((a, b) => a + b.weight, 0);
+
+                    const pointsDistribution = Array.from({ length: 16 }, (_, i) => ({ points: i, count: 0 }));
+                    semesterSubjects.forEach(s => {
+                        (s.semesterGrades || []).forEach(g => {
+                            if (!g.pending && g.points >= 0 && g.points <= 15) {
+                                pointsDistribution[g.points].count++;
+                            }
+                        });
+                    });
+
+                    return { semesterSubjects, avgPoints: sumW ? sump / sumW : 0, avgGrade: sumW ? pointsToGrade(sump/sumW) : null, pointsDistribution };
+                });
+
+                const activeSubjectData = computed(() => processedData.value.semesterSubjects.find(s => s.id === selectedSubject.value?.id));
+                
+                // Kombination aus echten Noten und noch anstehenden Planer-Tests (Ergebnis noch nicht bekannt)
+                const sortedGrades = computed(() => {
+                    const dbGrades = [...(activeSubjectData.value?.semesterGrades || [])];
+                    
+                    // Zukünftige oder unerledigte Tests / Klausuren aus dem Planer für dieses Fach UND das aktuelle Halbjahr integrieren!
+                    const plannerUpcoming = tasks.value
+                        .filter(t => {
+                            const belongsToSubject = t.subjectId === selectedSubject.value?.id;
+                            const isExamOrTest = t.type === 'Test' || t.type === 'Klausur';
+                            const belongsToCurrentSemester = determineSemesterFromDate(t.date) === selectedHalfYear.value;
+                            return belongsToSubject && isExamOrTest && !t.done && belongsToCurrentSemester;
+                        })
+                        .map(t => ({
+                            id: 'task-' + t.id,
+                            points: null,
+                            pending: true,
+                            label: t.title + ' (' + t.type + ')',
+                            type: t.type,
+                            date: t.date,
+                            isFromPlanner: true
+                        }));
+
+                    const merged = [...dbGrades, ...plannerUpcoming];
+                    return merged.sort((a, b) => new Date(b.date) - new Date(a.date));
+                });
+
+                const sortedSubjectsList = computed(() => [...processedData.value.semesterSubjects].sort((a, b) => (b.reportCardGrade ?? b.finalPoints ?? 0) - (a.reportCardGrade ?? a.finalPoints ?? 0)));
+
+                const openAddSubjectModal = () => { isSettingsModalOpen.value=false; subjectForm.value={name:'', isLK:false, color:'#6366f1', examWeight:50, abiType:null}; isSubjectModalOpen.value=true; refreshIcons(); };
+                const openSettingsModal = () => { isSettingsModalOpen.value=true; subjectForm.value={...selectedSubject.value}; isSubjectModalOpen.value=true; refreshIcons(); };
+                const closeSubjectModal = () => { isSubjectModalOpen.value = false; };
+                const openAddGradeModal = () => { gradeForm.value={id:null, points:10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; isGradeModalOpen.value=true; refreshIcons(); };
+                const openEditGradeModal = (g) => { gradeForm.value={...g}; isGradeModalOpen.value=true; refreshIcons(); };
+                const openReportCardModal = () => { tempReportCardPoints.value = activeSubjectData.value?.reportCardGrade ?? 10; isReportCardModalOpen.value=true; refreshIcons(); };
+
+                const handleSaveSubject = async () => {
+                    if (!user.value || !subjectForm.value.name) return;
+                    if (isSettingsModalOpen.value) {
+                        await updateDoc(doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id), { ...subjectForm.value });
+                        selectedSubject.value = { ...selectedSubject.value, ...subjectForm.value };
+                    } else {
+                        await setDoc(doc(collection(db, 'users', user.value.uid, 'subjects')), { ...subjectForm.value, grades: [], reportCardGrades: {} });
+                    }
+                    closeSubjectModal();
+                };
+
+                const handleDeleteSubject = async () => {
+                    if (user.value && selectedSubject.value) {
+                        await deleteDoc(doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id));
+                        selectedSubject.value = null; closeSubjectModal();
+                    }
+                };
+
+                const handleSaveGrade = async () => {
+                    if (!user.value || !selectedSubject.value) return;
+                    const ref = doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id);
+                    await runTransaction(db, async (t) => {
+                        const snap = await t.get(ref);
+                        const grades = snap.data().grades || [];
+                        
+                        // VOLLAUTOMATISCH: Semester anhand des gewählten Datums und des Startjahrs berechnen!
+                        const calculatedSemester = determineSemesterFromDate(gradeForm.value.date);
+                        
+                        const ng = { 
+                            ...gradeForm.value, 
+                            id: gradeForm.value.id || crypto.randomUUID(), 
+                            semester: calculatedSemester 
+                        };
+                        t.update(ref, { grades: gradeForm.value.id ? grades.map(g => g.id === ng.id ? ng : g) : [...grades, ng] });
+                    });
+                    isGradeModalOpen.value = false;
+                };
+
+                const handleDeleteGrade = async (gradeId) => {
+                    if (!user.value || !selectedSubject.value || !gradeId) return;
+                    const ref = doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id);
+                    await runTransaction(db, async (t) => {
+                        const snap = await t.get(ref);
+                        t.update(ref, { grades: (snap.data().grades || []).filter(g => g.id !== gradeId) });
+                    });
+                    if(isGradeModalOpen.value) isGradeModalOpen.value = false;
+                };
+
+                const handleSaveReportCardGrade = async (pts) => {
+                    if (user.value && selectedSubject.value) {
+                        await setDoc(doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id), { reportCardGrades: { [selectedHalfYear.value]: pts } }, { merge: true });
+                        isReportCardModalOpen.value = false;
+                    }
+                };
+
+                // SWIPE TO DELETE LOGIC (Noten)
+                const startSwipe = (e, id) => {
+                    if(isGradeModalOpen.value) return;
+                    swipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, currentX: 0, isDragging: true };
+                    const el = swipeRefs.value[id];
+                    if (el) el.classList.add('dragging');
+                };
+                const moveSwipe = (e) => {
+                    if (!swipeState.value.isDragging || !swipeState.value.id) return;
+                    const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                    let diff = currentX - swipeState.value.startX;
+                    if(diff > 40) diff = 40; if(diff < -120) diff = -120;
+                    swipeState.value.currentX = diff;
+                    const el = swipeRefs.value[swipeState.value.id];
+                    if (el) el.style.transform = `translateX(${diff}px)`;
+                };
+                const endSwipe = (e, grade, forceReset = false) => {
+                    if (!swipeState.value.isDragging) return;
+                    swipeState.value.isDragging = false;
+                    const el = swipeRefs.value[swipeState.value.id];
+                    if (el) {
+                        el.classList.remove('dragging');
+                        if (!forceReset && swipeState.value.currentX < -80) {
+                            if(confirm(`Möchtest du die Note "${grade.label || grade.type}" wirklich löschen?`)) {
+                                handleDeleteGrade(grade.id);
+                            }
+                        }
+                        el.style.transform = 'translateX(0px)';
+                    }
+                    swipeState.value = { id: null, startX: 0, currentX: 0, isDragging: false };
+                };
+
+                // SWIPE TO DELETE LOGIC (Aufgaben)
+                const startTaskSwipe = (e, id) => {
+                    if(isTaskModalOpen.value) return;
+                    taskSwipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, currentX: 0, isDragging: true };
+                    const el = taskSwipeRefs.value[id];
+                    if (el) el.classList.add('dragging');
+                };
+                const moveTaskSwipe = (e) => {
+                    if (!taskSwipeState.value.isDragging || !taskSwipeState.value.id) return;
+                    const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                    let diff = currentX - taskSwipeState.value.startX;
+                    if(diff > 40) diff = 40; if(diff < -120) diff = -120;
+                    taskSwipeState.value.currentX = diff;
+                    const el = taskSwipeRefs.value[taskSwipeState.value.id];
+                    if (el) el.style.transform = `translateX(${diff}px)`;
+                };
+                const endTaskSwipe = (e, task, forceReset = false) => {
+                    if (!taskSwipeState.value.isDragging) return;
+                    taskSwipeState.value.isDragging = false;
+                    const el = taskSwipeRefs.value[taskSwipeState.value.id];
+                    if (el) {
+                        el.classList.remove('dragging');
+                        if (!forceReset && taskSwipeState.value.currentX < -80) {
+                            if(confirm(`Möchtest du die Aufgabe "${task.title}" wirklich löschen?`)) {
+                                handleDeleteTask(task.id);
+                            }
+                        }
+                        el.style.transform = 'translateX(0px)';
+                    }
+                    taskSwipeState.value = { id: null, startX: 0, currentX: 0, isDragging: false };
+                };
+
+                let chartInst = null;
+                let trendChartInst = null;
+                const triggerCharts = () => {
+                    nextTick(() => {
+                        if (currentTab.value === 'stats' && !selectedSubject.value) {
+                            const ctx = document.getElementById('barChart');
+                            if (ctx) {
+                                if (chartInst) chartInst.destroy();
+                                const dist = processedData.value.pointsDistribution || [];
+                                chartInst = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: dist.map(d => d.points),
+                                        datasets: [{ 
+                                            data: dist.map(d => d.count), 
+                                            backgroundColor: '#6366f1', 
+                                            borderColor: '#818cf8',
+                                            borderWidth: 1,
+                                            borderRadius: 8 
+                                        }]
+                                    },
+                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } } }
+                                });
+                            }
+                        }
+
+                        if (selectedSubject.value && activeSubjectData.value) {
+                            const ctxTrend = document.getElementById('trendChart');
+                            if (ctxTrend) {
+                                if (trendChartInst) trendChartInst.destroy();
+                                const sGrades = (activeSubjectData.value.semesterGrades || []).filter(g => !g.pending);
+                                const sorted = [...sGrades].sort((a,b) => new Date(a.date) - new Date(b.date));
+                                trendChartInst = new Chart(ctxTrend, {
+                                    type: 'line',
+                                    data: {
+                                        labels: sorted.map((g, i) => i + 1),
+                                        datasets: [{
+                                            label: 'Verlauf', data: sorted.map(g => g.points), borderColor: selectedSubject.value.color, backgroundColor: selectedSubject.value.color + '20', fill: true, tension: 0.3, borderWidth: 3, pointBackgroundColor: '#ffffff', pointRadius: 5
+                                        }]
+                                    },
+                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 15, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: 2 } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } } }
+                                });
+                            }
+                        }
+                    });
+                };
+                
+                watch([currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, subjects, tasks, startYear], () => { 
+                    refreshIcons(); 
+                    triggerCharts(); 
+                }, { deep: true });
+
+                return {
+                    halfYears, colorOptions, user, authLoading, isRegistering, email, password, authError, loading, showPassword, togglePasswordVisibility,
+                    currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, lkBonusActive,
+                    isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
+                    subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
+                    sortedSubjectsList, subjects, formatNumber, formatDate, isToday, handleAuth, handleLogout,
+                    openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal,
+                    handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
+                    examScores, adjustColor,
+                    // PLANNER
+                    tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, calMonth, calYear, monthNames,
+                    nextMonth, prevMonth, handleCalendarClick, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone,
+                    // DATE PICKER
+                    isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
+                    // SWIPES
+                    swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe,
+                    getCalculatedSemesterPoints,
+                    // INSTALL GUIDE / APP CONFIG
+                    isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
