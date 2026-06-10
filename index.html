@@ -178,6 +178,18 @@
                             </button>
                         </div>
 
+                        <!-- Einladungscode Feld (nur beim Registrieren) -->
+                        <div v-if="isRegistering" class="bg-black/20 border border-indigo-500/30 rounded-full flex items-center px-5 py-4 focus-within:ring-2 focus-within:ring-indigo-500/50 transition-all shadow-sm">
+                            <i data-lucide="ticket" class="text-indigo-400 mr-3 w-5 h-5 shrink-0"></i>
+                            <input 
+                                type="text" 
+                                placeholder="Einladungscode" 
+                                v-model="inviteCode"
+                                class="bg-transparent w-full outline-none text-base font-black text-white placeholder:text-slate-500 uppercase tracking-widest"
+                                autocomplete="off"
+                            />
+                        </div>
+
                         <p v-if="authError" class="text-rose-400 text-sm font-bold text-center bg-rose-500/10 py-3 rounded-full border border-rose-500/20">{{ authError }}</p>
 
                         <button type="submit" :disabled="loading" class="w-full hero-block hover:opacity-90 text-white py-4 sm:py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2">
@@ -1041,6 +1053,7 @@
                 const isRegistering = ref(false);
                 const email = ref('');
                 const password = ref('');
+                const inviteCode = ref('');
                 const authError = ref('');
                 const loading = ref(false);
                 const showPassword = ref(false);
@@ -1176,9 +1189,49 @@
                 const handleAuth = async () => {
                     authError.value = ''; loading.value = true;
                     try {
-                        if (isRegistering.value) await createUserWithEmailAndPassword(auth, email.value, password.value);
-                        else await signInWithEmailAndPassword(auth, email.value, password.value);
-                    } catch (err) { authError.value = 'Fehler bei der Anmeldung'; } 
+                        if (isRegistering.value) {
+                            // 1. Code-Eingabe prüfen
+                            if (!inviteCode.value.trim()) {
+                                authError.value = 'Bitte gib einen Einladungscode ein.';
+                                loading.value = false;
+                                return;
+                            }
+
+                            // 2. Code in Firestore nachschlagen
+                            const codeRef = doc(db, 'inviteCodes', inviteCode.value.trim().toUpperCase());
+                            const codeSnap = await getDoc(codeRef);
+
+                            if (!codeSnap.exists()) {
+                                authError.value = 'Ungültiger Einladungscode.';
+                                loading.value = false;
+                                return;
+                            }
+
+                            if (codeSnap.data().used === true) {
+                                authError.value = 'Dieser Code wurde bereits verwendet.';
+                                loading.value = false;
+                                return;
+                            }
+
+                            // 3. Account erstellen
+                            const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+
+                            // 4. Code als benutzt markieren
+                            await updateDoc(codeRef, {
+                                used: true,
+                                usedBy: email.value,
+                                usedAt: new Date().toISOString()
+                            });
+
+                        } else {
+                            await signInWithEmailAndPassword(auth, email.value, password.value);
+                        }
+                    } catch (err) {
+                        if (err.code === 'auth/email-already-in-use') authError.value = 'Diese E-Mail ist bereits registriert.';
+                        else if (err.code === 'auth/weak-password') authError.value = 'Passwort muss mindestens 6 Zeichen haben.';
+                        else if (err.code === 'auth/invalid-email') authError.value = 'Ungültige E-Mail-Adresse.';
+                        else authError.value = 'Fehler bei der Anmeldung.';
+                    } 
                     finally { loading.value = false; }
                 };
 
@@ -1659,7 +1712,7 @@
                 }, { deep: true });
 
                 return {
-                    halfYears, colorOptions, user, authLoading, isRegistering, email, password, authError, loading, showPassword, togglePasswordVisibility,
+                    halfYears, colorOptions, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
