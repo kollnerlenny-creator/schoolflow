@@ -3,8 +3,8 @@
 <head>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="GradeFlow">
-    <link class="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-title" content="SchoolFlow">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -225,6 +225,54 @@
         <!-- LOADING SCREEN -->
         <div v-if="authLoading" class="h-screen flex items-center justify-center text-indigo-400">
             <i data-lucide="loader-2" class="animate-spin w-14 h-14"></i>
+        </div>
+
+        <!-- ONBOARDING SCREEN (Wird nach erfolgreicher Registrierung angezeigt) -->
+        <div v-else-if="user && isOnboarding" class="min-h-screen flex items-center justify-center p-5 font-sans relative overflow-hidden">
+            <div class="bg-glow-1"></div>
+            <div class="bg-glow-2"></div>
+
+            <div class="w-full max-w-md space-y-8 animate-fade-in relative z-10">
+                <div class="text-center space-y-4">
+                    <div class="w-24 h-24 hero-block mx-auto flex items-center justify-center shadow-2xl relative">
+                        <i data-lucide="sparkles" class="w-12 h-12 text-white"></i>
+                    </div>
+                    <h1 class="text-3xl font-black text-white">Fast geschafft!</h1>
+                    <p class="text-indigo-300 text-sm">Richten wir dein Profil kurz ein, um SchoolFlow optimal an dich anzupassen.</p>
+                </div>
+
+                <div class="glass-card p-8 space-y-6">
+                    <div class="space-y-4">
+                        <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-2.5">
+                            <label class="text-xs font-black uppercase text-slate-400 block">Wie heißt du?</label>
+                            <input
+                                type="text"
+                                placeholder="z.B. Jonas"
+                                v-model="onboardingName"
+                                class="w-full bg-black/40 border border-white/10 rounded-xl text-white font-bold text-base px-4 py-3.5 outline-none focus:border-indigo-500 transition-colors mt-2"
+                            />
+                        </div>
+
+                        <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                            <label class="text-xs font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
+                            <p class="text-[11px] text-slate-400 leading-normal">Damit berechnen wir automatisch deine Halbjahre.</p>
+                            <input
+                                type="number"
+                                min="2000" max="2099"
+                                v-model.number="onboardingStartYear"
+                                class="w-full bg-black/40 border border-white/10 rounded-xl text-indigo-400 font-black text-xl text-center py-3.5 outline-none focus:border-indigo-500"
+                                placeholder="z.B. 2025"
+                            />
+                        </div>
+                    </div>
+
+                    <p v-if="onboardingError" class="text-rose-400 text-sm font-bold text-center bg-rose-500/10 py-4 px-6 rounded-full border border-rose-500/20">{{ onboardingError }}</p>
+
+                    <button @click="submitOnboarding" class="w-full hero-block hover:opacity-90 active:scale-95 text-white py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-xl shadow-indigo-500/20 flex items-center justify-center gap-2 cursor-pointer">
+                        SchoolFlow starten 🚀
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- LOGIN / REGISTER SCREEN (Optimiert & großzügig) -->
@@ -677,43 +725,95 @@
                         </div>
                     </div>
 
-                    <!-- Kalenderansicht (Modernisiertes Zwei-Spalten-Layout) -->
+                    <!-- Kalenderansicht (Mit Monats-, Wochen- & Tagesauswahl) -->
                     <div v-if="plannerTab === 'calendar'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
                         <div class="lg:col-span-7 glass-card p-5 shadow-xl">
-                            <div class="flex justify-between items-center mb-6 gap-2">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                                 <h3 class="font-black text-white text-lg sm:text-xl truncate">{{ monthNames[calMonth] }} {{ calYear }}</h3>
-                                <div class="flex gap-2 shrink-0">
-                                    <button @click="prevMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 active:bg-white/10 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                                    <button @click="nextMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 active:bg-white/10 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                                
+                                <!-- Kalender Ansichtsmodus (Monat, Woche, Tag) -->
+                                <div class="flex bg-black/40 p-1 rounded-full border border-white/5 self-stretch sm:self-auto">
+                                    <button @click="calendarViewMode = 'month'" :class="calendarViewMode === 'month' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'" class="px-3 py-1.5 text-xs uppercase rounded-full tracking-wider transition-all cursor-pointer">Monat</button>
+                                    <button @click="calendarViewMode = 'week'" :class="calendarViewMode === 'week' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'" class="px-3 py-1.5 text-xs uppercase rounded-full tracking-wider transition-all cursor-pointer">Woche</button>
+                                    <button @click="calendarViewMode = 'day'" :class="calendarViewMode === 'day' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'" class="px-3 py-1.5 text-xs uppercase rounded-full tracking-wider transition-all cursor-pointer">Tag</button>
+                                </div>
+
+                                <div class="flex gap-2 shrink-0 self-end sm:self-auto">
+                                    <button @click="navigateCalendar(-1)" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 active:bg-white/10 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                    <button @click="navigateCalendar(1)" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 active:bg-white/10 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                                 </div>
                             </div>
 
-                            <!-- Wochentage -->
-                            <div class="grid grid-cols-7 gap-1 text-center mb-2">
-                                <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] sm:text-xs font-black uppercase text-slate-500 py-1.5">{{ d }}</div>
-                            </div>
-
-                            <!-- Tage Grid (Perfekt für Handys skaliert) -->
-                            <div class="grid grid-cols-7 gap-1.5">
-                                <div v-for="(day, idx) in calendarDays" :key="idx" 
-                                     class="aspect-square rounded-2xl flex flex-col items-center justify-between relative p-1.5 transition-all border"
-                                     :style="{ minHeight: '44px' }"
-                                     :class="[
-                                        day.isCurrentMonth ? 'bg-black/30 text-white border-white/5 hover:border-indigo-500/60 cursor-pointer' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
-                                        isToday(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/10 border-indigo-500/30' : '',
-                                        selectedCalendarDate === day.date ? 'border-indigo-400 bg-indigo-500/15' : ''
-                                     ]"
-                                     @click="day.isCurrentMonth && selectCalendarDay(day.date)">
-                                    
-                                    <span class="font-black text-xs sm:text-sm self-start ml-0.5" :class="selectedCalendarDate === day.date ? 'text-indigo-300' : ''">{{ day.day }}</span>
-                                    
-                                    <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-0.5 sm:gap-1 justify-center w-full pb-0.5 flex-wrap max-w-[95%]">
-                                        <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" :style="{ backgroundColor: t.subject.color }"></span>
-                                        <span v-if="day.tasks.length > 3" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                            <!-- 1. MONATSANSICHT -->
+                            <div v-if="calendarViewMode === 'month'">
+                                <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                                    <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] sm:text-xs font-black uppercase text-slate-500 py-1.5">{{ d }}</div>
+                                </div>
+                                <div class="grid grid-cols-7 gap-1.5">
+                                    <div v-for="(day, idx) in calendarDays" :key="idx" 
+                                         class="aspect-square rounded-2xl flex flex-col items-center justify-between relative p-1.5 transition-all border"
+                                         :style="{ minHeight: '44px' }"
+                                         :class="[
+                                            day.isCurrentMonth ? 'bg-black/30 text-white border-white/5 hover:border-indigo-500/60 cursor-pointer' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
+                                            isToday(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/10 border-indigo-500/30' : '',
+                                            selectedCalendarDate === day.date ? 'border-indigo-400 bg-indigo-500/15' : ''
+                                         ]"
+                                         @click="day.isCurrentMonth && selectCalendarDay(day.date)">
+                                        
+                                        <span class="font-black text-xs sm:text-sm self-start ml-0.5" :class="selectedCalendarDate === day.date ? 'text-indigo-300' : ''">{{ day.day }}</span>
+                                        
+                                        <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-0.5 sm:gap-1 justify-center w-full pb-0.5 flex-wrap max-w-[95%]">
+                                            <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" :style="{ backgroundColor: t.subject.color }"></span>
+                                            <span v-if="day.tasks.length > 3" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                        </div>
+                                        <div v-else class="h-1.5"></div>
                                     </div>
-                                    <div v-else class="h-1.5"></div>
                                 </div>
                             </div>
+
+                            <!-- 2. WOCHENANSICHT -->
+                            <div v-else-if="calendarViewMode === 'week'" class="space-y-3">
+                                <div class="grid grid-cols-7 gap-2 text-center">
+                                    <div v-for="wd in ['Mo','Di','Mi','Do','Fr','Sa','So']" class="text-xs font-black uppercase text-slate-500">{{ wd }}</div>
+                                </div>
+                                <div class="grid grid-cols-7 gap-2">
+                                    <div v-for="wd in currentWeekDays" :key="wd.date" 
+                                         @click="selectCalendarDay(wd.date)"
+                                         :class="[
+                                            'p-2 rounded-xl text-center cursor-pointer border flex flex-col justify-between min-h-[70px] transition-all',
+                                            selectedCalendarDate === wd.date ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-black/25 border-white/5 text-white',
+                                            isToday(wd.date) ? 'ring-2 ring-indigo-500' : ''
+                                         ]">
+                                        <span class="text-xs font-black">{{ wd.day }}</span>
+                                        <div class="flex flex-col gap-1 items-center justify-center mt-1">
+                                            <span v-for="t in wd.tasks.slice(0, 2)" :key="t.id" class="w-2 h-2 rounded-full" :style="{ backgroundColor: t.subject.color }"></span>
+                                            <span v-if="wd.tasks.length > 2" class="text-[9px] text-slate-400 font-bold">+{{ wd.tasks.length - 2 }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. TAGESANSICHT -->
+                            <div v-else-if="calendarViewMode === 'day'" class="space-y-4">
+                                <div class="bg-black/30 p-4 rounded-2xl border border-white/5 text-center">
+                                    <span class="text-xs font-black uppercase tracking-wider text-slate-400">Ausgewählter Tag</span>
+                                    <h4 class="text-2xl font-black text-indigo-400 mt-1">{{ formatDate(selectedCalendarDate) }}</h4>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="text-xs font-black uppercase text-slate-500 px-1">Zeitleiste</div>
+                                    <div class="bg-black/20 rounded-2xl border border-white/5 divide-y divide-white/5">
+                                        <div class="p-4 flex justify-between items-center">
+                                            <span class="text-sm font-black text-slate-400">Vormittag / Schule</span>
+                                            <span class="text-xs text-slate-500">{{ selectedDayTasks.filter(t => t.type === 'Klausur' || t.type === 'Test').length }} Termine</span>
+                                        </div>
+                                        <div class="p-4 flex justify-between items-center">
+                                            <span class="text-sm font-black text-slate-400">Nachmittag / Hausaufgaben</span>
+                                            <span class="text-xs text-slate-500">{{ selectedDayTasks.filter(t => t.type === 'Hausaufgabe').length }} Aufgaben</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <!-- Direkte Aufgaben-Details des ausgewählten Tages -->
@@ -1197,52 +1297,31 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // Verbesserter PWA-Service-Worker-Registrierungsprozess mit Verweis auf echtes Manifest
         if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-            try {
-                const manifest = {
-                    name: "SchoolFlow",
-                    short_name: "SchoolFlow",
-                    start_url: window.location.origin + window.location.pathname,
-                    display: "fullscreen",
-                    background_color: "#050508",
-                    theme_color: "#6366f1",
-                    icons: [
-                        {
-                            src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%236366f1'/><text x='50' y='65' font-size='42' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>SF</text></svg>",
-                            sizes: "192x192",
-                            type: "image/svg+xml"
-                        },
-                        {
-                            src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%236366f1'/><text x='50' y='65' font-size='42' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>SF</text></svg>",
-                            sizes: "512x512",
-                            type: "image/svg+xml"
-                        }
-                    ]
-                };
-                const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-                const manifestURL = URL.createObjectURL(manifestBlob);
-                const link = document.createElement('link');
-                link.rel = 'manifest';
-                link.href = manifestURL;
-                document.head.appendChild(link);
-
-                const swCode = `
-                    self.addEventListener('install', (e) => self.skipWaiting());
-                    self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-                    self.addEventListener('fetch', (e) => {
-                        if (e.request.url.startsWith(self.location.origin)) {
-                            e.respondWith(fetch(e.request).catch(() => new Response("Offline Mode")));
-                        }
-                    });
-                `;
-                const swBlob = new Blob([swCode], {type: 'application/javascript'});
-                const swURL = URL.createObjectURL(swBlob);
-                navigator.serviceWorker.register(swURL).then(() => {
-                    console.log('SchoolFlow PWA Service-Worker erfolgreich registriert.');
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('SchoolFlow PWA Service-Worker erfolgreich registriert.', reg.scope);
+                }).catch(err => {
+                    // Fallback-Registrierung falls sw.js nicht vorhanden
+                    try {
+                        const swCode = `
+                            self.addEventListener('install', (e) => self.skipWaiting());
+                            self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+                            self.addEventListener('fetch', (e) => {
+                                if (e.request.url.startsWith(self.location.origin)) {
+                                    e.respondWith(fetch(e.request).catch(() => new Response("Offline Mode")));
+                                }
+                            });
+                        `;
+                        const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                        const swURL = URL.createObjectURL(swBlob);
+                        navigator.serviceWorker.register(swURL);
+                    } catch (swErr) {
+                        console.warn('PWA Service Worker Fallback gescheitert:', swErr);
+                    }
                 });
-            } catch (err) {
-                console.warn('PWA Setup abgebrochen:', err);
-            }
+            });
         }
 
         const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
@@ -1271,6 +1350,12 @@
                 const authError = ref('');
                 const loading = ref(false);
                 const showPassword = ref(false);
+
+                // ONBOARDING STATE
+                const isOnboarding = ref(false);
+                const onboardingName = ref('');
+                const onboardingStartYear = ref(new Date().getFullYear());
+                const onboardingError = ref('');
 
                 // TABS & STATE
                 const currentTab = ref('home');
@@ -1310,6 +1395,7 @@
                 const deferredPrompt = ref(null);
 
                 // CALENDAR & SELECTED DAY STATE
+                const calendarViewMode = ref('month'); // 'month' | 'week' | 'day'
                 const calMonth = ref(new Date().getMonth());
                 const calYear = ref(new Date().getFullYear());
                 const selectedCalendarDate = ref(new Date().toISOString().split('T')[0]); 
@@ -1344,18 +1430,71 @@
                         deferredPrompt.value = e;
                     });
 
-                    onAuthStateChanged(auth, (currentUser) => {
+                    onAuthStateChanged(auth, async (currentUser) => {
                         user.value = currentUser;
-                        authLoading.value = false;
                         if (currentUser) {
-                            listenToSubjects(currentUser.uid);
-                            listenToTasks(currentUser.uid);
-                            loadExamScores(currentUser.uid);
-                            loadAppSettings(currentUser.uid);
+                            const configDoc = await getDoc(doc(db, 'users', currentUser.uid, 'settings', 'config'));
+                            if (!configDoc.exists()) {
+                                // Wenn noch kein Config-Dokument existiert, handelt es sich um eine Neuregistrierung
+                                isOnboarding.value = true;
+                            } else {
+                                isOnboarding.value = false;
+                                listenToSubjects(currentUser.uid);
+                                listenToTasks(currentUser.uid);
+                                loadExamScores(currentUser.uid);
+                                loadAppSettings(currentUser.uid);
+                            }
+                        } else {
+                            isOnboarding.value = false;
                         }
+                        authLoading.value = false;
                         refreshIcons();
                     });
                 });
+
+                // Onboarding-Daten abschicken
+                const submitOnboarding = async () => {
+                    if (!onboardingName.value.trim()) {
+                        onboardingError.value = "Bitte gib deinen Namen ein.";
+                        return;
+                    }
+                    if (!onboardingStartYear.value || onboardingStartYear.value < 2000 || onboardingStartYear.value > 2099) {
+                        onboardingError.value = "Bitte gib ein gültiges Startjahr ein.";
+                        return;
+                    }
+
+                    onboardingError.value = "";
+                    authLoading.value = true;
+
+                    try {
+                        const uid = user.value.uid;
+                        // Initialkonfiguration speichern
+                        await setDoc(doc(db, 'users', uid, 'settings', 'config'), {
+                            startYear: onboardingStartYear.value,
+                            displayName: onboardingName.value.trim()
+                        });
+
+                        // State aktualisieren
+                        startYear.value = onboardingStartYear.value;
+                        tempStartYear.value = onboardingStartYear.value;
+                        displayName.value = onboardingName.value.trim();
+
+                        isOnboarding.value = false;
+                        
+                        // Hörer & Daten laden
+                        listenToSubjects(uid);
+                        listenToTasks(uid);
+                        loadExamScores(uid);
+                        autoSetCurrentHalfYear();
+
+                    } catch (err) {
+                        console.error(err);
+                        onboardingError.value = "Fehler beim Erstellen der Profildaten.";
+                    } finally {
+                        authLoading.value = false;
+                        refreshIcons();
+                    }
+                };
 
                 const loadAppSettings = async (uid) => {
                     const snap = await getDoc(doc(db, 'users', uid, 'settings', 'config'));
@@ -1585,6 +1724,30 @@
                     return days;
                 });
 
+                // Hilfsdaten für Wochenansicht
+                const currentWeekDays = computed(() => {
+                    const currentSelected = new Date(selectedCalendarDate.value);
+                    const dayOfWeek = currentSelected.getDay(); // 0 is Sunday, 1 is Monday
+                    const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                    
+                    const monday = new Date(currentSelected);
+                    monday.setDate(currentSelected.getDate() + distanceToMonday);
+                    
+                    const days = [];
+                    for (let i = 0; i < 7; i++) {
+                        const nextD = new Date(monday);
+                        nextD.setDate(monday.getDate() + i);
+                        const localStr = `${nextD.getFullYear()}-${String(nextD.getMonth()+1).padStart(2,'0')}-${String(nextD.getDate()).padStart(2,'0')}`;
+                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        days.push({
+                            day: nextD.getDate(),
+                            date: localStr,
+                            tasks: dayTasks
+                        });
+                    }
+                    return days;
+                });
+
                 const selectedDayTasks = computed(() => {
                     return enrichedTasks.value.filter(t => t.date === selectedCalendarDate.value);
                 });
@@ -1596,6 +1759,22 @@
 
                 const nextMonth = () => { if(calMonth.value === 11) { calMonth.value = 0; calYear.value++; } else { calMonth.value++; } };
                 const prevMonth = () => { if(calMonth.value === 0) { calMonth.value = 11; calYear.value--; } else { calMonth.value--; } };
+
+                // Kalendernavigation basierend auf Ansichtsmodus
+                const navigateCalendar = (direction) => {
+                    if (calendarViewMode.value === 'month') {
+                        if (direction > 0) nextMonth();
+                        else prevMonth();
+                    } else if (calendarViewMode.value === 'week') {
+                        const current = new Date(selectedCalendarDate.value);
+                        current.setDate(current.getDate() + (direction * 7));
+                        selectedCalendarDate.value = current.toISOString().split('T')[0];
+                    } else if (calendarViewMode.value === 'day') {
+                        const current = new Date(selectedCalendarDate.value);
+                        current.setDate(current.getDate() + direction);
+                        selectedCalendarDate.value = current.toISOString().split('T')[0];
+                    }
+                };
 
                 const datepickerDays = computed(() => {
                     const days = [];
@@ -1999,6 +2178,7 @@
 
                 return {
                     halfYears, colorOptions, subjectIcons, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
+                    isOnboarding, onboardingName, onboardingStartYear, onboardingError, submitOnboarding,
                     currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
@@ -2006,8 +2186,8 @@
                     openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal,
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
                     examScores, adjustColor,
-                    tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, calMonth, calYear, monthNames,
-                    nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
+                    tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
+                    navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe,
                     getCalculatedSemesterPoints,
