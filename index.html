@@ -42,10 +42,11 @@
         
         /* Premium Dark Mode mit weichen Glüheffekten */
         body { 
-            background-color: #050508;
+            background-color: #07070f;
             background-image: 
-                radial-gradient(circle at 50% 10%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
-                radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+                radial-gradient(ellipse at 20% 15%, rgba(99, 102, 241, 0.22) 0%, transparent 45%),
+                radial-gradient(ellipse at 80% 85%, rgba(139, 92, 246, 0.18) 0%, transparent 45%),
+                radial-gradient(ellipse at 60% 40%, rgba(56, 189, 248, 0.07) 0%, transparent 40%);
             background-attachment: fixed;
             color: #f1f5f9;
             min-height: 100vh;
@@ -94,44 +95,72 @@
 
         /* Dark Glassmorphism */
         .glass-card {
-            background: rgba(22, 22, 33, 0.75);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+            background: rgba(255, 255, 255, 0.055);
+            backdrop-filter: blur(40px) saturate(1.8);
+            -webkit-backdrop-filter: blur(40px) saturate(1.8);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            box-shadow: 
+                0 2px 0 rgba(255,255,255,0.12) inset,
+                0 -1px 0 rgba(0,0,0,0.3) inset,
+                0 20px 50px -8px rgba(0, 0, 0, 0.55),
+                0 0 0 0.5px rgba(255,255,255,0.06);
             border-radius: 2.2rem;
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
         @media (hover: hover) {
             .glass-card:hover {
-                border-color: rgba(99, 102, 241, 0.3);
-                box-shadow: 0 20px 40px -5px rgba(99, 102, 241, 0.2);
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 
+                    0 2px 0 rgba(255,255,255,0.15) inset,
+                    0 -1px 0 rgba(0,0,0,0.3) inset,
+                    0 24px 56px -6px rgba(99, 102, 241, 0.22);
             }
         }
 
         .glass-pill {
-            background: rgba(18, 18, 29, 0.85);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(32px) saturate(1.6);
+            -webkit-backdrop-filter: blur(32px) saturate(1.6);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            box-shadow: 
+                0 1.5px 0 rgba(255,255,255,0.14) inset,
+                0 10px 30px rgba(0, 0, 0, 0.35);
             border-radius: 9999px;
         }
 
         /* Liquid Glass Buttons */
         .liquid-glass-btn {
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #a5b4fc;
-            box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(1.5);
+            -webkit-backdrop-filter: blur(20px) saturate(1.5);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #c7d2fe;
+            box-shadow: 
+                0 1.5px 0 rgba(255,255,255,0.13) inset,
+                0 8px 24px 0 rgba(0, 0, 0, 0.28);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .liquid-glass-btn:active {
-            background: rgba(99, 102, 241, 0.25);
-            border-color: rgba(99, 102, 241, 0.45);
+            background: rgba(99, 102, 241, 0.28);
+            border-color: rgba(99, 102, 241, 0.5);
             transform: scale(0.95);
+        }
+
+        /* Liquid Glass — leichte helle Variante für Karten-Inhalte */
+        .liquid-inner {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset;
+            border-radius: 1.5rem;
+        }
+
+        /* Bottom Nav Liquid Glass */
+        .glass-nav {
+            background: rgba(12, 12, 22, 0.72);
+            backdrop-filter: blur(48px) saturate(2);
+            -webkit-backdrop-filter: blur(48px) saturate(2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -1px 0 rgba(255,255,255,0.06), 0 -20px 60px rgba(0,0,0,0.4);
         }
 
         /* Fester Header Block */
@@ -139,10 +168,13 @@
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
             border-radius: 2.5rem;
-            box-shadow: 0 20px 40px -10px rgba(79, 70, 229, 0.45);
+            box-shadow: 
+                0 2px 0 rgba(255,255,255,0.25) inset,
+                0 -1px 0 rgba(0,0,0,0.3) inset,
+                0 20px 50px -8px rgba(79, 70, 229, 0.55);
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
         
         .hero-shape-1 { position: absolute; top: -40px; left: -20px; width: 160px; height: 160px; background: rgba(255,255,255,0.08); border-radius: 50%; }
@@ -181,6 +213,18 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Liquid Glass — Modals */
+        .modal-glass {
+            background: rgba(14, 14, 24, 0.82);
+            backdrop-filter: blur(48px) saturate(1.8);
+            -webkit-backdrop-filter: blur(48px) saturate(1.8);
+            border-color: rgba(255, 255, 255, 0.11) !important;
+            box-shadow: 
+                0 1px 0 rgba(255,255,255,0.1) inset,
+                0 -1px 0 rgba(0,0,0,0.5) inset,
+                0 40px 80px -10px rgba(0,0,0,0.7);
         }
 
         /* Große, griffige Slider für Touch-Steuerung */
@@ -265,6 +309,32 @@
                         </div>
 
                         <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                            <label class="text-xs font-black uppercase text-slate-400 block">In welcher Klasse bist du?</label>
+                            <p class="text-[11px] text-slate-400 leading-normal">Damit passen wir die App an deine Schulstufe an.</p>
+                            <div class="grid grid-cols-4 gap-2 mt-2">
+                                <button v-for="k in [5,6,7,8,9,10,11,12]" :key="k" type="button"
+                                    @click="onboardingCurrentClass = k; onboardingGradeSystem = k >= 11 ? '15' : '6'"
+                                    :class="onboardingCurrentClass === k ? 'bg-indigo-600 text-white font-black border-indigo-500' : 'bg-black/40 text-slate-400 border-white/10'"
+                                    class="py-3 rounded-xl text-sm font-bold border cursor-pointer transition-all active:scale-95">
+                                    {{ k }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                            <label class="text-xs font-black uppercase text-slate-400 block">Notensystem</label>
+                            <p class="text-[11px] text-slate-400 leading-normal">Wähle dein Notensystem. In der Oberstufe (11/12) wird 0–15 Punkte verwendet.</p>
+                            <div class="flex gap-2 bg-black/40 p-1.5 rounded-full border border-white/5 mt-2">
+                                <button type="button" @click="onboardingGradeSystem = '15'"
+                                    :class="onboardingGradeSystem === '15' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'"
+                                    class="flex-1 py-3 rounded-full text-xs uppercase tracking-wider cursor-pointer transition-all">0–15 Punkte</button>
+                                <button type="button" @click="onboardingGradeSystem = '6'"
+                                    :class="onboardingGradeSystem === '6' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'"
+                                    class="flex-1 py-3 rounded-full text-xs uppercase tracking-wider cursor-pointer transition-all">1–6 Noten</button>
+                            </div>
+                        </div>
+
+                        <div v-if="onboardingCurrentClass >= 11" class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
                             <label class="text-xs font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
                             <p class="text-[11px] text-slate-400 leading-normal">Damit berechnen wir automatisch deine Halbjahre.</p>
                             <input
@@ -357,7 +427,7 @@
                     <div class="min-w-0">
                         <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">SchoolFlow</h1>
                         <p class="text-[11px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest truncate">
-                            Gymnasiale Oberstufe
+                            {{ currentClass >= 11 ? 'Gymnasiale Oberstufe' : 'Klasse ' + currentClass }}
                         </p>
                     </div>
                 </div>
@@ -378,7 +448,7 @@
             <!-- HALBJAHR SLIDER (Bequeme, größere Touch-Flächen) -->
             <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-2 flex relative mb-8 z-10 max-w-sm mx-auto">
                 <div class="absolute top-2 bottom-2 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/35"
-                     :style="{ width: 'calc(100% / 4 - 4px)', left: 'calc(' + halfYears.indexOf(selectedHalfYear) + ' * 100% / 4 + 2px)' }"></div>
+                     :style="{ width: `calc(100% / ${halfYears.length} - 4px)`, left: `calc(${halfYears.indexOf(selectedHalfYear)} * 100% / ${halfYears.length} + 2px)` }"></div>
                 <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
                         :class="selectedHalfYear === s ? 'text-white font-black' : 'text-slate-400 font-bold'"
                         class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors duration-300 cursor-pointer">
@@ -428,7 +498,7 @@
                         <!-- Rechte Seite: LK-Faktor & Nächste Aufgaben -->
                         <div class="md:col-span-6 space-y-6">
                             <!-- LK-Bonus Toggle Widget (Riesige Klickfläche) -->
-                            <div @click="lkBonusActive = !lkBonusActive" class="glass-card p-5 flex justify-between items-center cursor-pointer active:scale-98 transition-transform">
+                            <div v-if="gradeSystem !== '6'" @click="lkBonusActive = !lkBonusActive" class="glass-card p-5 flex justify-between items-center cursor-pointer active:scale-98 transition-transform">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div class="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
                                         <i data-lucide="award" class="w-6 h-6"></i>
@@ -495,7 +565,7 @@
                             <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
                                 <div class="w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
                                     <i :data-lucide="s.icon || 'book-open'" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-                                    <span class="absolute bottom-0 right-0 text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-full leading-tight" :style="{backgroundColor: s.color, color: '#fff'}">{{ s.isLK ? 'LK' : 'GK' }}</span>
+                                    <span v-if="gradeSystem !== '6'" class="absolute bottom-0 right-0 text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-full leading-tight" :style="{backgroundColor: s.color, color: '#fff'}">{{ s.isLK ? 'LK' : 'GK' }}</span>
                                 </div>
                                 <div class="overflow-hidden">
                                     <h3 class="text-base sm:text-lg font-black text-white truncate pr-2 leading-tight">{{ s.name }}</h3>
@@ -532,7 +602,7 @@
                                 <div class="flex justify-between items-start gap-3">
                                     <div class="min-w-0">
                                         <div class="flex items-center gap-3">
-                                            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider backdrop-blur-md">
+                                            <span v-if="gradeSystem !== '6'" class="bg-white/20 text-white px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider backdrop-blur-md">
                                                 {{ selectedSubject.isLK ? 'Leistungskurs' : 'Grundkurs' }}
                                             </span>
                                             <div class="w-8 h-8 sm:w-9 sm:h-9 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md shrink-0">
@@ -596,7 +666,7 @@
                                         <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                     </div>
                                     
-                                    <div class="p-4 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.6rem]"
+                                    <div class="p-4 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-[1.6rem]"
                                          @touchstart="!g.isFromPlanner && startSwipe($event, g.id)"
                                          @touchmove="!g.isFromPlanner && moveSwipe($event)"
                                          @touchend="!g.isFromPlanner && endSwipe($event, g)"
@@ -682,7 +752,7 @@
                                     <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                 </div>
                                 
-                                <div class="p-4 flex items-center justify-between relative z-10 swipe-item bg-[#121216] border border-white/5 rounded-[1.6rem]"
+                                <div class="p-4 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-[1.6rem]"
                                      @touchstart="startTaskSwipe($event, t.id)"
                                      @touchmove="moveTaskSwipe($event)"
                                      @touchend="endTaskSwipe($event, t)"
@@ -853,21 +923,89 @@
                     </div>
                 </div>
 
-                <!-- 5. ABITURRECHNER (Responsive & hervorragend lesbar) -->
+                <!-- 5. ZEUGNISANSICHT / ABITURRECHNER -->
                 <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in max-w-6xl mx-auto">
                     <div class="px-2">
-                        <h2 class="text-2xl sm:text-4xl font-black text-white">Abiturrechner</h2>
-                        <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-400 mt-1">Zeugnisübersicht aller Halbjahre</p>
+                        <h2 class="text-2xl sm:text-4xl font-black text-white">{{ currentClass >= 11 ? 'Abiturrechner' : 'Zeugnisübersicht' }}</h2>
+                        <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-400 mt-1">Halbjahresübersicht aller Fächer</p>
                     </div>
 
-                    <div class="glass-card p-4 sm:p-6 overflow-hidden">
-                        <h3 class="text-sm font-black uppercase tracking-wider text-indigo-400 mb-4 flex items-center gap-2">
-                            <i data-lucide="table" class="w-5 h-5"></i> Zeugnisnoten
+                    <!-- Für Klassen 5-10: Klassenauswahl als kompakte Leiste -->
+                    <div v-if="currentClass <= 10" class="glass-card p-4 sm:p-5">
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Klasse anzeigen</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button v-for="k in lowerSchoolClasses" :key="k"
+                                @click="abiturViewClass = k"
+                                :class="abiturViewClass === k ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5'"
+                                class="px-4 py-2 rounded-full text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all">
+                                Kl. {{ k }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Für Klassen 11/12: Kompakte Klassenauswahl (5–10) -->
+                    <div v-if="currentClass >= 11" class="glass-card p-4 sm:p-5">
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Klasse für Verlaufsansicht</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button v-for="k in [5,6,7,8,9,10]" :key="k"
+                                @click="abiturViewClass = k"
+                                :class="abiturViewClass === k ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5'"
+                                class="px-4 py-2 rounded-full text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all">
+                                Kl. {{ k }}
+                            </button>
+                            <button @click="abiturViewClass = 'oberstufe'"
+                                :class="abiturViewClass === 'oberstufe' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5'"
+                                class="px-4 py-2 rounded-full text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all">
+                                11 / 12
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TABELLE: Klassen 5-10 (je 2 Halbjahre der gewählten Klasse) -->
+                    <div v-if="abiturViewClass !== 'oberstufe'" class="glass-card p-4 sm:p-6 overflow-hidden">
+                        <h3 class="text-sm font-black uppercase tracking-wider text-indigo-400 mb-2 flex items-center gap-2">
+                            <i data-lucide="table" class="w-5 h-5"></i> Klasse {{ abiturViewClass }} – Zeugnisnoten
                         </h3>
-                        <p class="text-[11px] sm:text-xs text-slate-400 mb-5 leading-relaxed">Hier siehst du alle Kursergebnisse auf einen Blick – optimiert für deinen Bildschirm!</p>
-                        
+                        <p class="text-[11px] sm:text-xs text-slate-400 mb-4 leading-relaxed">Zeugnisnoten für Halbjahr 1 und 2 der Klasse {{ abiturViewClass }}.</p>
                         <div class="w-full overflow-x-auto no-scrollbar">
-                            <!-- Fluid & füllende Tabelle ohne übermäßiges Quetschen -->
+                            <table class="w-full text-left border-collapse min-w-[280px]">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-[10px] sm:text-xs font-black uppercase text-slate-400">
+                                        <th class="py-3 pr-2 w-[55%]">Fach</th>
+                                        <th class="py-3 text-center w-[22.5%]">HJ 1</th>
+                                        <th class="py-3 text-center w-[22.5%]">HJ 2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="s in sortedSubjectsList" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-xs sm:text-sm font-bold text-white">
+                                        <td class="py-3.5 pr-2">
+                                            <div class="flex items-center gap-2 overflow-hidden">
+                                                <span class="w-2.5 h-2.5 rounded-full inline-block shrink-0" :style="{ backgroundColor: s.color }"></span>
+                                                <span class="truncate text-xs sm:text-sm font-black">{{ s.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td v-for="hj in [1,2]" :key="hj" class="py-3.5 text-center font-extrabold text-sm sm:text-base">
+                                            <div class="inline-flex items-center gap-1 justify-center">
+                                                <span v-if="s.reportCardGrades?.['k' + abiturViewClass + '_hj' + hj] !== undefined" class="text-amber-400 flex items-center gap-0.5">
+                                                    <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                                                    <span class="text-xs sm:text-sm font-black">{{ s.reportCardGrades['k' + abiturViewClass + '_hj' + hj] }}</span>
+                                                </span>
+                                                <span v-else class="text-slate-500">–</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-[10px] text-slate-600 mt-4 italic">Zeugnisnoten können über den Award-Button ⭐ in der Fachdetailansicht eingetragen werden.</p>
+                    </div>
+
+                    <!-- TABELLE: Oberstufe 11/12 (wie bisher) -->
+                    <div v-if="abiturViewClass === 'oberstufe'" class="glass-card p-4 sm:p-6 overflow-hidden">
+                        <h3 class="text-sm font-black uppercase tracking-wider text-indigo-400 mb-4 flex items-center gap-2">
+                            <i data-lucide="table" class="w-5 h-5"></i> Zeugnisnoten Oberstufe
+                        </h3>
+                        <div class="w-full overflow-x-auto no-scrollbar">
                             <table class="w-full text-left border-collapse min-w-[340px]">
                                 <thead>
                                     <tr class="border-b border-white/10 text-[10px] sm:text-xs font-black uppercase text-slate-400">
@@ -954,7 +1092,7 @@
         <!-- MODALS (Designtechnisch optimierte Bottom-Sheets für ein erstklassiges Mobile-Gefühl) -->
         <!-- Fach Modal -->
         <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border-t md:border border-white/10 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <!-- Swipe-Down Handle Indikator für Bottom-Sheet-Look -->
                 <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
                 
@@ -969,7 +1107,7 @@
                         <input type="text" required v-model="subjectForm.name" class="w-full bg-transparent text-lg font-bold text-white outline-none ml-2 mt-2" />
                     </div>
                     
-                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 flex items-center justify-between">
+                    <div v-if="gradeSystem !== '6'" class="bg-black/20 p-5 rounded-3xl border border-white/5 flex items-center justify-between">
                         <div class="ml-2"><p class="font-black text-white text-base">Leistungskurs</p></div>
                         <button type="button" @click="subjectForm.isLK = !subjectForm.isLK" :class="subjectForm.isLK ? 'bg-indigo-600' : 'bg-slate-700'" class="relative inline-flex h-9 w-16 rounded-full transition-all cursor-pointer">
                             <span :class="subjectForm.isLK ? 'translate-x-8' : 'translate-x-1'" class="inline-block h-7 w-7 transform rounded-full bg-white transition-transform mt-1 shadow-sm"></span>
@@ -996,13 +1134,6 @@
                         </div>
                     </div>
 
-                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5">
-                        <label class="text-xs font-black uppercase text-slate-400 ml-2 block mb-3">Prüfungsfach (Abitur)</label>
-                        <div class="grid grid-cols-6 gap-2.5">
-                            <button type="button" @click="subjectForm.abiType = null" :class="!subjectForm.abiType ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-3 rounded-xl text-sm font-black cursor-pointer">X</button>
-                            <button type="button" v-for="t in ['P1','P2','P3','P4','P5']" :key="t" @click="subjectForm.abiType = t" :class="subjectForm.abiType === t ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-400 border border-white/5'" class="col-span-1 py-3 rounded-xl text-sm font-black cursor-pointer">{{t}}</button>
-                        </div>
-                    </div>
 
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5">
                         <p class="font-black text-white text-base ml-2 mb-3">Fachfarbe</p>
@@ -1046,7 +1177,7 @@
 
         <!-- Noten Modal -->
         <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border-t md:border border-white/10 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
                 
                 <button @click="isGradeModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
@@ -1064,7 +1195,11 @@
 
                     <div v-if="!gradeForm.pending" class="bg-black/20 p-6 rounded-3xl text-center border border-white/5">
                         <div class="text-7xl font-black text-indigo-400 mb-5">{{ gradeForm.points }}</div>
-                        <input type="range" min="0" max="15" v-model.number="gradeForm.points" class="custom-range">
+                        <input v-if="gradeSystem === '6'" type="range" min="1" max="6" step="1" v-model.number="gradeForm.points" class="custom-range">
+                        <input v-else type="range" min="0" max="15" v-model.number="gradeForm.points" class="custom-range">
+                        <div v-if="gradeSystem === '6'" class="flex justify-between px-1 mt-2">
+                            <span v-for="n in [1,2,3,4,5,6]" :key="n" class="text-[11px] text-slate-600 font-bold">{{ n }}</span>
+                        </div>
                     </div>
 
                     <div class="flex gap-2 bg-black/20 p-2 rounded-full border border-white/5">
@@ -1089,7 +1224,7 @@
 
         <!-- Zeugnis Modal -->
         <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border-t md:border border-white/10 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12">
+            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12">
                 <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
                 
                 <button @click="isReportCardModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
@@ -1097,10 +1232,39 @@
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">Zeugnisnote festlegen</h2>
                 
-                <div class="space-y-6">
+                <div class="space-y-5">
+                    <!-- Halbjahr-Auswahl für Klassen 5-10 -->
+                    <div v-if="currentClass <= 10" class="bg-black/20 border border-white/5 p-4 rounded-3xl space-y-3">
+                        <p class="text-xs font-black uppercase text-slate-400">Für welches Halbjahr?</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button v-for="k in reportCardClassOptions" :key="k.key"
+                                @click="selectedReportCardKey = k.key"
+                                :class="selectedReportCardKey === k.key ? 'bg-indigo-600 text-white font-black border-indigo-500' : 'bg-black/30 text-slate-400 border-white/10'"
+                                class="py-3 rounded-xl text-xs font-bold border cursor-pointer transition-all active:scale-95">
+                                {{ k.label }}
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Halbjahr-Auswahl für Klassen 11-12 -->
+                    <div v-if="currentClass >= 11" class="bg-black/20 border border-white/5 p-4 rounded-3xl space-y-3">
+                        <p class="text-xs font-black uppercase text-slate-400">Halbjahr</p>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button v-for="hy in halfYears" :key="hy"
+                                @click="selectedReportCardKey = hy"
+                                :class="selectedReportCardKey === hy ? 'bg-indigo-600 text-white font-black border-indigo-500' : 'bg-black/30 text-slate-400 border-white/10'"
+                                class="py-3 rounded-xl text-xs font-bold border cursor-pointer transition-all active:scale-95">
+                                {{ hy }}
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="bg-black/20 border border-white/5 p-6 rounded-3xl text-center">
                         <div class="text-8xl font-black text-white mb-6">{{ tempReportCardPoints === null ? '-' : tempReportCardPoints }}</div>
-                        <input type="range" min="0" max="15" v-model.number="tempReportCardPoints" class="custom-range">
+                        <input v-if="gradeSystem === '6'" type="range" min="1" max="6" step="1" v-model.number="tempReportCardPoints" class="custom-range">
+                        <input v-else type="range" min="0" max="15" v-model.number="tempReportCardPoints" class="custom-range">
+                        <div v-if="gradeSystem === '6'" class="flex justify-between px-1 mt-2">
+                            <span v-for="n in [1,2,3,4,5,6]" :key="n" class="text-[11px] text-slate-600 font-bold">{{ n }}</span>
+                        </div>
                     </div>
                     <div class="flex gap-4">
                         <button @click="handleSaveReportCardGrade(tempReportCardPoints)" class="flex-1 bg-indigo-600 text-white py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Festlegen</button>
@@ -1112,7 +1276,7 @@
 
         <!-- Aufgabe/Prüfung Modal -->
         <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border-t md:border border-white/10 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
                 
                 <button @click="isTaskModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 active:bg-white/10 transition-all">
@@ -1160,10 +1324,10 @@
 
         <!-- APP-EINSTELLUNGEN MODAL -->
         <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="bg-[#121216] border-t md:border border-white/10 w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12">
+            <div class="modal-glass border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar">
                 <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
                 
-                <button @click="isAppSettingsModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
+                <button @click="isAppSettingsModalOpen = false" class="sticky top-0 float-right w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all z-10 -mt-1 -mr-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10 flex items-center gap-3">
@@ -1183,9 +1347,34 @@
                     </div>
 
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                        <label class="text-xs font-black uppercase text-slate-400 block">Aktuelle Klasse</label>
+                        <p class="text-xs text-slate-400 leading-normal">In welcher Klasse bist du aktuell?</p>
+                        <div class="grid grid-cols-4 gap-2 mt-1">
+                            <button v-for="k in [5,6,7,8,9,10,11,12]" :key="k" type="button"
+                                @click="tempCurrentClass = k; tempGradeSystem = k >= 11 ? '15' : '6'"
+                                :class="tempCurrentClass === k ? 'bg-indigo-600 text-white font-black border-indigo-500' : 'bg-black/40 text-slate-400 border-white/10'"
+                                class="py-3 rounded-xl text-sm font-bold border cursor-pointer transition-all active:scale-95">
+                                {{ k }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                        <label class="text-xs font-black uppercase text-slate-400 block">Notensystem</label>
+                        <p class="text-xs text-slate-400 leading-normal">Noten aus dem 0–15 System bleiben erhalten, wenn du wechselst.</p>
+                        <div class="flex gap-2 bg-black/40 p-1.5 rounded-full border border-white/5 mt-1">
+                            <button type="button" @click="tempGradeSystem = '15'"
+                                :class="tempGradeSystem === '15' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'"
+                                class="flex-1 py-3 rounded-full text-xs uppercase tracking-wider cursor-pointer transition-all">0–15 Punkte</button>
+                            <button type="button" @click="tempGradeSystem = '6'"
+                                :class="tempGradeSystem === '6' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'"
+                                class="flex-1 py-3 rounded-full text-xs uppercase tracking-wider cursor-pointer transition-all">1–6 Noten</button>
+                        </div>
+                    </div>
+
+                    <div v-if="tempCurrentClass >= 11" class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
                         <label class="text-xs font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
-                        <p class="text-xs text-slate-400 leading-normal">Bestimmt die automatische Berechnung des Halbjahres für alle Termine und Noten. Bitte tippe hier dein Startjahr ein:</p>
-                        
+                        <p class="text-xs text-slate-400 leading-normal">Bestimmt die automatische Berechnung des Halbjahres für alle Termine und Noten.</p>
                         <div class="flex items-center gap-3 pt-1">
                             <input
                                 type="number"
@@ -1208,7 +1397,7 @@
 
         <!-- CUSTOM CALENDAR DATE PICKER POP-UP -->
         <div v-if="isDatePickerOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
+            <div class="modal-glass border w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
                 <button @click="isDatePickerOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -1244,7 +1433,7 @@
 
         <!-- PWA INSTALL GUIDE MODAL -->
         <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="bg-[#121216] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
+            <div class="modal-glass border w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
                 <button @click="isInstallGuideModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -1323,7 +1512,12 @@
 
         createApp({
             setup() {
-                const halfYears = ['11/1', '11/2', '12/1', '12/2'];
+                const halfYearsUpper = ['11/1', '11/2', '12/1', '12/2'];
+                const halfYears = computed(() => {
+                    if (currentClass.value >= 11) return halfYearsUpper;
+                    // Für Klassen 5-10: zeige Halbjahre der aktuellen Klasse
+                    return [`${currentClass.value}/1`, `${currentClass.value}/2`];
+                });
                 
                 const colorOptions = [
                     '#6366f1', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#14b8a6',
@@ -1350,6 +1544,8 @@
                 const isOnboarding = ref(false);
                 const onboardingName = ref('');
                 const onboardingStartYear = ref(new Date().getFullYear());
+                const onboardingCurrentClass = ref(11);
+                const onboardingGradeSystem = ref('15');
                 const onboardingError = ref('');
 
                 // TABS & STATE
@@ -1374,12 +1570,29 @@
                 const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null, icon: 'book-open' });
                 const gradeForm = ref({ id: null, points: 10, type: 'Klausur', label: '', date: '', pending: false });
                 const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false });
-                const tempReportCardPoints = ref(10);
+                const tempReportCardPoints = ref(3);
+                const selectedReportCardKey = ref('11/1'); // key für reportCardGrades Map
+                
+                // Optionen für Klassen 5-10: alle Halbjahre bis zur aktuellen Klasse
+                const reportCardClassOptions = computed(() => {
+                    const opts = [];
+                    const maxClass = currentClass.value <= 10 ? currentClass.value : 10;
+                    for (let k = 5; k <= maxClass; k++) {
+                        opts.push({ key: `k${k}_hj1`, label: `Kl. ${k} / HJ 1` });
+                        opts.push({ key: `k${k}_hj2`, label: `Kl. ${k} / HJ 2` });
+                    }
+                    return opts;
+                });
                 
                 // APP SETTINGS
                 const startYear = ref(2025);
                 const tempStartYear = ref(2025);
-                const displayName = ref(''); 
+                const displayName = ref('');
+                const currentClass = ref(11);
+                const tempCurrentClass = ref(11);
+                const gradeSystem = ref('15'); // '15' oder '6'
+                const tempGradeSystem = ref('15');
+                const abiturViewClass = ref('oberstufe'); 
                 
                 // DATA
                 const examScores = ref({ P1: 0, P2: 0, P3: 0, P4: 0, P5: 0 });
@@ -1474,10 +1687,11 @@
                                 isOnboarding.value = true;
                             } else {
                                 isOnboarding.value = false;
+                                // Settings aus bereits geladenen configDoc übernehmen (kein zweiter Firestore-Aufruf)
+                                await loadAppSettings(currentUser.uid, configDoc);
                                 listenToSubjects(currentUser.uid);
                                 listenToTasks(currentUser.uid);
                                 loadExamScores(currentUser.uid);
-                                loadAppSettings(currentUser.uid);
                             }
                         } else {
                             isOnboarding.value = false;
@@ -1493,9 +1707,11 @@
                         onboardingError.value = "Bitte gib deinen Namen ein.";
                         return;
                     }
-                    if (!onboardingStartYear.value || onboardingStartYear.value < 2000 || onboardingStartYear.value > 2099) {
-                        onboardingError.value = "Bitte gib ein gültiges Startjahr ein.";
-                        return;
+                    if (onboardingCurrentClass.value >= 11) {
+                        if (!onboardingStartYear.value || onboardingStartYear.value < 2000 || onboardingStartYear.value > 2099) {
+                            onboardingError.value = "Bitte gib ein gültiges Startjahr ein.";
+                            return;
+                        }
                     }
 
                     onboardingError.value = "";
@@ -1503,20 +1719,24 @@
 
                     try {
                         const uid = user.value.uid;
-                        // Initialkonfiguration speichern
                         await setDoc(doc(db, 'users', uid, 'settings', 'config'), {
-                            startYear: onboardingStartYear.value,
-                            displayName: onboardingName.value.trim()
+                            startYear: onboardingCurrentClass.value >= 11 ? onboardingStartYear.value : new Date().getFullYear(),
+                            displayName: onboardingName.value.trim(),
+                            currentClass: onboardingCurrentClass.value,
+                            gradeSystem: onboardingGradeSystem.value
                         });
 
-                        // State aktualisieren
-                        startYear.value = onboardingStartYear.value;
-                        tempStartYear.value = onboardingStartYear.value;
+                        startYear.value = onboardingCurrentClass.value >= 11 ? onboardingStartYear.value : new Date().getFullYear();
+                        tempStartYear.value = startYear.value;
                         displayName.value = onboardingName.value.trim();
+                        currentClass.value = onboardingCurrentClass.value;
+                        tempCurrentClass.value = onboardingCurrentClass.value;
+                        gradeSystem.value = onboardingGradeSystem.value;
+                        tempGradeSystem.value = onboardingGradeSystem.value;
+                        abiturViewClass.value = onboardingCurrentClass.value >= 11 ? 'oberstufe' : onboardingCurrentClass.value;
 
                         isOnboarding.value = false;
                         
-                        // Hörer & Daten laden
                         listenToSubjects(uid);
                         listenToTasks(uid);
                         loadExamScores(uid);
@@ -1531,8 +1751,8 @@
                     }
                 };
 
-                const loadAppSettings = async (uid) => {
-                    const snap = await getDoc(doc(db, 'users', uid, 'settings', 'config'));
+                const loadAppSettings = async (uid, existingSnap) => {
+                    const snap = existingSnap || await getDoc(doc(db, 'users', uid, 'settings', 'config'));
                     if (snap.exists()) {
                         const data = snap.data();
                         if (data.startYear) {
@@ -1542,17 +1762,37 @@
                         if (data.displayName) {
                             displayName.value = data.displayName;
                         }
+                        if (data.currentClass) {
+                            currentClass.value = data.currentClass;
+                            tempCurrentClass.value = data.currentClass;
+                        }
+                        if (data.gradeSystem) {
+                            gradeSystem.value = data.gradeSystem;
+                            tempGradeSystem.value = data.gradeSystem;
+                        }
+                        abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     }
                     autoSetCurrentHalfYear();
                 };
 
                 const saveAppSettings = async () => {
                     if (!user.value) return;
+                    const prevClass = currentClass.value;
                     startYear.value = tempStartYear.value;
+                    currentClass.value = tempCurrentClass.value;
+                    gradeSystem.value = tempGradeSystem.value;
+                    abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), {
                         startYear: startYear.value,
-                        displayName: displayName.value
+                        displayName: displayName.value,
+                        currentClass: currentClass.value,
+                        gradeSystem: gradeSystem.value
                     }, { merge: true });
+                    // Subjects-Listener neu starten wenn Klasse zwischen Unter-/Oberstufe wechselt
+                    const crossedBoundary = (prevClass >= 11) !== (currentClass.value >= 11);
+                    if (crossedBoundary) {
+                        listenToSubjects(user.value.uid);
+                    }
                     isAppSettingsModalOpen.value = false;
                     autoSetCurrentHalfYear();
                 };
@@ -1560,7 +1800,9 @@
                 let unsubscribeSubjects = null;
                 const listenToSubjects = (uid) => {
                     if (unsubscribeSubjects) unsubscribeSubjects();
-                    const q = collection(db, 'users', uid, 'subjects');
+                    // Klassen 5-10 nutzen 'subjects_lower', Klassen 11/12 nutzen 'subjects'
+                    const collectionName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                    const q = collection(db, 'users', uid, collectionName);
                     unsubscribeSubjects = onSnapshot(q, (snapshot) => {
                         subjects.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         refreshIcons();
@@ -1661,30 +1903,42 @@
                 const determineSemesterFromDate = (dateStr) => {
                     if (!dateStr) return selectedHalfYear.value;
                     const d = new Date(dateStr);
-                    const y = d.getFullYear();
-                    const m = d.getMonth() + 1;
+                    const m = d.getMonth() + 1; // 1-12
                     
-                    const dateVal = y * 100 + m;
-                    const startY = startYear.value;
-                    
-                    const lim11_2_start = (startY + 1) * 100 + 2; 
-                    const lim12_1_start = (startY + 1) * 100 + 8;
-                    const lim12_2_start = (startY + 2) * 100 + 2;
-                    
-                    if (dateVal < lim11_2_start) {
-                        return '11/1';
-                    } else if (dateVal < lim12_1_start) {
-                        return '11/2';
-                    } else if (dateVal < lim12_2_start) {
-                        return '12/1';
+                    if (currentClass.value >= 11) {
+                        const y = d.getFullYear();
+                        const dateVal = y * 100 + m;
+                        const startY = startYear.value;
+                        
+                        const lim11_2_start = (startY + 1) * 100 + 2; 
+                        const lim12_1_start = (startY + 1) * 100 + 8;
+                        const lim12_2_start = (startY + 2) * 100 + 2;
+                        
+                        if (dateVal < lim11_2_start) {
+                            return '11/1';
+                        } else if (dateVal < lim12_1_start) {
+                            return '11/2';
+                        } else if (dateVal < lim12_2_start) {
+                            return '12/1';
+                        } else {
+                            return '12/2';
+                        }
                     } else {
-                        return '12/2';
+                        // Für Klassen 5-10: August-Januar = HJ1, Februar-Juli = HJ2
+                        const hj = m >= 8 ? 1 : 2;
+                        return `${currentClass.value}/${hj}`;
                     }
                 };
 
                 const autoSetCurrentHalfYear = () => {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    selectedHalfYear.value = determineSemesterFromDate(todayStr);
+                    if (currentClass.value >= 11) {
+                        const todayStr = new Date().toISOString().split('T')[0];
+                        selectedHalfYear.value = determineSemesterFromDate(todayStr);
+                    } else {
+                        // Für Klassen 5-10 standardmäßig erstes Halbjahr der aktuellen Klasse
+                        const month = new Date().getMonth() + 1;
+                        selectedHalfYear.value = month >= 8 ? `${currentClass.value}/1` : `${currentClass.value}/2`;
+                    }
                 };
 
                 const enrichedTasks = computed(() => {
@@ -1995,11 +2249,18 @@
                     const sump = active.reduce((a, b) => a + ((b.reportCardGrade !== null ? b.reportCardGrade : b.finalPoints) * b.weight), 0);
                     const sumW = active.reduce((a, b) => a + b.weight, 0);
 
-                    const pointsDistribution = Array.from({ length: 16 }, (_, i) => ({ points: i, count: 0 }));
+                    const maxPoints = gradeSystem.value === '6' ? 6 : 15;
+                    const pointsDistribution = gradeSystem.value === '6'
+                        ? Array.from({ length: 6 }, (_, i) => ({ points: i + 1, count: 0 }))
+                        : Array.from({ length: 16 }, (_, i) => ({ points: i, count: 0 }));
                     semesterSubjects.forEach(s => {
                         (s.semesterGrades || []).forEach(g => {
-                            if (!g.pending && g.points >= 0 && g.points <= 15) {
-                                pointsDistribution[g.points].count++;
+                            if (!g.pending) {
+                                if (gradeSystem.value === '6' && g.points >= 1 && g.points <= 6) {
+                                    pointsDistribution[g.points - 1].count++;
+                                } else if (gradeSystem.value !== '6' && g.points >= 0 && g.points <= 15) {
+                                    pointsDistribution[g.points].count++;
+                                }
                             }
                         });
                     });
@@ -2038,50 +2299,75 @@
                 const openAddSubjectModal = () => { isSettingsModalOpen.value=false; subjectForm.value={name:'', isLK:false, color:'#6366f1', examWeight:50, abiType:null, icon:'book-open'}; isSubjectModalOpen.value=true; refreshIcons(); };
                 const openSettingsModal = () => { isSettingsModalOpen.value=true; subjectForm.value={...selectedSubject.value}; isSubjectModalOpen.value=true; refreshIcons(); };
                 const closeSubjectModal = () => { isSubjectModalOpen.value = false; };
-                const openAddGradeModal = () => { gradeForm.value={id:null, points:10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; isGradeModalOpen.value=true; refreshIcons(); };
+                const openAddGradeModal = () => { gradeForm.value={id:null, points: gradeSystem.value === '6' ? 3 : 10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; isGradeModalOpen.value=true; refreshIcons(); };
                 const openEditGradeModal = (g) => { gradeForm.value={...g}; isGradeModalOpen.value=true; refreshIcons(); };
-                const openReportCardModal = () => { tempReportCardPoints.value = activeSubjectData.value?.reportCardGrade ?? 10; isReportCardModalOpen.value=true; refreshIcons(); };
+                const openReportCardModal = () => { 
+                    // Standardmäßig aktuelles Halbjahr als Key vorauswählen
+                    if (currentClass.value >= 11) {
+                        selectedReportCardKey.value = selectedHalfYear.value;
+                    } else {
+                        // Letztes vorhandenes oder erste Option
+                        const opts = reportCardClassOptions.value;
+                        selectedReportCardKey.value = opts.length ? opts[opts.length - 1].key : `k${currentClass.value}_hj1`;
+                    }
+                    const existingGrade = activeSubjectData.value?.reportCardGrades?.[selectedReportCardKey.value];
+                    tempReportCardPoints.value = existingGrade !== undefined ? existingGrade : (gradeSystem.value === '6' ? 3 : 10); 
+                    isReportCardModalOpen.value = true; 
+                    refreshIcons(); 
+                };
 
                 const handleSaveSubject = async () => {
                     if (!user.value || !subjectForm.value.name) return;
+                    const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                     if (isSettingsModalOpen.value) {
-                        await updateDoc(doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id), { ...subjectForm.value });
+                        await updateDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id), { ...subjectForm.value });
                         selectedSubject.value = { ...selectedSubject.value, ...subjectForm.value };
                     } else {
-                        await setDoc(doc(collection(db, 'users', user.value.uid, 'subjects')), { ...subjectForm.value, grades: [], reportCardGrades: {} });
+                        await setDoc(doc(collection(db, 'users', user.value.uid, collName)), { ...subjectForm.value, grades: [], reportCardGrades: {} });
                     }
                     closeSubjectModal();
                 };
 
                 const handleDeleteSubject = async () => {
                     if (user.value && selectedSubject.value) {
-                        await deleteDoc(doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id));
+                        const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                        await deleteDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id));
                         selectedSubject.value = null; closeSubjectModal();
                     }
                 };
 
                 const handleSaveGrade = async () => {
                     if (!user.value || !selectedSubject.value) return;
-                    const ref = doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id);
-                    await runTransaction(db, async (t) => {
-                        const snap = await t.get(ref);
-                        const grades = snap.data().grades || [];
-                        
-                        const calculatedSemester = determineSemesterFromDate(gradeForm.value.date);
-                        
-                        const ng = { 
-                            ...gradeForm.value, 
-                            id: gradeForm.value.id || crypto.randomUUID(), 
-                            semester: calculatedSemester 
-                        };
-                        t.update(ref, { grades: gradeForm.value.id ? grades.map(g => g.id === ng.id ? ng : g) : [...grades, ng] });
-                    });
-                    isGradeModalOpen.value = false;
+                    if (!gradeForm.value.date) {
+                        gradeForm.value.date = new Date().toISOString().split('T')[0];
+                    }
+                    const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                    const ref = doc(db, 'users', user.value.uid, collName, selectedSubject.value.id);
+                    try {
+                        await runTransaction(db, async (t) => {
+                            const snap = await t.get(ref);
+                            const grades = snap.data().grades || [];
+                            
+                            const calculatedSemester = determineSemesterFromDate(gradeForm.value.date);
+                            
+                            const ng = { 
+                                ...gradeForm.value, 
+                                id: gradeForm.value.id || crypto.randomUUID(), 
+                                semester: calculatedSemester 
+                            };
+                            t.update(ref, { grades: gradeForm.value.id ? grades.map(g => g.id === ng.id ? ng : g) : [...grades, ng] });
+                        });
+                        isGradeModalOpen.value = false;
+                    } catch (err) {
+                        console.error("Fehler beim Speichern der Note:", err);
+                        alert("Fehler beim Speichern: " + err.message);
+                    }
                 };
 
                 const handleDeleteGrade = async (gradeId) => {
                     if (!user.value || !selectedSubject.value || !gradeId) return;
-                    const ref = doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id);
+                    const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                    const ref = doc(db, 'users', user.value.uid, collName, selectedSubject.value.id);
                     await runTransaction(db, async (t) => {
                         const snap = await t.get(ref);
                         t.update(ref, { grades: (snap.data().grades || []).filter(g => g.id !== gradeId) });
@@ -2091,7 +2377,23 @@
 
                 const handleSaveReportCardGrade = async (pts) => {
                     if (user.value && selectedSubject.value) {
-                        await setDoc(doc(db, 'users', user.value.uid, 'subjects', selectedSubject.value.id), { reportCardGrades: { [selectedHalfYear.value]: pts } }, { merge: true });
+                        const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                        const key = selectedReportCardKey.value;
+                        const updateData = pts !== null 
+                            ? { reportCardGrades: { [key]: pts } }
+                            : {};
+                        if (pts === null) {
+                            // Eintrag löschen: aktuelles reportCardGrades laden und Key entfernen
+                            const subRef = doc(db, 'users', user.value.uid, collName, selectedSubject.value.id);
+                            await runTransaction(db, async (t) => {
+                                const snap = await t.get(subRef);
+                                const existing = snap.data().reportCardGrades || {};
+                                delete existing[key];
+                                t.update(subRef, { reportCardGrades: existing });
+                            });
+                        } else {
+                            await setDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id), { reportCardGrades: { [key]: pts } }, { merge: true });
+                        }
                         isReportCardModalOpen.value = false;
                     }
                 };
@@ -2191,6 +2493,10 @@
                                 if (trendChartInst) trendChartInst.destroy();
                                 const sGrades = (activeSubjectData.value.semesterGrades || []).filter(g => !g.pending);
                                 const sorted = [...sGrades].sort((a,b) => new Date(a.date) - new Date(b.date));
+                                const chartMax = gradeSystem.value === '6' ? 6 : 15;
+                                const chartMin = gradeSystem.value === '6' ? 1 : 0;
+                                const chartStep = gradeSystem.value === '6' ? 1 : 2;
+                                const chartReverse = gradeSystem.value === '6';
                                 trendChartInst = new Chart(ctxTrend, {
                                     type: 'line',
                                     data: {
@@ -2199,21 +2505,43 @@
                                             label: 'Verlauf', data: sorted.map(g => g.points), borderColor: selectedSubject.value.color, backgroundColor: selectedSubject.value.color + '20', fill: true, tension: 0.3, borderWidth: 3, pointBackgroundColor: '#ffffff', pointRadius: 5
                                         }]
                                     },
-                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 15, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: 2 } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } } }
+                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: chartMin, max: chartMax, reverse: chartReverse, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: chartStep } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } } }
                                 });
                             }
                         }
                     });
                 };
                 
+                watch(selectedReportCardKey, (newKey) => {
+                    if (isReportCardModalOpen.value && activeSubjectData.value) {
+                        const existingGrade = activeSubjectData.value?.reportCardGrades?.[newKey];
+                        tempReportCardPoints.value = existingGrade !== undefined ? existingGrade : (gradeSystem.value === '6' ? 3 : 10);
+                    }
+                });
+
+                // Wenn gradeSystem sich ändert, Formularwerte anpassen
+                watch(gradeSystem, (newSys) => {
+                    const maxVal = newSys === '6' ? 6 : 15;
+                    const defaultVal = newSys === '6' ? 3 : 10;
+                    if (gradeForm.value.points > maxVal) gradeForm.value.points = defaultVal;
+                    if (tempReportCardPoints.value > maxVal) tempReportCardPoints.value = defaultVal;
+                });
+
                 watch([currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, subjects, tasks, startYear], () => { 
                     refreshIcons(); 
                     triggerCharts(); 
                 }, { deep: true });
 
+                const lowerSchoolClasses = computed(() => {
+                    const c = currentClass.value;
+                    if (c <= 6) return [5, 6];
+                    if (c <= 8) return [5, 6, 7, 8];
+                    return [5, 6, 7, 8, 9, 10];
+                });
+
                 return {
                     halfYears, colorOptions, subjectIcons, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
-                    isOnboarding, onboardingName, onboardingStartYear, onboardingError, submitOnboarding,
+                    isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
                     currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
@@ -2228,7 +2556,9 @@
                     getCalculatedSemesterPoints,
                     isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings,
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
-                    handlePlannerTouchStart, handlePlannerTouchEnd
+                    handlePlannerTouchStart, handlePlannerTouchEnd,
+                    currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
+                    selectedReportCardKey, reportCardClassOptions
                 };
             }
         }).mount('#app');
