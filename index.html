@@ -163,6 +163,57 @@
             box-shadow: 0 -1px 0 rgba(255,255,255,0.06), 0 -20px 60px rgba(0,0,0,0.4);
         }
 
+        /* Liquid Glass Nav Bar - like reference image */
+        .liquid-glass-nav {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(40px) saturate(2.2) brightness(1.15);
+            -webkit-backdrop-filter: blur(40px) saturate(2.2) brightness(1.15);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow:
+                0 2px 0 rgba(255,255,255,0.25) inset,
+                0 -1px 0 rgba(0,0,0,0.15) inset,
+                0 8px 32px rgba(0,0,0,0.35),
+                0 1px 0 rgba(255,255,255,0.12);
+        }
+
+        /* Active bubble inside nav - the frosted glass dot */
+        .nav-active-bubble {
+            background: rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(20px) saturate(2);
+            -webkit-backdrop-filter: blur(20px) saturate(2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow:
+                0 2px 0 rgba(255,255,255,0.35) inset,
+                0 -1px 0 rgba(0,0,0,0.1) inset,
+                0 4px 16px rgba(99,102,241,0.3),
+                0 0 0 1px rgba(255,255,255,0.15);
+        }
+
+        /* Liquid Glass Modals - true frosted glass */
+        .liquid-glass-modal {
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(60px) saturate(2.5) brightness(1.2);
+            -webkit-backdrop-filter: blur(60px) saturate(2.5) brightness(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow:
+                0 2px 0 rgba(255,255,255,0.2) inset,
+                0 -1px 0 rgba(0,0,0,0.2) inset,
+                0 40px 80px rgba(0,0,0,0.5),
+                0 0 0 0.5px rgba(255,255,255,0.15);
+        }
+
+        /* Liquid Glass calendar date picker */
+        .liquid-glass-datepicker {
+            background: rgba(255, 255, 255, 0.13);
+            backdrop-filter: blur(60px) saturate(2.5) brightness(1.25);
+            -webkit-backdrop-filter: blur(60px) saturate(2.5) brightness(1.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow:
+                0 2px 0 rgba(255,255,255,0.22) inset,
+                0 -1px 0 rgba(0,0,0,0.18) inset,
+                0 30px 60px rgba(0,0,0,0.5);
+        }
+
         /* Fester Header Block */
         .hero-block {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
@@ -271,6 +322,19 @@
             transform: scaleX(1.15) scaleY(1.05);
             background: #818cf8;
         }
+
+        /* Swipe-down-to-close handle */
+        .modal-drag-handle {
+            width: 48px;
+            height: 6px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 9999px;
+            margin: 0 auto 20px;
+            cursor: grab;
+            transition: background 0.2s ease;
+        }
+        .modal-drag-handle:active { cursor: grabbing; background: rgba(255,255,255,0.35); }
+        .modal-dragging { transition: none !important; }
     </style>
 </head>
 <body class="font-sans selection:bg-indigo-500/30 overflow-x-hidden antialiased pb-36">
@@ -638,8 +702,8 @@
                                 <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-5 flex items-center gap-2">
                                     <i data-lucide="trending-up" class="w-5 h-5 text-indigo-400"></i> Verlauf
                                 </p>
-                                <div class="h-52 sm:h-64 w-full relative">
-                                    <canvas id="trendChart"></canvas>
+                                <div class="h-52 sm:h-64 w-full relative rounded-2xl overflow-hidden" style="background: transparent;">
+                                    <canvas id="trendChart" style="background: transparent;"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -653,20 +717,21 @@
                                 </button>
                             </div>
 
-                            <p class="text-[11px] text-slate-500 italic px-2">💡 Noten nach links wischen zum Löschen.</p>
+                            <p class="text-[11px] text-slate-500 italic px-2">💡 Tippen zum Bearbeiten · Links wischen zum Löschen.</p>
 
-                            <div class="space-y-3.5 relative overflow-hidden px-1 py-1">
+                            <div class="space-y-3.5 relative px-1 py-1">
                                 <div v-if="sortedGrades.length === 0" class="text-center py-10 text-slate-500 font-bold text-xs sm:text-sm">
                                     Keine Noten in diesem Halbjahr.
                                 </div>
 
-                                <div v-for="g in sortedGrades" :key="g.id" class="relative group overflow-hidden rounded-[1.6rem]">
-                                    <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-6 z-0">
+                                <div v-for="g in sortedGrades" :key="g.id" class="relative group rounded-[1.6rem]" :style="swipeState.id === g.id ? 'overflow:hidden' : 'overflow:visible'">
+                                    <div class="absolute inset-0 bg-rose-600 rounded-[1.6rem] flex items-center justify-between px-6 z-0" :style="swipeState.id === g.id ? 'opacity:1' : 'opacity:0'">
                                         <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                         <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                     </div>
                                     
-                                    <div class="p-4 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-[1.6rem]"
+                                    <div class="p-4 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-[1.6rem] cursor-pointer active:opacity-80"
+                                         @click="swipeState.currentX === 0 && (g.isFromPlanner ? openEditTaskFromPlanner(g.id) : openEditGradeModal(g))"
                                          @touchstart="!g.isFromPlanner && startSwipe($event, g.id)"
                                          @touchmove="!g.isFromPlanner && moveSwipe($event)"
                                          @touchend="!g.isFromPlanner && endSwipe($event, g)"
@@ -743,11 +808,11 @@
                             Keine Aufgaben in dieser Ansicht.
                         </p>
 
-                        <div class="space-y-3.5 relative overflow-hidden px-1 py-1">
+                        <div class="space-y-3.5 relative px-1 py-1">
                             <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" 
                                  class="relative group rounded-[1.6rem]"
-                                 :class="leavingTasks.has(t.id) ? 'task-item-leaving' : 'overflow-hidden'">
-                                <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-6 z-0">
+                                 :class="leavingTasks.has(t.id) ? 'task-item-leaving' : (taskSwipeState.id === t.id ? 'overflow-hidden' : 'overflow-visible')">
+                                <div class="absolute inset-0 bg-rose-600 rounded-[1.6rem] flex items-center justify-between px-6 z-0" :style="taskSwipeState.id === t.id ? 'opacity:1' : 'opacity:0'">
                                     <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                     <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                 </div>
@@ -797,10 +862,14 @@
                                 <h3 class="font-black text-white text-lg sm:text-xl truncate">{{ monthNames[calMonth] }} {{ calYear }}</h3>
                                 
                                 <!-- Kalender Ansichtsmodus (Monat, Woche, Tag) -->
-                                <div class="flex bg-black/40 p-1 rounded-full border border-white/5 self-stretch sm:self-auto">
-                                    <button @click="calendarViewMode = 'month'" :class="calendarViewMode === 'month' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'" class="px-3 py-1.5 text-xs uppercase rounded-full tracking-wider transition-all cursor-pointer">Monat</button>
-                                    <button @click="calendarViewMode = 'week'" :class="calendarViewMode === 'week' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'" class="px-3 py-1.5 text-xs uppercase rounded-full tracking-wider transition-all cursor-pointer">Woche</button>
-                                    <button @click="calendarViewMode = 'day'" :class="calendarViewMode === 'day' ? 'bg-indigo-600 text-white font-black' : 'text-slate-400'" class="px-3 py-1.5 text-xs uppercase rounded-full tracking-wider transition-all cursor-pointer">Tag</button>
+                                <div class="flex bg-black/40 p-1 rounded-full border border-white/5 self-stretch sm:self-auto relative">
+                                    <div class="absolute top-1 bottom-1 bg-indigo-600 rounded-full shadow-md shadow-indigo-600/30 pointer-events-none"
+                                         style="transition: left 0.4s cubic-bezier(0.34,1.56,0.64,1), width 0.3s cubic-bezier(0.34,1.56,0.64,1);"
+                                         :style="{ width: 'calc(33.333% - 2px)', left: `calc(${['month','week','day'].indexOf(calendarViewMode)} * 33.333% + 1px)` }">
+                                    </div>
+                                    <button @click="calendarViewMode = 'month'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'month' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 px-3 py-1.5 text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10">Monat</button>
+                                    <button @click="calendarViewMode = 'week'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'week' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 px-3 py-1.5 text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10">Woche</button>
+                                    <button @click="calendarViewMode = 'day'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'day' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 px-3 py-1.5 text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10">Tag</button>
                                 </div>
 
                                 <div class="flex gap-2 shrink-0 self-end sm:self-auto">
@@ -977,7 +1046,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="s in sortedSubjectsList" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-xs sm:text-sm font-bold text-white">
+                                    <tr v-for="s in subjects" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-xs sm:text-sm font-bold text-white">
                                         <td class="py-3.5 pr-2">
                                             <div class="flex items-center gap-2 overflow-hidden">
                                                 <span class="w-2.5 h-2.5 rounded-full inline-block shrink-0" :style="{ backgroundColor: s.color }"></span>
@@ -986,7 +1055,7 @@
                                         </td>
                                         <td v-for="hj in [1,2]" :key="hj" class="py-3.5 text-center font-extrabold text-sm sm:text-base">
                                             <div class="inline-flex items-center gap-1 justify-center">
-                                                <span v-if="s.reportCardGrades?.['k' + abiturViewClass + '_hj' + hj] !== undefined" class="text-amber-400 flex items-center gap-0.5">
+                                                <span v-if="s.reportCardGrades?.['k' + abiturViewClass + '_hj' + hj] !== undefined && s.reportCardGrades['k' + abiturViewClass + '_hj' + hj] !== null" class="text-amber-400 flex items-center gap-0.5">
                                                     <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
                                                     <span class="text-xs sm:text-sm font-black">{{ s.reportCardGrades['k' + abiturViewClass + '_hj' + hj] }}</span>
                                                 </span>
@@ -1018,7 +1087,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="s in sortedSubjectsList" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-xs sm:text-sm font-bold text-white">
+                                    <tr v-for="s in subjects" :key="s.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-xs sm:text-sm font-bold text-white">
                                         <td class="py-3.5 pr-2 flex items-center gap-2 overflow-hidden truncate">
                                             <span class="w-2.5 h-2.5 rounded-full inline-block shrink-0" :style="{ backgroundColor: s.color }"></span>
                                             <span class="truncate text-xs sm:text-sm font-black">{{ s.name }}</span>
@@ -1029,7 +1098,7 @@
                                         </td>
                                         <td v-for="hy in halfYears" :key="hy" class="py-3.5 text-center font-extrabold text-sm sm:text-base">
                                             <div class="inline-flex items-center gap-1 justify-center">
-                                                <span v-if="s.reportCardGrades?.[hy] !== undefined" class="text-amber-400 flex items-center gap-0.5">
+                                                <span v-if="s.reportCardGrades?.[hy] !== undefined && s.reportCardGrades[hy] !== null" class="text-amber-400 flex items-center gap-0.5">
                                                     <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
                                                     <span class="text-xs sm:text-sm font-black">{{ s.reportCardGrades[hy] }}</span>
                                                 </span>
@@ -1050,39 +1119,40 @@
                     <div class="px-2">
                         <h2 class="text-2xl sm:text-4xl font-black text-white">Statistik</h2>
                     </div>
-                    <div class="glass-card p-5 sm:p-6 relative overflow-hidden">
+                    <div class="glass-card p-5 sm:p-6 relative">
                         <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-5">Punkteverteilung ({{ selectedHalfYear }})</p>
-                        <div class="h-64 sm:h-72 w-full relative z-10">
-                            <canvas id="barChart"></canvas>
+                        <div class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
+                            <canvas id="barChart" style="background: transparent;"></canvas>
                         </div>
                     </div>
                 </div>
 
             </main>
 
-            <!-- NAVIGATION BOTTOM BAR (Riesige Klickbereiche für Mobile-Daumen und sichere Höheneinstellungen für PWA) -->
+            <!-- NAVIGATION BOTTOM BAR (Original glass-pill mit flüssigem Sliding-Indikator) -->
             <div class="fixed left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pb-[calc(1.5rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
                 <div class="glass-pill p-1.5 flex relative pointer-events-auto w-full max-w-md shadow-2xl">
-                    <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/40"
+                    <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full shadow-md shadow-indigo-600/40"
+                         style="transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);"
                          :style="{ 
                              width: 'calc(20% - 2px)', 
                              left: `calc(${['home', 'subjects', 'planner', 'abitur', 'stats'].indexOf(currentTab)} * 20% + 1px)` 
                          }">
                     </div>
                     
-                    <button @click="currentTab = 'home'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer text-center" :class="currentTab === 'home' ? 'text-white' : 'text-slate-400'">
+                    <button @click="currentTab = 'home'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'home' ? 'text-white' : 'text-slate-400'">
                         <i data-lucide="home" class="w-6.5 h-6.5"></i>
                     </button>
-                    <button @click="currentTab = 'subjects'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer text-center" :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400'">
+                    <button @click="currentTab = 'subjects'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400'">
                         <i data-lucide="layout-grid" class="w-6.5 h-6.5"></i>
                     </button>
-                    <button @click="currentTab = 'planner'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer text-center" :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400'">
+                    <button @click="currentTab = 'planner'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400'">
                         <i data-lucide="calendar-check" class="w-6.5 h-6.5"></i>
                     </button>
-                    <button @click="currentTab = 'abitur'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer text-center" :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400'">
+                    <button @click="currentTab = 'abitur'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400'">
                         <i data-lucide="graduation-cap" class="w-6.5 h-6.5"></i>
                     </button>
-                    <button @click="currentTab = 'stats'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 transition-colors duration-300 cursor-pointer text-center" :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400'">
+                    <button @click="currentTab = 'stats'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400'">
                         <i data-lucide="trending-up" class="w-6.5 h-6.5"></i>
                     </button>
                 </div>
@@ -1092,9 +1162,12 @@
         <!-- MODALS (Designtechnisch optimierte Bottom-Sheets für ein erstklassiges Mobile-Gefühl) -->
         <!-- Fach Modal -->
         <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
-                <!-- Swipe-Down Handle Indikator für Bottom-Sheet-Look -->
-                <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
+            <div class="liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+                <!-- Swipe-Down Handle -->
+                <div class="modal-drag-handle md:hidden"
+                     @touchstart.stop="modalDragStart($event, 'isSubjectModalOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
                 
                 <button @click="closeSubjectModal" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -1177,8 +1250,11 @@
 
         <!-- Noten Modal -->
         <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
-                <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
+            <div class="liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+                <div class="modal-drag-handle md:hidden"
+                     @touchstart.stop="modalDragStart($event, 'isGradeModalOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
                 
                 <button @click="isGradeModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -1224,8 +1300,11 @@
 
         <!-- Zeugnis Modal -->
         <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12">
-                <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
+            <div class="liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12">
+                <div class="modal-drag-handle md:hidden"
+                     @touchstart.stop="modalDragStart($event, 'isReportCardModalOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
                 
                 <button @click="isReportCardModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -1276,8 +1355,11 @@
 
         <!-- Aufgabe/Prüfung Modal -->
         <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="modal-glass border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
-                <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
+            <div class="liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+                <div class="modal-drag-handle md:hidden"
+                     @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
                 
                 <button @click="isTaskModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -1324,8 +1406,11 @@
 
         <!-- APP-EINSTELLUNGEN MODAL -->
         <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
-            <div class="modal-glass border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar">
-                <div class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-5 md:hidden"></div>
+            <div class="liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar">
+                <div class="modal-drag-handle md:hidden" 
+                     @touchstart.stop="modalDragStart($event, 'isAppSettingsModalOpen')" 
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
                 
                 <button @click="isAppSettingsModalOpen = false" class="sticky top-0 float-right w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all z-10 -mt-1 -mr-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -1397,7 +1482,7 @@
 
         <!-- CUSTOM CALENDAR DATE PICKER POP-UP -->
         <div v-if="isDatePickerOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="modal-glass border w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
+            <div class="liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
                 <button @click="isDatePickerOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -1433,7 +1518,7 @@
 
         <!-- PWA INSTALL GUIDE MODAL -->
         <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="modal-glass border w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
+            <div class="liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
                 <button @click="isInstallGuideModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -1836,6 +1921,55 @@
                     if (snap.exists()) examScores.value = { ...examScores.value, ...snap.data() };
                 };
 
+                // Modal Swipe-Down-to-Close
+                const modalDrag = ref({ active: false, startY: 0, currentY: 0, modalKey: null, el: null });
+
+                const modalDragStart = (e, modalKey) => {
+                    const touch = e.touches[0];
+                    const panel = e.currentTarget.closest('[class*="liquid-glass-modal"], [class*="modal-glass"]');
+                    if (!panel) return;
+                    modalDrag.value = { active: true, startY: touch.clientY, currentY: 0, modalKey, el: panel };
+                    panel.classList.add('modal-dragging');
+                };
+                const modalDragMove = (e) => {
+                    if (!modalDrag.value.active) return;
+                    const touch = e.touches[0];
+                    const diff = touch.clientY - modalDrag.value.startY;
+                    if (diff < 0) return;
+                    modalDrag.value.currentY = diff;
+                    if (modalDrag.value.el) {
+                        modalDrag.value.el.style.transform = `translateY(${diff}px)`;
+                        modalDrag.value.el.style.opacity = String(Math.max(0.4, 1 - diff / 300));
+                    }
+                };
+                const modalDragEnd = (e) => {
+                    if (!modalDrag.value.active) return;
+                    const { el, currentY, modalKey } = modalDrag.value;
+                    modalDrag.value.active = false;
+                    if (el) {
+                        el.classList.remove('modal-dragging');
+                        if (currentY > 100) {
+                            el.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease';
+                            el.style.transform = 'translateY(100%)';
+                            el.style.opacity = '0';
+                            setTimeout(() => {
+                                if (modalKey === 'isAppSettingsModalOpen') isAppSettingsModalOpen.value = false;
+                                else if (modalKey === 'isGradeModalOpen') isGradeModalOpen.value = false;
+                                else if (modalKey === 'isTaskModalOpen') isTaskModalOpen.value = false;
+                                else if (modalKey === 'isSubjectModalOpen') { isSubjectModalOpen.value = false; isSettingsModalOpen.value = false; }
+                                else if (modalKey === 'isReportCardModalOpen') isReportCardModalOpen.value = false;
+                                el.style.cssText = '';
+                            }, 280);
+                        } else {
+                            el.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease';
+                            el.style.transform = 'translateY(0)';
+                            el.style.opacity = '1';
+                            setTimeout(() => { el.style.cssText = ''; }, 350);
+                        }
+                    }
+                    modalDrag.value = { active: false, startY: 0, currentY: 0, modalKey: null, el: null };
+                };
+
                 const refreshIcons = () => nextTick(() => { if (window.lucide) lucide.createIcons(); });
                 const formatNumber = (num) => (num === null || isNaN(num)) ? '-' : num.toFixed(2).replace('.', ',');
                 const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString('de-DE') : '';
@@ -2208,7 +2342,7 @@
                 };
 
                 const getCalculatedSemesterPoints = (subject, sem) => {
-                    const allGrades = subject.grades || [];
+                    const allGrades = subject.grades || subject.semesterGrades || [];
                     const hg = allGrades.filter(g => g.semester === sem && !g.pending);
                     if (hg.length === 0) return '-';
                     const ex = hg.filter(g => g.type === 'Klausur');
@@ -2461,6 +2595,12 @@
                     taskSwipeState.value = { id: null, startX: 0, currentX: 0, isDragging: false };
                 };
 
+                // Chart.js: transparent canvas background by default
+                if (typeof Chart !== 'undefined') {
+                    Chart.defaults.backgroundColor = 'transparent';
+                    Chart.defaults.color = 'rgba(255,255,255,0.4)';
+                }
+
                 let chartInst = null;
                 let trendChartInst = null;
                 const triggerCharts = () => {
@@ -2482,7 +2622,7 @@
                                             borderRadius: 8 
                                         }]
                                     },
-                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } } }
+                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, layout: { padding: 0 }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: 1 }, border: { display: false } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' }, border: { display: false } } } }
                                 });
                             }
                         }
@@ -2505,7 +2645,7 @@
                                             label: 'Verlauf', data: sorted.map(g => g.points), borderColor: selectedSubject.value.color, backgroundColor: selectedSubject.value.color + '20', fill: true, tension: 0.3, borderWidth: 3, pointBackgroundColor: '#ffffff', pointRadius: 5
                                         }]
                                     },
-                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: chartMin, max: chartMax, reverse: chartReverse, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: chartStep } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } } }
+                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, layout: { padding: 0 }, scales: { y: { min: chartMin, max: chartMax, reverse: chartReverse, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: chartStep }, border: { display: false } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' }, border: { display: false } } } }
                                 });
                             }
                         }
@@ -2552,7 +2692,8 @@
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
-                    swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe,
+                    swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe, swipeState, taskSwipeState,
+                    modalDragStart, modalDragMove, modalDragEnd,
                     getCalculatedSemesterPoints,
                     isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings,
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
