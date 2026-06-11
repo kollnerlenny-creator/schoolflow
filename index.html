@@ -824,7 +824,8 @@
                                 </div>
 
                                 <div v-for="g in sortedGrades" :key="g.id" class="relative group rounded-[1.6rem]" :style="swipeState.id === g.id ? 'overflow:hidden' : 'overflow:visible'">
-                                    <div class="absolute inset-0 bg-rose-600 rounded-[1.6rem] flex items-center justify-between px-6 z-0" :style="swipeState.id === g.id ? 'opacity:1' : 'opacity:0'">
+                                    <div class="absolute inset-0 bg-rose-600 rounded-[1.6rem] flex items-center justify-between px-6 z-0 transition-opacity duration-150"
+                                         :style="swipeState.id === g.id && swipeState.currentX < -20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
                                         <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                         <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                     </div>
@@ -911,7 +912,8 @@
                             <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" 
                                  class="relative group rounded-[1.6rem]"
                                  :class="leavingTasks.has(t.id) ? 'task-item-leaving' : (taskSwipeState.id === t.id ? 'overflow-hidden' : 'overflow-visible')">
-                                <div class="absolute inset-0 bg-rose-600 rounded-[1.6rem] flex items-center justify-between px-6 z-0" :style="taskSwipeState.id === t.id ? 'opacity:1' : 'opacity:0'">
+                                <div class="absolute inset-0 bg-rose-600 rounded-[1.6rem] flex items-center justify-between px-6 z-0 transition-opacity duration-150"
+                                     :style="taskSwipeState.id === t.id && taskSwipeState.currentX < -20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
                                     <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                     <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                 </div>
@@ -2447,7 +2449,13 @@
 
                 const getCalculatedSemesterPoints = (subject, sem) => {
                     const allGrades = subject.grades || subject.semesterGrades || [];
-                    const hg = allGrades.filter(g => g.semester === sem && !g.pending);
+                    // Für Klassen 5-10: HJ2 enthält kumulativ auch HJ1-Noten
+                    let relevantSems = [sem];
+                    if (currentClass.value <= 10) {
+                        const [cls, hj] = sem.split('/').map(Number);
+                        if (hj === 2) relevantSems = [`${cls}/1`, `${cls}/2`];
+                    }
+                    const hg = allGrades.filter(g => relevantSems.includes(g.semester) && !g.pending);
                     if (hg.length === 0) return '-';
                     const ex = hg.filter(g => g.type === 'Klausur');
                     const ot = hg.filter(g => g.type !== 'Klausur');
@@ -2467,8 +2475,20 @@
                 const processedData = computed(() => {
                     const semesterSubjects = subjects.value.map(s => {
                         const allGrades = s.grades || [];
-                        const grades = allGrades.filter(g => g.semester === selectedHalfYear.value && !g.pending);
-                        const rawSemGrades = allGrades.filter(g => g.semester === selectedHalfYear.value);
+                        
+                        // Für Klassen 5-10: Noten kumulieren sich über Halbjahre innerhalb eines Schuljahres.
+                        // HJ2 enthält alle Noten aus HJ1 + HJ2 desselben Schuljahres.
+                        let relevantSemesters = [selectedHalfYear.value];
+                        if (currentClass.value <= 10) {
+                            const [cls, hj] = selectedHalfYear.value.split('/').map(Number);
+                            if (hj === 2) {
+                                // HJ2 enthält auch alle Noten aus HJ1 derselben Klasse
+                                relevantSemesters = [`${cls}/1`, `${cls}/2`];
+                            }
+                        }
+                        
+                        const grades = allGrades.filter(g => relevantSemesters.includes(g.semester) && !g.pending);
+                        const rawSemGrades = allGrades.filter(g => relevantSemesters.includes(g.semester));
                         const exams = grades.filter(g => g.type === 'Klausur');
                         const others = grades.filter(g => g.type !== 'Klausur');
                         const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
@@ -2509,7 +2529,14 @@
                 const activeSubjectData = computed(() => processedData.value.semesterSubjects.find(s => s.id === selectedSubject.value?.id));
                 
                 const sortedGrades = computed(() => {
-                    const dbGrades = [...(activeSubjectData.value?.semesterGrades || [])];
+                    // Für Klassen 5-10: im HJ2 auch Noten aus HJ1 anzeigen
+                    let relevantSemesters = [selectedHalfYear.value];
+                    if (currentClass.value <= 10) {
+                        const [cls, hj] = selectedHalfYear.value.split('/').map(Number);
+                        if (hj === 2) relevantSemesters = [`${cls}/1`, `${cls}/2`];
+                    }
+                    
+                    const dbGrades = (activeSubjectData.value?.semesterGrades || []);
                     
                     const plannerUpcoming = tasks.value
                         .filter(t => {
