@@ -927,28 +927,28 @@
         <!-- HAUPT APP (Volle Breite für Laptop/PC optimiert, aber voll auf Mobile vergrößert) -->
         <div v-else class="w-full max-w-md md:max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 xs:px-5 pt-6 md:pt-10">
             <!-- HEADER BEREICH -->
-            <header class="mb-6 sm:mb-8 flex justify-between items-center gap-3">
-                <div class="flex items-center gap-3 sm:gap-4 cursor-pointer min-w-0" @click="currentTab = 'home'; selectedSubject = null">
-                    <div class="w-12 h-12 sm:w-16 sm:h-16 hero-block flex items-center justify-center rounded-2xl shadow-lg shrink-0">
-                        <i data-lucide="graduation-cap" class="w-6 h-6 sm:w-8 sm:h-8 text-white"></i>
+            <header class="mb-6 sm:mb-8 flex justify-between items-center gap-2">
+                <div class="flex items-center gap-2.5 sm:gap-4 cursor-pointer flex-1 min-w-0" @click="currentTab = 'home'; selectedSubject = null">
+                    <div class="w-11 h-11 sm:w-16 sm:h-16 hero-block flex items-center justify-center rounded-2xl shadow-lg shrink-0">
+                        <i data-lucide="graduation-cap" class="w-5.5 h-5.5 sm:w-8 sm:h-8 text-white"></i>
                     </div>
-                    <div class="min-w-0">
-                        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">SchoolFlow</h1>
-                        <p class="text-[11px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest truncate">
-                            {{ currentClass >= 11 ? 'Gymnasiale Oberstufe' : 'Klasse ' + currentClass }}
+                    <div class="min-w-0 flex-1">
+                        <h1 class="text-xl sm:text-3xl font-black text-white tracking-tight truncate leading-tight">SchoolFlow</h1>
+                        <p class="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest truncate">
+                            {{ currentClass >= 11 ? 'Gymn. Oberstufe' : 'Klasse ' + currentClass }}
                         </p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
-                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
-                        <i data-lucide="download" class="w-5.5 h-5.5"></i>
+                <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
+                        <i data-lucide="download" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
                     </button>
-                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
-                        <i data-lucide="settings" class="w-5.5 h-5.5"></i>
+                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
+                        <i data-lucide="settings" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
                     </button>
-                    <button @click="handleLogout" title="Abmelden" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
-                        <i data-lucide="log-out" class="w-5.5 h-5.5"></i>
+                    <button @click="handleLogout" title="Abmelden" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
+                        <i data-lucide="log-out" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
                     </button>
                 </div>
             </header>
@@ -1567,11 +1567,136 @@
                 <div v-if="currentTab === 'stats' && !selectedSubject" class="space-y-6 max-w-4xl mx-auto animate-fade-in">
                     <div class="px-2 title-enter">
                         <h2 class="text-2xl sm:text-4xl font-black text-white">Statistik</h2>
+                        <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-400 mt-1">{{ selectedHalfYear }} – Halbjahresauswertung</p>
                     </div>
+
+                    <!-- Schnellübersicht: 4 KPI-Kacheln -->
+                    <div class="grid grid-cols-2 gap-3 stats-card-enter" style="animation-delay:0.05s">
+                        <!-- Beste Note -->
+                        <div class="glass-card p-4 flex flex-col gap-1 overflow-hidden">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <span class="w-6 h-6 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                </span>
+                                <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 leading-tight">Beste Note</span>
+                            </div>
+                            <div class="text-4xl font-black text-emerald-400 leading-none">
+                                {{ (() => { const all = processedData.semesterSubjects.flatMap(s => (s.semesterGrades||[]).filter(g=>!g.pending).map(g=>g.points)); if(!all.length) return '-'; return gradeSystem === '6' ? Math.min(...all) : Math.max(...all); })() }}
+                            </div>
+                            <div class="text-[9px] text-slate-500 font-bold leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Niedrigste Zahl' : 'Höchste Punktzahl' }}</div>
+                        </div>
+                        <!-- Schlechteste Note -->
+                        <div class="glass-card p-4 flex flex-col gap-1 overflow-hidden">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <span class="w-6 h-6 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                                    <i data-lucide="trending-down" class="w-3.5 h-3.5 text-rose-400"></i>
+                                </span>
+                                <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 leading-tight">Schwächste</span>
+                            </div>
+                            <div class="text-4xl font-black text-rose-400 leading-none">
+                                {{ (() => { const all = processedData.semesterSubjects.flatMap(s => (s.semesterGrades||[]).filter(g=>!g.pending).map(g=>g.points)); if(!all.length) return '-'; return gradeSystem === '6' ? Math.max(...all) : Math.min(...all); })() }}
+                            </div>
+                            <div class="text-[9px] text-slate-500 font-bold leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Höchste Zahl' : 'Niedrigste Punktzahl' }}</div>
+                        </div>
+                        <!-- Anzahl Noten -->
+                        <div class="glass-card p-4 flex flex-col gap-1 overflow-hidden">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <span class="w-6 h-6 rounded-full bg-indigo-500/15 flex items-center justify-center shrink-0">
+                                    <i data-lucide="hash" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                </span>
+                                <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 leading-tight">Noten gesamt</span>
+                            </div>
+                            <div class="text-4xl font-black text-indigo-400 leading-none">
+                                {{ processedData.semesterSubjects.reduce((a,s)=>a+(s.semesterGrades||[]).filter(g=>!g.pending).length, 0) }}
+                            </div>
+                            <div class="text-[9px] text-slate-500 font-bold leading-tight mt-0.5">in {{ processedData.semesterSubjects.length }} Fächern</div>
+                        </div>
+                        <!-- Gesamtschnitt -->
+                        <div class="glass-card p-4 flex flex-col gap-1 overflow-hidden">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <span class="w-6 h-6 rounded-full bg-violet-500/15 flex items-center justify-center shrink-0">
+                                    <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-violet-400"></i>
+                                </span>
+                                <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 leading-tight">Gesamtschnitt</span>
+                            </div>
+                            <div class="text-4xl font-black text-violet-400 leading-none">{{ formatNumber(processedData.avgPoints) }}</div>
+                            <div class="text-[9px] text-slate-500 font-bold leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Ø aller Fächer' : 'Ø Punkte gewichtet' }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Punkteverteilung Balkendiagramm -->
                     <div class="glass-card p-5 sm:p-6 relative stats-card-enter" style="animation-delay:0.1s">
-                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-5">Punkteverteilung ({{ selectedHalfYear }})</p>
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-5 flex items-center gap-2">
+                            <i data-lucide="bar-chart" class="w-4 h-4 text-indigo-400"></i>
+                            Notenverteilung ({{ selectedHalfYear }})
+                        </p>
                         <div class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
                             <canvas id="barChart" style="background: transparent;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Klausur vs. Sonstige Leistungen -->
+                    <div class="glass-card p-5 sm:p-6 stats-card-enter" style="animation-delay:0.18s">
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-400"></i>
+                            Klausuren vs. Sonstige Leistungen
+                        </p>
+                        <div class="space-y-3">
+                            <template v-for="typ in ['Klausur','Sonstige Leistung']" :key="typ">
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-black text-white">{{ typ }}</span>
+                                        <span class="text-xs font-bold text-slate-400">
+                                            {{ processedData.semesterSubjects.reduce((a,s)=>a+(s.semesterGrades||[]).filter(g=>!g.pending&&g.type===typ).length,0) }} Noten
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-white/5 rounded-full h-3 overflow-hidden border border-white/5">
+                                        <div class="h-3 rounded-full transition-all duration-700"
+                                             :style="{
+                                                width: (() => {
+                                                    const total = processedData.semesterSubjects.reduce((a,s)=>a+(s.semesterGrades||[]).filter(g=>!g.pending).length,0);
+                                                    const count = processedData.semesterSubjects.reduce((a,s)=>a+(s.semesterGrades||[]).filter(g=>!g.pending&&g.type===typ).length,0);
+                                                    return total ? (count/total*100).toFixed(1)+'%' : '0%';
+                                                })(),
+                                                background: typ === 'Klausur' ? 'linear-gradient(90deg,#6366f1,#818cf8)' : 'linear-gradient(90deg,#8b5cf6,#a78bfa)'
+                                             }">
+                                        </div>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 mt-0.5">
+                                        Ø {{ (() => {
+                                            const grades = processedData.semesterSubjects.flatMap(s=>(s.semesterGrades||[]).filter(g=>!g.pending&&g.type===typ).map(g=>g.points));
+                                            return grades.length ? formatNumber(grades.reduce((a,b)=>a+b,0)/grades.length) : '-';
+                                        })() }} Punkte im Schnitt
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Fächer-Ranking -->
+                    <div class="glass-card p-5 sm:p-6 stats-card-enter" style="animation-delay:0.26s">
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                            <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
+                            Fächer-Ranking nach Schnitt
+                        </p>
+                        <div class="space-y-2.5">
+                            <div v-if="processedData.semesterSubjects.filter(s=>s.finalPoints!==null).length === 0" class="text-center py-6 text-slate-500 text-xs font-bold">
+                                Noch keine Noten eingetragen.
+                            </div>
+                            <div v-for="(s, idx) in [...processedData.semesterSubjects].filter(s=>s.finalPoints!==null).sort((a,b)=> gradeSystem==='6' ? a.finalPoints-b.finalPoints : b.finalPoints-a.finalPoints)"
+                                 :key="s.id"
+                                 class="flex items-center gap-3 p-3 rounded-2xl bg-black/20 border border-white/5">
+                                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0"
+                                      :class="idx===0?'bg-amber-500/20 text-amber-400':idx===1?'bg-slate-400/15 text-slate-300':idx===2?'bg-orange-600/15 text-orange-400':'bg-white/5 text-slate-500'">
+                                    {{ idx + 1 }}
+                                </span>
+                                <div class="w-2 h-6 rounded-full shrink-0" :style="{ backgroundColor: s.color }"></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-black text-white text-sm truncate">{{ s.name }}</div>
+                                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{{ s.semesterGrades ? s.semesterGrades.filter(g=>!g.pending).length : 0 }} Noten</div>
+                                </div>
+                                <div class="text-xl font-black shrink-0" :style="{ color: s.color }">{{ formatNumber(s.finalPoints) }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1633,7 +1758,7 @@
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="closeSubjectModal" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10">
+                <button @click="closeModal('isSubjectModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
@@ -1720,7 +1845,7 @@
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isGradeModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
+                <button @click="closeModal('isGradeModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
@@ -1770,7 +1895,7 @@
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isReportCardModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
+                <button @click="closeModal('isReportCardModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">Zeugnisnote festlegen</h2>
@@ -1825,7 +1950,7 @@
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isTaskModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
+                <button @click="closeModal('isTaskModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
@@ -1876,7 +2001,7 @@
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isAppSettingsModalOpen = false" class="sticky top-0 float-right w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10 -mt-1 -mr-1">
+                <button @click="closeModal('isAppSettingsModalOpen')" class="sticky top-0 float-right w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10 -mt-1 -mr-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10 flex items-center gap-3">
@@ -1983,7 +2108,7 @@
         <!-- PWA INSTALL GUIDE MODAL -->
         <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 modal-overlay-enter">
             <div class="center-modal-enter liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
-                <button @click="isInstallGuideModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
+                <button @click="closeModal('isInstallGuideModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <div class="w-20 h-20 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -2009,7 +2134,7 @@
                     </div>
                 </div>
                 
-                <button @click="isInstallGuideModalOpen = false" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Alles klar!</button>
+                <button @click="closeModal('isInstallGuideModalOpen')" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Alles klar!</button>
             </div>
         </div>
 
@@ -2342,7 +2467,7 @@
                     if (crossedBoundary) {
                         listenToSubjects(user.value.uid);
                     }
-                    isAppSettingsModalOpen.value = false;
+                    closeModal('isAppSettingsModalOpen');
                     autoSetCurrentHalfYear();
                 };
 
@@ -2468,6 +2593,64 @@
                         }
                     }
                     modalDrag.value = { active: false, startY: 0, currentY: 0, modalKey: null, el: null, velocity: 0, lastY: 0, lastTime: 0 };
+                };
+
+                // ── ANIMIERTES MODAL SCHLIESSEN ──
+                // Spielt die Exit-Animation ab, dann setzt den State auf false
+                const closeModal = (modalKey) => {
+                    const keyMap = {
+                        'isSubjectModalOpen': ['isSubjectModalOpen', 'isSettingsModalOpen'],
+                        'isGradeModalOpen': ['isGradeModalOpen'],
+                        'isReportCardModalOpen': ['isReportCardModalOpen'],
+                        'isTaskModalOpen': ['isTaskModalOpen'],
+                        'isAppSettingsModalOpen': ['isAppSettingsModalOpen'],
+                        'isInstallGuideModalOpen': ['isInstallGuideModalOpen'],
+                    };
+                    // Finde das DOM-Panel
+                    const panelQuery = {
+                        'isSubjectModalOpen': '.z-\\[100\\] .liquid-glass-modal, .z-\\[100\\] .modal-glass',
+                        'isGradeModalOpen': '.z-\\[100\\] .liquid-glass-modal',
+                        'isReportCardModalOpen': '.z-\\[100\\] .liquid-glass-modal',
+                        'isTaskModalOpen': '.z-\\[100\\] .liquid-glass-modal',
+                        'isAppSettingsModalOpen': '.z-\\[110\\] .liquid-glass-modal, .z-\\[110\\] .modal-glass',
+                        'isInstallGuideModalOpen': '.z-\\[110\\] .liquid-glass-modal, .z-\\[110\\] .center-modal-enter',
+                    };
+                    // Finde das aktive Modal-Panel
+                    const allPanels = document.querySelectorAll('.liquid-glass-modal, .modal-glass');
+                    let panel = null;
+                    for (const p of allPanels) {
+                        const parent = p.closest('[class*="z-[100]"], [class*="z-[110]"]');
+                        if (parent) { panel = p; break; }
+                    }
+                    const stateRefs = {
+                        'isSubjectModalOpen': isSubjectModalOpen,
+                        'isSettingsModalOpen': isSettingsModalOpen,
+                        'isGradeModalOpen': isGradeModalOpen,
+                        'isReportCardModalOpen': isReportCardModalOpen,
+                        'isTaskModalOpen': isTaskModalOpen,
+                        'isAppSettingsModalOpen': isAppSettingsModalOpen,
+                        'isInstallGuideModalOpen': isInstallGuideModalOpen,
+                    };
+                    const keysToClose = keyMap[modalKey] || [modalKey];
+                    if (panel) {
+                        panel.style.willChange = 'transform, opacity';
+                        panel.style.transition = 'transform 0.32s cubic-bezier(0.4, 0, 1, 1), opacity 0.26s ease';
+                        panel.style.transform = 'translateY(105%) scale(0.96)';
+                        panel.style.opacity = '0';
+                        // Overlay-Backdrop ausblenden
+                        const overlay = panel.closest('[class*="fixed inset-0"]');
+                        if (overlay) {
+                            overlay.style.transition = 'opacity 0.28s ease';
+                            overlay.style.opacity = '0';
+                        }
+                        setTimeout(() => {
+                            keysToClose.forEach(k => { if (stateRefs[k]) stateRefs[k].value = false; });
+                            if (panel) panel.style.cssText = '';
+                            if (overlay) overlay.style.cssText = '';
+                        }, 340);
+                    } else {
+                        keysToClose.forEach(k => { if (stateRefs[k]) stateRefs[k].value = false; });
+                    }
                 };
 
                 const refreshIcons = () => nextTick(() => { if (window.lucide) lucide.createIcons(); });
@@ -2787,7 +2970,7 @@
                             const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
                             await setDoc(taskRef, taskData);
                         }
-                        isTaskModalOpen.value = false;
+                        closeModal('isTaskModalOpen');
                     } catch (err) { 
                         console.error("Fehler beim Speichern der Aufgabe: ", err); 
                     }
@@ -2796,7 +2979,7 @@
                 const handleDeleteTask = async (taskId) => {
                     if (!user.value) return;
                     await deleteDoc(doc(db, 'users', user.value.uid, 'tasks', taskId));
-                    isTaskModalOpen.value = false;
+                    if (isTaskModalOpen.value) closeModal('isTaskModalOpen');
                 };
 
                 const toggleTaskDone = async (task) => {
@@ -2957,7 +3140,7 @@
 
                 const openAddSubjectModal = () => { isSettingsModalOpen.value=false; subjectForm.value={name:'', isLK:false, color:'#6366f1', examWeight:50, abiType:null, icon:'book-open'}; isSubjectModalOpen.value=true; refreshIcons(); };
                 const openSettingsModal = () => { isSettingsModalOpen.value=true; subjectForm.value={...selectedSubject.value}; isSubjectModalOpen.value=true; refreshIcons(); };
-                const closeSubjectModal = () => { isSubjectModalOpen.value = false; };
+                const closeSubjectModal = () => { closeModal('isSubjectModalOpen'); };
                 const openAddGradeModal = () => { gradeForm.value={id:null, points: gradeSystem.value === '6' ? 3 : 10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; isGradeModalOpen.value=true; refreshIcons(); };
                 const openEditGradeModal = (g) => { gradeForm.value={...g}; isGradeModalOpen.value=true; refreshIcons(); };
                 const openReportCardModal = () => { 
@@ -3016,7 +3199,7 @@
                             };
                             t.update(ref, { grades: gradeForm.value.id ? grades.map(g => g.id === ng.id ? ng : g) : [...grades, ng] });
                         });
-                        isGradeModalOpen.value = false;
+                        closeModal('isGradeModalOpen');
                     } catch (err) {
                         console.error("Fehler beim Speichern der Note:", err);
                         alert("Fehler beim Speichern: " + err.message);
@@ -3031,7 +3214,7 @@
                         const snap = await t.get(ref);
                         t.update(ref, { grades: (snap.data().grades || []).filter(g => g.id !== gradeId) });
                     });
-                    if(isGradeModalOpen.value) isGradeModalOpen.value = false;
+                    if(isGradeModalOpen.value) closeModal('isGradeModalOpen');
                 };
 
                 const handleSaveReportCardGrade = async (pts) => {
@@ -3053,7 +3236,7 @@
                         } else {
                             await setDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id), { reportCardGrades: { [key]: pts } }, { merge: true });
                         }
-                        isReportCardModalOpen.value = false;
+                        closeModal('isReportCardModalOpen');
                     }
                 };
 
@@ -3239,7 +3422,7 @@
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
                     handlePlannerTouchStart, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
-                    selectedReportCardKey, reportCardClassOptions
+                    selectedReportCardKey, reportCardClassOptions, closeModal
                 };
             }
         }).mount('#app');
