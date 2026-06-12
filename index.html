@@ -941,7 +941,7 @@
                 </div>
                 
                 <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
+                    <button v-if="deferredPrompt" @click="triggerInstall" title="App installieren" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
                         <i data-lucide="download" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
                     </button>
                     <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
@@ -2712,9 +2712,8 @@
                         if (outcome === 'accepted') {
                             deferredPrompt.value = null;
                         }
-                    } else {
-                        isInstallGuideModalOpen.value = true;
                     }
+                    // Kein Fallback auf Anleitung – Button ist nur sichtbar wenn Installation möglich
                 };
 
                 const determineSemesterFromDate = (dateStr) => {
