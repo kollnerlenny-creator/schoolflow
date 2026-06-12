@@ -234,38 +234,48 @@
         .hero-shape-2 { position: absolute; bottom: -70px; right: -20px; width: 220px; height: 220px; background: rgba(255,255,255,0.08); border-radius: 50%; }
 
         /* Swipe to delete transition */
-        .swipe-item { transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+        .swipe-item { transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
         .swipe-item.dragging { transition: none; }
 
-        /* Task done animation */
+        /* Task done animation — smooth collapse */
         @keyframes task-shrink-out {
-            0%   { max-height: 140px; opacity: 1; transform: scaleY(1) translateY(0); margin-bottom: 0.75rem; }
-            30%  { max-height: 140px; opacity: 0.8; transform: scaleY(1) translateY(0); }
-            100% { max-height: 0px; opacity: 0; transform: scaleY(0.1) translateY(-20px); margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-width: 0; }
+            0%   { max-height: 160px; opacity: 1; transform: scale(1) translateY(0); margin-bottom: 0.875rem; }
+            20%  { max-height: 160px; opacity: 1; transform: scale(1.015) translateY(0); }
+            50%  { max-height: 160px; opacity: 0.6; transform: scale(0.97) translateY(0); }
+            100% { max-height: 0px; opacity: 0; transform: scale(0.92) translateY(-6px); margin-bottom: 0; padding-top: 0; padding-bottom: 0; border-width: 0; }
         }
         
         .task-done-btn {
-            transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: background-color 0.22s ease, border-color 0.22s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
         }
         .task-done-btn:active {
-            transform: scale(0.75);
+            transform: scale(0.72);
         }
         
         .task-item-leaving {
             overflow: hidden;
-            transform-origin: top center;
-            animation: task-shrink-out 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            transform-origin: center top;
+            animation: task-shrink-out 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             pointer-events: none;
             will-change: max-height, opacity, transform;
         }
 
-        /* Sanfte Seitenübergänge */
+        /* ── PREMIUM PAGE TRANSITIONS ── */
         .animate-fade-in {
-            animation: fadeIn 0.38s cubic-bezier(0.215, 0.610, 0.355, 1) forwards;
+            animation: fadeIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(16px) scale(0.985); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ── MODAL OVERLAY BACKDROP ── */
+        .modal-backdrop-enter {
+            animation: backdropFadeIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes backdropFadeIn {
+            from { opacity: 0; backdrop-filter: blur(0px); }
+            to   { opacity: 1; backdrop-filter: blur(12px); }
         }
 
         /* Liquid Glass — Modals */
@@ -389,33 +399,368 @@
 
         /* ── STAGGERED HOME KACHELN ── */
         @keyframes cardSlideUp {
-            from { opacity: 0; transform: translateY(28px) scale(0.97); }
+            from { opacity: 0; transform: translateY(32px) scale(0.96); filter: blur(2px); }
+            to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .card-enter { animation: cardSlideUp 0.56s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .card-enter-1 { animation-delay: 0.04s; }
+        .card-enter-2 { animation-delay: 0.10s; }
+        .card-enter-3 { animation-delay: 0.17s; }
+        .card-enter-4 { animation-delay: 0.24s; }
+        .card-enter-5 { animation-delay: 0.31s; }
+
+        /* ── MODAL SLIDE-UP ENTER (Bottom-Sheet) ── */
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(100%) scale(0.98); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .card-enter { animation: cardSlideUp 0.52s cubic-bezier(0.215,0.610,0.355,1) both; }
-        .card-enter-1 { animation-delay: 0.05s; }
-        .card-enter-2 { animation-delay: 0.13s; }
-        .card-enter-3 { animation-delay: 0.21s; }
-        .card-enter-4 { animation-delay: 0.29s; }
-        .card-enter-5 { animation-delay: 0.37s; }
-
-        /* ── MODAL SLIDE-UP ENTER ── */
-        @keyframes modalSlideUp {
-            from { opacity: 0; transform: translateY(60px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* Center modal (desktop) */
+        @keyframes modalPopIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .modal-enter { animation: modalSlideUp 0.38s cubic-bezier(0.215,0.610,0.355,1) both; }
+        .modal-enter {
+            animation: modalSlideUp 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @media (min-width: 768px) {
+            .modal-enter {
+                animation: modalPopIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+            }
+        }
+
+        /* ── MODAL SLIDE-DOWN EXIT ── */
+        @keyframes modalSlideDown {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(100%); }
+        }
+        .modal-exit {
+            animation: modalSlideDown 0.32s cubic-bezier(0.4, 0, 1, 1) both;
+            pointer-events: none;
+        }
 
         /* ── TAB FADE ── */
         @keyframes tabFade {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px) scale(0.99); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .tab-enter { animation: tabFade 0.32s cubic-bezier(0.215,0.610,0.355,1) both; }
+        .tab-enter { animation: tabFade 0.36s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+        /* ── MODAL DRAG HANDLE PULSE ── */
+        .modal-drag-handle:active {
+            transform: scaleX(1.2);
+        }
+        .modal-drag-handle {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+        }
 
         /* ── FIX: Note-Item darf beim Tippen NICHT rot werden ── */
         .grade-swipe-item { -webkit-tap-highlight-color: transparent; }
         .grade-swipe-item:active { background: transparent !important; opacity: 1 !important; }
+
+        /* ── PREMIUM BUTTON PRESS FEEDBACK ── */
+        .active\:scale-95:active { transform: scale(0.95); transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+        .active\:scale-90:active { transform: scale(0.90); transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+
+        /* ── SPRING TRANSITION UTILITY ── */
+        .transition-spring {
+            transition: all 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* ── NAV TAB ICON SCALE-UP ── */
+        .nav-btn-icon {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.22s ease;
+            display: inline-block;
+        }
+        .nav-btn-active .nav-btn-icon {
+            transform: scale(1.18) translateY(-2px);
+        }
+
+        /* ── MODAL OVERLAY FADE ── */
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .modal-overlay-enter {
+            animation: overlayFadeIn 0.3s ease both;
+        }
+
+        /* ── SUBJECT CARD HOVER ── */
+        .subject-card {
+            transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+        }
+        .subject-card:active {
+            transform: scale(0.975);
+        }
+
+        /* ── SWIPE-BACKGROUND REVEAL ── */
+        .swipe-delete-bg {
+            transition: opacity 0.18s ease;
+        }
+
+        /* ── CHECKMARK DRAW ANIMATION ── */
+        @keyframes checkDraw {
+            from { stroke-dashoffset: 30; opacity: 0; }
+            to   { stroke-dashoffset: 0; opacity: 1; }
+        }
+        .check-draw {
+            stroke-dasharray: 30;
+            stroke-dashoffset: 30;
+            animation: checkDraw 0.28s 0.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* ── TOGGLE SWITCH SMOOTH ── */
+        .toggle-thumb {
+            transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
+        }
+
+        /* ── PILL INDICATOR SPRING ── */
+        .pill-indicator {
+            transition: left 0.44s cubic-bezier(0.34, 1.2, 0.64, 1), width 0.44s cubic-bezier(0.34, 1.2, 0.64, 1) !important;
+        }
+
+        /* ── DATE PICKER POP ── */
+        @keyframes datepickerPop {
+            from { opacity: 0; transform: scale(0.92) translateY(12px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .datepicker-enter {
+            animation: datepickerPop 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── INSTALL GUIDE MODAL ── */
+        @keyframes centerModalPop {
+            from { opacity: 0; transform: scale(0.88) translateY(20px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .center-modal-enter {
+            animation: centerModalPop 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── GRADE ITEM APPEAR ── */
+        @keyframes gradeItemIn {
+            from { opacity: 0; transform: translateX(-12px) scale(0.97); }
+            to   { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        .grade-item-enter {
+            animation: gradeItemIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── SMOOTH MODAL DRAG HANDLE ── */
+        .modal-drag-handle {
+            width: 44px;
+            height: 5px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 9999px;
+            margin: 0 auto 20px;
+            cursor: grab;
+            transition: background 0.2s ease, transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-drag-handle:active {
+            cursor: grabbing;
+            background: rgba(255,255,255,0.42);
+            width: 56px;
+        }
+        .modal-dragging { transition: none !important; }
+        .modal-dragging .modal-drag-handle {
+            background: rgba(255,255,255,0.38);
+            width: 60px;
+        }
+
+        /* ── SCROLL BOUNCE FEEDBACK ── */
+        .no-scrollbar {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ── LOADING SPINNER PULSE ── */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            50%       { opacity: 0.8; box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
+        }
+
+        /* ── SUBJECT CARD STAGGER (Fächerliste) ── */
+        @keyframes subjectCardIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .subject-list-item {
+            animation: subjectCardIn 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── TASK ITEM STAGGER (Planer-Liste) ── */
+        @keyframes taskItemIn {
+            from { opacity: 0; transform: translateX(-10px) scale(0.98); }
+            to   { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        .task-list-item {
+            animation: taskItemIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── CALENDAR DAY HOVER FEEDBACK ── */
+        .cal-day {
+            transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.18s ease, border-color 0.18s ease;
+        }
+        .cal-day:active { transform: scale(0.9); }
+
+        /* ── NUMBER COUNTER HIGHLIGHT ── */
+        @keyframes numberPop {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+        .number-pop { animation: numberPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+        /* ── FILTER PILL TRANSITION ── */
+        .filter-pill {
+            transition: background-color 0.22s cubic-bezier(0.22, 1, 0.36, 1), color 0.22s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
+        }
+        .filter-pill:active { transform: scale(0.93); }
+
+        /* ── STATS CARD ENTER ── */
+        @keyframes statsCardIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); filter: blur(1px); }
+            to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .stats-card-enter { animation: statsCardIn 0.48s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+        /* ── ABITUR TABLE ROW STAGGER ── */
+        @keyframes tableRowIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .table-row-enter {
+            animation: tableRowIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── MODAL FORM FIELD FOCUS ── */
+        .modal-input {
+            transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+        }
+        .modal-input:focus {
+            border-color: rgba(99, 102, 241, 0.5) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+            background-color: rgba(0,0,0,0.35) !important;
+            outline: none;
+        }
+
+        /* ── HERO SCORE NUMBER GLOW ── */
+        .score-number {
+            transition: text-shadow 0.3s ease;
+        }
+        .score-number:hover {
+            text-shadow: 0 0 40px rgba(199, 210, 254, 0.4);
+        }
+
+        /* ── BACK BUTTON HOVER ── */
+        .back-btn {
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .back-btn:hover { transform: translateX(-3px); }
+        .back-btn:active { transform: scale(0.93) translateX(-2px); }
+
+        /* ── EMPTY STATE PULSE ── */
+        @keyframes emptyBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.6; }
+            50%       { transform: translateY(-4px); opacity: 1; }
+        }
+        .empty-state-icon { animation: emptyBounce 2.5s ease-in-out infinite; }
+
+        /* ── SUBJECT DETAIL HEADER ENTER ── */
+        @keyframes heroSlideDown {
+            from { opacity: 0; transform: translateY(-12px) scale(0.99); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .hero-enter { animation: heroSlideDown 0.44s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+        /* ── GRADE VALUE BOUNCE ── */
+        @keyframes gradeValueIn {
+            from { opacity: 0; transform: scale(0.7) translateY(4px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .grade-value-enter { animation: gradeValueIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+        /* ── SMOOTH CLOSE BUTTON ── */
+        .modal-close-btn {
+            transition: background-color 0.18s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.18s ease;
+        }
+        .modal-close-btn:hover { background: rgba(255,255,255,0.1); }
+        .modal-close-btn:active { transform: scale(0.85) rotate(90deg); }
+
+        /* ── ICON SELECTOR BUTTON ── */
+        .icon-btn {
+            transition: background-color 0.2s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        }
+        .icon-btn:active { transform: scale(0.88); }
+        .icon-btn.selected { transform: scale(1.05); }
+
+        /* ── COLOR SWATCH ── */
+        .color-swatch {
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        }
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch:active { transform: scale(0.9); }
+
+        /* ── HEADER ICON BUTTONS ── */
+        .header-action-btn {
+            transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, color 0.2s ease;
+        }
+        .header-action-btn:hover { background: rgba(255,255,255,0.1); color: #c7d2fe; }
+        .header-action-btn:active { transform: scale(0.85); }
+
+        /* ── ZEUGNISNOTE VALUE POP ── */
+        @keyframes reportValuePop {
+            0%   { transform: scale(1); }
+            35%  { transform: scale(1.12); color: #a5b4fc; }
+            100% { transform: scale(1); }
+        }
+        .report-value-pop { animation: reportValuePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+        /* ── WEEK/DAY VIEW ITEMS ── */
+        @keyframes calItemIn {
+            from { opacity: 0; transform: scale(0.92); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .cal-item-enter {
+            animation: calItemIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── INCOMING TASK PREVIEW ITEM ── */
+        @keyframes previewItemIn {
+            from { opacity: 0; transform: translateX(12px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .preview-item-enter {
+            animation: previewItemIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ── HALBJAHR PILL BUTTON ── */
+        .hy-btn {
+            transition: color 0.22s ease, font-weight 0.15s ease;
+        }
+
+        /* ── SMOOTH TRANSITION FOR ALL INTERACTIVE ELEMENTS ── */
+        button, [role="button"] {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── SECTION TITLE ENTER ── */
+        @keyframes titleIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .title-enter { animation: titleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+        /* ── SETTINGS SECTION STAGGER ── */
+        @keyframes settingsSectionIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .settings-section { animation: settingsSectionIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .settings-section-1 { animation-delay: 0.05s; }
+        .settings-section-2 { animation-delay: 0.1s; }
+        .settings-section-3 { animation-delay: 0.15s; }
+        .settings-section-4 { animation-delay: 0.2s; }
+        .settings-section-5 { animation-delay: 0.25s; }
     </style>
 </head>
 <body class="font-sans selection:bg-indigo-500/30 overflow-x-hidden antialiased pb-36">
@@ -596,13 +941,13 @@
                 </div>
                 
                 <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
-                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 active:scale-90 transition-all cursor-pointer">
+                    <button @click="triggerInstall" title="Zum Startbildschirm hinzufügen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
                         <i data-lucide="download" class="w-5.5 h-5.5"></i>
                     </button>
-                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 active:scale-90 transition-all cursor-pointer">
+                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
                         <i data-lucide="settings" class="w-5.5 h-5.5"></i>
                     </button>
-                    <button @click="handleLogout" title="Abmelden" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 active:scale-90 transition-all cursor-pointer">
+                    <button @click="handleLogout" title="Abmelden" class="w-11 h-11 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
                         <i data-lucide="log-out" class="w-5.5 h-5.5"></i>
                     </button>
                 </div>
@@ -610,7 +955,7 @@
 
             <!-- HALBJAHR SLIDER (Bequeme, größere Touch-Flächen) -->
             <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-2 flex relative mb-8 z-10 max-w-sm mx-auto">
-                <div class="absolute top-2 bottom-2 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md shadow-indigo-600/35"
+                <div class="absolute top-2 bottom-2 bg-indigo-600 rounded-full shadow-md shadow-indigo-600/35 pill-indicator"
                      :style="{ width: `calc(100% / ${halfYears.length} - 4px)`, left: `calc(${halfYears.indexOf(selectedHalfYear)} * 100% / ${halfYears.length} + 2px)` }"></div>
                 <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
                         :class="selectedHalfYear === s ? 'text-white font-black' : 'text-slate-400 font-bold'"
@@ -648,7 +993,7 @@
                                 <div class="hero-shape-2"></div>
                                 <div class="relative z-10 my-auto">
                                     <p class="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-indigo-200 mb-2">Dein Schnitt in {{ selectedHalfYear }}</p>
-                                    <div class="text-6xl xs:text-7xl sm:text-8xl font-black tracking-tighter text-white drop-shadow-lg">
+                                    <div class="text-6xl xs:text-7xl sm:text-8xl font-black tracking-tighter text-white drop-shadow-lg score-number">
                                         {{ formatNumber(processedData.avgPoints) }}
                                     </div>
                                     <div v-if="processedData.avgGrade" class="mt-4 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2 rounded-full text-white font-bold text-sm">
@@ -661,7 +1006,7 @@
                         <!-- Rechte Seite: LK-Faktor & Nächste Aufgaben -->
                         <div class="md:col-span-6 space-y-6 card-enter card-enter-3">
                             <!-- LK-Bonus Toggle Widget (Riesige Klickfläche) -->
-                            <div v-if="gradeSystem !== '6'" @click="lkBonusActive = !lkBonusActive" class="glass-card p-5 flex justify-between items-center cursor-pointer active:scale-98 transition-transform">
+                            <div v-if="gradeSystem !== '6'" @click="lkBonusActive = !lkBonusActive" class="glass-card p-5 flex justify-between items-center cursor-pointer transition-transform subject-card" style="transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div class="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
                                         <i data-lucide="award" class="w-6 h-6"></i>
@@ -671,8 +1016,8 @@
                                         <p class="text-xs text-slate-400 truncate">LKs doppelt werten</p>
                                     </div>
                                 </div>
-                                <div class="w-14 h-8 rounded-full transition-colors relative shrink-0" :class="lkBonusActive ? 'bg-indigo-600' : 'bg-slate-700'">
-                                    <div class="w-6 h-6 bg-white rounded-full absolute top-1 transition-all" :class="lkBonusActive ? 'right-1' : 'left-1'"></div>
+                                <div class="w-14 h-8 rounded-full relative shrink-0" :class="lkBonusActive ? 'bg-indigo-600' : 'bg-slate-700'" style="transition: background-color 0.25s ease;">
+                                    <div class="w-6 h-6 bg-white rounded-full absolute top-1 shadow-md" :class="lkBonusActive ? 'right-1' : 'left-1'" style="transition: left 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), right 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
                                 </div>
                             </div>
 
@@ -688,7 +1033,8 @@
                                     Aktuell keine Aufgaben! 🎉
                                 </div>
                                 <div v-else class="space-y-3.5">
-                                    <div v-for="t in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3.5 bg-black/20 p-4 rounded-2xl border border-white/5">
+                                    <div v-for="(t, tIdx) in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3.5 bg-black/20 p-4 rounded-2xl border border-white/5 preview-item-enter"
+                                         :style="{ animationDelay: (tIdx * 0.07) + 's' }">
                                         <button @click="toggleTaskDone(t)" 
                                                 class="task-done-btn shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-indigo-400'">
@@ -721,8 +1067,9 @@
                     </div>
 
                     <div class="space-y-4">
-                        <div v-for="s in sortedSubjectsList" :key="s.id" @click="selectedSubject = s" 
-                             class="glass-card p-5 flex items-center justify-between cursor-pointer active:border-white/20 transition-all shadow-sm relative overflow-hidden">
+                        <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s" 
+                             class="glass-card p-5 flex items-center justify-between cursor-pointer transition-all shadow-sm relative overflow-hidden subject-card subject-list-item"
+                             :style="{ animationDelay: (idx * 0.055) + 's' }">
                             <div class="w-1.5 absolute left-0 top-4 bottom-4 rounded-r-full" :style="{ backgroundColor: s.color }"></div>
                             
                             <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
@@ -752,7 +1099,7 @@
 
                 <!-- 3. DETAILANSICHT EINES FACHS -->
                 <div v-if="selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-6xl mx-auto">
-                    <button @click="selectedSubject = null" class="glass-pill px-5 py-3 flex items-center gap-2 text-xs sm:text-sm font-black text-slate-300 active:scale-95 transition-transform w-fit cursor-pointer">
+                    <button @click="selectedSubject = null" class="glass-pill px-5 py-3 flex items-center gap-2 text-xs sm:text-sm font-black text-slate-300 active:scale-95 transition-transform w-fit cursor-pointer back-btn">
                         <i data-lucide="arrow-left" class="w-4.5 h-4.5"></i> Zurück
                     </button>
 
@@ -761,7 +1108,7 @@
                         <!-- Linke Spalte -->
                         <div class="lg:col-span-7 space-y-6 sm:space-y-8">
                             <!-- Fach Header -->
-                            <div class="hero-block p-6 sm:p-8" :style="{ background: `linear-gradient(135deg, ${selectedSubject.color} 0%, ${adjustColor(selectedSubject.color, -50)} 100%)` }">
+                            <div class="hero-block p-6 sm:p-8 hero-enter" :style="{ background: `linear-gradient(135deg, ${selectedSubject.color} 0%, ${adjustColor(selectedSubject.color, -50)} 100%)` }">
                                 <div class="flex justify-between items-start gap-3">
                                     <div class="min-w-0">
                                         <div class="flex items-center gap-3">
@@ -789,7 +1136,7 @@
                                 <div class="mt-8 pt-5 border-t border-white/20 flex justify-between items-end">
                                     <div>
                                         <p class="text-[11px] font-black uppercase tracking-wider text-white/80">Schnitt</p>
-                                        <div class="text-4xl sm:text-6xl font-black text-white mt-1">{{ activeSubjectData?.finalPoints !== null ? formatNumber(activeSubjectData.finalPoints) : '-' }}</div>
+                                        <div class="text-4xl sm:text-6xl font-black text-white mt-1 grade-value-enter" :key="activeSubjectData?.finalPoints">{{ activeSubjectData?.finalPoints !== null ? formatNumber(activeSubjectData.finalPoints) : '-' }}</div>
                                     </div>
                                     <div v-if="activeSubjectData?.finalPoints !== null" class="text-xs sm:text-sm font-bold text-white/95 bg-white/20 px-4 py-2 rounded-full backdrop-blur-md">
                                         Note {{ formatNumber(activeSubjectData.finalGrade) }}
@@ -888,8 +1235,8 @@
 
                     <!-- Planner Sub-Tabs -->
                     <div class="glass-pill p-2 flex relative z-10 max-w-full overflow-x-auto no-scrollbar">
-                        <div class="absolute top-2 bottom-2 bg-indigo-600 rounded-full transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) shadow-md"
-                             :style="{ width: 'calc(100% / 3 - 4px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 2px)' }"></div>
+                    <div class="absolute top-2 bottom-2 bg-indigo-600 rounded-full shadow-md pill-indicator"
+                         :style="{ width: 'calc(100% / 3 - 4px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 2px)' }"></div>
                         <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Anstehend</button>
                         <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Vergangen</button>
                         <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Kalender</button>
@@ -897,9 +1244,9 @@
 
                     <!-- Planer Filter-Pills -->
                     <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="flex gap-2.5 justify-center mt-2 px-2 flex-wrap">
-                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all">Alle</button>
-                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all">Nur Tests</button>
-                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'bg-indigo-600 text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all">Klausuren</button>
+                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-600/30' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Alle</button>
+                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-600/30' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Nur Tests</button>
+                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'bg-indigo-600 text-white font-black shadow-md shadow-indigo-600/30' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Klausuren</button>
                     </div>
 
                     <!-- Listenansichten -->
@@ -909,8 +1256,9 @@
                         </p>
 
                         <div class="space-y-3.5 relative px-1 py-1">
-                            <div v-for="t in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" 
-                                 class="relative group rounded-[1.6rem]"
+                        <div v-for="(t, tIdx) in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" 
+                                 class="relative group rounded-[1.6rem] task-list-item"
+                                 :style="{ animationDelay: (tIdx * 0.045) + 's' }"
                                  :class="leavingTasks.has(t.id) ? 'task-item-leaving' : (taskSwipeState.id === t.id ? 'overflow-hidden' : 'overflow-visible')">
                                 <div class="absolute inset-0 bg-rose-600 rounded-[1.6rem] flex items-center justify-between px-6 z-0 transition-opacity duration-150"
                                      :style="taskSwipeState.id === t.id && taskSwipeState.currentX < -20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
@@ -986,7 +1334,7 @@
                                 </div>
                                 <div class="grid grid-cols-7 gap-1.5">
                                     <div v-for="(day, idx) in calendarDays" :key="idx" 
-                                         class="aspect-square rounded-2xl flex flex-col items-center justify-between relative p-1.5 transition-all border"
+                                         class="aspect-square rounded-2xl flex flex-col items-center justify-between relative p-1.5 border cal-day"
                                          :style="{ minHeight: '44px' }"
                                          :class="[
                                             day.isCurrentMonth ? 'bg-black/30 text-white border-white/5 hover:border-indigo-500/60 cursor-pointer' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
@@ -1095,7 +1443,7 @@
 
                 <!-- 5. ZEUGNISANSICHT / ABITURRECHNER -->
                 <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in max-w-6xl mx-auto">
-                    <div class="px-2">
+                    <div class="px-2 title-enter">
                         <h2 class="text-2xl sm:text-4xl font-black text-white">{{ currentClass >= 11 ? 'Abiturrechner' : 'Zeugnisübersicht' }}</h2>
                         <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-400 mt-1">Halbjahresübersicht aller Fächer</p>
                     </div>
@@ -1217,10 +1565,10 @@
 
                 <!-- 6. STATS -->
                 <div v-if="currentTab === 'stats' && !selectedSubject" class="space-y-6 max-w-4xl mx-auto animate-fade-in">
-                    <div class="px-2">
+                    <div class="px-2 title-enter">
                         <h2 class="text-2xl sm:text-4xl font-black text-white">Statistik</h2>
                     </div>
-                    <div class="glass-card p-5 sm:p-6 relative">
+                    <div class="glass-card p-5 sm:p-6 relative stats-card-enter" style="animation-delay:0.1s">
                         <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-5">Punkteverteilung ({{ selectedHalfYear }})</p>
                         <div class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
                             <canvas id="barChart" style="background: transparent;"></canvas>
@@ -1233,28 +1581,43 @@
             <!-- NAVIGATION BOTTOM BAR (Original glass-pill mit flüssigem Sliding-Indikator) -->
             <div class="fixed left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pb-[calc(1.5rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
                 <div class="glass-pill p-1.5 flex relative pointer-events-auto w-full max-w-md shadow-2xl">
-                    <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full shadow-md shadow-indigo-600/40"
-                         style="transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);"
+                    <div class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-full shadow-lg shadow-indigo-600/45 pill-indicator"
+                         style="transition: left 0.44s cubic-bezier(0.34, 1.2, 0.64, 1), width 0.44s cubic-bezier(0.34, 1.2, 0.64, 1);"
                          :style="{ 
                              width: 'calc(20% - 2px)', 
                              left: `calc(${['home', 'subjects', 'planner', 'abitur', 'stats'].indexOf(currentTab)} * 20% + 1px)` 
                          }">
                     </div>
                     
-                    <button @click="currentTab = 'home'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'home' ? 'text-white' : 'text-slate-400'">
-                        <i data-lucide="home" class="w-6.5 h-6.5"></i>
+                    <button @click="currentTab = 'home'; selectedSubject = null" 
+                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        :class="currentTab === 'home' ? 'text-white' : 'text-slate-400'"
+                        style="transition: color 0.25s ease;">
+                        <i data-lucide="home" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'home' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
-                    <button @click="currentTab = 'subjects'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400'">
-                        <i data-lucide="layout-grid" class="w-6.5 h-6.5"></i>
+                    <button @click="currentTab = 'subjects'; selectedSubject = null"
+                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400'"
+                        style="transition: color 0.25s ease;">
+                        <i data-lucide="layout-grid" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'subjects' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
-                    <button @click="currentTab = 'planner'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400'">
-                        <i data-lucide="calendar-check" class="w-6.5 h-6.5"></i>
+                    <button @click="currentTab = 'planner'; selectedSubject = null"
+                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400'"
+                        style="transition: color 0.25s ease;">
+                        <i data-lucide="calendar-check" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'planner' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
-                    <button @click="currentTab = 'abitur'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400'">
-                        <i data-lucide="graduation-cap" class="w-6.5 h-6.5"></i>
+                    <button @click="currentTab = 'abitur'; selectedSubject = null"
+                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400'"
+                        style="transition: color 0.25s ease;">
+                        <i data-lucide="graduation-cap" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'abitur' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
-                    <button @click="currentTab = 'stats'; selectedSubject = null" class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center" style="transition: color 0.3s ease;" :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400'">
-                        <i data-lucide="trending-up" class="w-6.5 h-6.5"></i>
+                    <button @click="currentTab = 'stats'; selectedSubject = null"
+                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400'"
+                        style="transition: color 0.25s ease;">
+                        <i data-lucide="trending-up" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'stats' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                 </div>
             </div>
@@ -1262,7 +1625,7 @@
 
         <!-- MODALS (Designtechnisch optimierte Bottom-Sheets für ein erstklassiges Mobile-Gefühl) -->
         <!-- Fach Modal -->
-        <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
+        <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <!-- Swipe-Down Handle -->
                 <div class="modal-drag-handle md:hidden"
@@ -1270,7 +1633,7 @@
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="closeSubjectModal" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
+                <button @click="closeSubjectModal" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
@@ -1283,8 +1646,8 @@
                     
                     <div v-if="gradeSystem !== '6'" class="bg-black/20 p-5 rounded-3xl border border-white/5 flex items-center justify-between">
                         <div class="ml-2"><p class="font-black text-white text-base">Leistungskurs</p></div>
-                        <button type="button" @click="subjectForm.isLK = !subjectForm.isLK" :class="subjectForm.isLK ? 'bg-indigo-600' : 'bg-slate-700'" class="relative inline-flex h-9 w-16 rounded-full transition-all cursor-pointer">
-                            <span :class="subjectForm.isLK ? 'translate-x-8' : 'translate-x-1'" class="inline-block h-7 w-7 transform rounded-full bg-white transition-transform mt-1 shadow-sm"></span>
+                        <button type="button" @click="subjectForm.isLK = !subjectForm.isLK" :class="subjectForm.isLK ? 'bg-indigo-600' : 'bg-slate-700'" class="relative inline-flex h-9 w-16 rounded-full transition-colors duration-250 cursor-pointer" style="transition: background-color 0.25s ease;">
+                            <span :class="subjectForm.isLK ? 'translate-x-8' : 'translate-x-1'" class="inline-block h-7 w-7 transform rounded-full bg-white mt-1 shadow-md" style="transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></span>
                         </button>
                     </div>
 
@@ -1312,7 +1675,7 @@
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5">
                         <p class="font-black text-white text-base ml-2 mb-3">Fachfarbe</p>
                         <div class="grid grid-cols-8 gap-3 px-1 py-1 mb-4">
-                            <button type="button" v-for="c in colorOptions" :key="c" @click="subjectForm.color = c" :style="{ backgroundColor: c }" class="w-9 h-9 rounded-full shrink-0 transition-transform cursor-pointer" :class="subjectForm.color === c ? 'scale-115 ring-2 ring-indigo-500' : ''"></button>
+                            <button type="button" v-for="c in colorOptions" :key="c" @click="subjectForm.color = c" :style="{ backgroundColor: c }" class="w-9 h-9 rounded-full shrink-0 cursor-pointer color-swatch" :class="subjectForm.color === c ? 'scale-115 ring-2 ring-indigo-500' : ''"></button>
                         </div>
                         <div class="flex items-center gap-4 px-1">
                             <label class="text-xs font-black text-slate-400 uppercase tracking-wider shrink-0">Eigene Farbe</label>
@@ -1333,8 +1696,8 @@
                         <p class="font-black text-white text-base ml-2 mb-4">Fach-Symbol</p>
                         <div class="grid grid-cols-4 gap-3 px-1">
                             <button type="button" v-for="ic in subjectIcons" :key="ic" @click="subjectForm.icon = ic; refreshIcons()"
-                                :class="subjectForm.icon === ic ? 'ring-2 ring-indigo-500 bg-indigo-500/20 text-indigo-300' : 'bg-white/5 text-slate-400'"
-                                class="flex flex-col items-center justify-center py-3 rounded-2xl transition-all cursor-pointer">
+                                :class="[subjectForm.icon === ic ? 'ring-2 ring-indigo-500 bg-indigo-500/20 text-indigo-300 selected' : 'bg-white/5 text-slate-400']"
+                                class="flex flex-col items-center justify-center py-3 rounded-2xl cursor-pointer icon-btn">
                                 <i :data-lucide="ic" class="w-5.5 h-5.5 mb-1.5"></i>
                                 <span class="text-[10px] font-bold uppercase tracking-wide leading-tight text-center px-1 truncate w-full">{{ ic.replace(/-/g,' ') }}</span>
                             </button>
@@ -1350,14 +1713,14 @@
         </div>
 
         <!-- Noten Modal -->
-        <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
+        <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <div class="modal-drag-handle md:hidden"
                      @touchstart.stop="modalDragStart($event, 'isGradeModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isGradeModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
+                <button @click="isGradeModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
@@ -1366,12 +1729,12 @@
                     <div class="bg-black/20 p-5 rounded-3xl flex justify-between items-center border border-white/5">
                         <p class="font-black text-white text-base ml-2">Ergebnis ausstehend</p>
                         <button type="button" @click="gradeForm.pending = !gradeForm.pending" :class="gradeForm.pending ? 'bg-amber-500' : 'bg-slate-700'" class="relative inline-flex h-9 w-16 rounded-full transition-all cursor-pointer">
-                            <span :class="gradeForm.pending ? 'translate-x-8' : 'translate-x-1'" class="inline-block h-7 w-7 transform rounded-full bg-white transition-transform mt-1"></span>
+                            <span :class="gradeForm.pending ? 'translate-x-8' : 'translate-x-1'" class="inline-block h-7 w-7 transform rounded-full bg-white mt-1 shadow-md" style="transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></span>
                         </button>
                     </div>
 
                     <div v-if="!gradeForm.pending" class="bg-black/20 p-6 rounded-3xl text-center border border-white/5">
-                        <div class="text-7xl font-black text-indigo-400 mb-5">{{ gradeForm.points }}</div>
+                        <div class="text-7xl font-black text-indigo-400 mb-5 grade-value-enter" :key="gradeForm.points">{{ gradeForm.points }}</div>
                         <input v-if="gradeSystem === '6'" type="range" min="1" max="6" step="1" v-model.number="gradeForm.points" class="custom-range">
                         <input v-else type="range" min="0" max="15" v-model.number="gradeForm.points" class="custom-range">
                         <div v-if="gradeSystem === '6'" class="flex justify-between px-1 mt-2">
@@ -1384,7 +1747,7 @@
                         <button @click="gradeForm.type = 'Sonstige Leistung'" :class="gradeForm.type === 'Sonstige Leistung' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-4 rounded-full text-xs font-black uppercase cursor-pointer">Sonstiges</button>
                     </div>
 
-                    <input type="text" placeholder="Beschreibung (optional)" v-model="gradeForm.label" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg outline-none text-white placeholder:text-slate-600" />
+                    <input type="text" placeholder="Beschreibung (optional)" v-model="gradeForm.label" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white placeholder:text-slate-600 modal-input" />
                     
                     <div @click="openDatePicker('grade')" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white flex justify-between items-center cursor-pointer active:border-white/20 transition-all">
                         <span>{{ gradeForm.date ? formatDate(gradeForm.date) : 'Datum auswählen' }}</span>
@@ -1400,14 +1763,14 @@
         </div>
 
         <!-- Zeugnis Modal -->
-        <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
+        <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12">
                 <div class="modal-drag-handle md:hidden"
                      @touchstart.stop="modalDragStart($event, 'isReportCardModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isReportCardModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
+                <button @click="isReportCardModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">Zeugnisnote festlegen</h2>
@@ -1439,7 +1802,7 @@
                     </div>
 
                     <div class="bg-black/20 border border-white/5 p-6 rounded-3xl text-center">
-                        <div class="text-8xl font-black text-white mb-6">{{ tempReportCardPoints === null ? '-' : tempReportCardPoints }}</div>
+                        <div class="text-8xl font-black text-white mb-6 grade-value-enter" :key="tempReportCardPoints">{{ tempReportCardPoints === null ? '-' : tempReportCardPoints }}</div>
                         <input v-if="gradeSystem === '6'" type="range" min="1" max="6" step="1" v-model.number="tempReportCardPoints" class="custom-range">
                         <input v-else type="range" min="0" max="15" v-model.number="tempReportCardPoints" class="custom-range">
                         <div v-if="gradeSystem === '6'" class="flex justify-between px-1 mt-2">
@@ -1455,14 +1818,14 @@
         </div>
 
         <!-- Aufgabe/Prüfung Modal -->
-        <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
+        <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <div class="modal-drag-handle md:hidden"
                      @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isTaskModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 active:bg-white/10 transition-all">
+                <button @click="isTaskModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
@@ -1472,7 +1835,7 @@
                 </div>
                 
                 <div v-else class="space-y-6">
-                    <input type="text" placeholder="Titel (z.B. Vokabeln, Analysis Test)" required v-model="taskForm.title" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg outline-none text-white placeholder:text-slate-600" />
+                    <input type="text" placeholder="Titel (z.B. Vokabeln, Analysis Test)" required v-model="taskForm.title" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white placeholder:text-slate-600 modal-input" />
                     
                     <div class="flex gap-2 bg-black/20 p-1.5 rounded-full border border-white/5">
                         <button @click="taskForm.type = 'Hausaufgabe'" :class="taskForm.type === 'Hausaufgabe' ? 'bg-indigo-600 text-white' : 'text-slate-400'" class="flex-1 py-3.5 rounded-full text-xs font-black uppercase cursor-pointer">Hausaufg.</button>
@@ -1506,14 +1869,14 @@
         </div>
 
         <!-- APP-EINSTELLUNGEN MODAL -->
-        <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 animate-fade-in">
+        <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar">
                 <div class="modal-drag-handle md:hidden" 
                      @touchstart.stop="modalDragStart($event, 'isAppSettingsModalOpen')" 
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="isAppSettingsModalOpen = false" class="sticky top-0 float-right w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all z-10 -mt-1 -mr-1">
+                <button @click="isAppSettingsModalOpen = false" class="sticky top-0 float-right w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10 -mt-1 -mr-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10 flex items-center gap-3">
@@ -1521,18 +1884,18 @@
                 </h2>
                 
                 <div class="space-y-6">
-                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-2.5">
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-2.5 settings-section settings-section-1">
                         <label class="text-xs font-black uppercase text-slate-400 block">Dein Name</label>
                         <p class="text-xs text-slate-400 leading-normal">Damit dich die App persönlich auf der Startseite begrüßt.</p>
                         <input
                             type="text"
                             placeholder="z.B. Jonas"
                             v-model="displayName"
-                            class="w-full bg-black/40 border border-white/10 rounded-xl text-white font-bold text-base px-4 py-3.5 outline-none focus:border-indigo-500 transition-colors mt-2"
+                            class="w-full bg-black/40 border border-white/10 rounded-xl text-white font-bold text-base px-4 py-3.5 outline-none focus:border-indigo-500 transition-colors mt-2 modal-input"
                         />
                     </div>
 
-                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3 settings-section settings-section-2">
                         <label class="text-xs font-black uppercase text-slate-400 block">Aktuelle Klasse</label>
                         <p class="text-xs text-slate-400 leading-normal">In welcher Klasse bist du aktuell?</p>
                         <div class="grid grid-cols-4 gap-2 mt-1">
@@ -1545,7 +1908,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3 settings-section settings-section-3">
                         <label class="text-xs font-black uppercase text-slate-400 block">Notensystem</label>
                         <p class="text-xs text-slate-400 leading-normal">Noten aus dem 0–15 System bleiben erhalten, wenn du wechselst.</p>
                         <div class="flex gap-2 bg-black/40 p-1.5 rounded-full border border-white/5 mt-1">
@@ -1558,7 +1921,7 @@
                         </div>
                     </div>
 
-                    <div v-if="tempCurrentClass >= 11" class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3">
+                    <div v-if="tempCurrentClass >= 11" class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3 settings-section settings-section-4">
                         <label class="text-xs font-black uppercase text-slate-400 block">Klasse 11 Startjahr</label>
                         <p class="text-xs text-slate-400 leading-normal">Bestimmt die automatische Berechnung des Halbjahres für alle Termine und Noten.</p>
                         <div class="flex items-center gap-3 pt-1">
@@ -1566,13 +1929,13 @@
                                 type="number"
                                 min="2000" max="2099"
                                 v-model.number="tempStartYear"
-                                class="w-full bg-black/40 border border-white/10 rounded-xl text-indigo-400 font-black text-xl text-center py-4 outline-none focus:border-indigo-500"
+                                class="w-full bg-black/40 border border-white/10 rounded-xl text-indigo-400 font-black text-xl text-center py-4 outline-none focus:border-indigo-500 modal-input"
                                 placeholder="z.B. 2025"
                             />
                         </div>
                     </div>
 
-                    <div class="pt-2">
+                    <div class="pt-2 settings-section settings-section-5">
                         <button @click="saveAppSettings" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4.5 rounded-full font-black uppercase text-sm cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all">
                             <i data-lucide="save" class="w-5 h-5"></i> Einstellungen speichern
                         </button>
@@ -1582,9 +1945,9 @@
         </div>
 
         <!-- CUSTOM CALENDAR DATE PICKER POP-UP -->
-        <div v-if="isDatePickerOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
-                <button @click="isDatePickerOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
+        <div v-if="isDatePickerOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 modal-overlay-enter">
+            <div class="datepicker-enter liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
+                <button @click="isDatePickerOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <h3 class="text-xl font-black text-white mb-6 pr-10 flex items-center gap-2.5">
@@ -1605,7 +1968,7 @@
 
                 <div class="grid grid-cols-7 gap-1.5">
                     <div v-for="(day, idx) in datepickerDays" :key="idx" 
-                         class="aspect-square rounded-xl flex items-center justify-center relative p-1 transition-all border text-sm"
+                         class="aspect-square rounded-xl flex items-center justify-center relative p-1 border text-sm cal-day"
                          :class="[
                             day.isCurrentMonth ? 'bg-black/20 text-white border-white/5 hover:border-indigo-500 cursor-pointer font-bold' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
                             isSelectedDate(day.date) ? 'ring-2 ring-indigo-500 bg-indigo-500/20 text-indigo-300' : ''
@@ -1618,9 +1981,9 @@
         </div>
 
         <!-- PWA INSTALL GUIDE MODAL -->
-        <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fade-in">
-            <div class="liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
-                <button @click="isInstallGuideModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer active:bg-white/10 transition-all">
+        <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 modal-overlay-enter">
+            <div class="center-modal-enter liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
+                <button @click="isInstallGuideModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <div class="w-20 h-20 bg-indigo-500/10 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -2023,39 +2386,70 @@
                 };
 
                 // Modal Swipe-Down-to-Close
-                const modalDrag = ref({ active: false, startY: 0, currentY: 0, modalKey: null, el: null });
+                const modalDrag = ref({ active: false, startY: 0, currentY: 0, modalKey: null, el: null, velocity: 0, lastY: 0, lastTime: 0 });
 
                 const modalDragStart = (e, modalKey) => {
                     const touch = e.touches[0];
                     const panel = e.currentTarget.closest('[class*="liquid-glass-modal"], [class*="modal-glass"]');
                     if (!panel) return;
-                    modalDrag.value = { active: true, startY: touch.clientY, currentY: 0, modalKey, el: panel };
+                    const now = Date.now();
+                    modalDrag.value = { 
+                        active: true, 
+                        startY: touch.clientY, 
+                        currentY: 0, 
+                        modalKey, 
+                        el: panel, 
+                        velocity: 0, 
+                        lastY: touch.clientY, 
+                        lastTime: now 
+                    };
                     panel.classList.add('modal-dragging');
                     panel.style.willChange = 'transform, opacity';
+                    panel.style.transition = 'none';
                 };
                 const modalDragMove = (e) => {
                     if (!modalDrag.value.active) return;
                     const touch = e.touches[0];
+                    const now = Date.now();
                     const diff = touch.clientY - modalDrag.value.startY;
                     if (diff < 0) return;
+                    
+                    // Track velocity for fling detection
+                    const dt = now - modalDrag.value.lastTime;
+                    if (dt > 0) {
+                        modalDrag.value.velocity = (touch.clientY - modalDrag.value.lastY) / dt;
+                    }
+                    modalDrag.value.lastY = touch.clientY;
+                    modalDrag.value.lastTime = now;
                     modalDrag.value.currentY = diff;
+                    
                     if (modalDrag.value.el) {
-                        // Rubber-band resistance: felt drag = sqrt(diff) * 4 for first 40px, then linear
-                        const felt = diff < 40 ? diff * 0.6 : (40 * 0.6 + (diff - 40));
-                        modalDrag.value.el.style.transform = `translateY(${felt}px)`;
-                        modalDrag.value.el.style.opacity = String(Math.max(0.3, 1 - diff / 320));
+                        // Elastic rubber-band resistance: natural iOS-like feel
+                        const resistance = diff < 60 
+                            ? diff * 0.72 
+                            : (60 * 0.72 + (diff - 60) * 0.88);
+                        const opacity = Math.max(0.15, 1 - (diff / 380));
+                        const scale = Math.max(0.94, 1 - (diff / 2200));
+                        modalDrag.value.el.style.transform = `translateY(${resistance}px) scale(${scale})`;
+                        modalDrag.value.el.style.opacity = String(opacity);
                     }
                 };
                 const modalDragEnd = (e) => {
                     if (!modalDrag.value.active) return;
-                    const { el, currentY, modalKey } = modalDrag.value;
+                    const { el, currentY, modalKey, velocity } = modalDrag.value;
                     modalDrag.value.active = false;
+                    
+                    // Fling velocity in px/ms (>0.6 = fast flick = close)
+                    const isFling = velocity > 0.55;
+                    const shouldClose = currentY > 80 || isFling;
+                    
                     if (el) {
                         el.classList.remove('modal-dragging');
-                        if (currentY > 90) {
-                            // Slide out
-                            el.style.transition = 'transform 0.28s cubic-bezier(0.4,0,1,1), opacity 0.22s ease';
-                            el.style.transform = 'translateY(110%)';
+                        if (shouldClose) {
+                            // Slide out with momentum
+                            const flyDuration = isFling ? 0.22 : 0.3;
+                            el.style.transition = `transform ${flyDuration}s cubic-bezier(0.4, 0, 1, 1), opacity ${flyDuration * 0.85}s ease`;
+                            el.style.transform = 'translateY(105%) scale(0.96)';
                             el.style.opacity = '0';
                             setTimeout(() => {
                                 if (modalKey === 'isAppSettingsModalOpen') isAppSettingsModalOpen.value = false;
@@ -2064,16 +2458,16 @@
                                 else if (modalKey === 'isSubjectModalOpen') { isSubjectModalOpen.value = false; isSettingsModalOpen.value = false; }
                                 else if (modalKey === 'isReportCardModalOpen') isReportCardModalOpen.value = false;
                                 el.style.cssText = '';
-                            }, 260);
+                            }, flyDuration * 1000 + 40);
                         } else {
-                            // Snap back with spring
-                            el.style.transition = 'transform 0.42s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease';
-                            el.style.transform = 'translateY(0)';
+                            // Snap back with satisfying spring
+                            el.style.transition = 'transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease';
+                            el.style.transform = 'translateY(0) scale(1)';
                             el.style.opacity = '1';
-                            setTimeout(() => { el.style.cssText = ''; }, 440);
+                            setTimeout(() => { el.style.cssText = ''; }, 500);
                         }
                     }
-                    modalDrag.value = { active: false, startY: 0, currentY: 0, modalKey: null, el: null };
+                    modalDrag.value = { active: false, startY: 0, currentY: 0, modalKey: null, el: null, velocity: 0, lastY: 0, lastTime: 0 };
                 };
 
                 const refreshIcons = () => nextTick(() => { if (window.lucide) lucide.createIcons(); });
@@ -2668,13 +3062,18 @@
                     if(isGradeModalOpen.value) return;
                     swipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, currentX: 0, isDragging: true };
                     const el = swipeRefs.value[id];
-                    if (el) el.classList.add('dragging');
+                    if (el) { el.classList.add('dragging'); el.style.willChange = 'transform'; }
                 };
                 const moveSwipe = (e) => {
                     if (!swipeState.value.isDragging || !swipeState.value.id) return;
                     const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                     let diff = currentX - swipeState.value.startX;
-                    if(diff > 0) diff = 0; if(diff < -140) diff = -140;
+                    if(diff > 8) diff = 8; // tiny right rubber-band
+                    if(diff < -140) {
+                        // Elastic resistance beyond -140
+                        const over = -diff - 140;
+                        diff = -(140 + over * 0.25);
+                    }
                     swipeState.value.currentX = diff;
                     const el = swipeRefs.value[swipeState.value.id];
                     if (el) el.style.transform = `translateX(${diff}px)`;
@@ -2690,7 +3089,10 @@
                                 handleDeleteGrade(grade.id);
                             }
                         }
+                        // Spring snap-back
+                        el.style.transition = 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)';
                         el.style.transform = 'translateX(0px)';
+                        setTimeout(() => { el.style.transition = ''; }, 450);
                     }
                     swipeState.value = { id: null, startX: 0, currentX: 0, isDragging: false };
                 };
@@ -2699,13 +3101,17 @@
                     if(isTaskModalOpen.value) return;
                     taskSwipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, currentX: 0, isDragging: true };
                     const el = taskSwipeRefs.value[id];
-                    if (el) el.classList.add('dragging');
+                    if (el) { el.classList.add('dragging'); el.style.willChange = 'transform'; }
                 };
                 const moveTaskSwipe = (e) => {
                     if (!taskSwipeState.value.isDragging || !taskSwipeState.value.id) return;
                     const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                     let diff = currentX - taskSwipeState.value.startX;
-                    if(diff > 40) diff = 40; if(diff < -130) diff = -130;
+                    if(diff > 8) diff = 8; // tiny right rubber-band
+                    if(diff < -130) {
+                        const over = -diff - 130;
+                        diff = -(130 + over * 0.25);
+                    }
                     taskSwipeState.value.currentX = diff;
                     const el = taskSwipeRefs.value[taskSwipeState.value.id];
                     if (el) el.style.transform = `translateX(${diff}px)`;
@@ -2721,7 +3127,10 @@
                                 handleDeleteTask(task.id);
                             }
                         }
+                        // Spring snap-back
+                        el.style.transition = 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)';
                         el.style.transform = 'translateX(0px)';
+                        setTimeout(() => { el.style.transition = ''; }, 450);
                     }
                     taskSwipeState.value = { id: null, startX: 0, currentX: 0, isDragging: false };
                 };
