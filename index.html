@@ -126,6 +126,7 @@
                 0 20px 50px -8px rgba(0, 0, 0, 0.55),
                 0 0 0 0.5px rgba(255,255,255,0.06);
             border-radius: 2.2rem;
+            contain: paint;
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
         .glass-card-inner {
@@ -1109,7 +1110,7 @@
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s"
                              class="flex rounded-[2.2rem] overflow-hidden cursor-pointer subject-card subject-list-item shadow-sm"
                              :style="{ animationDelay: (idx * 0.055) + 's' }">
-                            <div class="w-1 shrink-0 rounded-l-[2.2rem]" :style="{ backgroundColor: s.color }"></div>
+                            <div class="w-1 shrink-0 rounded-l-[2.2rem] rounded-r" :style="{ backgroundColor: s.color }"></div>
                             <div class="glass-card-inner p-5 flex items-center justify-between flex-1 min-w-0" style="border-radius: 0 2.2rem 2.2rem 0;">
                             
                             <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
@@ -1490,7 +1491,7 @@
                     </div>
 
                     <!-- Für Klassen 5-10: Klassenauswahl als kompakte Leiste -->
-                    <div v-if="currentClass <= 10" class="glass-card p-4 sm:p-5">
+                    <div v-if="currentClass <= 10" class="glass-card p-4 sm:p-5 overflow-hidden">
                         <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Klasse anzeigen</p>
                         <div class="flex flex-wrap gap-2">
                             <button v-for="k in lowerSchoolClasses" :key="k"
@@ -1503,7 +1504,7 @@
                     </div>
 
                     <!-- Für Klassen 11/12: Kompakte Klassenauswahl (5–10) -->
-                    <div v-if="currentClass >= 11" class="glass-card p-4 sm:p-5">
+                    <div v-if="currentClass >= 11" class="glass-card p-4 sm:p-5 overflow-hidden">
                         <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Klasse für Verlaufsansicht</p>
                         <div class="flex flex-wrap gap-2">
                             <button v-for="k in [5,6,7,8,9,10]" :key="k"
