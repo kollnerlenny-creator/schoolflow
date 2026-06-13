@@ -129,7 +129,15 @@
             contain: paint;
             transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
-        .glass-card-inner {
+        .glass-card-solid {
+            background: rgba(20, 20, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            box-shadow: 
+                0 2px 0 rgba(255,255,255,0.08) inset,
+                0 20px 50px -8px rgba(0, 0, 0, 0.55);
+            border-radius: 2.2rem;
+            overflow: hidden;
+        }
             background: rgba(255, 255, 255, 0.055);
             backdrop-filter: blur(40px) saturate(1.8);
             -webkit-backdrop-filter: blur(40px) saturate(1.8);
@@ -1109,9 +1117,10 @@
                     <div class="space-y-4">
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s"
                              class="flex rounded-[2.2rem] overflow-hidden cursor-pointer subject-card subject-list-item shadow-sm"
+                             style="background: rgba(20,20,40,0.95); border: 1px solid rgba(255,255,255,0.13);"
                              :style="{ animationDelay: (idx * 0.055) + 's' }">
-                            <div class="w-1 shrink-0 rounded-l-[2.2rem] rounded-r" :style="{ backgroundColor: s.color }"></div>
-                            <div class="glass-card-inner p-5 flex items-center justify-between flex-1 min-w-0" style="border-radius: 0 2.2rem 2.2rem 0;">
+                            <div class="w-1.5 shrink-0 rounded-l-[2rem] rounded-r-sm" :style="{ backgroundColor: s.color }"></div>
+                            <div class="glass-card-inner p-5 flex items-center justify-between flex-1 min-w-0" style="border-radius: 0 2.2rem 2.2rem 0; background: transparent;">
                             
                             <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
                                 <div class="w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
@@ -1491,7 +1500,7 @@
                     </div>
 
                     <!-- Für Klassen 5-10: Klassenauswahl als kompakte Leiste -->
-                    <div v-if="currentClass <= 10" class="glass-card p-4 sm:p-5 overflow-hidden">
+                    <div v-if="currentClass <= 10" class="glass-card-solid p-4 sm:p-5">
                         <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Klasse anzeigen</p>
                         <div class="flex flex-wrap gap-2">
                             <button v-for="k in lowerSchoolClasses" :key="k"
@@ -1504,7 +1513,7 @@
                     </div>
 
                     <!-- Für Klassen 11/12: Kompakte Klassenauswahl (5–10) -->
-                    <div v-if="currentClass >= 11" class="glass-card p-4 sm:p-5 overflow-hidden">
+                    <div v-if="currentClass >= 11" class="glass-card-solid p-4 sm:p-5">
                         <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">Klasse für Verlaufsansicht</p>
                         <div class="flex flex-wrap gap-2">
                             <button v-for="k in [5,6,7,8,9,10]" :key="k"
