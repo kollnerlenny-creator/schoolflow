@@ -1094,9 +1094,8 @@
 
                     <div class="space-y-4">
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s" 
-                             class="glass-card p-5 flex items-center justify-between cursor-pointer transition-all shadow-sm relative overflow-hidden subject-card subject-list-item"
-                             :style="{ animationDelay: (idx * 0.055) + 's' }">
-                            <div class="w-1.5 absolute left-0 inset-y-0 rounded-r-full" :style="{ backgroundColor: s.color }"></div>
+                             class="glass-card p-5 flex items-center justify-between cursor-pointer transition-all shadow-sm relative subject-card subject-list-item"
+                             :style="{ animationDelay: (idx * 0.055) + 's', borderLeft: '3px solid ' + s.color }">
                             
                             <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
                                 <div class="w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
