@@ -951,7 +951,7 @@
                 </div>
                 
                 <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                    <button @click="triggerInstall" title="App installieren" class="install-btn flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-indigo-600/90 hover:bg-indigo-500 rounded-full border border-indigo-400/40 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-indigo-600/30 active:scale-95">
+                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-indigo-600/90 hover:bg-indigo-500 rounded-full border border-indigo-400/40 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-indigo-600/30 active:scale-95">
                         <i data-lucide="download" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0"></i>
                         <span class="hidden xs:inline whitespace-nowrap">Installieren</span>
                     </button>
@@ -2286,6 +2286,10 @@
 
                 // PWA INSTALL TRIGGER STATE
                 const deferredPrompt = ref(null);
+                const isInstalled = ref(
+                    window.matchMedia('(display-mode: standalone)').matches ||
+                    window.navigator.standalone === true
+                );
 
                 // CALENDAR & SELECTED DAY STATE
                 const calendarViewMode = ref('month'); // 'month' | 'week' | 'day'
@@ -2357,6 +2361,11 @@
                     window.setDeferredPrompt = (e) => {
                         deferredPrompt.value = e;
                     };
+
+                    window.addEventListener('appinstalled', () => {
+                        isInstalled.value = true;
+                        deferredPrompt.value = null;
+                    });
 
                     window.addEventListener('beforeinstallprompt', (e) => {
                         e.preventDefault();
@@ -2717,17 +2726,12 @@
                 const handleLogout = async () => { await signOut(auth); selectedSubject.value = null; };
 
                 const triggerInstall = async () => {
-                    if (deferredPrompt.value) {
-                        // Chrome unterstützt direkten Installations-Prompt → sofort öffnen
-                        deferredPrompt.value.prompt();
-                        const { outcome } = await deferredPrompt.value.userChoice;
-                        if (outcome === 'accepted') {
-                            deferredPrompt.value = null;
-                        }
-                    } else {
-                        // Kein Prompt verfügbar (z.B. bereits installiert, Firefox, Safari)
-                        // → Anleitung anzeigen
-                        isInstallGuideModalOpen.value = true;
+                    if (!deferredPrompt.value) return;
+                    deferredPrompt.value.prompt();
+                    const { outcome } = await deferredPrompt.value.userChoice;
+                    if (outcome === 'accepted') {
+                        deferredPrompt.value = null;
+                        isInstalled.value = true;
                     }
                 };
 
@@ -3432,7 +3436,7 @@
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe, swipeState, taskSwipeState,
                     modalDragStart, modalDragMove, modalDragEnd,
                     getCalculatedSemesterPoints,
-                    isInstallGuideModalOpen, triggerInstall, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings,
+                    isInstallGuideModalOpen, triggerInstall, isInstalled, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings,
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
                     handlePlannerTouchStart, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
