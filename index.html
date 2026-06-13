@@ -750,6 +750,15 @@
         }
         .title-enter { animation: titleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+        /* ── INSTALL BUTTON PULSE ── */
+        @keyframes installPulse {
+            0%, 100% { box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35), 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            60%       { box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35), 0 0 0 7px rgba(99, 102, 241, 0); }
+        }
+        .install-btn {
+            animation: installPulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
         /* ── SETTINGS SECTION STAGGER ── */
         @keyframes settingsSectionIn {
             from { opacity: 0; transform: translateY(16px); }
@@ -941,8 +950,9 @@
                 </div>
                 
                 <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                    <button v-if="deferredPrompt" @click="triggerInstall" title="App installieren" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
-                        <i data-lucide="download" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
+                    <button @click="triggerInstall" title="App installieren" class="install-btn flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-indigo-600/90 hover:bg-indigo-500 rounded-full border border-indigo-400/40 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-indigo-600/30 active:scale-95">
+                        <i data-lucide="download" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0"></i>
+                        <span class="hidden xs:inline whitespace-nowrap">Installieren</span>
                     </button>
                     <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
                         <i data-lucide="settings" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
@@ -2707,13 +2717,17 @@
 
                 const triggerInstall = async () => {
                     if (deferredPrompt.value) {
+                        // Chrome unterstützt direkten Installations-Prompt → sofort öffnen
                         deferredPrompt.value.prompt();
                         const { outcome } = await deferredPrompt.value.userChoice;
                         if (outcome === 'accepted') {
                             deferredPrompt.value = null;
                         }
+                    } else {
+                        // Kein Prompt verfügbar (z.B. bereits installiert, Firefox, Safari)
+                        // → Anleitung anzeigen
+                        isInstallGuideModalOpen.value = true;
                     }
-                    // Kein Fallback auf Anleitung – Button ist nur sichtbar wenn Installation möglich
                 };
 
                 const determineSemesterFromDate = (dateStr) => {
