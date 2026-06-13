@@ -1095,7 +1095,7 @@
                     <div class="space-y-4">
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s" 
                              class="glass-card p-5 flex items-center justify-between cursor-pointer transition-all shadow-sm relative subject-card subject-list-item"
-                             :style="{ animationDelay: (idx * 0.055) + 's', borderLeft: '3px solid ' + s.color }">
+                             :style="{ animationDelay: (idx * 0.055) + 's', boxShadow: '4px 0 0 ' + s.color + ' inset, 0 2px 0 rgba(255,255,255,0.12) inset, 0 -1px 0 rgba(0,0,0,0.3) inset, 0 20px 50px -8px rgba(0,0,0,0.55)' }">
                             
                             <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
                                 <div class="w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
@@ -1469,7 +1469,7 @@
                 <!-- 5. ZEUGNISANSICHT / ABITURRECHNER -->
                 <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in max-w-6xl mx-auto">
                     <div class="px-2 title-enter">
-                        <h2 class="text-2xl sm:text-4xl font-black text-white">{{ currentClass >= 11 ? 'Abiturrechner' : 'Zeugnisübersicht' }}</h2>
+                        <h2 class="text-2xl sm:text-4xl font-black text-white">{{ currentClass >= 11 ? 'Abi' : 'Zeugnisübersicht' }}</h2>
                         <p class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-400 mt-1">Halbjahresübersicht aller Fächer</p>
                     </div>
 
