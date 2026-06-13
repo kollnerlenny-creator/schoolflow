@@ -2303,15 +2303,9 @@
                 const deferredPrompt = ref(null);
                 const isInstalled = ref(
                     window.matchMedia('(display-mode: standalone)').matches ||
-                    window.navigator.standalone === true
+                    window.navigator.standalone === true ||
+                    localStorage.getItem('pwa_installed') === '1'
                 );
-
-                // Async check: ist die App bereits installiert? (Chrome API)
-                if (!isInstalled.value && 'getInstalledRelatedApps' in navigator) {
-                    navigator.getInstalledRelatedApps().then(apps => {
-                        if (apps.length > 0) isInstalled.value = true;
-                    }).catch(() => {});
-                }
 
                 // CALENDAR & SELECTED DAY STATE
                 const calendarViewMode = ref('month'); // 'month' | 'week' | 'day'
@@ -2387,6 +2381,7 @@
                     window.addEventListener('appinstalled', () => {
                         isInstalled.value = true;
                         deferredPrompt.value = null;
+                        localStorage.setItem('pwa_installed', '1');
                     });
 
                     window.addEventListener('beforeinstallprompt', (e) => {
@@ -2754,6 +2749,7 @@
                     if (outcome === 'accepted') {
                         deferredPrompt.value = null;
                         isInstalled.value = true;
+                        localStorage.setItem('pwa_installed', '1');
                     }
                 };
 
