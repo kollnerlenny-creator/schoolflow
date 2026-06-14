@@ -2480,6 +2480,20 @@
                         loadExamScores(uid);
                         autoSetCurrentHalfYear();
 
+                        // Welcome-Mail nach Onboarding
+                        try {
+                            await fetch('/api/send-welcome', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    email: user.value.email,
+                                    name: onboardingName.value.trim()
+                                })
+                            });
+                        } catch (mailErr) {
+                            console.warn('Welcome-Mail konnte nicht gesendet werden:', mailErr);
+                        }
+
                     } catch (err) {
                         console.error(err);
                         onboardingError.value = "Fehler beim Erstellen der Profildaten.";
@@ -2754,6 +2768,20 @@
                                 usedBy: email.value,
                                 usedAt: new Date().toISOString()
                             });
+
+                            // Welcome-Mail via Vercel Serverless Function
+                            try {
+                                await fetch('/api/send-welcome', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        email: email.value,
+                                        name: email.value.split('@')[0]
+                                    })
+                                });
+                            } catch (mailErr) {
+                                console.warn('Welcome-Mail konnte nicht gesendet werden:', mailErr);
+                            }
 
                         } else {
                             await signInWithEmailAndPassword(auth, email.value, password.value);
