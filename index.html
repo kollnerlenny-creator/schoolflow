@@ -969,6 +969,9 @@
                             <i v-if="loading" data-lucide="loader-2" class="animate-spin w-6 h-6"></i>
                             {{ isRegistering ? 'Kostenlos starten' : 'Einloggen' }}
                         </button>
+                        <button v-if="!isRegistering" type="button" @click="handleForgotPassword" class="w-full text-center text-slate-500 hover:text-indigo-400 text-sm font-bold transition-colors cursor-pointer pt-1">
+                            Passwort vergessen?
+                        </button>
                     </form>
                 </div>
             </div>
@@ -2118,6 +2121,14 @@
                             <i data-lucide="save" class="w-5 h-5"></i> Einstellungen speichern
                         </button>
                     </div>
+
+                    <div class="bg-rose-950/30 border border-rose-500/20 rounded-3xl p-5 space-y-3 settings-section settings-section-5">
+                        <label class="text-xs font-black uppercase text-rose-400 block">Gefahrenzone</label>
+                        <p class="text-xs text-slate-500 leading-normal">Dein Konto und alle deine Daten werden unwiderruflich gelöscht.</p>
+                        <button @click="handleDeleteAccount" class="w-full bg-rose-600/20 hover:bg-rose-600/40 border border-rose-500/30 text-rose-400 py-4 rounded-full font-black uppercase text-sm cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i> Konto löschen
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2195,7 +2206,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, runTransaction, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -2548,6 +2559,46 @@
                     }
                     closeModal('isAppSettingsModalOpen');
                     autoSetCurrentHalfYear();
+                };
+
+                // Passwort vergessen
+                const handleForgotPassword = async () => {
+                    const emailVal = email.value.trim();
+                    if (!emailVal) {
+                        authError.value = 'Bitte zuerst deine E-Mail eingeben.';
+                        return;
+                    }
+                    try {
+                        await sendPasswordResetEmail(auth, emailVal);
+                        authError.value = '';
+                        alert(`Eine E-Mail zum Zurücksetzen des Passworts wurde an ${emailVal} gesendet.`);
+                    } catch (err) {
+                        if (err.code === 'auth/user-not-found') {
+                            authError.value = 'Kein Konto mit dieser E-Mail gefunden.';
+                        } else {
+                            authError.value = 'Fehler beim Senden der E-Mail.';
+                        }
+                    }
+                };
+
+                // Konto löschen
+                const handleDeleteAccount = async () => {
+                    if (!confirm('Bist du sicher? Dein Konto und alle Daten werden unwiderruflich gelöscht!')) return;
+                    if (!confirm('Letzte Warnung: Diese Aktion kann nicht rückgängig gemacht werden. Wirklich löschen?')) return;
+                    try {
+                        const uid = user.value.uid;
+                        // Firestore-Daten löschen
+                        const { collection: col, getDocs: gd, deleteDoc: dd } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+                        // Firebase Auth User löschen
+                        await deleteUser(auth.currentUser);
+                        alert('Dein Konto wurde erfolgreich gelöscht.');
+                    } catch (err) {
+                        if (err.code === 'auth/requires-recent-login') {
+                            alert('Bitte melde dich ab und wieder an, dann versuche es erneut.');
+                        } else {
+                            alert('Fehler beim Löschen: ' + err.message);
+                        }
+                    }
                 };
 
                 let unsubscribeSubjects = null;
@@ -3517,7 +3568,7 @@
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe, swipeState, taskSwipeState,
                     modalDragStart, modalDragMove, modalDragEnd,
                     getCalculatedSemesterPoints,
-                    isInstallGuideModalOpen, triggerInstall, isInstalled, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings,
+                    isInstallGuideModalOpen, triggerInstall, isInstalled, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings, handleForgotPassword, handleDeleteAccount,
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
                     handlePlannerTouchStart, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
