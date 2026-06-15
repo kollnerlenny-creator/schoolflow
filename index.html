@@ -2480,18 +2480,16 @@
                         loadExamScores(uid);
                         autoSetCurrentHalfYear();
 
-                        // Welcome-Mail nach Onboarding
+                        // Bestätigungsmail senden
                         try {
-                            await fetch('/api/send-welcome', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    email: user.value.email,
-                                    name: onboardingName.value.trim()
-                                })
-                            });
+                            const isOberstufe = onboardingCurrentClass.value >= 11;
+                            const actionCodeSettings = {
+                                url: 'https://schoolflow26.vercel.app',
+                                handleCodeInApp: false
+                            };
+                            await sendEmailVerification(auth.currentUser, actionCodeSettings);
                         } catch (mailErr) {
-                            console.warn('Welcome-Mail konnte nicht gesendet werden:', mailErr);
+                            console.warn('Verification email error:', mailErr);
                         }
 
                     } catch (err) {
