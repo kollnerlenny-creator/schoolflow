@@ -51,26 +51,26 @@ export default async function handler(req, res) {
       </p>
 
       <!-- Features -->
-      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
-        <div style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;">
-          <div style="font-size:22px;flex-shrink:0;">📊</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
+        <div style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;">
+          <div style="font-size:26px;flex-shrink:0;width:36px;text-align:center;">📊</div>
           <div>
-            <div style="color:#c7d2fe;font-weight:800;font-size:14px;margin-bottom:2px;">Notenverwaltung</div>
-            <div style="color:#64748b;font-size:13px;line-height:1.4;">Trag deine Noten ein und behalte deinen Schnitt immer im Blick.</div>
+            <div style="color:#c7d2fe;font-weight:800;font-size:15px;margin-bottom:3px;">Notenverwaltung</div>
+            <div style="color:#64748b;font-size:13px;line-height:1.5;">Trag deine Noten ein und behalte deinen Schnitt immer im Blick.</div>
           </div>
         </div>
-        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;">
-          <div style="font-size:22px;flex-shrink:0;">📅</div>
+        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;">
+          <div style="font-size:26px;flex-shrink:0;width:36px;text-align:center;">📅</div>
           <div>
-            <div style="color:#ddd6fe;font-weight:800;font-size:14px;margin-bottom:2px;">Planer & Kalender</div>
-            <div style="color:#64748b;font-size:13px;line-height:1.4;">Klausuren, Tests und Aufgaben — alles an einem Ort.</div>
+            <div style="color:#ddd6fe;font-weight:800;font-size:15px;margin-bottom:3px;">Planer & Kalender</div>
+            <div style="color:#64748b;font-size:13px;line-height:1.5;">Klausuren, Tests und Aufgaben — alles an einem Ort.</div>
           </div>
         </div>
-        <div style="background:rgba(56,189,248,0.10);border:1px solid rgba(56,189,248,0.2);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;">
-          <div style="font-size:22px;flex-shrink:0;">🎯</div>
+        <div style="background:rgba(56,189,248,0.10);border:1px solid rgba(56,189,248,0.2);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;">
+          <div style="font-size:26px;flex-shrink:0;width:36px;text-align:center;">🎯</div>
           <div>
-            <div style="color:#bae6fd;font-weight:800;font-size:14px;margin-bottom:2px;">${isOberstufe ? 'Abitur-Übersicht' : 'Lernübersicht'}</div>
-            <div style="color:#64748b;font-size:13px;line-height:1.4;">${isOberstufe ? 'Simuliere deine Abiturnote und plane gezielt für die Prüfungen.' : 'Behalte den Überblick über alle Fächer und Prüfungen.'}</div>
+            <div style="color:#bae6fd;font-weight:800;font-size:15px;margin-bottom:3px;">${isOberstufe ? 'Abitur-Übersicht' : 'Lernübersicht'}</div>
+            <div style="color:#64748b;font-size:13px;line-height:1.5;">${isOberstufe ? 'Simuliere deine Abiturnote und plane gezielt für die Prüfungen.' : 'Behalte den Überblick über alle Fächer und Prüfungen.'}</div>
           </div>
         </div>
       </div>
