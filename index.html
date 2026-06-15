@@ -2480,16 +2480,19 @@
                         loadExamScores(uid);
                         autoSetCurrentHalfYear();
 
-                        // Bestätigungsmail senden
+                        // Welcome-Mail mit Gmail SMTP
                         try {
-                            const isOberstufe = onboardingCurrentClass.value >= 11;
-                            const actionCodeSettings = {
-                                url: 'https://schoolflow26.vercel.app',
-                                handleCodeInApp: false
-                            };
-                            await sendEmailVerification(auth.currentUser, actionCodeSettings);
+                            await fetch('/api/send-welcome', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    email: user.value.email,
+                                    name: onboardingName.value.trim(),
+                                    isOberstufe: onboardingCurrentClass.value >= 11
+                                })
+                            });
                         } catch (mailErr) {
-                            console.warn('Verification email error:', mailErr);
+                            console.warn('Welcome-Mail Fehler:', mailErr);
                         }
 
                     } catch (err) {
