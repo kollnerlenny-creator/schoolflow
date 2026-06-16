@@ -1005,7 +1005,7 @@
                     </button>
                     <!-- NEU: Personen-Symbol (Freunde/Mitglieder) -->
                     <button @click="isFriendsOpen = true" title="Freunde" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
-                        <i data-lucide="users" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
+                        <i data-lucide="user-plus" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
                     </button>
                     <!-- Einstellungen -->
                     <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-9 h-9 sm:w-13 sm:h-13 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-slate-400 transition-all cursor-pointer header-action-btn">
@@ -2261,8 +2261,8 @@
                          class="bg-black/20 border rounded-2xl p-4 flex items-start gap-4 transition-all"
                          :class="notif.read ? 'border-white/5' : 'border-indigo-500/30 bg-indigo-500/5'">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                             :class="notif.type === 'friend_request' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-violet-500/20 text-violet-400'">
-                            <i :data-lucide="notif.type === 'friend_request' ? 'user-plus' : 'bell'" class="w-5 h-5"></i>
+                             :class="notif.type === 'friend_request' ? 'bg-indigo-500/20 text-indigo-400' : notif.type === 'friend_accepted' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-violet-500/20 text-violet-400'">
+                            <i :data-lucide="notif.type === 'friend_request' ? 'user-plus' : notif.type === 'friend_accepted' ? 'user-check' : 'bell'" class="w-5 h-5"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-bold text-white leading-snug">{{ notif.message }}</p>
@@ -2728,14 +2728,25 @@
                 const acceptFriendRequest = async (notif) => {
                     if (!user.value) return;
                     try {
-                        const { setDoc: setD, updateDoc: updD, doc: docFn } = window.__firestoreModule;
+                        const { setDoc: setD, updateDoc: updD, deleteDoc: delD, doc: docFn } = window.__firestoreModule;
                         const myProfile = { uid: user.value.uid, displayName: displayName.value || '', email: user.value.email, currentClass: currentClass.value };
                         const theirProfile = { uid: notif.fromUid, displayName: notif.fromName || '', email: '' };
                         // Gegenseitig als Freund eintragen
                         await setD(docFn(db, 'users', user.value.uid, 'friends', notif.fromUid), theirProfile);
                         await setD(docFn(db, 'users', notif.fromUid, 'friends', user.value.uid), myProfile);
-                        // Benachrichtigung updaten
+                        // Benachrichtigung beim Annehmer updaten
                         await updD(docFn(db, 'users', user.value.uid, 'notifications', notif.id), { responded: true, accepted: true, read: true });
+                        // sentRequests-Eintrag beim Anfragesteller löschen → dessen "Ausstehend" verschwindet
+                        try { await delD(docFn(db, 'users', notif.fromUid, 'sentRequests', user.value.uid)); } catch (_) {}
+                        // Rückbenachrichtigung an Anfragesteller: Anfrage wurde angenommen
+                        await setD(docFn(db, 'users', notif.fromUid, 'notifications', `fa_${user.value.uid}`), {
+                            type: 'friend_accepted',
+                            fromUid: user.value.uid,
+                            fromName: displayName.value || user.value.email,
+                            message: `${displayName.value || user.value.email} hat deine Freundschaftsanfrage angenommen.`,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        });
                     } catch (e) { console.warn('acceptFriendRequest:', e); }
                 };
 
@@ -2780,6 +2791,25 @@
                     }
                 };
 
+                // Geladene Fächer des ausgewählten Freundes
+                const friendSubjectsLoaded = ref([]);
+
+                // Fächer des Freundes aus Firestore nachladen wenn Freund ausgewählt wird
+                watch(selectedFriend, async (friend) => {
+                    friendSubjectsLoaded.value = [];
+                    if (!friend) return;
+                    try {
+                        const { getDocs, collection: col, query: qry } = window.__firestoreModule || {};
+                        if (!getDocs) return;
+                        // Oberstufe-Fächer versuchen, dann Unterstufe
+                        let snap = await getDocs(col(db, 'users', friend.uid, 'subjects'));
+                        if (!snap || snap.empty) snap = await getDocs(col(db, 'users', friend.uid, 'subjects_lower'));
+                        if (snap && !snap.empty) {
+                            friendSubjectsLoaded.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                        }
+                    } catch (e) { console.warn('loadFriendSubjects:', e); }
+                });
+
                 // Vergleichsdaten berechnen
                 const comparisonData = computed(() => {
                     if (!selectedFriend.value) return [];
@@ -2789,8 +2819,8 @@
                     for (const s of mySubjects) {
                         const mySemGrades = (s.semesterGrades || []).filter(g => !g.pending);
                         const myAvg = mySemGrades.length ? mySemGrades.reduce((sum, g) => sum + g.points, 0) / mySemGrades.length : null;
-                        // Freund-Daten aus friendSubjects (falls geladen)
-                        const friendSubject = (selectedFriend.value.subjects || []).find(fs => fs.name.toLowerCase() === s.name.toLowerCase());
+                        // Freund-Fächer: zuerst aus nachgeladenen Firestore-Daten, Vergleich NUR per Name (Groß-/Kleinschreibung egal)
+                        const friendSubject = friendSubjectsLoaded.value.find(fs => fs.name.toLowerCase() === s.name.toLowerCase());
                         const friendGrades = friendSubject ? (friendSubject.semesterGrades || []).filter(g => !g.pending) : [];
                         const friendAvg = friendGrades.length ? friendGrades.reduce((sum, g) => sum + g.points, 0) / friendGrades.length : null;
                         result.push({ subjectName: s.name, color: s.color, myAvg, friendAvg });
@@ -4044,7 +4074,7 @@
                     isFriendsOpen, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
-                    requestPushPermission, comparisonData, ensurePublicProfile
+                    requestPushPermission, comparisonData, ensurePublicProfile, friendSubjectsLoaded
                 };
             }
         }).mount('#app');
