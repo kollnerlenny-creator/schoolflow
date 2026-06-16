@@ -3228,22 +3228,20 @@
                                 return;
                             }
 
+                            // Erst Nutzer erstellen (einloggen), dann Code prüfen
+                            const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+
+                            // Jetzt ist auth.currentUser gesetzt - Code prüfen
                             const codeRef = doc(db, 'inviteCodes', inviteCode.value.trim().toUpperCase());
                             const codeSnap = await getDoc(codeRef);
 
-                            if (!codeSnap.exists()) {
-                                authError.value = 'Ungültiger Einladungscode.';
+                            if (!codeSnap.exists() || codeSnap.data().used === true) {
+                                // Ungültiger Code - Nutzer wieder löschen
+                                await deleteUser(userCredential.user);
+                                authError.value = !codeSnap.exists() ? 'Ungültiger Einladungscode.' : 'Dieser Code wurde bereits verwendet.';
                                 loading.value = false;
                                 return;
                             }
-
-                            if (codeSnap.data().used === true) {
-                                authError.value = 'Dieser Code wurde bereits verwendet.';
-                                loading.value = false;
-                                return;
-                            }
-
-                            await createUserWithEmailAndPassword(auth, email.value, password.value);
 
                             // Bestätigungsmail senden
                             try {
