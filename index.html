@@ -446,17 +446,28 @@
             background: #818cf8;
         }
 
-        /* Swipe-down-to-close handle */
+        /* Swipe-down-to-close handle: sichtbarer Balken bleibt 6px hoch,
+           aber die tatsächliche Touch-Fläche ist deutlich größer (>=44px), damit
+           die Wischgeste zuverlässig greift statt nur auf einem 6px-Streifen. */
         .modal-drag-handle {
+            width: 100%;
+            height: 44px;
+            margin: -12px 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            touch-action: none;
+        }
+        .modal-drag-handle::after {
+            content: '';
             width: 48px;
             height: 6px;
             background: rgba(255,255,255,0.18);
             border-radius: 9999px;
-            margin: 0 auto 20px;
-            cursor: grab;
             transition: background 0.2s ease;
         }
-        .modal-drag-handle:active { cursor: grabbing; background: rgba(255,255,255,0.35); }
+        .modal-drag-handle:active::after { background: rgba(255,255,255,0.35); }
         .modal-dragging { transition: none !important; }
 
         /* ── SPLASH LADEBALKEN ── */
@@ -557,10 +568,10 @@
         .tab-enter { animation: tabFade 0.36s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
         /* ── MODAL DRAG HANDLE PULSE ── */
-        .modal-drag-handle:active {
+        .modal-drag-handle:active::after {
             transform: scaleX(1.2);
         }
-        .modal-drag-handle {
+        .modal-drag-handle::after {
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
         }
 
@@ -656,23 +667,16 @@
             animation: gradeItemIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
-        /* ── SMOOTH MODAL DRAG HANDLE ── */
-        .modal-drag-handle {
-            width: 44px;
-            height: 5px;
-            background: rgba(255,255,255,0.18);
-            border-radius: 9999px;
-            margin: 0 auto 20px;
-            cursor: grab;
-            transition: background 0.2s ease, transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .modal-drag-handle:active {
-            cursor: grabbing;
+        /* ── SMOOTH MODAL DRAG HANDLE (Touch-Fläche bleibt groß, nur der ::after-Balken animiert) ── */
+        .modal-drag-handle:active::after {
             background: rgba(255,255,255,0.42);
             width: 56px;
         }
+        .modal-drag-handle::after {
+            transition: background 0.2s ease, width 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
         .modal-dragging { transition: none !important; }
-        .modal-dragging .modal-drag-handle {
+        .modal-dragging .modal-drag-handle::after {
             background: rgba(255,255,255,0.38);
             width: 60px;
         }
@@ -1093,7 +1097,7 @@
                      :style="{ width: `calc(100% / ${halfYears.length} - 4px)`, left: `calc(${halfYears.indexOf(selectedHalfYear)} * 100% / ${halfYears.length} + 2px)` }"></div>
                 <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
                         :class="selectedHalfYear === s ? 'text-white font-black' : 'text-slate-400 font-bold'"
-                        class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors duration-300 cursor-pointer">
+                        class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors duration-300 cursor-pointer">
                     {{ s }}
                 </button>
             </div>
@@ -1371,12 +1375,12 @@
                     </div>
 
                     <!-- Planner Sub-Tabs -->
-                    <div class="glass-pill p-2 flex relative z-10 max-w-full overflow-x-auto no-scrollbar">
+                    <div class="glass-pill p-2 flex relative z-10 max-w-sm mx-auto overflow-x-auto no-scrollbar">
                     <div class="absolute top-2 bottom-2 toggle-accent-on rounded-full shadow-md pill-indicator"
                          :style="{ width: 'calc(100% / 3 - 4px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 2px)' }"></div>
-                        <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Anstehend</button>
-                        <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Vergangen</button>
-                        <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Kalender</button>
+                        <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Anstehend</button>
+                        <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Vergangen</button>
+                        <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Kalender</button>
                     </div>
 
                     <!-- Planer Filter-Pills -->
@@ -1427,8 +1431,9 @@
                                                 <span class="text-[11px] sm:text-xs font-black uppercase text-slate-400 truncate pr-1">{{ t.subject.name }}</span>
                                             </div>
                                             <h4 class="font-black text-white text-sm sm:text-base mt-1 leading-tight truncate pr-1" :class="{'line-through text-slate-500': t.done}">{{ t.title }}</h4>
-                                            <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
+                                            <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1.5">
                                                 {{ t.type }} • {{ formatDate(t.date) }}
+                                                <i v-if="t.notes" data-lucide="sticky-note" class="w-3 h-3 text-accent shrink-0" title="Hat Notizen"></i>
                                             </p>
                                         </div>
                                     </div>
@@ -2125,6 +2130,11 @@
                         <i data-lucide="calendar" class="w-6 h-6 text-accent"></i>
                     </div>
 
+                    <div>
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1 block mb-3">Notizen {{ taskForm.type !== 'Hausaufgabe' ? '(z.B. Lernstoff, Themen)' : '(optional)' }}</label>
+                        <textarea v-model="taskForm.notes" rows="3" placeholder="z.B. Kapitel 4-6, Vokabeln Unit 3, Formelsammlung mitbringen..." class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-medium text-sm text-white placeholder:text-slate-600 modal-input resize-none no-scrollbar"></textarea>
+                    </div>
+
                     <div class="pt-4 flex gap-4">
                         <button @click="handleSaveTask" class="flex-1 btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Speichern</button>
                         <button v-if="taskForm.id" @click="handleDeleteTask(taskForm.id)" class="w-16 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
@@ -2676,7 +2686,7 @@
                 // FORMS & SETTINGS
                 const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null, icon: 'book-open' });
                 const gradeForm = ref({ id: null, points: 10, type: 'Klausur', label: '', date: '', pending: false });
-                const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false });
+                const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false, notes: '' });
                 const tempReportCardPoints = ref(3);
                 const selectedReportCardKey = ref('11/1'); // key für reportCardGrades Map
                 
@@ -3908,12 +3918,12 @@
                 const prevSelectMonth = () => { if(calSelectMonth.value === 0) { calSelectMonth.value = 11; calSelectYear.value--; } else { calSelectMonth.value--; } };
 
                 const openTaskModal = () => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false, notes: '' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 };
                 const openTaskModalWithDate = (dateStr) => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false, notes: '' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 }
@@ -3930,7 +3940,7 @@
                 const handleSaveTask = async () => {
                     if (!user.value || !taskForm.value.title || !taskForm.value.subjectId) return;
                     try {
-                        const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done };
+                        const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done, notes: taskForm.value.notes || '' };
                         if (taskForm.value.id) {
                             await updateDoc(doc(db, 'users', user.value.uid, 'tasks', taskForm.value.id), taskData);
                         } else {
