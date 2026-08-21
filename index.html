@@ -1092,7 +1092,7 @@
             </header>
 
             <!-- HALBJAHR SLIDER (Bequeme, größere Touch-Flächen) -->
-            <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-2 flex relative mb-8 z-10 max-w-sm mx-auto">
+            <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-2 flex relative mb-8 z-10 max-w-xs mx-auto">
                 <div class="absolute top-2 bottom-2 toggle-accent-on rounded-full shadow-md shadow-black/30 pill-indicator"
                      :style="{ width: `calc(100% / ${halfYears.length} - 4px)`, left: `calc(${halfYears.indexOf(selectedHalfYear)} * 100% / ${halfYears.length} + 2px)` }"></div>
                 <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
@@ -1204,34 +1204,34 @@
                         </button>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s"
-                             class="flex rounded-[2.2rem] overflow-hidden cursor-pointer subject-card subject-list-item shadow-sm"
-                             style="background: rgba(20,20,40,0.95); border: 1px solid rgba(255,255,255,0.13);"
+                             class="flex rounded-[2rem] overflow-hidden cursor-pointer subject-card subject-list-item shadow-sm"
+                             style="background: rgba(20,20,40,0.95); border: 1px solid rgba(255,255,255,0.1);"
                              :style="{ animationDelay: (idx * 0.055) + 's' }">
-                            <div class="w-1.5 shrink-0 rounded-l-[2rem] rounded-r-sm" :style="{ backgroundColor: s.color }"></div>
-                            <div class="glass-card-inner p-5 flex items-center justify-between flex-1 min-w-0" style="border-radius: 0 2.2rem 2.2rem 0; background: transparent;">
+                            <div class="w-1 shrink-0 rounded-l-[2rem] rounded-r-sm" :style="{ backgroundColor: s.color }"></div>
+                            <div class="glass-card-inner p-4 flex items-center justify-between flex-1 min-w-0" style="border-radius: 0 2rem 2rem 0; background: transparent;">
                             
-                            <div class="flex items-center gap-4 pl-3 min-w-0 flex-1">
-                                <div class="w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
-                                    <i :data-lucide="s.icon || 'book-open'" class="w-5 h-5 sm:w-6 sm:h-6"></i>
-                                    <span v-if="gradeSystem !== '6'" class="absolute bottom-0 right-0 text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-full leading-tight" :style="{backgroundColor: s.color, color: '#fff'}">{{ s.isLK ? 'LK' : 'GK' }}</span>
+                            <div class="flex items-center gap-3.5 pl-2.5 min-w-0 flex-1">
+                                <div class="w-11 h-11 sm:w-13 sm:h-13 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
+                                    <i :data-lucide="s.icon || 'book-open'" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5"></i>
+                                    <span v-if="gradeSystem !== '6'" class="absolute bottom-0 right-0 text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-tight" :style="{backgroundColor: s.color, color: '#fff'}">{{ s.isLK ? 'LK' : 'GK' }}</span>
                                 </div>
                                 <div class="overflow-hidden">
-                                    <h3 class="text-base sm:text-lg font-black text-white truncate pr-2 leading-tight">{{ s.name }}</h3>
-                                    <p class="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{{ s.semesterGrades ? s.semesterGrades.length : 0 }} Noten</p>
+                                    <h3 class="text-sm sm:text-lg font-semibold text-white truncate pr-2 leading-tight">{{ s.name }}</h3>
+                                    <p class="text-[10px] sm:text-xs font-medium text-slate-400 uppercase tracking-widest mt-1">{{ s.semesterGrades ? s.semesterGrades.length : 0 }} Noten</p>
                                 </div>
                             </div>
                             
-                            <div class="flex items-center gap-3 shrink-0">
+                            <div class="flex items-center gap-2.5 shrink-0">
                                 <div class="text-right">
-                                    <div class="text-2xl sm:text-3xl font-black text-white">
-                                        <span v-if="s.reportCardGrade !== null" class="flex items-center justify-end gap-1"><i data-lucide="award" class="w-5 h-5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
+                                    <div class="text-xl sm:text-3xl font-bold text-white">
+                                        <span v-if="s.reportCardGrade !== null" class="flex items-center justify-end gap-1"><i data-lucide="award" class="w-4.5 h-4.5 sm:w-5 sm:h-5 text-amber-400"></i>{{ s.reportCardGrade }}</span>
                                         <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '-' }}</span>
                                     </div>
-                                    <div v-if="s.finalPoints !== null && s.reportCardGrade === null" class="text-[11px] sm:text-xs font-bold text-slate-400 mt-0.5">Ø {{ formatNumber(s.finalGrade) }}</div>
+                                    <div v-if="s.finalPoints !== null && s.reportCardGrade === null" class="text-[10px] sm:text-xs font-medium text-slate-400 mt-0.5">Ø {{ formatNumber(s.finalGrade) }}</div>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-500"></i>
+                                <i data-lucide="chevron-right" class="w-4.5 h-4.5 sm:w-5 sm:h-5 text-slate-500"></i>
                             </div>
                             </div><!-- end glass-card-inner -->
                         </div><!-- end wrapper -->
@@ -1361,7 +1361,8 @@
 
                 <!-- 4. PLANER (Mit Touch-Swipe zum Wechseln der Tabs) -->
                 <div v-if="currentTab === 'planner' && !selectedSubject" 
-                     class="space-y-6 max-w-4xl mx-auto animate-fade-in"
+                     class="space-y-6 animate-fade-in"
+                     :class="plannerTab === 'calendar' ? 'max-w-6xl mx-auto' : 'max-w-4xl mx-auto'"
                      @touchstart="handlePlannerTouchStart"
                      @touchend="handlePlannerTouchEnd">
                     <div class="flex justify-between items-end px-2 mb-2">
@@ -1375,7 +1376,7 @@
                     </div>
 
                     <!-- Planner Sub-Tabs -->
-                    <div class="glass-pill p-2 flex relative z-10 max-w-sm mx-auto overflow-x-auto no-scrollbar">
+                    <div class="glass-pill p-2 flex relative z-10 max-w-xs mx-auto overflow-x-auto no-scrollbar">
                     <div class="absolute top-2 bottom-2 toggle-accent-on rounded-full shadow-md pill-indicator"
                          :style="{ width: 'calc(100% / 3 - 4px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 2px)' }"></div>
                         <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Anstehend</button>
@@ -1455,14 +1456,14 @@
                                 
                                 <!-- Kalender Ansichtsmodus (Monat, Woche, Tag) -->
                                 <div class="flex items-center bg-black/40 p-1 rounded-full border border-white/5 h-10 relative shrink-0">
-                                    <div class="relative flex w-full h-full items-center">
+                                    <div class="relative flex h-full items-center">
                                         <div class="absolute top-0 bottom-0 toggle-accent-on rounded-full shadow-md shadow-black/30 pointer-events-none"
                                              style="width: calc(100% / 3); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);"
                                              :style="{ transform: `translateX(${['month','week','day'].indexOf(calendarViewMode) * 100}%)` }">
                                         </div>
-                                        <button @click="calendarViewMode = 'month'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'month' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 h-full flex items-center justify-center px-3 sm:px-4 text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10 whitespace-nowrap">Monat</button>
-                                        <button @click="calendarViewMode = 'week'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'week' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 h-full flex items-center justify-center px-3 sm:px-4 text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10 whitespace-nowrap">Woche</button>
-                                        <button @click="calendarViewMode = 'day'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'day' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 h-full flex items-center justify-center px-3 sm:px-4 text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10 whitespace-nowrap">Tag</button>
+                                        <button @click="calendarViewMode = 'month'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'month' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="shrink-0 w-[4.5rem] sm:w-20 h-full flex items-center justify-center text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10 whitespace-nowrap">Monat</button>
+                                        <button @click="calendarViewMode = 'week'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'week' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="shrink-0 w-[4.5rem] sm:w-20 h-full flex items-center justify-center text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10 whitespace-nowrap">Woche</button>
+                                        <button @click="calendarViewMode = 'day'" style="transition: color 0.25s ease;" :class="calendarViewMode === 'day' ? 'text-white font-black' : 'text-slate-400 font-bold'" class="shrink-0 w-[4.5rem] sm:w-20 h-full flex items-center justify-center text-xs uppercase rounded-full tracking-wider cursor-pointer relative z-10 whitespace-nowrap">Tag</button>
                                     </div>
                                 </div>
 
@@ -1475,26 +1476,35 @@
                             <!-- 1. MONATSANSICHT -->
                             <div v-if="calendarViewMode === 'month'">
                                 <div class="grid grid-cols-7 gap-1 text-center mb-2">
-                                    <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] sm:text-xs font-black uppercase text-slate-500 py-1.5">{{ d }}</div>
+                                    <div v-for="d in ['Mo','Di','Mi','Do','Fr','Sa','So']" :key="d" class="text-[11px] sm:text-xs md:text-sm font-black uppercase text-slate-500 py-1.5">{{ d }}</div>
                                 </div>
-                                <div class="grid grid-cols-7 gap-1.5">
+                                <div class="grid grid-cols-7 gap-1.5 md:gap-2">
                                     <div v-for="(day, idx) in calendarDays" :key="idx" 
-                                         class="aspect-square rounded-2xl flex flex-col items-center justify-between relative p-1.5 border cal-day"
-                                         :style="{ minHeight: '44px' }"
+                                         class="rounded-2xl flex flex-col items-start justify-start relative p-1.5 md:p-2.5 border cal-day overflow-hidden"
+                                         :style="{ minHeight: '56px' }"
                                          :class="[
+                                            'aspect-square sm:aspect-auto sm:min-h-[76px] md:min-h-[112px]',
                                             day.isCurrentMonth ? 'bg-black/30 text-white border-white/5 hover:border-accent-border cursor-pointer' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
                                             isToday(day.date) ? 'ring-2 ring-accent bg-accent-dim border-accent-border' : '',
                                             selectedCalendarDate === day.date ? 'border-accent bg-accent-dim' : ''
                                          ]"
                                          @click="day.isCurrentMonth && selectCalendarDay(day.date)">
                                         
-                                        <span class="font-black text-xs sm:text-sm self-start ml-0.5" :class="selectedCalendarDate === day.date ? 'text-accent-light' : ''">{{ day.day }}</span>
-                                        
-                                        <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-0.5 sm:gap-1 justify-center w-full pb-0.5 flex-wrap max-w-[95%]">
+                                        <span class="font-black text-xs sm:text-sm md:text-base ml-0.5 shrink-0" :class="selectedCalendarDate === day.date ? 'text-accent-light' : ''">{{ day.day }}</span>
+
+                                        <!-- Mobil/klein: nur Punkte -->
+                                        <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-0.5 justify-center w-full pb-0.5 flex-wrap mt-auto sm:hidden">
                                             <span v-for="(t, i) in day.tasks.slice(0,3)" :key="i" class="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" :style="{ backgroundColor: t.subject.color }"></span>
                                             <span v-if="day.tasks.length > 3" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                                         </div>
-                                        <div v-else class="h-1.5"></div>
+
+                                        <!-- Ab sm: ausgearbeitete Vorschau mit Fachname -->
+                                        <div v-if="day.tasks && day.tasks.length > 0" class="hidden sm:flex flex-col gap-1 w-full mt-1.5">
+                                            <div v-for="t in day.tasks.slice(0,2)" :key="t.id" class="w-full text-left px-1.5 py-1 rounded-lg text-[9px] md:text-[10px] font-bold truncate leading-tight" :style="{ backgroundColor: t.subject.color + '28', color: t.subject.color }">
+                                                {{ t.subject.name }}
+                                            </div>
+                                            <div v-if="day.tasks.length > 2" class="text-[9px] md:text-[10px] font-bold text-slate-400 px-1.5">+{{ day.tasks.length - 2 }} weitere</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1502,20 +1512,28 @@
                             <!-- 2. WOCHENANSICHT -->
                             <div v-else-if="calendarViewMode === 'week'" class="space-y-3">
                                 <div class="grid grid-cols-7 gap-2 text-center">
-                                    <div v-for="wd in ['Mo','Di','Mi','Do','Fr','Sa','So']" class="text-xs font-black uppercase text-slate-500">{{ wd }}</div>
+                                    <div v-for="wd in ['Mo','Di','Mi','Do','Fr','Sa','So']" class="text-xs md:text-sm font-black uppercase text-slate-500">{{ wd }}</div>
                                 </div>
                                 <div class="grid grid-cols-7 gap-2">
                                     <div v-for="wd in currentWeekDays" :key="wd.date" 
                                          @click="selectCalendarDay(wd.date)"
                                          :class="[
-                                            'p-2 rounded-xl text-center cursor-pointer border flex flex-col justify-between min-h-[70px] transition-all',
+                                            'p-2 md:p-3 rounded-xl text-center cursor-pointer border flex flex-col justify-between min-h-[70px] sm:min-h-[110px] md:min-h-[160px] transition-all',
                                             selectedCalendarDate === wd.date ? 'bg-accent-dim2 border-accent text-accent-light' : 'bg-black/25 border-white/5 text-white',
                                             isToday(wd.date) ? 'ring-2 ring-accent' : ''
                                          ]">
-                                        <span class="text-xs font-black">{{ wd.day }}</span>
-                                        <div class="flex flex-col gap-1 items-center justify-center mt-1">
+                                        <span class="text-xs md:text-sm font-black">{{ wd.day }}</span>
+                                        <!-- klein: Punkte -->
+                                        <div class="flex flex-col gap-1 items-center justify-center mt-1 sm:hidden">
                                             <span v-for="t in wd.tasks.slice(0, 2)" :key="t.id" class="w-2 h-2 rounded-full" :style="{ backgroundColor: t.subject.color }"></span>
                                             <span v-if="wd.tasks.length > 2" class="text-[9px] text-slate-400 font-bold">+{{ wd.tasks.length - 2 }}</span>
+                                        </div>
+                                        <!-- ab sm: Fachnamen -->
+                                        <div class="hidden sm:flex flex-col gap-1 w-full mt-1.5">
+                                            <div v-for="t in wd.tasks.slice(0,3)" :key="t.id" class="w-full text-left px-1.5 py-1 rounded-lg text-[9px] md:text-[10px] font-bold truncate leading-tight" :style="{ backgroundColor: t.subject.color + '28', color: t.subject.color }">
+                                                {{ t.subject.name }}
+                                            </div>
+                                            <div v-if="wd.tasks.length > 3" class="text-[9px] md:text-[10px] font-bold text-slate-400 px-1.5">+{{ wd.tasks.length - 3 }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -3475,6 +3493,7 @@
                     const touch = e.touches[0];
                     const panel = e.currentTarget.closest('[class*="liquid-glass-modal"], [class*="modal-glass"]');
                     if (!panel) return;
+                    const backdrop = panel.closest('.fixed.inset-0');
                     const now = Date.now();
                     modalDrag.value = { 
                         active: true, 
@@ -3482,6 +3501,7 @@
                         currentY: 0, 
                         modalKey, 
                         el: panel, 
+                        backdrop,
                         velocity: 0, 
                         lastY: touch.clientY, 
                         lastTime: now 
@@ -3489,6 +3509,7 @@
                     panel.classList.add('modal-dragging');
                     panel.style.willChange = 'transform, opacity';
                     panel.style.transition = 'none';
+                    if (backdrop) backdrop.style.transition = 'none';
                 };
                 const modalDragMove = (e) => {
                     if (!modalDrag.value.active) return;
@@ -3516,16 +3537,29 @@
                         modalDrag.value.el.style.transform = `translateY(${resistance}px) scale(${scale})`;
                         modalDrag.value.el.style.opacity = String(opacity);
                     }
+                    // Backdrop dimmt live mit, damit man das Runterziehen deutlich sieht
+                    if (modalDrag.value.backdrop) {
+                        const backdropOpacity = Math.max(0.25, 1 - (diff / 300));
+                        modalDrag.value.backdrop.style.backgroundColor = `rgba(2,6,23,${0.7 * backdropOpacity})`;
+                        modalDrag.value.backdrop.style.backdropFilter = `blur(${Math.max(2, 12 * backdropOpacity)}px)`;
+                    }
                 };
                 const modalDragEnd = (e) => {
                     if (!modalDrag.value.active) return;
-                    const { el, currentY, modalKey, velocity } = modalDrag.value;
+                    const { el, currentY, modalKey, velocity, backdrop } = modalDrag.value;
                     modalDrag.value.active = false;
                     
                     // Fling velocity in px/ms (>0.6 = fast flick = close)
                     const isFling = velocity > 0.55;
                     const shouldClose = currentY > 80 || isFling;
                     
+                    if (backdrop) {
+                        backdrop.style.transition = `background-color ${shouldClose ? 0.25 : 0.3}s ease, backdrop-filter ${shouldClose ? 0.25 : 0.3}s ease`;
+                        if (!shouldClose) {
+                            backdrop.style.backgroundColor = '';
+                            backdrop.style.backdropFilter = '';
+                        }
+                    }
                     if (el) {
                         el.classList.remove('modal-dragging');
                         if (shouldClose) {
@@ -3541,16 +3575,17 @@
                                 else if (modalKey === 'isSubjectModalOpen') { isSubjectModalOpen.value = false; isSettingsModalOpen.value = false; }
                                 else if (modalKey === 'isReportCardModalOpen') isReportCardModalOpen.value = false;
                                 el.style.cssText = '';
+                                if (backdrop) backdrop.style.cssText = backdrop.getAttribute('data-orig-style') || '';
                             }, flyDuration * 1000 + 40);
                         } else {
                             // Snap back with satisfying spring
                             el.style.transition = 'transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease';
                             el.style.transform = 'translateY(0) scale(1)';
                             el.style.opacity = '1';
-                            setTimeout(() => { el.style.cssText = ''; }, 500);
+                            setTimeout(() => { el.style.cssText = ''; if (backdrop) { backdrop.style.backgroundColor = ''; backdrop.style.backdropFilter = ''; backdrop.style.transition = ''; } }, 500);
                         }
                     }
-                    modalDrag.value = { active: false, startY: 0, currentY: 0, modalKey: null, el: null, velocity: 0, lastY: 0, lastTime: 0 };
+                    modalDrag.value = { active: false, startY: 0, currentY: 0, modalKey: null, el: null, backdrop: null, velocity: 0, lastY: 0, lastTime: 0 };
                 };
 
                 // ── ANIMIERTES MODAL SCHLIESSEN ──
