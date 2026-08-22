@@ -100,202 +100,92 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Premium Dark Mode mit weichen Glüheffekten */
+        /* Clean Flat: einheitliche, flache Hintergrundfläche ohne Glow-Verläufe */
         body { 
-            background-color: #0c0c18;
-            background-image: 
-                radial-gradient(ellipse at 20% 15%, var(--accent-glow-22) 0%, transparent 45%),
-                radial-gradient(ellipse at 80% 85%, rgba(139, 92, 246, 0.2) 0%, transparent 45%),
-                radial-gradient(ellipse at 60% 40%, rgba(56, 189, 248, 0.09) 0%, transparent 40%);
-            background-attachment: fixed;
+            background-color: #111116;
             color: #f1f5f9;
             min-height: 100vh;
         }
 
-        /* Feines technisches Grid-Muster im Hintergrund - verstärkt */
-        .grid-bg {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 48px 48px;
-            z-index: 0;
-            pointer-events: none;
-        }
-        /* Alles im App-Bereich über dem Grid */
+        /* Alles im App-Bereich */
         #app { position: relative; z-index: 1; }
 
-        /* Schwebende Glows */
-        .bg-glow-1 {
-            position: absolute;
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, var(--accent-glow-22) 0%, transparent 70%);
-            top: 5%;
-            left: -10%;
-            z-index: 0;
-            animation: floatGlow 14s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-        .bg-glow-2 {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
-            bottom: 10%;
-            right: -10%;
-            z-index: 0;
-            animation: floatGlow 18s ease-in-out infinite alternate-reverse;
-            pointer-events: none;
-        }
-
-        @keyframes floatGlow {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(30px) scale(1.1); }
-        }
+        /* Schwebende Glows entfernt (Clean-Flat-Konzept) */
+        .bg-glow-1, .bg-glow-2 { display: none; }
 
         /* Dark Glassmorphism */
+        /* Clean Flat: Karten heben sich nur durch Fläche + Rand ab, kein Schatten */
         .glass-card {
-            background: rgba(255, 255, 255, 0.055);
-            backdrop-filter: blur(40px) saturate(1.8);
-            -webkit-backdrop-filter: blur(40px) saturate(1.8);
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            box-shadow: 
-                0 2px 0 rgba(255,255,255,0.12) inset,
-                0 -1px 0 rgba(0,0,0,0.3) inset,
-                0 20px 50px -8px rgba(0, 0, 0, 0.55),
-                0 0 0 0.5px rgba(255,255,255,0.06);
-            border-radius: 2.2rem;
+            background: #17171d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
             contain: paint;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            transition: border-color 0.2s ease;
         }
         .glass-card-solid {
-            background: rgba(20, 20, 40, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            box-shadow: 
-                0 2px 0 rgba(255,255,255,0.08) inset,
-                0 20px 50px -8px rgba(0, 0, 0, 0.55);
-            border-radius: 2.2rem;
+            background: #17171d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
             overflow: hidden;
-        }
-            background: rgba(255, 255, 255, 0.055);
-            backdrop-filter: blur(40px) saturate(1.8);
-            -webkit-backdrop-filter: blur(40px) saturate(1.8);
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            border-left: none;
-            box-shadow: 
-                0 2px 0 rgba(255,255,255,0.12) inset,
-                0 -1px 0 rgba(0,0,0,0.3) inset,
-                0 20px 50px -8px rgba(0, 0, 0, 0.55),
-                0 0 0 0.5px rgba(255,255,255,0.06);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
         @media (hover: hover) {
             .glass-card:hover {
-                border-color: rgba(255, 255, 255, 0.2);
-                box-shadow: 
-                    0 2px 0 rgba(255,255,255,0.15) inset,
-                    0 -1px 0 rgba(0,0,0,0.3) inset,
-                    0 24px 56px -6px var(--accent-glow-22);
+                border-color: rgba(255, 255, 255, 0.16);
             }
         }
 
         .glass-pill {
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(32px) saturate(1.6);
-            -webkit-backdrop-filter: blur(32px) saturate(1.6);
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            box-shadow: 
-                0 1.5px 0 rgba(255,255,255,0.14) inset,
-                0 10px 30px rgba(0, 0, 0, 0.35);
+            background: #17171d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 9999px;
         }
 
-        /* Liquid Glass Buttons */
+        /* Buttons: flach, kein Schatten */
         .liquid-glass-btn {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px) saturate(1.5);
-            -webkit-backdrop-filter: blur(20px) saturate(1.5);
-            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: #c7d2fe;
-            box-shadow: 
-                0 1.5px 0 rgba(255,255,255,0.13) inset,
-                0 8px 24px 0 rgba(0, 0, 0, 0.28);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: background 0.15s ease, transform 0.15s ease;
         }
         .liquid-glass-btn:active {
             background: var(--accent-glow-28);
             border-color: var(--accent-glow-50);
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
-        /* Liquid Glass — leichte helle Variante für Karten-Inhalte */
+        /* Kartenkörper: leichter innerer Kontrast */
         .liquid-inner {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset;
-            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 0.75rem;
         }
 
-        /* Bottom Nav Liquid Glass */
+        /* Bottom Nav: solide, kein Schatten */
         .glass-nav {
-            background: rgba(12, 12, 22, 0.72);
-            backdrop-filter: blur(48px) saturate(2);
-            -webkit-backdrop-filter: blur(48px) saturate(2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 -1px 0 rgba(255,255,255,0.06), 0 -20px 60px rgba(0,0,0,0.4);
+            background: #111116;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Liquid Glass Nav Bar - like reference image */
         .liquid-glass-nav {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(40px) saturate(2.2) brightness(1.15);
-            -webkit-backdrop-filter: blur(40px) saturate(2.2) brightness(1.15);
-            border: 1px solid rgba(255, 255, 255, 0.28);
-            box-shadow:
-                0 2px 0 rgba(255,255,255,0.25) inset,
-                0 -1px 0 rgba(0,0,0,0.15) inset,
-                0 8px 32px rgba(0,0,0,0.35),
-                0 1px 0 rgba(255,255,255,0.12);
+            background: #17171d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Active bubble inside nav - the frosted glass dot */
+        /* Aktive Blase in der Nav: flache Akzentfläche, kein Glow */
         .nav-active-bubble {
-            background: rgba(255, 255, 255, 0.22);
-            backdrop-filter: blur(20px) saturate(2);
-            -webkit-backdrop-filter: blur(20px) saturate(2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow:
-                0 2px 0 rgba(255,255,255,0.35) inset,
-                0 -1px 0 rgba(0,0,0,0.1) inset,
-                0 4px 16px var(--accent-border),
-                0 0 0 1px rgba(255,255,255,0.15);
+            background: var(--accent);
         }
 
-        /* Liquid Glass Modals - true frosted glass */
+        /* Modals: solide Fläche, kein Schatten */
         .liquid-glass-modal {
-            background: rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(60px) saturate(2.5) brightness(1.2);
-            -webkit-backdrop-filter: blur(60px) saturate(2.5) brightness(1.2);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            box-shadow:
-                0 2px 0 rgba(255,255,255,0.2) inset,
-                0 -1px 0 rgba(0,0,0,0.2) inset,
-                0 40px 80px rgba(0,0,0,0.5),
-                0 0 0 0.5px rgba(255,255,255,0.15);
+            background: #17171d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Liquid Glass calendar date picker */
+        /* Kalender-Datepicker: gleiches System */
         .liquid-glass-datepicker {
-            background: rgba(255, 255, 255, 0.13);
-            backdrop-filter: blur(60px) saturate(2.5) brightness(1.25);
-            -webkit-backdrop-filter: blur(60px) saturate(2.5) brightness(1.25);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow:
-                0 2px 0 rgba(255,255,255,0.22) inset,
-                0 -1px 0 rgba(0,0,0,0.18) inset,
-                0 30px 60px rgba(0,0,0,0.5);
+            background: #17171d;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Fester Header Block */
@@ -984,7 +874,7 @@
 
                     <p v-if="onboardingError" class="text-rose-400 text-sm font-bold text-center bg-rose-500/10 py-4 px-6 rounded-full border border-rose-500/20">{{ onboardingError }}</p>
 
-                    <button @click="submitOnboarding" class="w-full hero-block hover:opacity-90 active:scale-95 text-white py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-xl shadow-black/20 flex items-center justify-center gap-2 cursor-pointer">
+                    <button @click="submitOnboarding" class="w-full hero-block hover:opacity-90 active:scale-95 text-white py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
                         SchoolFlow starten 🚀
                     </button>
                 </div>
@@ -1007,10 +897,10 @@
                     </p>
                 </div>
 
-                <div class="glass-card p-8 space-y-8 border-white/10 shadow-[0_25px_50px_-12px_var(--accent-glow-22)]">
+                <div class="glass-card p-8 space-y-8 border-white/10">
                     <div class="flex bg-black/50 p-2 rounded-full border border-white/5">
-                        <button @click="isRegistering = false" :class="!isRegistering ? 'toggle-accent-on text-white shadow-md font-black' : 'text-slate-400 font-bold'" class="flex-1 py-4 rounded-full text-sm uppercase tracking-widest transition-all cursor-pointer">Anmelden</button>
-                        <button @click="isRegistering = true" :class="isRegistering ? 'toggle-accent-on text-white shadow-md font-black' : 'text-slate-400 font-bold'" class="flex-1 py-4 rounded-full text-sm uppercase tracking-widest transition-all cursor-pointer">Registrieren</button>
+                        <button @click="isRegistering = false" :class="!isRegistering ? 'toggle-accent-on text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 py-4 rounded-full text-sm uppercase tracking-widest transition-all cursor-pointer">Anmelden</button>
+                        <button @click="isRegistering = true" :class="isRegistering ? 'toggle-accent-on text-white font-black' : 'text-slate-400 font-bold'" class="flex-1 py-4 rounded-full text-sm uppercase tracking-widest transition-all cursor-pointer">Registrieren</button>
                     </div>
 
                     <form @submit.prevent="handleAuth" class="space-y-6">
@@ -1042,7 +932,7 @@
 
                         <p v-if="authError" class="text-rose-400 text-sm font-bold text-center bg-rose-500/10 py-4 px-6 rounded-full border border-rose-500/20 animate-pulse">{{ authError }}</p>
 
-                        <button type="submit" :disabled="loading" class="w-full hero-block hover:opacity-90 active:scale-95 text-white py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-xl shadow-black/20 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-6">
+                        <button type="submit" :disabled="loading" class="w-full hero-block hover:opacity-90 active:scale-95 text-white py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-6">
                             <i v-if="loading" data-lucide="loader-2" class="animate-spin w-6 h-6"></i>
                             {{ isRegistering ? 'Kostenlos starten' : 'Einloggen' }}
                         </button>
@@ -1059,7 +949,7 @@
             <!-- HEADER BEREICH -->
             <header class="mb-6 sm:mb-8 flex justify-between items-center gap-2">
                 <div class="flex items-center gap-2.5 sm:gap-4 cursor-pointer flex-1 min-w-0" @click="currentTab = 'home'; selectedSubject = null">
-                    <div class="w-11 h-11 sm:w-16 sm:h-16 hero-block flex items-center justify-center rounded-2xl shadow-lg shrink-0">
+                    <div class="w-11 h-11 sm:w-16 sm:h-16 hero-block flex items-center justify-center rounded-3xl shrink-0">
                         <i data-lucide="graduation-cap" class="w-6 h-6 sm:w-8 sm:h-8 text-white"></i>
                     </div>
                     <div class="min-w-0 flex-1">
@@ -1068,7 +958,7 @@
                 </div>
                 
                 <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 toggle-accent-on/90 hover:bg-accent-dim rounded-full border border-white/20 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-black/30 active:scale-95">
+                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 toggle-accent-on/90 hover:bg-accent-dim rounded-full border border-white/20 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer active:scale-95">
                         <i data-lucide="download" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0"></i>
                         <span class="hidden xs:inline whitespace-nowrap">Installieren</span>
                     </button>
@@ -1093,8 +983,8 @@
 
             <!-- HALBJAHR SLIDER (Bequeme, größere Touch-Flächen) -->
             <div v-if="!selectedSubject && currentTab !== 'planner'" class="glass-pill p-2 flex relative mb-8 z-10 max-w-xs mx-auto">
-                <div class="absolute top-2 bottom-2 toggle-accent-on rounded-full shadow-md shadow-black/30 pill-indicator"
-                     :style="{ width: `calc(100% / ${halfYears.length} - 4px)`, left: `calc(${halfYears.indexOf(selectedHalfYear)} * 100% / ${halfYears.length} + 2px)` }"></div>
+                <div class="absolute top-2 bottom-2 toggle-accent-on rounded-full pill-indicator"
+                     :style="{ width: `calc((100% - 16px) / ${halfYears.length})`, left: `calc(8px + ${halfYears.indexOf(selectedHalfYear)} * (100% - 16px) / ${halfYears.length})` }"></div>
                 <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
                         :class="selectedHalfYear === s ? 'text-white font-black' : 'text-slate-400 font-bold'"
                         class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors duration-300 cursor-pointer">
@@ -1109,7 +999,7 @@
                 <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
                     
                     <!-- Große, extrem prominente Begrüßung im Vordergrund -->
-                    <div class="card-enter card-enter-1 text-center py-8 sm:py-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem] relative overflow-hidden backdrop-blur-md shadow-2xl">
+                    <div class="card-enter card-enter-1 text-center py-8 sm:py-10 bg-white/[0.02] border border-white/5 rounded-3xl relative overflow-hidden backdrop-blur-md shadow-2xl">
                         <div class="absolute -left-10 -top-10 w-36 h-32 bg-accent-dim2 rounded-full blur-2xl"></div>
                         <div class="absolute -right-10 -bottom-10 w-36 h-32 bg-violet-600/10 rounded-full blur-2xl"></div>
                         <div class="relative z-10 space-y-2">
@@ -1167,11 +1057,11 @@
                                     </h3>
                                     <button @click="currentTab = 'planner'" class="text-xs font-bold text-accent uppercase tracking-widest hover:text-accent-light px-3 py-1.5">Alle</button>
                                 </div>
-                                <div v-if="upcomingTasks.length === 0" class="text-xs sm:text-sm text-slate-500 font-bold text-center py-6 bg-black/20 rounded-2xl border border-white/5">
+                                <div v-if="upcomingTasks.length === 0" class="text-xs sm:text-sm text-slate-500 font-bold text-center py-6 bg-black/20 rounded-3xl border border-white/5">
                                     Aktuell keine Aufgaben! 🎉
                                 </div>
                                 <div v-else class="space-y-3.5">
-                                    <div v-for="(t, tIdx) in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3.5 bg-black/20 p-4 rounded-2xl border border-white/5 preview-item-enter"
+                                    <div v-for="(t, tIdx) in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3.5 bg-black/20 p-4 rounded-3xl border border-white/5 preview-item-enter"
                                          :style="{ animationDelay: (tIdx * 0.07) + 's' }">
                                         <button @click="toggleTaskDone(t, $event)" 
                                                 class="task-done-btn shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
@@ -1210,7 +1100,7 @@
                              style="background: rgba(20,20,40,0.95); border: 1px solid rgba(255,255,255,0.1);"
                              :style="{ animationDelay: (idx * 0.055) + 's' }">
                             <div class="w-1 shrink-0 rounded-l-3xl rounded-r-sm" :style="{ backgroundColor: s.color }"></div>
-                            <div class="glass-card-inner p-4 flex items-center justify-between flex-1 min-w-0" style="border-radius: 0 1.5rem 1.5rem 0; background: transparent;">
+                            <div class="glass-card-inner p-3 flex items-center justify-between flex-1 min-w-0" style="border-radius: 0 1.5rem 1.5rem 0; background: transparent;">
                             
                             <div class="flex items-center gap-3.5 pl-2.5 min-w-0 flex-1">
                                 <div class="w-11 h-11 sm:w-13 sm:h-13 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: s.color + '20', color: s.color }">
@@ -1289,7 +1179,7 @@
                                 <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-5 flex items-center gap-2">
                                     <i data-lucide="trending-up" class="w-5 h-5 text-accent"></i> Verlauf
                                 </p>
-                                <div class="h-52 sm:h-64 w-full relative rounded-2xl overflow-hidden" style="background: transparent;">
+                                <div class="h-52 sm:h-64 w-full relative rounded-3xl overflow-hidden" style="background: transparent;">
                                     <canvas id="trendChart" style="background: transparent; min-height: 160px;"></canvas>
                                 </div>
                             </div>
@@ -1319,7 +1209,7 @@
                                     </div>
                                     
                                     <div class="p-4 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-3xl cursor-pointer grade-swipe-item"
-                                         @click="swipeState.currentX === 0 && (g.isFromPlanner ? openEditTaskFromPlanner(g.id) : openEditGradeModal(g))"
+                                         @click="swipeState.currentX === 0 && (g.isFromPlanner ? openGradeFromPlannerTask(g.id) : openEditGradeModal(g))"
                                          @touchstart="!g.isFromPlanner && startSwipe($event, g.id)"
                                          @touchmove="!g.isFromPlanner && moveSwipe($event)"
                                          @touchend="!g.isFromPlanner && endSwipe($event, g)"
@@ -1342,13 +1232,16 @@
                                             </div>
                                             <div class="overflow-hidden">
                                                 <p class="font-black text-white text-sm sm:text-base truncate leading-tight pr-1">{{ g.label || g.type }}</p>
-                                                <p v-if="g.isFromPlanner" class="text-[10px] font-black text-amber-400 uppercase tracking-wider mt-1">Ergebnis noch nicht bekannt</p>
+                                                <p v-if="g.isFromPlanner" class="text-[10px] font-black text-amber-400 uppercase tracking-wider mt-1">Antippen, um Note einzutragen</p>
                                                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{{ formatDate(g.date) }}</p>
                                             </div>
                                         </div>
                                         <div class="flex gap-2.5 shrink-0">
                                             <span v-if="g.pending && !g.isFromPlanner" class="text-[9px] font-black uppercase bg-amber-500/15 text-amber-400 px-3 py-1.5 rounded-full border border-amber-500/20 self-center">Ausstehend</span>
-                                            <button @click.stop="g.isFromPlanner ? openEditTaskFromPlanner(g.id) : openEditGradeModal(g)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:text-accent active:bg-accent-dim transition-colors cursor-pointer">
+                                            <button v-if="g.isFromPlanner" @click.stop="openEditTaskFromPlanner(g.id)" title="Aufgabe bearbeiten (Titel/Datum)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:text-accent active:bg-accent-dim transition-colors cursor-pointer">
+                                                <i data-lucide="calendar-cog" class="w-5 h-5"></i>
+                                            </button>
+                                            <button v-else @click.stop="openEditGradeModal(g)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:text-accent active:bg-accent-dim transition-colors cursor-pointer">
                                                 <i data-lucide="edit-2" class="w-5 h-5"></i>
                                             </button>
                                         </div>
@@ -1376,19 +1269,20 @@
                     </div>
 
                     <!-- Planner Sub-Tabs -->
-                    <div class="glass-pill p-2 flex relative z-10 max-w-xs mx-auto overflow-x-auto no-scrollbar">
-                    <div class="absolute top-2 bottom-2 toggle-accent-on rounded-full shadow-md pill-indicator"
-                         :style="{ width: 'calc(100% / 3 - 4px)', left: 'calc(' + ['upcoming', 'past', 'calendar'].indexOf(plannerTab) + ' * 100% / 3 + 2px)' }"></div>
-                        <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Anstehend</button>
-                        <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Vergangen</button>
-                        <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-3.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Kalender</button>
+                    <div class="glass-pill p-1.5 flex relative z-10 max-w-md mx-auto overflow-x-auto no-scrollbar">
+                    <div class="absolute top-1.5 bottom-1.5 toggle-accent-on rounded-full pill-indicator"
+                         :style="{ width: 'calc((100% - 12px) / 4)', left: 'calc(6px + ' + ['upcoming', 'past', 'timetable', 'calendar'].indexOf(plannerTab) + ' * (100% - 12px) / 4)' }"></div>
+                        <button @click="plannerTab = 'upcoming'" :class="plannerTab === 'upcoming' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-2.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Anstehend</button>
+                        <button @click="plannerTab = 'past'" :class="plannerTab === 'past' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-2.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Vergangen</button>
+                        <button @click="plannerTab = 'timetable'" :class="plannerTab === 'timetable' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-2.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Plan</button>
+                        <button @click="plannerTab = 'calendar'" :class="plannerTab === 'calendar' ? 'text-white font-black' : 'text-slate-400'" class="flex-1 py-2.5 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors cursor-pointer whitespace-nowrap px-1">Kalender</button>
                     </div>
 
                     <!-- Planer Filter-Pills -->
                     <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="flex gap-2.5 justify-center mt-2 px-2 flex-wrap">
-                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'toggle-accent-on text-white font-black shadow-md shadow-black/30' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Alle</button>
-                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'toggle-accent-on text-white font-black shadow-md shadow-black/30' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Nur Tests</button>
-                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'toggle-accent-on text-white font-black shadow-md shadow-black/30' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Klausuren</button>
+                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Alle</button>
+                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Nur Tests</button>
+                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Klausuren</button>
                     </div>
 
                     <!-- Listenansichten -->
@@ -1409,7 +1303,7 @@
                                     <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
                                 </div>
                                 
-                                <div class="p-4 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-3xl"
+                                <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-3xl"
                                      @touchstart="startTaskSwipe($event, t.id)"
                                      @touchmove="moveTaskSwipe($event)"
                                      @touchend="endTaskSwipe($event, t)"
@@ -1449,8 +1343,55 @@
                     </div>
 
                     <!-- Kalenderansicht (Mit Monats-, Wochen- & Tagesauswahl) -->
+                    <!-- STUNDENPLAN: tageweise Fächer eintragen -->
+                    <div v-if="plannerTab === 'timetable'" class="glass-card p-5 space-y-5">
+                        <div>
+                            <h3 class="font-black text-white text-lg mb-1">Dein Stundenplan</h3>
+                            <p class="text-xs text-slate-400">Trag ein, welche Fächer du an welchem Tag hast. Beim Anlegen einer Klausur oder Hausaufgabe siehst du dann direkt, wann das Fach stattfindet.</p>
+                        </div>
+
+                        <!-- Wochentag-Auswahl -->
+                        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                            <button v-for="wd in weekdayKeys.slice(0,5)" :key="wd" @click="timetableEditDay = wd"
+                                    :class="timetableEditDay === wd ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'"
+                                    class="px-4 py-2 rounded-full text-xs uppercase tracking-wider cursor-pointer shrink-0 transition-colors">
+                                {{ weekdayLabels[wd].slice(0,2) }}
+                            </button>
+                        </div>
+
+                        <!-- Fächer-Auswahl für den gewählten Tag -->
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">{{ weekdayLabels[timetableEditDay] }} — Fächer antippen</p>
+                            <div v-if="subjects.length === 0" class="text-sm text-slate-500 text-center py-6">Lege zuerst Fächer an, um sie hier einzutragen.</div>
+                            <div class="flex flex-wrap gap-2">
+                                <button v-for="s in subjects" :key="s.id" @click="toggleTimetableSubject(timetableEditDay, s.id)"
+                                        class="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-bold border transition-colors cursor-pointer"
+                                        :class="(timetable[timetableEditDay] || []).includes(s.id) ? 'text-white border-transparent' : 'bg-white/5 text-slate-400 border-white/5'"
+                                        :style="(timetable[timetableEditDay] || []).includes(s.id) ? { backgroundColor: s.color } : {}">
+                                    <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: (timetable[timetableEditDay] || []).includes(s.id) ? 'rgba(255,255,255,0.7)' : s.color }"></span>
+                                    {{ s.name }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Wochenübersicht -->
+                        <div class="pt-2 border-t border-white/5 space-y-2.5">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Wochenübersicht</p>
+                            <div v-for="wd in weekdayKeys.slice(0,5)" :key="'ov-'+wd" class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-slate-500 w-8 shrink-0">{{ weekdayLabels[wd].slice(0,2) }}</span>
+                                <div class="flex flex-wrap gap-1.5 min-h-[22px]">
+                                    <span v-for="sid in (timetable[wd] || [])" :key="sid" class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                          :style="{ backgroundColor: (subjects.find(s => s.id === sid)?.color || '#666') + '28', color: subjects.find(s => s.id === sid)?.color || '#999' }">
+                                        {{ subjects.find(s => s.id === sid)?.name || '?' }}
+                                    </span>
+                                    <span v-if="(timetable[wd] || []).length === 0" class="text-[10px] text-slate-600">—</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div v-if="plannerTab === 'calendar'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-                        <div class="lg:col-span-7 glass-card p-5 shadow-xl">
+                        <div class="lg:col-span-7 glass-card p-5">
                             <div class="flex justify-between items-center mb-4 gap-3">
                                 <h3 class="font-black text-white text-lg sm:text-xl truncate min-w-0">{{ monthNames[calMonth] }} {{ calYear }}</h3>
                                 <div class="flex gap-2 shrink-0">
@@ -1462,7 +1403,7 @@
                             <!-- Kalender Ansichtsmodus (Monat, Woche, Tag) -->
                             <div class="flex items-center bg-black/40 p-1 rounded-full border border-white/5 h-10 relative mb-6 w-full sm:w-fit">
                                 <div class="relative flex h-full items-center w-full sm:w-fit">
-                                    <div class="absolute top-0 bottom-0 toggle-accent-on rounded-full shadow-md shadow-black/30 pointer-events-none"
+                                    <div class="absolute top-0 bottom-0 toggle-accent-on rounded-full pointer-events-none"
                                          style="width: calc(100% / 3); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);"
                                          :style="{ transform: `translateX(${['month','week','day'].indexOf(calendarViewMode) * 100}%)` }">
                                     </div>
@@ -1479,17 +1420,20 @@
                                 </div>
                                 <div class="grid grid-cols-7 gap-1.5 md:gap-2">
                                     <div v-for="(day, idx) in calendarDays" :key="idx" 
-                                         class="rounded-2xl flex flex-col items-start justify-start relative p-1.5 md:p-2.5 border cal-day overflow-hidden"
+                                         class="rounded-3xl flex flex-col items-start justify-start relative p-1.5 md:p-2.5 border cal-day overflow-hidden"
                                          :style="{ minHeight: '56px' }"
                                          :class="[
                                             'aspect-square sm:aspect-auto sm:min-h-[76px] md:min-h-[112px]',
-                                            day.isCurrentMonth ? 'bg-black/30 text-white border-white/5 hover:border-accent-border cursor-pointer' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
-                                            isToday(day.date) ? 'ring-2 ring-accent bg-accent-dim border-accent-border' : '',
+                                            day.isCurrentMonth ? 'bg-white/[0.03] text-white border-white/5 hover:border-accent-border cursor-pointer' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
+                                            isToday(day.date) && selectedCalendarDate !== day.date ? 'border-accent-border/60' : '',
                                             selectedCalendarDate === day.date ? 'border-accent bg-accent-dim' : ''
                                          ]"
                                          @click="day.isCurrentMonth && selectCalendarDay(day.date)">
                                         
-                                        <span class="font-black text-xs sm:text-sm md:text-base ml-0.5 shrink-0" :class="selectedCalendarDate === day.date ? 'text-accent-light' : ''">{{ day.day }}</span>
+                                        <span class="font-black text-xs sm:text-sm md:text-base ml-0.5 shrink-0 flex items-center gap-1" :class="selectedCalendarDate === day.date ? 'text-accent-light' : (isToday(day.date) ? 'text-accent' : '')">
+                                            {{ day.day }}
+                                            <span v-if="isToday(day.date) && selectedCalendarDate !== day.date" class="w-1 h-1 rounded-full bg-accent"></span>
+                                        </span>
 
                                         <!-- Mobil/klein: nur Punkte -->
                                         <div v-if="day.tasks && day.tasks.length > 0" class="flex gap-0.5 justify-center w-full pb-0.5 flex-wrap mt-auto sm:hidden">
@@ -1540,13 +1484,13 @@
 
                             <!-- 3. TAGESANSICHT -->
                             <div v-else-if="calendarViewMode === 'day'" class="space-y-4">
-                                <div class="bg-black/30 p-4 rounded-2xl border border-white/5 text-center">
+                                <div class="bg-black/30 p-4 rounded-3xl border border-white/5 text-center">
                                     <span class="text-xs font-black uppercase tracking-wider text-slate-400">Ausgewählter Tag</span>
                                     <h4 class="text-2xl font-black text-accent mt-1">{{ formatDate(selectedCalendarDate) }}</h4>
                                 </div>
                                 <div class="space-y-2">
                                     <div class="text-xs font-bold uppercase text-slate-500 px-1">Zeitleiste</div>
-                                    <div class="bg-black/20 rounded-2xl border border-white/5 divide-y divide-white/5">
+                                    <div class="bg-black/20 rounded-3xl border border-white/5 divide-y divide-white/5">
                                         <div class="p-4 flex justify-between items-center">
                                             <span class="text-sm font-bold text-slate-400">Vormittag / Schule</span>
                                             <span class="text-xs text-slate-500">{{ selectedDayTasks.filter(t => t.type === 'Klausur' || t.type === 'Test').length }} Termine</span>
@@ -1568,13 +1512,13 @@
                                 Aufgaben am {{ formatDate(selectedCalendarDate) }}
                             </h4>
 
-                            <div v-if="selectedDayTasks.length === 0" class="text-center py-8 text-slate-500 font-bold text-xs sm:text-sm bg-black/10 rounded-2xl border border-white/5">
+                            <div v-if="selectedDayTasks.length === 0" class="text-center py-8 text-slate-500 font-bold text-xs sm:text-sm bg-black/10 rounded-3xl border border-white/5">
                                 Keine Aufgaben an diesem Tag! 🎉
                                 <button @click="openTaskModalWithDate(selectedCalendarDate)" class="block mx-auto mt-3 text-xs font-black text-accent uppercase tracking-widest hover:underline">+ Neue Aufgabe</button>
                             </div>
 
                             <div v-else class="space-y-4">
-                                <div v-for="t in selectedDayTasks" :key="t.id" class="flex items-center justify-between p-4 bg-black/30 border border-white/5 rounded-2xl gap-2.5">
+                                <div v-for="t in selectedDayTasks" :key="t.id" class="flex items-center justify-between p-4 bg-black/30 border border-white/5 rounded-3xl gap-2.5">
                                     <div class="flex items-center gap-3.5 min-w-0">
                                         <button @click="toggleTaskDone(t, $event)" 
                                                 class="task-done-btn shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
@@ -1792,7 +1736,7 @@
                             <i data-lucide="bar-chart" class="w-4 h-4 text-accent"></i>
                             Notenverteilung ({{ selectedHalfYear }})
                         </p>
-                        <div class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
+                        <div class="h-64 sm:h-72 w-full relative z-10 rounded-3xl overflow-hidden" style="background: transparent;">
                             <canvas id="barChart" style="background: transparent; width: 100%; height: 100%;"></canvas>
                         </div>
                     </div>
@@ -1847,7 +1791,7 @@
                             </div>
                             <div v-for="(s, idx) in [...processedData.semesterSubjects].filter(s=>s.finalPoints!==null).sort((a,b)=> gradeSystem==='6' ? a.finalPoints-b.finalPoints : b.finalPoints-a.finalPoints)"
                                  :key="s.id"
-                                 class="flex items-center gap-3 p-3 rounded-2xl bg-black/20 border border-white/5">
+                                 class="flex items-center gap-3 p-3 rounded-3xl bg-black/20 border border-white/5">
                                 <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0"
                                       :class="idx===0?'bg-amber-500/20 text-amber-400':idx===1?'bg-slate-400/15 text-slate-300':idx===2?'bg-orange-600/15 text-orange-400':'bg-white/5 text-slate-500'">
                                     {{ idx + 1 }}
@@ -1867,8 +1811,8 @@
 
             <!-- NAVIGATION BOTTOM BAR (Original glass-pill mit flüssigem Sliding-Indikator) -->
             <div class="fixed left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pb-[calc(1.5rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
-                <div class="glass-pill p-1.5 flex relative pointer-events-auto w-full max-w-md shadow-2xl">
-                    <div class="absolute top-1.5 bottom-1.5 toggle-accent-on rounded-full shadow-lg shadow-black/40 pill-indicator"
+                <div class="glass-pill p-1 flex relative pointer-events-auto w-full max-w-md">
+                    <div class="absolute top-1.5 bottom-1.5 toggle-accent-on rounded-full pill-indicator"
                          style="transition: left 0.44s cubic-bezier(0.34, 1.2, 0.64, 1), width 0.44s cubic-bezier(0.34, 1.2, 0.64, 1);"
                          :style="{ 
                              width: 'calc((100% - 12px) / 5)',
@@ -1877,34 +1821,34 @@
                     </div>
                     
                     <button @click="currentTab = 'home'; selectedSubject = null" 
-                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'home' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
-                        <i data-lucide="home" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'home' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
+                        <i data-lucide="home" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'home' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'subjects'; selectedSubject = null"
-                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
-                        <i data-lucide="layout-grid" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'subjects' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
+                        <i data-lucide="layout-grid" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'subjects' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'planner'; selectedSubject = null"
-                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
-                        <i data-lucide="calendar-check" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'planner' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
+                        <i data-lucide="calendar-check" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'planner' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'abitur'; selectedSubject = null"
-                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
-                        <i data-lucide="graduation-cap" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'abitur' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
+                        <i data-lucide="graduation-cap" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'abitur' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'stats'; selectedSubject = null"
-                        class="flex-1 py-4.5 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
-                        <i data-lucide="trending-up" class="w-6.5 h-6.5 transition-all duration-300" :style="currentTab === 'stats' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
+                        <i data-lucide="trending-up" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'stats' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                 </div>
             </div>
@@ -1913,7 +1857,7 @@
         <!-- MODALS (Designtechnisch optimierte Bottom-Sheets für ein erstklassiges Mobile-Gefühl) -->
         <!-- Fach Modal -->
         <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <!-- Swipe-Down Handle -->
                 <div class="modal-drag-handle md:hidden"
                      @touchstart.stop="modalDragStart($event, 'isSubjectModalOpen')"
@@ -1984,7 +1928,7 @@
                         <div class="grid grid-cols-4 gap-3 px-1">
                             <button type="button" v-for="ic in subjectIcons" :key="ic" @click="subjectForm.icon = ic; refreshIcons()"
                                 :class="[subjectForm.icon === ic ? 'ring-2 ring-accent bg-accent-dim2 text-accent-light selected' : 'bg-white/5 text-slate-400']"
-                                class="flex flex-col items-center justify-center py-3 rounded-2xl cursor-pointer icon-btn">
+                                class="flex flex-col items-center justify-center py-3 rounded-3xl cursor-pointer icon-btn">
                                 <i :data-lucide="ic" class="w-6 h-6 mb-1.5"></i>
                                 <span class="text-[10px] font-bold uppercase tracking-wide leading-tight text-center px-1 truncate w-full">{{ ic.replace(/-/g,' ') }}</span>
                             </button>
@@ -2001,49 +1945,55 @@
 
         <!-- Noten Modal -->
         <div v-if="isGradeModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
-                <div class="modal-drag-handle md:hidden"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col">
+                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
                      @touchstart.stop="modalDragStart($event, 'isGradeModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
                 
-                <button @click="closeModal('isGradeModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
+                <button @click="closeModal('isGradeModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-20">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
-                
-                <div class="space-y-6">
-                    <div class="bg-black/20 p-5 rounded-3xl flex justify-between items-center border border-white/5">
-                        <p class="font-black text-white text-base ml-2">Ergebnis ausstehend</p>
-                        <button type="button" @click="gradeForm.pending = !gradeForm.pending" :class="gradeForm.pending ? 'bg-amber-500' : 'bg-slate-700'" class="relative inline-flex h-9 w-16 rounded-full transition-all cursor-pointer">
-                            <span :class="gradeForm.pending ? 'translate-x-8' : 'translate-x-1'" class="inline-block h-7 w-7 transform rounded-full bg-white mt-1 shadow-md" style="transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></span>
-                        </button>
-                    </div>
 
-                    <div v-if="!gradeForm.pending" class="bg-black/20 p-6 rounded-3xl text-center border border-white/5">
-                        <div class="text-7xl font-black text-accent mb-5 grade-value-enter" :key="gradeForm.points">{{ gradeForm.points }}</div>
-                        <input v-if="gradeSystem === '6'" type="range" min="1" max="6" step="1" v-model.number="gradeForm.points" class="custom-range">
-                        <input v-else type="range" min="0" max="15" v-model.number="gradeForm.points" class="custom-range">
-                        <div v-if="gradeSystem === '6'" class="flex justify-between px-1 mt-2">
-                            <span v-for="n in [1,2,3,4,5,6]" :key="n" class="text-[11px] text-slate-600 font-bold">{{ n }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2 bg-black/20 p-2 rounded-full border border-white/5">
-                        <button @click="gradeForm.type = 'Klausur'" :class="gradeForm.type === 'Klausur' ? 'toggle-accent-on text-white' : 'text-slate-400'" class="flex-1 py-4 rounded-full text-xs font-black uppercase cursor-pointer">Klausur</button>
-                        <button @click="gradeForm.type = 'Sonstige Leistung'" :class="gradeForm.type === 'Sonstige Leistung' ? 'toggle-accent-on text-white' : 'text-slate-400'" class="flex-1 py-4 rounded-full text-xs font-black uppercase cursor-pointer">Sonstiges</button>
-                    </div>
-
-                    <input type="text" placeholder="Beschreibung (optional)" v-model="gradeForm.label" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white placeholder:text-slate-600 modal-input" />
+                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4">
+                    <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
                     
-                    <div @click="openDatePicker('grade')" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white flex justify-between items-center cursor-pointer active:border-white/20 transition-all">
-                        <span>{{ gradeForm.date ? formatDate(gradeForm.date) : 'Datum auswählen' }}</span>
-                        <i data-lucide="calendar" class="w-6 h-6 text-accent"></i>
-                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-black/20 p-5 rounded-3xl flex justify-between items-center border border-white/5">
+                            <p class="font-black text-white text-base ml-2">Ergebnis ausstehend</p>
+                            <button type="button" @click="gradeForm.pending = !gradeForm.pending" :class="gradeForm.pending ? 'bg-amber-500' : 'bg-slate-700'" class="relative inline-flex h-9 w-16 rounded-full transition-all cursor-pointer">
+                                <span :class="gradeForm.pending ? 'translate-x-8' : 'translate-x-1'" class="inline-block h-7 w-7 transform rounded-full bg-white mt-1 shadow-md" style="transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></span>
+                            </button>
+                        </div>
 
-                    <div class="pt-4 flex gap-4">
-                        <button @click="handleSaveGrade" class="flex-1 btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Speichern</button>
-                        <button v-if="gradeForm.id" @click="handleDeleteGrade(gradeForm.id)" class="w-16 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                        <div v-if="!gradeForm.pending" class="bg-black/20 p-6 rounded-3xl border border-white/5">
+                            <p class="text-xs font-bold uppercase text-slate-400 text-center mb-4">{{ gradeSystem === '6' ? 'Note auswählen' : 'Punktzahl auswählen' }}</p>
+                            <div class="grid grid-cols-6 gap-2">
+                                <button v-for="n in (gradeSystem === '6' ? [1,2,3,4,5,6] : Array.from({length:16}, (_,i) => i))" :key="n"
+                                        type="button" @click="gradeForm.points = n"
+                                        class="aspect-square rounded-lg flex items-center justify-center font-bold text-xs cursor-pointer transition-all"
+                                        :class="gradeForm.points === n ? 'toggle-accent-on text-white' : 'bg-white/5 text-slate-300 border border-white/5 active:bg-white/10'">
+                                    {{ gradeSystem === '6' ? n : String(n).padStart(2,'0') }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 bg-black/20 p-2 rounded-full border border-white/5">
+                            <button @click="gradeForm.type = 'Klausur'" :class="gradeForm.type === 'Klausur' ? 'toggle-accent-on text-white' : 'text-slate-400'" class="flex-1 py-4 rounded-full text-xs font-black uppercase cursor-pointer">Klausur</button>
+                            <button @click="gradeForm.type = 'Sonstige Leistung'" :class="gradeForm.type === 'Sonstige Leistung' ? 'toggle-accent-on text-white' : 'text-slate-400'" class="flex-1 py-4 rounded-full text-xs font-black uppercase cursor-pointer">Sonstiges</button>
+                        </div>
+
+                        <input type="text" placeholder="Beschreibung (optional)" v-model="gradeForm.label" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white placeholder:text-slate-600 modal-input" />
+                        
+                        <div @click="openDatePicker('grade')" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white flex justify-between items-center cursor-pointer active:border-white/20 transition-all">
+                            <span>{{ gradeForm.date ? formatDate(gradeForm.date) : 'Datum auswählen' }}</span>
+                            <i data-lucide="calendar" class="w-6 h-6 text-accent"></i>
+                        </div>
+
+                        <div class="pt-4 flex gap-4">
+                            <button @click="handleSaveGrade" class="flex-1 btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Speichern</button>
+                            <button v-if="gradeForm.id" @click="handleDeleteGrade(gradeForm.id)" class="w-16 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2051,7 +2001,7 @@
 
         <!-- Zeugnis Modal -->
         <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12">
                 <div class="modal-drag-handle md:hidden"
                      @touchstart.stop="modalDragStart($event, 'isReportCardModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
@@ -2088,12 +2038,15 @@
                         </div>
                     </div>
 
-                    <div class="bg-black/20 border border-white/5 p-6 rounded-3xl text-center">
-                        <div class="text-8xl font-black text-white mb-6 grade-value-enter" :key="tempReportCardPoints">{{ tempReportCardPoints === null ? '-' : tempReportCardPoints }}</div>
-                        <input v-if="gradeSystem === '6'" type="range" min="1" max="6" step="1" v-model.number="tempReportCardPoints" class="custom-range">
-                        <input v-else type="range" min="0" max="15" v-model.number="tempReportCardPoints" class="custom-range">
-                        <div v-if="gradeSystem === '6'" class="flex justify-between px-1 mt-2">
-                            <span v-for="n in [1,2,3,4,5,6]" :key="n" class="text-[11px] text-slate-600 font-bold">{{ n }}</span>
+                    <div class="bg-black/20 border border-white/5 p-6 rounded-3xl">
+                        <p class="text-xs font-bold uppercase text-slate-400 text-center mb-4">{{ gradeSystem === '6' ? 'Note auswählen' : 'Punktzahl auswählen' }}</p>
+                        <div class="grid grid-cols-6 gap-2">
+                            <button v-for="n in (gradeSystem === '6' ? [1,2,3,4,5,6] : Array.from({length:16}, (_,i) => i))" :key="n"
+                                    type="button" @click="tempReportCardPoints = n"
+                                    class="aspect-square rounded-lg flex items-center justify-center font-bold text-xs cursor-pointer transition-all"
+                                    :class="tempReportCardPoints === n ? 'toggle-accent-on text-white' : 'bg-white/5 text-slate-300 border border-white/5 active:bg-white/10'">
+                                {{ gradeSystem === '6' ? n : String(n).padStart(2,'0') }}
+                            </button>
                         </div>
                     </div>
                     <div class="flex gap-4">
@@ -2106,7 +2059,7 @@
 
         <!-- Aufgabe/Prüfung Modal -->
         <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
                 <div class="modal-drag-handle md:hidden"
                      @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
@@ -2140,6 +2093,10 @@
                                 <span class="font-bold text-sm text-white truncate">{{ s.name }}</span>
                             </button>
                         </div>
+                        <p v-if="taskForm.subjectId && timetableDaysForSubject(taskForm.subjectId).length > 0" class="text-xs text-slate-400 mt-3 flex items-center gap-1.5">
+                            <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-accent shrink-0"></i>
+                            Laut Stundenplan: {{ timetableDaysForSubject(taskForm.subjectId).map(d => weekdayLabels[d]).join(', ') }}
+                        </p>
                     </div>
 
                     <div @click="openDatePicker('task')" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white flex justify-between items-center cursor-pointer active:border-white/20 transition-all">
@@ -2162,7 +2119,7 @@
 
         <!-- APP-EINSTELLUNGEN MODAL -->
         <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar">
                 <div class="modal-drag-handle md:hidden" 
                      @touchstart.stop="modalDragStart($event, 'isAppSettingsModalOpen')" 
                      @touchmove.stop="modalDragMove($event)"
@@ -2257,7 +2214,7 @@
                         </div>
                         <p class="text-xs text-slate-500 leading-normal -mt-2">Erhalte Benachrichtigungen auch wenn die App geschlossen ist.</p>
                         <div class="space-y-3">
-                            <div v-for="pn in pushNotificationSettings" :key="pn.key" class="flex items-center justify-between bg-black/20 p-4 rounded-2xl border border-white/5">
+                            <div v-for="pn in pushNotificationSettings" :key="pn.key" class="flex items-center justify-between bg-black/20 p-4 rounded-3xl border border-white/5">
                                 <div class="flex items-center gap-3">
                                     <i :data-lucide="pn.icon" class="w-5 h-5 text-accent/70 shrink-0"></i>
                                     <span class="text-sm font-bold text-white">{{ pn.label }}</span>
@@ -2291,7 +2248,7 @@
 
         <!-- CUSTOM CALENDAR DATE PICKER POP-UP -->
         <div v-if="isDatePickerOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 modal-overlay-enter">
-            <div class="datepicker-enter liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative">
+            <div class="datepicker-enter liquid-glass-datepicker border w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
                 <button @click="isDatePickerOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -2299,7 +2256,7 @@
                     <i data-lucide="calendar" class="w-6 h-6 text-accent"></i> Datum wählen
                 </h3>
                 
-                <div class="flex justify-between items-center mb-5 bg-black/20 p-3 rounded-2xl border border-white/5">
+                <div class="flex justify-between items-center mb-5 bg-black/20 p-3 rounded-3xl border border-white/5">
                     <span class="font-black text-white text-sm px-2">{{ monthNames[calSelectMonth] }} {{ calSelectYear }}</span>
                     <div class="flex gap-2">
                         <button type="button" @click="prevSelectMonth" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-300 active:bg-white/10 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
@@ -2327,7 +2284,7 @@
 
         <!-- PWA INSTALL GUIDE MODAL -->
         <div v-if="isInstallGuideModalOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 modal-overlay-enter">
-            <div class="center-modal-enter liquid-glass-datepicker border w-full max-w-sm rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative text-center">
+            <div class="center-modal-enter liquid-glass-datepicker border w-full max-w-sm rounded-3xl p-6 sm:p-8 shadow-2xl relative text-center">
                 <button @click="closeModal('isInstallGuideModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -2339,7 +2296,7 @@
                     Füge SchoolFlow zu deinem Startbildschirm hinzu, um sie wie eine echte App im Vollbild zu nutzen!
                 </p>
                 
-                <div class="bg-black/25 border border-white/5 rounded-2xl p-5 text-left space-y-4">
+                <div class="bg-black/25 border border-white/5 rounded-3xl p-5 text-left space-y-4">
                     <div class="flex items-start gap-3.5 text-sm text-slate-300">
                         <span class="w-7 h-7 bg-white/5 rounded-full flex items-center justify-center font-bold text-xs shrink-0">1</span>
                         <p>Öffne die URL in deinem Browser (z.B. <strong>Safari</strong>).</p>
@@ -2360,7 +2317,7 @@
 
         <!-- BENACHRICHTIGUNGEN MODAL -->
         <div v-if="isNotificationsOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] overflow-y-auto no-scrollbar">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] overflow-y-auto no-scrollbar">
                 <button @click="isNotificationsOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -2379,7 +2336,7 @@
 
                 <div v-else class="space-y-3">
                     <div v-for="notif in notifications" :key="notif.id"
-                         class="bg-black/20 border rounded-2xl p-4 flex items-start gap-4 transition-all"
+                         class="bg-black/20 border rounded-3xl p-4 flex items-start gap-4 transition-all"
                          :class="notif.read ? 'border-white/5' : 'border-accent-border bg-accent-dim2'">
                         <!-- Icon je nach Typ als inline SVG -->
                         <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
@@ -2417,7 +2374,7 @@
 
         <!-- FREUNDE MODAL -->
         <div v-if="isFriendsOpen" @click.self="isFriendsOpen = false" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
 
                 <!-- Header fixiert -->
                 <div class="px-6 sm:px-8 pt-6 pb-4 shrink-0">
@@ -2454,7 +2411,7 @@
                         <p class="text-slate-500 font-bold text-sm">Keine weiteren Nutzer gefunden</p>
                     </div>
                     <div v-else v-for="member in allMembers" :key="member.uid"
-                         class="bg-black/20 border border-white/5 rounded-2xl p-4 flex items-center gap-3 transition-all">
+                         class="bg-black/20 border border-white/5 rounded-3xl p-4 flex items-center gap-3 transition-all">
                         <!-- Avatar -->
                         <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-base shrink-0"
                              :class="isFriend(member.uid) ? 'bg-emerald-500/20 text-emerald-400' : 'bg-accent-dim2 text-accent'">
@@ -2503,7 +2460,7 @@
                         <p class="text-xs text-slate-600">Füge Nutzer über die Mitgliederliste hinzu</p>
                     </div>
                     <div v-else v-for="friend in friends" :key="friend.uid"
-                         class="bg-black/20 border border-white/5 rounded-2xl p-4 flex items-center gap-3">
+                         class="bg-black/20 border border-white/5 rounded-3xl p-4 flex items-center gap-3">
                         <div class="w-11 h-11 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-black text-base shrink-0">
                             {{ friend.displayName ? friend.displayName[0].toUpperCase() : '?' }}
                         </div>
@@ -2559,7 +2516,7 @@
                             <div v-if="comparisonData.length === 0" class="text-center py-6 text-slate-600 text-sm font-bold">Keine gemeinsamen Fächer</div>
 
                             <div v-for="row in comparisonData" :key="row.subjectName"
-                                 class="grid grid-cols-3 gap-3 items-center bg-black/20 border border-white/5 rounded-2xl px-4 py-3.5">
+                                 class="grid grid-cols-3 gap-3 items-center bg-black/20 border border-white/5 rounded-3xl px-4 py-3.5">
                                 <!-- Mein Schnitt -->
                                 <div class="text-center">
                                     <div class="text-2xl font-black leading-none"
@@ -2685,6 +2642,29 @@
                 // TABS & STATE
                 const currentTab = ref('home');
                 const plannerTab = ref('upcoming');
+                // Stundenplan: pro Wochentag eine Liste von Fach-IDs, tageweise erfasst
+                const weekdayKeys = ['mo', 'di', 'mi', 'do', 'fr', 'sa', 'so'];
+                const weekdayLabels = { mo: 'Montag', di: 'Dienstag', mi: 'Mittwoch', do: 'Donnerstag', fr: 'Freitag', sa: 'Samstag', so: 'Sonntag' };
+                const timetable = ref({ mo: [], di: [], mi: [], do: [], fr: [], sa: [], so: [] });
+                const timetableEditDay = ref('mo');
+                const saveTimetable = async () => {
+                    if (!user.value) return;
+                    try {
+                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { timetable: timetable.value }, { merge: true });
+                    } catch (e) { console.error('Stundenplan speichern fehlgeschlagen', e); }
+                };
+                const toggleTimetableSubject = (day, subjectId) => {
+                    const list = timetable.value[day] || [];
+                    const idx = list.indexOf(subjectId);
+                    if (idx === -1) list.push(subjectId); else list.splice(idx, 1);
+                    timetable.value = { ...timetable.value, [day]: list };
+                    saveTimetable();
+                };
+                // Liefert die Wochentage (Kürzel), an denen ein Fach laut Stundenplan stattfindet
+                const timetableDaysForSubject = (subjectId) => {
+                    if (!subjectId) return [];
+                    return weekdayKeys.filter(k => (timetable.value[k] || []).includes(subjectId));
+                };
                 const plannerFilter = ref('all');
                 const selectedHalfYear = ref('11/1');
                 const selectedSubject = ref(null);
@@ -2703,6 +2683,7 @@
                 // FORMS & SETTINGS
                 const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null, icon: 'book-open' });
                 const gradeForm = ref({ id: null, points: 10, type: 'Klausur', label: '', date: '', pending: false });
+                const gradeFormSourceTaskId = ref(null);
                 const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false, notes: '' });
                 const tempReportCardPoints = ref(3);
                 const selectedReportCardKey = ref('11/1'); // key für reportCardGrades Map
@@ -3309,6 +3290,7 @@
                             tempGradeSystem.value = data.gradeSystem;
                         }
                         if (data.theme) loadTheme(data.theme);
+                        if (data.timetable) timetable.value = { ...timetable.value, ...data.timetable };
                         abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     }
                     autoSetCurrentHalfYear();
@@ -3590,6 +3572,7 @@
                 // ── ANIMIERTES MODAL SCHLIESSEN ──
                 // Spielt die Exit-Animation ab, dann setzt den State auf false
                 const closeModal = (modalKey) => {
+                    if (modalKey === 'isGradeModalOpen') gradeFormSourceTaskId.value = null;
                     const keyMap = {
                         'isSubjectModalOpen': ['isSubjectModalOpen', 'isSettingsModalOpen'],
                         'isGradeModalOpen': ['isGradeModalOpen'],
@@ -4203,7 +4186,24 @@
                 const openAddSubjectModal = () => { isSettingsModalOpen.value=false; subjectForm.value={name:'', isLK:false, color:'#6366f1', examWeight:50, abiType:null, icon:'book-open'}; isSubjectModalOpen.value=true; refreshIcons(); };
                 const openSettingsModal = () => { isSettingsModalOpen.value=true; subjectForm.value={...selectedSubject.value}; isSubjectModalOpen.value=true; refreshIcons(); };
                 const closeSubjectModal = () => { closeModal('isSubjectModalOpen'); };
-                const openAddGradeModal = () => { gradeForm.value={id:null, points: gradeSystem.value === '6' ? 3 : 10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; isGradeModalOpen.value=true; refreshIcons(); };
+                const openAddGradeModal = () => { gradeForm.value={id:null, points: gradeSystem.value === '6' ? 3 : 10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; gradeFormSourceTaskId.value = null; isGradeModalOpen.value=true; refreshIcons(); };
+                // Note direkt aus einer geplanten Klausur/Test heraus eintragen (statt nur die Aufgabe zu bearbeiten)
+                const openGradeFromPlannerTask = (compositeId) => {
+                    const taskId = compositeId.replace('task-', '');
+                    const task = tasks.value.find(t => t.id === taskId);
+                    if (!task) return;
+                    gradeForm.value = {
+                        id: null,
+                        points: gradeSystem.value === '6' ? 1 : 15,
+                        type: task.type,
+                        label: task.title,
+                        date: task.date,
+                        pending: false
+                    };
+                    gradeFormSourceTaskId.value = taskId;
+                    isGradeModalOpen.value = true;
+                    refreshIcons();
+                };
                 const openEditGradeModal = (g) => { gradeForm.value={...g}; isGradeModalOpen.value=true; refreshIcons(); };
                 const openReportCardModal = () => { 
                     // Standardmäßig aktuelles Halbjahr als Key vorauswählen
@@ -4264,6 +4264,13 @@
                             };
                             t.update(ref, { grades: gradeForm.value.id ? grades.map(g => g.id === ng.id ? ng : g) : [...grades, ng] });
                         });
+                        // Wenn die Note aus einer geplanten Klausur/Test heraus eingetragen wurde: Aufgabe im Planer als erledigt markieren
+                        if (gradeFormSourceTaskId.value && user.value) {
+                            try {
+                                await updateDoc(doc(db, 'users', user.value.uid, 'tasks', gradeFormSourceTaskId.value), { done: true });
+                            } catch (e) { console.error('Aufgabe konnte nicht als erledigt markiert werden', e); }
+                            gradeFormSourceTaskId.value = null;
+                        }
                         closeModal('isGradeModalOpen');
                     } catch (err) {
                         console.error("Fehler beim Speichern der Note:", err);
@@ -4486,7 +4493,7 @@
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
                     sortedSubjectsList, subjects, formatNumber, formatDate, isToday, handleAuth, handleLogout,
-                    openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal,
+                    openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal, openGradeFromPlannerTask,
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
@@ -4497,6 +4504,7 @@
                     getCalculatedSemesterPoints,
                     isInstallGuideModalOpen, triggerInstall, isInstalled, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings, handleForgotPassword, handleDeleteAccount,
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
+                    weekdayKeys, weekdayLabels, timetable, timetableEditDay, toggleTimetableSubject, timetableDaysForSubject,
                     handlePlannerTouchStart, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
