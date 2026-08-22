@@ -780,7 +780,7 @@
         .settings-section-5 { animation-delay: 0.25s; }
     </style>
 </head>
-<body class="font-sans  overflow-x-hidden antialiased pb-40">
+<body class="font-sans  overflow-x-hidden antialiased pb-44">
     <!-- SPLASH LADEBALKEN -->
     <div id="splash" class="splash-bar-wrap">
         <div class="splash-logo">
@@ -949,8 +949,8 @@
             <!-- HEADER BEREICH -->
             <header class="mb-6 sm:mb-8 flex justify-between items-center gap-2">
                 <div class="flex items-center gap-2.5 sm:gap-4 cursor-pointer flex-1 min-w-0" @click="currentTab = 'home'; selectedSubject = null">
-                    <div class="w-9 h-9 sm:w-14 sm:h-14 hero-block flex items-center justify-center rounded-2xl shrink-0">
-                        <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-7 sm:h-7 text-white"></i>
+                    <div class="w-8 h-8 sm:w-11 sm:h-11 hero-block flex items-center justify-center rounded-xl shrink-0">
+                        <i data-lucide="graduation-cap" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 text-white"></i>
                     </div>
                     <div class="min-w-0 flex-1">
                         <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight truncate leading-tight">SchoolFlow</h1>
@@ -993,7 +993,7 @@
             </div>
 
             <!-- MAIN INHALT -->
-            <main class="min-h-[60vh] pb-40">
+            <main class="min-h-[60vh] pb-44">
                 
                 <!-- 1. DASHBOARD / HOME (Zweispaltig & Touch-optimiert - Extrem aufgeräumt ohne Fächerliste) -->
                 <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
@@ -1263,9 +1263,14 @@
                             <h2 class="text-3xl sm:text-4xl font-black text-white">Planer</h2>
                             <p class="text-xs sm:text-sm font-bold text-slate-400 mt-1 uppercase tracking-wider">Klausuren & Aufgaben</p>
                         </div>
-                        <button @click="openTaskModal" class="w-13 h-13 sm:w-15 sm:h-15 liquid-glass-btn rounded-full flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
-                            <i data-lucide="plus" class="w-6 h-6"></i>
-                        </button>
+                        <div class="flex gap-2 shrink-0">
+                            <button @click="openBulkImport" title="Klausurtermine im Block eintragen" class="w-13 h-13 sm:w-15 sm:h-15 liquid-glass-btn rounded-full flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
+                                <i data-lucide="clipboard-paste" class="w-5.5 h-5.5"></i>
+                            </button>
+                            <button @click="openTaskModal" class="w-13 h-13 sm:w-15 sm:h-15 liquid-glass-btn rounded-full flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
+                                <i data-lucide="plus" class="w-6 h-6"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Planner Sub-Tabs -->
@@ -1283,9 +1288,9 @@
 
                     <!-- Planer Filter-Pills -->
                     <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="flex gap-2.5 justify-center mt-2 px-2 flex-wrap">
-                        <button @click="plannerFilter = 'all'" :class="plannerFilter === 'all' ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Alle</button>
-                        <button @click="plannerFilter = 'Test'" :class="plannerFilter === 'Test' ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Nur Tests</button>
-                        <button @click="plannerFilter = 'Klausur'" :class="plannerFilter === 'Klausur' ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Klausuren</button>
+                        <button @click="plannerFilter = ['Test','Klausur']" :class="plannerFilter.length === 2 ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Alle</button>
+                        <button @click="toggleFilterType('Test')" :class="plannerFilter.length !== 2 && plannerFilter.includes('Test') ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Nur Tests</button>
+                        <button @click="toggleFilterType('Klausur')" :class="plannerFilter.length !== 2 && plannerFilter.includes('Klausur') ? 'toggle-accent-on text-white font-black' : 'bg-white/5 text-slate-400 border border-white/5 font-bold'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill">Klausuren</button>
                     </div>
 
                     <!-- Listenansichten -->
@@ -1332,6 +1337,10 @@
                                             <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1.5">
                                                 {{ t.type }} • {{ formatDate(t.date) }}
                                                 <i v-if="t.notes" data-lucide="sticky-note" class="w-3 h-3 text-accent shrink-0" title="Hat Notizen"></i>
+                                                <span v-if="t.type !== 'Hausaufgabe' && t.studyStatus && t.studyStatus !== 'none'"
+                                                      class="w-1.5 h-1.5 rounded-full shrink-0"
+                                                      :class="t.studyStatus === 'ready' ? 'bg-emerald-400' : 'bg-amber-400'"
+                                                      :title="t.studyStatus === 'ready' ? 'Fertig gelernt' : 'Lernen läuft'"></span>
                                             </p>
                                         </div>
                                     </div>
@@ -1814,7 +1823,7 @@
             </main>
 
             <!-- NAVIGATION BOTTOM BAR (Original glass-pill mit flüssigem Sliding-Indikator) -->
-            <div class="fixed left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pb-[calc(2.25rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
+            <div class="fixed left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pb-[calc(2.75rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
                 <div class="glass-pill p-1 flex relative pointer-events-auto w-full max-w-md">
                     <div class="absolute top-1.5 bottom-1.5 toggle-accent-on rounded-full pill-indicator"
                          style="transition: left 0.44s cubic-bezier(0.34, 1.2, 0.64, 1), width 0.44s cubic-bezier(0.34, 1.2, 0.64, 1);"
@@ -1825,31 +1834,31 @@
                     </div>
                     
                     <button @click="currentTab = 'home'; selectedSubject = null" 
-                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3.5 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'home' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
                         <i data-lucide="home" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'home' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'subjects'; selectedSubject = null"
-                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3.5 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'subjects' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
                         <i data-lucide="layout-grid" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'subjects' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'planner'; selectedSubject = null"
-                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3.5 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'planner' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
                         <i data-lucide="calendar-check" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'planner' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'abitur'; selectedSubject = null"
-                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3.5 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'abitur' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
                         <i data-lucide="graduation-cap" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'abitur' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
                     </button>
                     <button @click="currentTab = 'stats'; selectedSubject = null"
-                        class="flex-1 py-3 flex justify-center relative z-10 cursor-pointer text-center group"
+                        class="flex-1 py-3.5 flex justify-center relative z-10 cursor-pointer text-center group"
                         :class="currentTab === 'stats' ? 'text-white' : 'text-slate-400'"
                         style="transition: color 0.25s ease;">
                         <i data-lucide="trending-up" class="w-5.5 h-5.5 transition-all duration-300" :style="currentTab === 'stats' ? 'transform: scale(1.2) translateY(-2px); filter: drop-shadow(0 0 8px rgba(199,210,254,0.6))' : 'transform: scale(1) translateY(0)'"></i>
@@ -1871,7 +1880,7 @@
                 <button @click="closeModal('isSubjectModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
+                <h2 class="text-2xl font-black text-white mb-6 pr-10" @touchstart.stop="modalDragStart($event, 'isSubjectModalOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
                 
                 <form @submit.prevent="handleSaveSubject" class="space-y-6">
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5">
@@ -2003,6 +2012,58 @@
             </div>
         </div>
 
+        <!-- Klausurtermine im Block eintragen -->
+        <div v-if="isBulkImportOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col">
+                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+                     @touchstart.stop="modalDragStart($event, 'isBulkImportOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
+
+                <button @click="isBulkImportOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+
+                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4">
+                    <h2 class="text-2xl font-black text-white mb-2 pr-10" @touchstart.stop="modalDragStart($event, 'isBulkImportOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">Klausurtermine im Block</h2>
+                    <p class="text-xs text-slate-400 mb-5">Füge Text ein – pro Zeile ein Termin, z.B. <span class="text-slate-300 font-bold">"20.9. Mathe"</span> oder <span class="text-slate-300 font-bold">"03.10.2026 – Englisch"</span>.</p>
+
+                    <div v-if="bulkImportParsed.length === 0" class="space-y-4">
+                        <textarea v-model="bulkImportText" rows="8" placeholder="20.9. Mathe&#10;22.9. Englisch LK&#10;5.10. Physik" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-medium text-sm text-white placeholder:text-slate-600 modal-input resize-none no-scrollbar"></textarea>
+                        <button @click="parseBulkImportText" :disabled="!bulkImportText.trim()" class="w-full btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform disabled:opacity-40">Termine erkennen</button>
+                    </div>
+
+                    <div v-else class="space-y-4">
+                        <p class="text-xs font-bold uppercase text-slate-400 tracking-widest">{{ bulkImportParsed.filter(r => r.date && r.subjectId).length }} von {{ bulkImportParsed.length }} bereit</p>
+                        <div class="space-y-2.5 max-h-[45vh] overflow-y-auto no-scrollbar pr-1">
+                            <div v-for="(row, idx) in bulkImportParsed" :key="idx" class="bg-black/20 border rounded-2xl p-3.5 flex items-center gap-3" :class="row.date && row.subjectId ? (row.timetableWarning ? 'border-amber-500/30' : 'border-white/5') : 'border-amber-500/30'">
+                                <div class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center" :class="row.date && row.subjectId ? (row.timetableWarning ? 'bg-amber-500/15 text-amber-400' : 'bg-emerald-500/15 text-emerald-400') : 'bg-amber-500/15 text-amber-400'">
+                                    <i :data-lucide="row.date && row.subjectId ? (row.timetableWarning ? 'alert-triangle' : 'check') : 'alert-triangle'" class="w-4.5 h-4.5"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs text-slate-500 truncate">{{ row.raw }}</p>
+                                    <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                        <span v-if="row.date" class="text-xs font-bold text-white">{{ formatDate(row.date) }}</span>
+                                        <span v-else class="text-xs font-bold text-amber-400">Kein Datum erkannt</span>
+                                        <select :value="row.subjectId || ''" @change="bulkImportSetSubject(idx, $event.target.value)" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-2.5 py-1 outline-none">
+                                            <option value="" disabled>Fach wählen</option>
+                                            <option v-for="s in subjects" :key="s.id" :value="s.id">{{ s.name }}</option>
+                                        </select>
+                                    </div>
+                                    <p v-if="row.timetableWarning" class="text-[10px] text-amber-400 mt-1">Laut Stundenplan hast du {{ row.subjectName }} an diesem Wochentag nicht — Datum prüfen?</p>
+                                </div>
+                                <button @click="bulkImportRemoveRow(idx)" class="shrink-0 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-500 cursor-pointer"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 pt-2">
+                            <button @click="bulkImportParsed = []" class="flex-1 bg-white/5 border border-white/10 text-slate-300 py-4 rounded-full font-black uppercase text-xs cursor-pointer active:scale-95 transition-transform">Zurück</button>
+                            <button @click="handleBulkImportSave" :disabled="bulkImportParsed.filter(r => r.date && r.subjectId).length === 0" class="flex-1 btn-accent py-4 rounded-full font-black uppercase text-xs cursor-pointer active:scale-95 transition-transform disabled:opacity-40">Alle eintragen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Zeugnis Modal -->
         <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12">
@@ -2014,7 +2075,7 @@
                 <button @click="closeModal('isReportCardModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10">Zeugnisnote festlegen</h2>
+                <h2 class="text-2xl font-black text-white mb-6 pr-10" @touchstart.stop="modalDragStart($event, 'isReportCardModalOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">Zeugnisnote festlegen</h2>
                 
                 <div class="space-y-5">
                     <!-- Halbjahr-Auswahl für Klassen 5-10 -->
@@ -2072,7 +2133,7 @@
                 <button @click="closeModal('isTaskModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
+                <h2 class="text-2xl font-black text-white mb-6 pr-10" @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
                 
                 <div v-if="subjects.length === 0" class="text-center py-8 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-sm animate-pulse">
                     Bitte erstelle zuerst ein Fach unter "Fächer", bevor du Aufgaben eintragen kannst.
@@ -2106,6 +2167,15 @@
                     <div @click="openDatePicker('task')" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white flex justify-between items-center cursor-pointer active:border-white/20 transition-all">
                         <span>{{ taskForm.date ? formatDate(taskForm.date) : 'Datum auswählen' }}</span>
                         <i data-lucide="calendar" class="w-6 h-6 text-accent"></i>
+                    </div>
+
+                    <div v-if="taskForm.type !== 'Hausaufgabe'">
+                        <label class="text-xs font-bold uppercase text-slate-400 ml-1 block mb-3">Lernstand</label>
+                        <div class="flex gap-2 bg-black/20 p-2 rounded-full border border-white/5">
+                            <button type="button" @click="taskForm.studyStatus = 'none'" :class="taskForm.studyStatus === 'none' || !taskForm.studyStatus ? 'bg-white/10 text-white' : 'text-slate-500'" class="flex-1 py-3 rounded-full text-[11px] font-black uppercase cursor-pointer transition-colors">Nicht angefangen</button>
+                            <button type="button" @click="taskForm.studyStatus = 'started'" :class="taskForm.studyStatus === 'started' ? 'bg-amber-500/80 text-white' : 'text-slate-500'" class="flex-1 py-3 rounded-full text-[11px] font-black uppercase cursor-pointer transition-colors">Dabei</button>
+                            <button type="button" @click="taskForm.studyStatus = 'ready'" :class="taskForm.studyStatus === 'ready' ? 'bg-emerald-500/80 text-white' : 'text-slate-500'" class="flex-1 py-3 rounded-full text-[11px] font-black uppercase cursor-pointer transition-colors">Fertig gelernt</button>
+                        </div>
                     </div>
 
                     <div>
@@ -2281,11 +2351,14 @@
                          ]"
                          @click="day.isCurrentMonth && selectDate(day.date)">
                         <span>{{ day.day }}</span>
-                        <div v-if="day.isCurrentMonth && subjectsForDate(day.date).length > 0" class="flex gap-0.5 mt-0.5">
-                            <span v-for="sub in subjectsForDate(day.date).slice(0,3)" :key="sub.id" class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ backgroundColor: sub.color }"></span>
-                        </div>
+                        <span v-if="day.isCurrentMonth && subjectOccursOnDate(day.date)" class="w-1.5 h-1.5 rounded-full mt-0.5 shrink-0" :style="{ backgroundColor: subjects.find(s => s.id === datePickerRelevantSubjectId)?.color || 'var(--accent)' }"></span>
                     </div>
                 </div>
+
+                <p v-if="datePickerRelevantSubjectId" class="text-[11px] text-slate-500 text-center mt-4 flex items-center justify-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: subjects.find(s => s.id === datePickerRelevantSubjectId)?.color || 'var(--accent)' }"></span>
+                    Markiert: Tage, an denen {{ subjects.find(s => s.id === datePickerRelevantSubjectId)?.name || 'das Fach' }} laut Stundenplan stattfindet
+                </p>
             </div>
         </div>
 
@@ -2333,6 +2406,29 @@
                     Benachrichtigungen
                 </h2>
                 <p class="text-xs text-slate-500 mb-6">Aktivitäten und Freundschaftsanfragen</p>
+
+                <!-- Klausur-Erinnerungen -->
+                <div class="bg-black/20 border border-white/5 rounded-3xl p-5 mb-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-black text-white text-sm">Klausur-Erinnerungen</p>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Benachrichtigung, wenn die App offen ist</p>
+                        </div>
+                        <button type="button" @click="examRemindersEnabled ? (examRemindersEnabled = false, saveReminderSettings()) : requestPushPermission()" :class="examRemindersEnabled ? 'bg-accent' : 'bg-slate-700'" class="relative inline-flex h-8 w-14 rounded-full transition-all cursor-pointer shrink-0">
+                            <span :class="examRemindersEnabled ? 'translate-x-7' : 'translate-x-1'" class="inline-block h-6 w-6 transform rounded-full bg-white mt-1 shadow-md" style="transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></span>
+                        </button>
+                    </div>
+                    <div v-if="examRemindersEnabled" class="flex items-center gap-2">
+                        <span class="text-xs text-slate-400">Erinnere mich</span>
+                        <select v-model.number="examReminderDays" @change="saveReminderSettings" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-3 py-1.5 outline-none">
+                            <option :value="0">am selben Tag</option>
+                            <option :value="1">1 Tag vorher</option>
+                            <option :value="2">2 Tage vorher</option>
+                            <option :value="3">3 Tage vorher</option>
+                            <option :value="7">1 Woche vorher</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div v-if="notifications.length === 0" class="text-center py-12 space-y-3">
                     <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto empty-state-icon">
@@ -2687,13 +2783,26 @@
                     const jsDay = d.getDay(); // 0=So, 1=Mo, ... 6=Sa
                     return weekdayKeys[(jsDay + 6) % 7];
                 };
-                // Fächer, die laut Stundenplan an einem bestimmten Datum stattfinden (Farben für die Datepicker-Punkte)
-                const subjectsForDate = (dateStr) => {
+                // Liefert die Fach-ID, die im Datepicker farblich markiert werden soll (je nachdem, ob eine Aufgabe oder eine Note angelegt wird)
+                const datePickerRelevantSubjectId = computed(() => {
+                    if (datePickerTarget.value === 'grade') return selectedSubject.value?.id || null;
+                    return taskForm.value.subjectId || null;
+                });
+                // Prüft, ob das gerade ausgewählte Fach laut Stundenplan an diesem Datum stattfindet
+                const subjectOccursOnDate = (dateStr) => {
+                    const subjectId = datePickerRelevantSubjectId.value;
+                    if (!subjectId) return false;
                     const key = weekdayKeyForDate(dateStr);
-                    const ids = timetable.value[key] || [];
-                    return ids.map(id => subjects.value.find(s => s.id === id)).filter(Boolean);
+                    return (timetable.value[key] || []).includes(subjectId);
                 };
-                const plannerFilter = ref('all');
+                const plannerFilter = ref(['Test', 'Klausur']);
+                const toggleFilterType = (type) => {
+                    if (plannerFilter.value.length === 2) { plannerFilter.value = [type]; return; }
+                    const idx = plannerFilter.value.indexOf(type);
+                    if (idx === -1) plannerFilter.value = [...plannerFilter.value, type];
+                    else if (plannerFilter.value.length > 1) plannerFilter.value = plannerFilter.value.filter(t => t !== type);
+                    else plannerFilter.value = ['Test', 'Klausur'];
+                };
                 const selectedHalfYear = ref('11/1');
                 const selectedSubject = ref(null);
                 const lkBonusActive = ref(true);
@@ -2712,7 +2821,7 @@
                 const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null, icon: 'book-open' });
                 const gradeForm = ref({ id: null, points: 10, type: 'Klausur', label: '', date: '', pending: false });
                 const gradeFormSourceTaskId = ref(null);
-                const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false, notes: '' });
+                const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyStatus: 'none' });
                 const tempReportCardPoints = ref(3);
                 const selectedReportCardKey = ref('11/1'); // key für reportCardGrades Map
                 
@@ -2753,6 +2862,50 @@
                 // ── NEU: FREUNDE & BENACHRICHTIGUNGEN ──
                 const isFriendsOpen = ref(false);
                 const isNotificationsOpen = ref(false);
+                // ── KLAUSUR-ERINNERUNGEN ──
+                // Da es keinen Push-Server gibt, prüfen wir beim App-Start/Sichtbarwerden lokal,
+                // ob eine anstehende Klausur/Test innerhalb des Erinnerungsfensters liegt, und
+                // feuern dann eine lokale Browser-Notification (nur möglich, während die App offen/im Hintergrund-Tab ist).
+                const examRemindersEnabled = ref(false);
+                const examReminderDays = ref(1);
+                const saveReminderSettings = async () => {
+                    if (!user.value) return;
+                    try {
+                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { examRemindersEnabled: examRemindersEnabled.value, examReminderDays: examReminderDays.value }, { merge: true });
+                    } catch (e) { console.error('Erinnerungs-Einstellungen konnten nicht gespeichert werden', e); }
+                };
+                const getNotifiedTaskIds = () => {
+                    try { return JSON.parse(localStorage.getItem('sf_notified_tasks') || '[]'); } catch { return []; }
+                };
+                const markTaskNotified = (id) => {
+                    const ids = getNotifiedTaskIds();
+                    if (!ids.includes(id)) { ids.push(id); localStorage.setItem('sf_notified_tasks', JSON.stringify(ids.slice(-200))); }
+                };
+                const checkExamReminders = () => {
+                    if (!examRemindersEnabled.value) return;
+                    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+                    const notifiedIds = getNotifiedTaskIds();
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    tasks.value.forEach(t => {
+                        if (t.done || (t.type !== 'Klausur' && t.type !== 'Test')) return;
+                        if (notifiedIds.includes(t.id)) return;
+                        const taskDate = new Date(t.date + 'T00:00:00');
+                        const daysUntil = Math.round((taskDate - today) / 86400000);
+                        if (daysUntil >= 0 && daysUntil <= examReminderDays.value) {
+                            const subject = subjects.value.find(s => s.id === t.subjectId);
+                            const dayLabel = daysUntil === 0 ? 'heute' : (daysUntil === 1 ? 'morgen' : `in ${daysUntil} Tagen`);
+                            try {
+                                new Notification(`${t.type}: ${subject?.name || ''}`, {
+                                    body: `${t.title} — ${dayLabel}`,
+                                    icon: './icon-192.png',
+                                    tag: 'sf-exam-' + t.id
+                                });
+                            } catch (e) { /* Notification API kann in manchen Kontexten (z.B. iOS Safari) fehlschlagen */ }
+                            markTaskNotified(t.id);
+                        }
+                    });
+                };
+                watch(tasks, () => { if (examRemindersEnabled.value) checkExamReminders(); });
                 const friendsTab = ref('members');
                 const allMembers = ref([]);
                 const friends = ref([]);
@@ -2987,7 +3140,10 @@
                     if (!('Notification' in window)) { alert('Dein Browser unterstützt keine Push-Benachrichtigungen.'); return; }
                     const permission = await Notification.requestPermission();
                     if (permission === 'granted') {
-                        alert('Push-Benachrichtigungen wurden aktiviert! 🔔');
+                        examRemindersEnabled.value = true;
+                        saveReminderSettings();
+                        checkExamReminders();
+                        alert('Klausur-Erinnerungen wurden aktiviert! 🔔 Du wirst benachrichtigt, sobald die App geöffnet ist und eine Klausur in deinem Erinnerungsfenster liegt.');
                     } else {
                         alert('Push-Benachrichtigungen wurden nicht erlaubt. Du kannst dies in deinen Browser-Einstellungen ändern.');
                     }
@@ -3178,6 +3334,7 @@
                 onMounted(() => {
                     nextTick(updatePlannerIndicator);
                     window.addEventListener('resize', updatePlannerIndicator);
+                    document.addEventListener('visibilitychange', () => { if (!document.hidden) checkExamReminders(); });
                     // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
                     if (window.earlyDeferredPrompt) {
                         deferredPrompt.value = window.earlyDeferredPrompt;
@@ -3321,6 +3478,8 @@
                         }
                         if (data.theme) loadTheme(data.theme);
                         if (data.timetable) timetable.value = { ...timetable.value, ...data.timetable };
+                        if (typeof data.examRemindersEnabled === 'boolean') examRemindersEnabled.value = data.examRemindersEnabled;
+                        if (typeof data.examReminderDays === 'number') examReminderDays.value = data.examReminderDays;
                         abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     }
                     autoSetCurrentHalfYear();
@@ -3538,21 +3697,9 @@
                     modalDrag.value.lastTime = now;
                     modalDrag.value.currentY = diff;
                     
+                    // Direktes 1:1-Folgen des Fingers, keine Gummiband-Bremse — fühlt sich unmittelbarer an
                     if (modalDrag.value.el) {
-                        // Elastic rubber-band resistance: natural iOS-like feel
-                        const resistance = diff < 60 
-                            ? diff * 0.72 
-                            : (60 * 0.72 + (diff - 60) * 0.88);
-                        const opacity = Math.max(0.15, 1 - (diff / 380));
-                        const scale = Math.max(0.94, 1 - (diff / 2200));
-                        modalDrag.value.el.style.transform = `translateY(${resistance}px) scale(${scale})`;
-                        modalDrag.value.el.style.opacity = String(opacity);
-                    }
-                    // Backdrop dimmt live mit, damit man das Runterziehen deutlich sieht
-                    if (modalDrag.value.backdrop) {
-                        const backdropOpacity = Math.max(0.25, 1 - (diff / 300));
-                        modalDrag.value.backdrop.style.backgroundColor = `rgba(2,6,23,${0.7 * backdropOpacity})`;
-                        modalDrag.value.backdrop.style.backdropFilter = `blur(${Math.max(2, 12 * backdropOpacity)}px)`;
+                        modalDrag.value.el.style.transform = `translateY(${diff}px)`;
                     }
                 };
                 const modalDragEnd = (e) => {
@@ -3560,40 +3707,29 @@
                     const { el, currentY, modalKey, velocity, backdrop } = modalDrag.value;
                     modalDrag.value.active = false;
                     
-                    // Fling velocity in px/ms (>0.6 = fast flick = close)
-                    const isFling = velocity > 0.55;
-                    const shouldClose = currentY > 80 || isFling;
+                    // Schließen, wenn über 28% der Panel-Höhe gezogen wurde ODER weit genug (>140px), analog zur Referenz-Geste
+                    const panelHeight = el ? el.getBoundingClientRect().height : 500;
+                    const shouldClose = currentY > panelHeight * 0.28 || currentY > 140;
                     
-                    if (backdrop) {
-                        backdrop.style.transition = `background-color ${shouldClose ? 0.25 : 0.3}s ease, backdrop-filter ${shouldClose ? 0.25 : 0.3}s ease`;
-                        if (!shouldClose) {
-                            backdrop.style.backgroundColor = '';
-                            backdrop.style.backdropFilter = '';
-                        }
-                    }
                     if (el) {
                         el.classList.remove('modal-dragging');
                         if (shouldClose) {
-                            // Slide out with momentum
-                            const flyDuration = isFling ? 0.22 : 0.3;
-                            el.style.transition = `transform ${flyDuration}s cubic-bezier(0.4, 0, 1, 1), opacity ${flyDuration * 0.85}s ease`;
-                            el.style.transform = 'translateY(105%) scale(0.96)';
-                            el.style.opacity = '0';
+                            el.style.transition = 'transform 0.28s cubic-bezier(0.4, 0, 1, 1)';
+                            el.style.transform = 'translateY(100%)';
                             setTimeout(() => {
                                 if (modalKey === 'isAppSettingsModalOpen') isAppSettingsModalOpen.value = false;
                                 else if (modalKey === 'isGradeModalOpen') isGradeModalOpen.value = false;
                                 else if (modalKey === 'isTaskModalOpen') isTaskModalOpen.value = false;
                                 else if (modalKey === 'isSubjectModalOpen') { isSubjectModalOpen.value = false; isSettingsModalOpen.value = false; }
                                 else if (modalKey === 'isReportCardModalOpen') isReportCardModalOpen.value = false;
+                                else if (modalKey === 'isBulkImportOpen') isBulkImportOpen.value = false;
                                 el.style.cssText = '';
                                 if (backdrop) backdrop.style.cssText = backdrop.getAttribute('data-orig-style') || '';
-                            }, flyDuration * 1000 + 40);
+                            }, 300);
                         } else {
-                            // Snap back with satisfying spring
-                            el.style.transition = 'transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease';
-                            el.style.transform = 'translateY(0) scale(1)';
-                            el.style.opacity = '1';
-                            setTimeout(() => { el.style.cssText = ''; if (backdrop) { backdrop.style.backgroundColor = ''; backdrop.style.backdropFilter = ''; backdrop.style.transition = ''; } }, 500);
+                            el.style.transition = 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)';
+                            el.style.transform = 'translateY(0)';
+                            setTimeout(() => { el.style.cssText = ''; }, 340);
                         }
                     }
                     modalDrag.value = { active: false, startY: 0, currentY: 0, modalKey: null, el: null, backdrop: null, velocity: 0, lastY: 0, lastTime: 0 };
@@ -3813,16 +3949,16 @@
 
                 const filteredUpcomingTasks = computed(() => {
                     let list = upcomingTasks.value;
-                    if (plannerFilter.value !== 'all') {
-                        list = list.filter(t => t.type === plannerFilter.value);
+                    if (plannerFilter.value.length !== 2) {
+                        list = list.filter(t => plannerFilter.value.includes(t.type));
                     }
                     return list;
                 });
 
                 const filteredPastTasks = computed(() => {
                     let list = pastTasks.value;
-                    if (plannerFilter.value !== 'all') {
-                        list = list.filter(t => t.type === plannerFilter.value);
+                    if (plannerFilter.value.length !== 2) {
+                        list = list.filter(t => plannerFilter.value.includes(t.type));
                     }
                     return list;
                 });
@@ -3965,16 +4101,16 @@
                 const prevSelectMonth = () => { if(calSelectMonth.value === 0) { calSelectMonth.value = 11; calSelectYear.value--; } else { calSelectMonth.value--; } };
 
                 const openTaskModal = () => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false, notes: '' };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyStatus: 'none' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 };
                 const openTaskModalWithDate = (dateStr) => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false, notes: '' };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false, notes: '', studyStatus: 'none' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 }
-                const openEditTaskModal = (task) => { taskForm.value = { ...task }; isTaskModalOpen.value = true; refreshIcons(); };
+                const openEditTaskModal = (task) => { taskForm.value = { studyStatus: 'none', ...task }; isTaskModalOpen.value = true; refreshIcons(); };
                 
                 const openEditTaskFromPlanner = (compositeId) => {
                     const taskId = compositeId.replace('task-', '');
@@ -3987,7 +4123,7 @@
                 const handleSaveTask = async () => {
                     if (!user.value || !taskForm.value.title || !taskForm.value.subjectId) return;
                     try {
-                        const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done, notes: taskForm.value.notes || '' };
+                        const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done, notes: taskForm.value.notes || '', studyStatus: taskForm.value.studyStatus || 'none' };
                         if (taskForm.value.id) {
                             await updateDoc(doc(db, 'users', user.value.uid, 'tasks', taskForm.value.id), taskData);
                         } else {
@@ -4004,6 +4140,86 @@
                     if (!user.value) return;
                     await deleteDoc(doc(db, 'users', user.value.uid, 'tasks', taskId));
                     if (isTaskModalOpen.value) closeModal('isTaskModalOpen');
+                };
+
+                // ── KLAUSURTERMINE IM BLOCK EINTRAGEN ──
+                // Freitext einfügen (z.B. aus einem Terminplan kopiert), Zeile für Zeile
+                // nach Datum + Fach parsen, als Vorschau zeigen und gesammelt anlegen.
+                const isBulkImportOpen = ref(false);
+                const bulkImportText = ref('');
+                const bulkImportParsed = ref([]);
+                const openBulkImport = () => {
+                    bulkImportText.value = '';
+                    bulkImportParsed.value = [];
+                    isBulkImportOpen.value = true;
+                    refreshIcons();
+                };
+                // Erkennt Datumsformate wie "20.9.", "20.09.2026", "20.9.26" am Zeilenanfang oder irgendwo in der Zeile
+                const parseBulkImportText = () => {
+                    const lines = bulkImportText.value.split('\n').map(l => l.trim()).filter(Boolean);
+                    const dateRegex = /(\d{1,2})\.(\d{1,2})\.(\d{2,4})?/;
+                    const currentYear = new Date().getFullYear();
+                    const results = lines.map(line => {
+                        const m = line.match(dateRegex);
+                        if (!m) return { raw: line, date: null, subjectId: null, subjectName: '', matched: false };
+                        const day = parseInt(m[1], 10), month = parseInt(m[2], 10);
+                        let year = m[3] ? parseInt(m[3], 10) : currentYear;
+                        if (year < 100) year += 2000;
+                        const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                        const restText = line.replace(m[0], '').replace(/^[\s:,\-–—]+/, '').trim();
+                        // Fach anhand Namens-Teilstring in der Restzeile suchen (case-insensitive)
+                        const foundSubject = subjects.value.find(s => restText.toLowerCase().includes(s.name.toLowerCase())) 
+                                           || subjects.value.find(s => line.toLowerCase().includes(s.name.toLowerCase()));
+                        return {
+                            raw: line,
+                            date: dateStr,
+                            title: restText || 'Klausur',
+                            subjectId: foundSubject ? foundSubject.id : null,
+                            subjectName: foundSubject ? foundSubject.name : restText,
+                            matched: !!foundSubject,
+                            timetableWarning: false
+                        };
+                    });
+                    // Plausibilitätsprüfung: Datum mit Stundenplan abgleichen (fällt die Klausur auf einen Tag,
+                    // an dem das Fach laut Stundenplan gar nicht stattfindet?)
+                    results.forEach(r => {
+                        if (!r.date || !r.subjectId) return;
+                        const key = weekdayKeyForDate(r.date);
+                        // Nur warnen, wenn für diesen Wochentag überhaupt ein Stundenplan hinterlegt ist
+                        const hasAnyTimetableForDay = (timetable.value[key] || []).length > 0;
+                        if (hasAnyTimetableForDay && !(timetable.value[key] || []).includes(r.subjectId)) {
+                            r.timetableWarning = true;
+                        }
+                    });
+                    bulkImportParsed.value = results;
+                };
+                const bulkImportSetSubject = (idx, subjectId) => {
+                    const item = bulkImportParsed.value[idx];
+                    const sub = subjects.value.find(s => s.id === subjectId);
+                    let timetableWarning = false;
+                    if (item.date && subjectId) {
+                        const key = weekdayKeyForDate(item.date);
+                        const hasAnyTimetableForDay = (timetable.value[key] || []).length > 0;
+                        timetableWarning = hasAnyTimetableForDay && !(timetable.value[key] || []).includes(subjectId);
+                    }
+                    bulkImportParsed.value[idx] = { ...item, subjectId, subjectName: sub?.name || '', matched: true, timetableWarning };
+                };
+                const bulkImportRemoveRow = (idx) => {
+                    bulkImportParsed.value = bulkImportParsed.value.filter((_, i) => i !== idx);
+                };
+                const handleBulkImportSave = async () => {
+                    if (!user.value) return;
+                    const validRows = bulkImportParsed.value.filter(r => r.date && r.subjectId);
+                    if (validRows.length === 0) return;
+                    try {
+                        await Promise.all(validRows.map(r => {
+                            const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
+                            return setDoc(taskRef, { title: r.title || 'Klausur', type: 'Klausur', subjectId: r.subjectId, date: r.date, done: false, notes: '' });
+                        }));
+                        isBulkImportOpen.value = false;
+                        bulkImportText.value = '';
+                        bulkImportParsed.value = [];
+                    } catch (e) { console.error('Fehler beim Massen-Import der Klausurtermine', e); }
                 };
 
                 const spawnConfetti = (btn) => {
@@ -4519,7 +4735,7 @@
                 return {
                     halfYears, colorOptions, subjectIcons, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
-                    currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, lkBonusActive,
+                    currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
                     sortedSubjectsList, subjects, formatNumber, formatDate, isToday, handleAuth, handleLogout,
@@ -4528,21 +4744,23 @@
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
+                    isBulkImportOpen, bulkImportText, bulkImportParsed, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportRemoveRow, handleBulkImportSave,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe, swipeState, taskSwipeState,
                     modalDragStart, modalDragMove, modalDragEnd,
                     getCalculatedSemesterPoints,
                     isInstallGuideModalOpen, triggerInstall, isInstalled, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings, handleForgotPassword, handleDeleteAccount,
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
-                    weekdayKeys, weekdayLabels, timetable, timetableEditDay, toggleTimetableSubject, timetableDaysForSubject, subjectsForDate,
+                    weekdayKeys, weekdayLabels, timetable, timetableEditDay, toggleTimetableSubject, timetableDaysForSubject, subjectOccursOnDate, datePickerRelevantSubjectId,
                     tabUpcoming, tabPast, tabTimetable, tabCalendar, plannerIndicator,
                     handlePlannerTouchStart, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
                     isFriendsOpen, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
+                    examRemindersEnabled, examReminderDays, saveReminderSettings, requestPushPermission,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
-                    requestPushPermission, comparisonData, ensurePublicProfile, friendSubjectsLoaded
+                    comparisonData, ensurePublicProfile, friendSubjectsLoaded
                 };
             }
         }).mount('#app');
