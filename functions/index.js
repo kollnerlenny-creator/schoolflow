@@ -1,9 +1,10 @@
 /**
- * SchoolFlow – tägliche Klausur-Erinnerungen per Firebase Cloud Messaging
+ * SchoolFlow – Klausur-Erinnerungen per Firebase Cloud Messaging
  * ------------------------------------------------------------------------
- * Diese Datei ist der Server-Teil (Cloud Function), der einmal täglich läuft,
- * für jeden Nutzer prüft ob eine Klausur/Test im gewählten Erinnerungsfenster
- * liegt, und dafür einen Push an sein gespeichertes FCM-Token schickt.
+ * Läuft JEDE STUNDE. Für jeden Nutzer wird geprüft, ob die aktuelle Stunde
+ * (Europe/Berlin) mit seiner in der App eingestellten Erinnerungs-Uhrzeit
+ * übereinstimmt — nur dann wird geprüft, ob eine Klausur/Test im gewählten
+ * Erinnerungsfenster liegt, und ein Push verschickt.
  *
  * DEPLOYMENT (in deinem Projektordner, einmalig einrichten):
  *   1. npm install -g firebase-tools          (falls noch nicht installiert)
@@ -15,7 +16,7 @@
  *   5. cd functions && npm install firebase-admin firebase-functions
  *   6. Zurück im Projekt-Root: firebase deploy --only functions
  *
- * Kosten: 1 Aufruf/Tag = ~30 Aufrufe/Monat, weit unter dem kostenlosen
+ * Kosten: 24 Aufrufe/Tag = ~720 Aufrufe/Monat, weit unter dem kostenlosen
  * Kontingent (2 Mio./Monat). Erfordert aber den Blaze-Tarif (siehe Chat).
  */
 
@@ -28,19 +29,28 @@ initializeApp();
 const db = getFirestore();
 const messaging = getMessaging();
 
-// Läuft jeden Tag um 18:00 Uhr (Europe/Berlin) — Zeit hier nach Wunsch anpassen
+// Läuft jede volle Stunde (Europe/Berlin) — prüft dann pro Nutzer, ob's "seine" Stunde ist
 exports.sendExamReminders = onSchedule(
-  { schedule: '0 18 * * *', timeZone: 'Europe/Berlin' },
+  { schedule: '0 * * * *', timeZone: 'Europe/Berlin' },
   async () => {
+    const nowBerlin = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+    const currentHour = nowBerlin.getHours();
+
     const usersSnap = await db.collection('users').get();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = new Date(nowBerlin); today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
 
     const jobs = usersSnap.docs.map(async (userDoc) => {
       const uid = userDoc.id;
-      const configSnap = await db.doc(`users/${uid}/settings/config`).get();
+      const configRef = db.doc(`users/${uid}/settings/config`);
+      const configSnap = await configRef.get();
       const config = configSnap.data();
       if (!config || !config.examRemindersEnabled || !config.fcmToken) return;
+
+      // Eingestellte Uhrzeit (Standard 18:00) — nur bei passender Stunde weitermachen
+      const reminderTime = config.examReminderTime || '18:00';
+      const reminderHour = parseInt(reminderTime.split(':')[0], 10);
+      if (reminderHour !== currentHour) return;
 
       const reminderDays = typeof config.examReminderDays === 'number' ? config.examReminderDays : 1;
 
@@ -70,7 +80,7 @@ exports.sendExamReminders = onSchedule(
               title: `${task.type}: ${subject?.name || ''}`,
               body: `${task.title} — ${dayLabel}`,
             },
-            data: { tag: `sf-exam-${t.id}` },
+            data: { tag: `sf-exam-${t.id}-${todayStr}` },
           }).catch((err) => {
             console.error(`Push an ${uid} fehlgeschlagen (Task ${t.id}):`, err.message);
           })
@@ -81,6 +91,6 @@ exports.sendExamReminders = onSchedule(
     });
 
     await Promise.all(jobs);
-    console.log(`Klausur-Erinnerungen geprüft für ${usersSnap.size} Nutzer.`);
+    console.log(`Klausur-Erinnerungen geprüft für ${usersSnap.size} Nutzer (Stunde ${currentHour}).`);
   }
 );
