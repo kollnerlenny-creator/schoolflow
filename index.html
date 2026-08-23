@@ -957,7 +957,7 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
+                <div v-if="currentTab === 'home'" class="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
                     <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 toggle-accent-on/90 hover:bg-accent-dim rounded-full border border-white/20 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer active:scale-95">
                         <i data-lucide="download" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0"></i>
                         <span class="hidden xs:inline whitespace-nowrap">Installieren</span>
@@ -2397,11 +2397,19 @@
 
         <!-- BENACHRICHTIGUNGEN MODAL -->
         <div v-if="isNotificationsOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] overflow-y-auto no-scrollbar">
-                <button @click="isNotificationsOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] flex flex-col">
+                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+                     @touchstart.stop="modalDragStart($event, 'isNotificationsOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
+
+                <button @click="isNotificationsOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-20">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-2 pr-10 flex items-center gap-3">
+
+                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4">
+                <h2 class="text-2xl font-black text-white mb-2 pr-10 flex items-center gap-3"
+                    @touchstart.stop="modalDragStart($event, 'isNotificationsOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     Benachrichtigungen
                 </h2>
@@ -2418,7 +2426,7 @@
                             <span :class="examRemindersEnabled ? 'translate-x-7' : 'translate-x-1'" class="inline-block h-6 w-6 transform rounded-full bg-white mt-1 shadow-md" style="transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></span>
                         </button>
                     </div>
-                    <div v-if="examRemindersEnabled" class="flex items-center gap-2">
+                    <div v-if="examRemindersEnabled" class="flex items-center gap-2 flex-wrap">
                         <span class="text-xs text-slate-400">Erinnere mich</span>
                         <select v-model.number="examReminderDays" @change="saveReminderSettings" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-3 py-1.5 outline-none">
                             <option :value="0">am selben Tag</option>
@@ -2427,7 +2435,12 @@
                             <option :value="3">3 Tage vorher</option>
                             <option :value="7">1 Woche vorher</option>
                         </select>
+                        <span class="text-xs text-slate-400">um</span>
+                        <input type="time" v-model="examReminderTime" @change="saveReminderSettings" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-3 py-1.5 outline-none" />
                     </div>
+                    <button v-if="examRemindersEnabled" type="button" @click="sendTestReminder" class="w-full bg-white/5 border border-white/10 text-slate-300 py-2.5 rounded-full text-xs font-bold cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-2">
+                        <i data-lucide="bell-ring" class="w-3.5 h-3.5"></i> Test-Erinnerung jetzt senden
+                    </button>
                 </div>
 
                 <div v-if="notifications.length === 0" class="text-center py-12 space-y-3">
@@ -2472,16 +2485,22 @@
                 <button v-if="unreadNotifications.length > 0" @click="markAllNotificationsRead" class="mt-6 w-full bg-white/5 border border-white/10 text-slate-400 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-transform">
                     Alle als gelesen markieren
                 </button>
+                </div>
             </div>
         </div>
 
         <!-- FREUNDE MODAL -->
         <div v-if="isFriendsOpen" @click.self="isFriendsOpen = false" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
+                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+                     @touchstart.stop="modalDragStart($event, 'isFriendsOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
 
                 <!-- Header fixiert -->
-                <div class="px-6 sm:px-8 pt-6 pb-4 shrink-0">
-                    <div class="flex items-center justify-between mb-5">
+                <div class="px-6 sm:px-8 pt-4 pb-4 shrink-0">
+                    <div class="flex items-center justify-between mb-5"
+                         @touchstart.stop="modalDragStart($event, 'isFriendsOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">
                         <h2 class="text-2xl font-black text-white flex items-center gap-3">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                             Soziales
@@ -2868,17 +2887,20 @@
 
                 // ── NEU: FREUNDE & BENACHRICHTIGUNGEN ──
                 const isFriendsOpen = ref(false);
+                watch(isFriendsOpen, (open) => { if (open) refreshIcons(); });
                 const isNotificationsOpen = ref(false);
+                watch(isNotificationsOpen, (open) => { if (open) refreshIcons(); });
                 // ── KLAUSUR-ERINNERUNGEN ──
                 // Da es keinen Push-Server gibt, prüfen wir beim App-Start/Sichtbarwerden lokal,
                 // ob eine anstehende Klausur/Test innerhalb des Erinnerungsfensters liegt, und
                 // feuern dann eine lokale Browser-Notification (nur möglich, während die App offen/im Hintergrund-Tab ist).
                 const examRemindersEnabled = ref(false);
                 const examReminderDays = ref(1);
+                const examReminderTime = ref('18:00'); // HH:MM, für lokale Erinnerung UND als Vorgabe für die Cloud Function
                 const saveReminderSettings = async () => {
                     if (!user.value) return;
                     try {
-                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { examRemindersEnabled: examRemindersEnabled.value, examReminderDays: examReminderDays.value }, { merge: true });
+                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { examRemindersEnabled: examRemindersEnabled.value, examReminderDays: examReminderDays.value, examReminderTime: examReminderTime.value }, { merge: true });
                     } catch (e) { console.error('Erinnerungs-Einstellungen konnten nicht gespeichert werden', e); }
                 };
                 const getNotifiedTaskIds = () => {
@@ -2891,6 +2913,11 @@
                 const checkExamReminders = () => {
                     if (!examRemindersEnabled.value) return;
                     if (!('Notification' in window) || Notification.permission !== 'granted') return;
+                    // Nur ab der eingestellten Uhrzeit erinnern (lokale Prüfung, wenn die App offen ist)
+                    const now = new Date();
+                    const [rh, rm] = (examReminderTime.value || '18:00').split(':').map(Number);
+                    const reminderMoment = new Date(); reminderMoment.setHours(rh, rm, 0, 0);
+                    if (now < reminderMoment) return;
                     const notifiedIds = getNotifiedTaskIds();
                     const today = new Date(); today.setHours(0,0,0,0);
                     tasks.value.forEach(t => {
@@ -2913,7 +2940,22 @@
                     });
                 };
                 watch(tasks, () => { if (examRemindersEnabled.value) checkExamReminders(); });
+                // Test-Button: schickt sofort eine Beispiel-Benachrichtigung, unabhängig von echten Terminen
+                const sendTestReminder = () => {
+                    if (!('Notification' in window) || Notification.permission !== 'granted') {
+                        alert('Bitte zuerst die Klausur-Erinnerungen aktivieren (Benachrichtigungs-Erlaubnis erteilen).');
+                        return;
+                    }
+                    try {
+                        new Notification('SchoolFlow · Test-Erinnerung', {
+                            body: 'So sieht eine echte Klausur-Erinnerung aus. 🔔',
+                            icon: './icon-192.png',
+                            tag: 'sf-test-' + Date.now()
+                        });
+                    } catch (e) { alert('Test-Benachrichtigung konnte nicht angezeigt werden: ' + e.message); }
+                };
                 const friendsTab = ref('members');
+                watch(friendsTab, () => refreshIcons());
                 const allMembers = ref([]);
                 const friends = ref([]);
                 const sentRequests = ref([]); // UIDs an die ich Anfragen gesendet habe
@@ -3514,6 +3556,7 @@
                         if (data.timetable) timetable.value = { ...timetable.value, ...data.timetable };
                         if (typeof data.examRemindersEnabled === 'boolean') examRemindersEnabled.value = data.examRemindersEnabled;
                         if (typeof data.examReminderDays === 'number') examReminderDays.value = data.examReminderDays;
+                        if (typeof data.examReminderTime === 'string') examReminderTime.value = data.examReminderTime;
                         abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     }
                     autoSetCurrentHalfYear();
@@ -3757,6 +3800,8 @@
                                 else if (modalKey === 'isSubjectModalOpen') { isSubjectModalOpen.value = false; isSettingsModalOpen.value = false; }
                                 else if (modalKey === 'isReportCardModalOpen') isReportCardModalOpen.value = false;
                                 else if (modalKey === 'isBulkImportOpen') isBulkImportOpen.value = false;
+                                else if (modalKey === 'isNotificationsOpen') isNotificationsOpen.value = false;
+                                else if (modalKey === 'isFriendsOpen') isFriendsOpen.value = false;
                                 el.style.cssText = '';
                                 if (backdrop) backdrop.style.cssText = backdrop.getAttribute('data-orig-style') || '';
                             }, 300);
@@ -4791,7 +4836,7 @@
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
                     isFriendsOpen, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
-                    examRemindersEnabled, examReminderDays, saveReminderSettings, requestPushPermission, pushSetupStatus,
+                    examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus, sendTestReminder,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
                     comparisonData, ensurePublicProfile, friendSubjectsLoaded
