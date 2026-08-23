@@ -946,8 +946,8 @@
 
         <!-- HAUPT APP (Volle Breite für Laptop/PC optimiert, aber voll auf Mobile vergrößert) -->
         <div v-else class="w-full max-w-md md:max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 xs:px-5 pt-6 md:pt-10">
-            <!-- HEADER BEREICH -->
-            <header class="mb-6 sm:mb-8 flex justify-between items-center gap-2">
+            <!-- HEADER BEREICH (nur auf der Home-Ansicht) -->
+            <header v-if="currentTab === 'home'" class="mb-6 sm:mb-8 flex justify-between items-center gap-2">
                 <div class="flex items-center gap-2.5 sm:gap-4 cursor-pointer flex-1 min-w-0" @click="currentTab = 'home'; selectedSubject = null">
                     <div class="w-8 h-8 sm:w-11 sm:h-11 hero-block flex items-center justify-center rounded-xl shrink-0">
                         <i data-lucide="graduation-cap" class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 text-white"></i>
@@ -957,7 +957,7 @@
                     </div>
                 </div>
                 
-                <div v-if="currentTab === 'home'" class="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
+                <div class="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
                     <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 toggle-accent-on/90 hover:bg-accent-dim rounded-full border border-white/20 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer active:scale-95">
                         <i data-lucide="download" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0"></i>
                         <span class="hidden xs:inline whitespace-nowrap">Installieren</span>
@@ -1754,6 +1754,21 @@
                         </div>
                     </div>
 
+                    <!-- Durchschnittsverlauf im Halbjahr -->
+                    <div class="glass-card p-5 sm:p-6 relative stats-card-enter" style="animation-delay:0.14s">
+                        <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-2">
+                            <i data-lucide="line-chart" class="w-4 h-4 text-accent"></i>
+                            Durchschnittsverlauf ({{ selectedHalfYear }})
+                        </p>
+                        <p class="text-[11px] text-slate-500 mb-5">Wie sich dein Gesamtdurchschnitt mit jeder eingetragenen Note in diesem Halbjahr entwickelt hat</p>
+                        <div v-if="yearTrendData.length < 2" class="h-48 flex items-center justify-center text-center px-6">
+                            <p class="text-slate-500 text-sm font-medium">Noch nicht genug Noten für einen Verlauf — trag mindestens 2 Noten an unterschiedlichen Tagen in {{ selectedHalfYear }} ein.</p>
+                        </div>
+                        <div v-else class="h-64 sm:h-72 w-full relative z-10 rounded-3xl overflow-hidden" style="background: transparent;">
+                            <canvas id="yearTrendChart" style="background: transparent; width: 100%; height: 100%;"></canvas>
+                        </div>
+                    </div>
+
                     <!-- Klausur vs. Sonstige Leistungen -->
                     <div class="glass-card p-5 sm:p-6 stats-card-enter" style="animation-delay:0.18s">
                         <p class="text-xs font-black uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
@@ -1870,17 +1885,17 @@
         <!-- MODALS (Designtechnisch optimierte Bottom-Sheets für ein erstklassiges Mobile-Gefühl) -->
         <!-- Fach Modal -->
         <div v-if="isSubjectModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12"
+                 @touchstart="modalDragStart($event, 'isSubjectModalOpen')"
+                 @touchmove="modalDragMove($event)"
+                 @touchend="modalDragEnd($event)">
                 <!-- Swipe-Down Handle -->
-                <div class="modal-drag-handle md:hidden"
-                     @touchstart.stop="modalDragStart($event, 'isSubjectModalOpen')"
-                     @touchmove.stop="modalDragMove($event)"
-                     @touchend.stop="modalDragEnd($event)"></div>
+                <div class="modal-drag-handle md:hidden"></div>
                 
                 <button @click="closeModal('isSubjectModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10" @touchstart.stop="modalDragStart($event, 'isSubjectModalOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
+                <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
                 
                 <form @submit.prevent="handleSaveSubject" class="space-y-6">
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5">
@@ -1968,7 +1983,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
 
-                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4">
+                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4" @touchstart="modalDragStart($event, 'isGradeModalOpen')" @touchmove="modalDragMove($event)" @touchend="modalDragEnd($event)">
                     <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ gradeForm.id ? 'Note bearbeiten' : 'Note eintragen' }}</h2>
                     
                     <div class="space-y-6">
@@ -2024,7 +2039,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
 
-                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4">
+                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4" @touchstart="modalDragStart($event, 'isBulkImportOpen')" @touchmove="modalDragMove($event)" @touchend="modalDragEnd($event)">
                     <h2 class="text-2xl font-black text-white mb-2 pr-10" @touchstart.stop="modalDragStart($event, 'isBulkImportOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">Klausurtermine im Block</h2>
                     <p class="text-xs text-slate-400 mb-5">Füge Text ein – pro Zeile ein Termin, z.B. <span class="text-slate-300 font-bold">"20.9. Mathe"</span> oder <span class="text-slate-300 font-bold">"03.10.2026 – Englisch"</span>.</p>
 
@@ -2066,16 +2081,16 @@
 
         <!-- Zeugnis Modal -->
         <div v-if="isReportCardModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12">
-                <div class="modal-drag-handle md:hidden"
-                     @touchstart.stop="modalDragStart($event, 'isReportCardModalOpen')"
-                     @touchmove.stop="modalDragMove($event)"
-                     @touchend.stop="modalDragEnd($event)"></div>
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12"
+                 @touchstart="modalDragStart($event, 'isReportCardModalOpen')"
+                 @touchmove="modalDragMove($event)"
+                 @touchend="modalDragEnd($event)">
+                <div class="modal-drag-handle md:hidden"></div>
                 
                 <button @click="closeModal('isReportCardModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10" @touchstart.stop="modalDragStart($event, 'isReportCardModalOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">Zeugnisnote festlegen</h2>
+                <h2 class="text-2xl font-black text-white mb-6 pr-10">Zeugnisnote festlegen</h2>
                 
                 <div class="space-y-5">
                     <!-- Halbjahr-Auswahl für Klassen 5-10 -->
@@ -2124,16 +2139,16 @@
 
         <!-- Aufgabe/Prüfung Modal -->
         <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12">
-                <div class="modal-drag-handle md:hidden"
-                     @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')"
-                     @touchmove.stop="modalDragMove($event)"
-                     @touchend.stop="modalDragEnd($event)"></div>
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12"
+                 @touchstart="modalDragStart($event, 'isTaskModalOpen')"
+                 @touchmove="modalDragMove($event)"
+                 @touchend="modalDragEnd($event)">
+                <div class="modal-drag-handle md:hidden"></div>
                 
                 <button @click="closeModal('isTaskModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10" @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
+                <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
                 
                 <div v-if="subjects.length === 0" class="text-center py-8 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-sm animate-pulse">
                     Bitte erstelle zuerst ein Fach unter "Fächer", bevor du Aufgaben eintragen kannst.
@@ -2193,11 +2208,11 @@
 
         <!-- APP-EINSTELLUNGEN MODAL -->
         <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar">
-                <div class="modal-drag-handle md:hidden" 
-                     @touchstart.stop="modalDragStart($event, 'isAppSettingsModalOpen')" 
-                     @touchmove.stop="modalDragMove($event)"
-                     @touchend.stop="modalDragEnd($event)"></div>
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar"
+                 @touchstart="modalDragStart($event, 'isAppSettingsModalOpen')"
+                 @touchmove="modalDragMove($event)"
+                 @touchend="modalDragEnd($event)">
+                <div class="modal-drag-handle md:hidden"></div>
                 
                 <button @click="closeModal('isAppSettingsModalOpen')" class="sticky top-0 float-right w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer modal-close-btn z-10 -mt-1 -mr-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -2407,7 +2422,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
 
-                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4">
+                <div class="overflow-y-auto no-scrollbar px-6 sm:px-8 pb-12 pt-2 sm:pt-4" @touchstart="modalDragStart($event, 'isNotificationsOpen')" @touchmove="modalDragMove($event)" @touchend="modalDragEnd($event)">
                 <h2 class="text-2xl font-black text-white mb-2 pr-10 flex items-center gap-3"
                     @touchstart.stop="modalDragStart($event, 'isNotificationsOpen')" @touchmove.stop="modalDragMove($event)" @touchend.stop="modalDragEnd($event)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -2438,9 +2453,6 @@
                         <span class="text-xs text-slate-400">um</span>
                         <input type="time" v-model="examReminderTime" @change="saveReminderSettings" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-3 py-1.5 outline-none" />
                     </div>
-                    <button v-if="examRemindersEnabled" type="button" @click="sendTestReminder" class="w-full bg-white/5 border border-white/10 text-slate-300 py-2.5 rounded-full text-xs font-bold cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-2">
-                        <i data-lucide="bell-ring" class="w-3.5 h-3.5"></i> Test-Erinnerung jetzt senden
-                    </button>
                 </div>
 
                 <div v-if="notifications.length === 0" class="text-center py-12 space-y-3">
@@ -2522,7 +2534,7 @@
                 </div>
 
                 <!-- Scrollbarer Inhalt -->
-                <div class="flex-1 overflow-y-auto no-scrollbar px-6 sm:px-8 pb-8">
+                <div class="flex-1 overflow-y-auto no-scrollbar px-6 sm:px-8 pb-8" @touchstart="modalDragStart($event, 'isFriendsOpen')" @touchmove="modalDragMove($event)" @touchend="modalDragEnd($event)">
 
                 <!-- MITGLIEDER-LISTE -->
                 <div v-if="friendsTab === 'members'" class="space-y-2.5">
@@ -2940,20 +2952,6 @@
                     });
                 };
                 watch(tasks, () => { if (examRemindersEnabled.value) checkExamReminders(); });
-                // Test-Button: schickt sofort eine Beispiel-Benachrichtigung, unabhängig von echten Terminen
-                const sendTestReminder = () => {
-                    if (!('Notification' in window) || Notification.permission !== 'granted') {
-                        alert('Bitte zuerst die Klausur-Erinnerungen aktivieren (Benachrichtigungs-Erlaubnis erteilen).');
-                        return;
-                    }
-                    try {
-                        new Notification('SchoolFlow · Test-Erinnerung', {
-                            body: 'So sieht eine echte Klausur-Erinnerung aus. 🔔',
-                            icon: './icon-192.png',
-                            tag: 'sf-test-' + Date.now()
-                        });
-                    } catch (e) { alert('Test-Benachrichtigung konnte nicht angezeigt werden: ' + e.message); }
-                };
                 const friendsTab = ref('members');
                 watch(friendsTab, () => refreshIcons());
                 const allMembers = ref([]);
@@ -3741,6 +3739,10 @@
                     const panel = e.currentTarget.closest('[class*="liquid-glass-modal"], [class*="modal-glass"]');
                     if (!panel) return;
                     const backdrop = panel.closest('.fixed.inset-0');
+                    // Scrollbaren Innenbereich merken: ist e.currentTarget selbst scrollbar (der Content-Wrapper),
+                    // dürfen wir nur ziehen, wenn er ganz oben (scrollTop 0) steht — sonst würde normales
+                    // Scrollen über Formularfeldern kaputtgehen.
+                    const scrollEl = e.currentTarget.classList.contains('overflow-y-auto') ? e.currentTarget : null;
                     const now = Date.now();
                     modalDrag.value = { 
                         active: true, 
@@ -3749,6 +3751,8 @@
                         modalKey, 
                         el: panel, 
                         backdrop,
+                        scrollEl,
+                        eligible: !scrollEl || scrollEl.scrollTop <= 0,
                         velocity: 0, 
                         lastY: touch.clientY, 
                         lastTime: now 
@@ -3763,7 +3767,18 @@
                     const touch = e.touches[0];
                     const now = Date.now();
                     const diff = touch.clientY - modalDrag.value.startY;
+
+                    // Wenn der Touch in einem scrollbaren Bereich begann, der nicht ganz oben war,
+                    // lassen wir normales Scrollen zu und greifen nicht ein.
+                    if (modalDrag.value.scrollEl && !modalDrag.value.eligible) {
+                        if (modalDrag.value.scrollEl.scrollTop <= 0 && diff > 0) {
+                            modalDrag.value.eligible = true;
+                        } else {
+                            return;
+                        }
+                    }
                     if (diff < 0) return;
+                    if (modalDrag.value.scrollEl) e.preventDefault();
                     
                     // Track velocity for fling detection
                     const dt = now - modalDrag.value.lastTime;
@@ -4394,6 +4409,52 @@
                     return Math.max(1.0, Math.min(6.0, (17 - p) / 3));
                 };
 
+                // Chronologischer Verlauf des offiziellen Gesamtdurchschnitts im gewählten Halbjahr —
+                // rechnet nach jeder Note exakt dieselbe Formel wie processedData.avgPoints neu,
+                // aber nur mit den bis zu diesem Zeitpunkt eingetragenen Noten.
+                const yearTrendData = computed(() => {
+                    let relevantSemesters = [selectedHalfYear.value];
+                    if (currentClass.value <= 10) {
+                        const [cls, hj] = selectedHalfYear.value.split('/').map(Number);
+                        if (hj === 2) relevantSemesters = [`${cls}/1`, `${cls}/2`];
+                    }
+
+                    // Alle relevanten Noten (mit Fach-Zuordnung) chronologisch sammeln
+                    const events = [];
+                    subjects.value.forEach(s => {
+                        (s.grades || []).forEach(g => {
+                            if (g.pending || !g.date || !g.semester) return;
+                            if (!relevantSemesters.includes(g.semester)) return;
+                            events.push({ date: g.date, subjectId: s.id });
+                        });
+                    });
+                    // eindeutige, sortierte Zeitpunkte (mehrere Noten am selben Tag zählen als ein Punkt)
+                    const uniqueDates = [...new Set(events.map(e => e.date))].sort((a, b) => new Date(a) - new Date(b));
+                    if (uniqueDates.length < 2) return [];
+
+                    return uniqueDates.map(cutoffDate => {
+                        const semesterSubjectsAsOf = subjects.value.map(s => {
+                            const gradesUpTo = (s.grades || []).filter(g => relevantSemesters.includes(g.semester) && !g.pending && g.date <= cutoffDate);
+                            const exams = gradesUpTo.filter(g => g.type === 'Klausur');
+                            const others = gradesUpTo.filter(g => g.type !== 'Klausur');
+                            const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
+                            const avgE = exams.length ? exams.reduce((a, b) => a + b.points, 0) / exams.length : null;
+                            const avgO = others.length ? others.reduce((a, b) => a + b.points, 0) / others.length : null;
+                            let final = null;
+                            if (avgE !== null && avgO !== null) final = (avgE * wE) + (avgO * wO);
+                            else if (avgE !== null) final = avgE;
+                            else if (avgO !== null) final = avgO;
+                            const rcg = s.reportCardGrades?.[selectedHalfYear.value] ?? null;
+                            const weight = (s.isLK && lkBonusActive.value) ? 2 : 1;
+                            return { finalPoints: final, reportCardGrade: rcg, weight };
+                        });
+                        const active = semesterSubjectsAsOf.filter(s => s.finalPoints !== null || s.reportCardGrade !== null);
+                        const sumP = active.reduce((a, b) => a + ((b.reportCardGrade !== null ? b.reportCardGrade : b.finalPoints) * b.weight), 0);
+                        const sumW = active.reduce((a, b) => a + b.weight, 0);
+                        return { date: cutoffDate, avg: sumW > 0 ? sumP / sumW : null };
+                    }).filter(d => d.avg !== null);
+                });
+
                 const getCalculatedSemesterPoints = (subject, sem) => {
                     const allGrades = subject.grades || subject.semesterGrades || [];
                     // Für Klassen 5-10: HJ2 enthält kumulativ auch HJ1-Noten
@@ -4723,6 +4784,7 @@
 
                 let chartInst = null;
                 let trendChartInst = null;
+                let yearTrendChartInst = null;
                 const triggerCharts = () => {
                     nextTick(() => {
                         if (currentTab.value === 'stats' && !selectedSubject.value) {
@@ -4749,6 +4811,26 @@
                                 window.__activeCharts = window.__activeCharts || [];
                                 window.__activeCharts = window.__activeCharts.filter(c => c !== chartInst);
                                 window.__activeCharts.push(chartInst);
+                            }
+
+                            const ctxYearTrend = document.getElementById('yearTrendChart');
+                            if (ctxYearTrend && yearTrendData.value.length >= 2) {
+                                if (yearTrendChartInst) yearTrendChartInst.destroy();
+                                const accentNow2 = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#6366f1';
+                                const chartMax = gradeSystem.value === '6' ? 6 : 15;
+                                const chartMin = gradeSystem.value === '6' ? 1 : 0;
+                                const chartStep = gradeSystem.value === '6' ? 1 : 3;
+                                const chartReverse = gradeSystem.value === '6';
+                                yearTrendChartInst = new Chart(ctxYearTrend, {
+                                    type: 'line',
+                                    data: {
+                                        labels: yearTrendData.value.map((d, i) => formatDate(d.date)),
+                                        datasets: [{
+                                            label: 'Durchschnitt', data: yearTrendData.value.map(d => d.avg), borderColor: accentNow2, backgroundColor: accentNow2 + '20', fill: true, tension: 0.3, borderWidth: 3, pointBackgroundColor: '#ffffff', pointRadius: 3, clip: false
+                                        }]
+                                    },
+                                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, layout: { padding: { top: 14, bottom: 4, left: 4, right: 4 } }, scales: { y: { min: chartMin, max: chartMax, reverse: chartReverse, grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)', stepSize: chartStep }, border: { display: false } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)', maxRotation: 0, autoSkip: true, maxTicksLimit: 6 }, border: { display: false } } } }
+                                });
                             }
                         }
 
@@ -4816,7 +4898,7 @@
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
                     currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
-                    subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades,
+                    subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData,
                     sortedSubjectsList, subjects, formatNumber, formatDate, isToday, handleAuth, handleLogout,
                     openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal, openGradeFromPlannerTask,
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
@@ -4836,7 +4918,7 @@
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
                     isFriendsOpen, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
-                    examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus, sendTestReminder,
+                    examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
                     comparisonData, ensurePublicProfile, friendSubjectsLoaded
