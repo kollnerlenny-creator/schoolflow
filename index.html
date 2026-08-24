@@ -1357,7 +1357,7 @@
 
                     <!-- Kalenderansicht (Mit Monats-, Wochen- & Tagesauswahl) -->
                     <!-- STUNDENPLAN: tageweise Fächer eintragen -->
-                    <div v-if="plannerTab === 'timetable'" class="glass-card p-5 space-y-5">
+                    <div v-if="plannerTab === 'timetable'" class="glass-card p-5 space-y-5 no-tab-swipe">
                         <div>
                             <h3 class="font-black text-white text-lg mb-1">Dein Stundenplan</h3>
                             <p class="text-xs text-slate-400">Trag ein, welche Fächer du an welchem Tag hast. Beim Anlegen einer Klausur oder Hausaufgabe siehst du dann direkt, wann das Fach stattfindet.</p>
@@ -1403,7 +1403,7 @@
                         </div>
                     </div>
 
-                    <div v-if="plannerTab === 'calendar'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+                    <div v-if="plannerTab === 'calendar'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start no-tab-swipe">
                         <div class="lg:col-span-7 glass-card p-5">
                             <div class="flex justify-between items-center mb-4 gap-3">
                                 <h3 class="font-black text-white text-lg sm:text-xl truncate min-w-0">{{ monthNames[calMonth] }} {{ calYear }}</h3>
@@ -2060,9 +2060,8 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-xs text-slate-500 truncate">{{ row.raw }}</p>
-                                    <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                        <span v-if="row.date" class="text-xs font-bold text-white">{{ formatDate(row.date) }}</span>
-                                        <span v-else class="text-xs font-bold text-amber-400">Kein Datum erkannt</span>
+                                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                        <input type="date" :value="row.date || ''" @change="bulkImportSetDate(idx, $event.target.value)" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-2.5 py-1 outline-none" :class="!row.date ? 'border-amber-500/40' : ''" />
                                         <select :value="row.subjectId || ''" @change="bulkImportSetSubject(idx, $event.target.value)" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-2.5 py-1 outline-none">
                                             <option value="" disabled>Fach wählen</option>
                                             <option v-for="s in subjects" :key="s.id" :value="s.id">{{ s.name }}</option>
@@ -3376,6 +3375,10 @@
                 const plannerTouchStart = ref({ x: 0, y: 0 });
                 const plannerTouchLock = ref(null); // null | 'horizontal' | 'vertical' — wird WÄHREND der Bewegung festgelegt
                 const handlePlannerTouchStart = (e) => {
+                    // Startet die Wisch-Erkennung NICHT, wenn die Berührung innerhalb eines
+                    // Inhaltsbereichs (Kalender, Stundenplan, Listen) beginnt — dort soll
+                    // ausschließlich normales Scrollen/Interagieren möglich sein, kein Tab-Wechsel.
+                    if (e.target.closest('.no-tab-swipe')) { plannerTouchStart.value = null; return; }
                     plannerTouchStart.value = {
                         x: e.touches[0].clientX,
                         y: e.touches[0].clientY
@@ -3792,6 +3795,11 @@
                     const touch = e.touches[0];
                     const now = Date.now();
                     const diff = touch.clientY - modalDrag.value.startY;
+
+                    // Mindestbewegung nötig, bevor überhaupt reagiert wird — sonst wird ein reiner
+                    // Tap (mit winzigem, unvermeidlichem Zittern von 1-5px) fälschlich als Ziehen erkannt
+                    // und per preventDefault() der native Klick auf Buttons/Inputs/Selects darunter unterdrückt.
+                    if (Math.abs(diff) < 8) return;
 
                     // Wenn der Touch in einem scrollbaren Bereich begann, der nicht ganz oben war,
                     // lassen wir normales Scrollen zu und greifen nicht ein.
@@ -4292,7 +4300,7 @@
                         return {
                             raw: line,
                             date: dateStr,
-                            title: restText || 'Klausur',
+                            title: 'Klausur',
                             subjectId: foundSubject ? foundSubject.id : null,
                             subjectName: foundSubject ? foundSubject.name : restText,
                             matched: !!foundSubject,
@@ -4311,6 +4319,7 @@
                         }
                     });
                     bulkImportParsed.value = results;
+                    refreshIcons();
                 };
                 const bulkImportSetSubject = (idx, subjectId) => {
                     const item = bulkImportParsed.value[idx];
@@ -4322,6 +4331,18 @@
                         timetableWarning = hasAnyTimetableForDay && !(timetable.value[key] || []).includes(subjectId);
                     }
                     bulkImportParsed.value[idx] = { ...item, subjectId, subjectName: sub?.name || '', matched: true, timetableWarning };
+                    nextTick(refreshIcons);
+                };
+                const bulkImportSetDate = (idx, dateStr) => {
+                    const item = bulkImportParsed.value[idx];
+                    let timetableWarning = false;
+                    if (dateStr && item.subjectId) {
+                        const key = weekdayKeyForDate(dateStr);
+                        const hasAnyTimetableForDay = (timetable.value[key] || []).length > 0;
+                        timetableWarning = hasAnyTimetableForDay && !(timetable.value[key] || []).includes(item.subjectId);
+                    }
+                    bulkImportParsed.value[idx] = { ...item, date: dateStr || null, timetableWarning };
+                    nextTick(refreshIcons);
                 };
                 const bulkImportRemoveRow = (idx) => {
                     bulkImportParsed.value = bulkImportParsed.value.filter((_, i) => i !== idx);
@@ -4931,7 +4952,7 @@
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
-                    isBulkImportOpen, bulkImportText, bulkImportParsed, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportRemoveRow, handleBulkImportSave,
+                    isBulkImportOpen, bulkImportText, bulkImportParsed, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe, swipeState, taskSwipeState,
                     modalDragStart, modalDragMove, modalDragEnd,
