@@ -1257,6 +1257,7 @@
                      class="space-y-6 animate-fade-in"
                      :class="plannerTab === 'calendar' ? 'max-w-3xl lg:max-w-none mx-auto' : 'max-w-4xl mx-auto'"
                      @touchstart="handlePlannerTouchStart"
+                     @touchmove="handlePlannerTouchMove"
                      @touchend="handlePlannerTouchEnd">
                     <div class="flex justify-between items-end px-2 mb-4">
                         <div>
@@ -3373,34 +3374,40 @@
 
                 // Planner Swiping
                 const plannerTouchStart = ref({ x: 0, y: 0 });
+                const plannerTouchLock = ref(null); // null | 'horizontal' | 'vertical' — wird WÄHREND der Bewegung festgelegt
                 const handlePlannerTouchStart = (e) => {
                     plannerTouchStart.value = {
                         x: e.touches[0].clientX,
                         y: e.touches[0].clientY
                     };
+                    plannerTouchLock.value = null;
+                };
+                const handlePlannerTouchMove = (e) => {
+                    if (!plannerTouchStart.value || plannerTouchLock.value) return;
+                    const diffX = e.touches[0].clientX - plannerTouchStart.value.x;
+                    const diffY = e.touches[0].clientY - plannerTouchStart.value.y;
+                    // Richtung erst festlegen, sobald sich der Finger spürbar bewegt hat (>12px) —
+                    // verhindert, dass eine lange vertikale Scroll-Bewegung am Ende zufällig genug
+                    // horizontalen Versatz hat, um fälschlich als Wisch-Geste gewertet zu werden.
+                    if (Math.abs(diffX) > 12 || Math.abs(diffY) > 12) {
+                        plannerTouchLock.value = Math.abs(diffX) > Math.abs(diffY) * 1.3 ? 'horizontal' : 'vertical';
+                    }
                 };
                 const handlePlannerTouchEnd = (e) => {
                     if (!plannerTouchStart.value) return;
                     const diffX = e.changedTouches[0].clientX - plannerTouchStart.value.x;
-                    const diffY = e.changedTouches[0].clientY - plannerTouchStart.value.y;
+                    const wasHorizontal = plannerTouchLock.value === 'horizontal';
+                    plannerTouchStart.value = null;
+                    plannerTouchLock.value = null;
 
-                    // Deutlich strengere Schwelle: muss klar horizontal sein (min. doppelt so viel
-                    // horizontale wie vertikale Bewegung) UND eine spürbare Mindestdistanz haben,
-                    // sonst wechseln normale Scroll-/Tap-Gesten aus Versehen den Tab.
-                    if (Math.abs(diffX) > 100 && Math.abs(diffX) > Math.abs(diffY) * 2) {
+                    if (wasHorizontal && Math.abs(diffX) > 70) {
                         const tabs = ['upcoming', 'past', 'timetable', 'calendar'];
                         const currentIndex = tabs.indexOf(plannerTab.value);
-                        if (currentIndex === -1) { plannerTouchStart.value = null; return; }
+                        if (currentIndex === -1) return;
                         if (diffX > 0) {
-                            // Swipe nach rechts -> Vorheriger Tab
-                            if (currentIndex > 0) {
-                                plannerTab.value = tabs[currentIndex - 1];
-                            }
+                            if (currentIndex > 0) plannerTab.value = tabs[currentIndex - 1];
                         } else {
-                            // Swipe nach links -> Nächster Tab
-                            if (currentIndex < tabs.length - 1) {
-                                plannerTab.value = tabs[currentIndex + 1];
-                            }
+                            if (currentIndex < tabs.length - 1) plannerTab.value = tabs[currentIndex + 1];
                         }
                     }
                 };
@@ -4933,7 +4940,7 @@
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
                     weekdayKeys, weekdayLabels, timetable, timetableEditDay, toggleTimetableSubject, timetableDaysForSubject, subjectOccursOnDate, datePickerRelevantSubjectId,
                     tabUpcoming, tabPast, tabTimetable, tabCalendar, plannerIndicator,
-                    handlePlannerTouchStart, handlePlannerTouchEnd,
+                    handlePlannerTouchStart, handlePlannerTouchMove, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
                     isFriendsOpen, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
