@@ -1204,28 +1204,37 @@
                                 <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-1 flex items-center gap-2">
                                     <i data-lucide="target" class="w-5 h-5 text-accent"></i> Zielnote-Rechner
                                 </p>
-                                <p class="text-[11px] text-slate-500 mb-5">Was du in den restlichen Noten dieses Halbjahres im Schnitt brauchst</p>
+                                <p class="text-[11px] text-slate-500 mb-5">Was deine nächste Note sein muss, um dein Ziel zu erreichen</p>
 
-                                <div class="flex items-center gap-3 mb-5">
+                                <div class="flex items-center gap-3 mb-4">
                                     <span class="text-xs font-bold text-slate-400 shrink-0">Zielpunktzahl</span>
                                     <input type="number" :min="gradeSystem === '6' ? 1 : 0" :max="gradeSystem === '6' ? 6 : 15" v-model.number="goalTargetPoints"
                                            class="w-20 bg-black/20 border border-white/5 rounded-full text-center font-black text-white py-2 outline-none" />
                                     <span class="text-xs text-slate-500">{{ gradeSystem === '6' ? '(1 = beste Note)' : 'von 15 Punkten' }}</span>
                                 </div>
 
-                                <div v-if="goalCalculation.status === 'no-data'" class="text-sm text-slate-500 text-center py-4">
-                                    Trag mindestens eine Note ein, damit die Rechnung starten kann.
+                                <!-- Kategorie-Auswahl: nur zeigen, wenn beide Kategorien im Fach überhaupt zählen -->
+                                <div v-if="activeSubjectData && activeSubjectData.examWeight > 0 && activeSubjectData.examWeight < 100" class="flex gap-2 bg-black/20 p-1.5 rounded-full border border-white/5 mb-5">
+                                    <button @click="goalCategory = 'exam'" :class="goalCategory === 'exam' ? 'toggle-accent-on text-white' : 'text-slate-400'" class="flex-1 py-2.5 rounded-full text-xs font-black uppercase cursor-pointer transition-colors">Nächste Klausur</button>
+                                    <button @click="goalCategory = 'other'" :class="goalCategory === 'other' ? 'toggle-accent-on text-white' : 'text-slate-400'" class="flex-1 py-2.5 rounded-full text-xs font-black uppercase cursor-pointer transition-colors">Nächste Sonstige</button>
                                 </div>
-                                <div v-else-if="goalCalculation.status === 'already-final'" class="bg-black/20 border border-white/5 rounded-2xl p-4 text-center">
-                                    <p class="text-sm font-bold text-slate-300">Alle Notenanteile (Klausur & Sonstige) sind schon vorhanden — der Schnitt steht fest bei <span class="text-white font-black">{{ formatNumber(activeSubjectData.finalPoints) }}</span>.</p>
+
+                                <div v-if="goalCalculation.status === 'not-applicable'" class="text-sm text-slate-500 text-center py-4">
+                                    In diesem Fach zählt {{ goalCalculation.category === 'exam' ? 'keine Klausur' : 'keine Sonstige Leistung' }} zur Note.
                                 </div>
                                 <div v-else-if="goalCalculation.status === 'unreachable'" class="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 text-center">
-                                    <p class="text-sm font-bold text-rose-400">Ziel ist rechnerisch nicht mehr erreichbar — selbst {{ gradeSystem === '6' ? 'die beste Note' : '15 Punkte' }} in den restlichen Noten würden nicht reichen.</p>
+                                    <p class="text-sm font-bold text-rose-400">Ziel ist rechnerisch nicht mehr erreichbar — selbst {{ gradeSystem === '6' ? 'die beste Note' : '15 Punkte' }} in der nächsten Note würden nicht reichen.</p>
+                                </div>
+                                <div v-else-if="goalCalculation.status === 'trivial'" class="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 text-center">
+                                    <p class="text-sm font-bold text-emerald-400">Dein Ziel steht schon fest — selbst {{ gradeSystem === '6' ? 'die schlechteste Note' : '0 Punkte' }} in der nächsten Note würden reichen.</p>
                                 </div>
                                 <div v-else-if="goalCalculation.status === 'ok'" class="bg-accent-dim border border-accent-border rounded-2xl p-5 text-center">
-                                    <p class="text-xs font-bold text-slate-300 mb-2">Du brauchst im Schnitt mindestens</p>
+                                    <p class="text-xs font-bold text-slate-300 mb-2">Deine nächste {{ goalCalculation.category === 'exam' ? 'Klausur' : 'Sonstige Leistung' }} muss mindestens</p>
                                     <div class="text-5xl font-black text-accent-light">{{ formatNumber(goalCalculation.neededAvg) }}</div>
-                                    <p class="text-xs text-slate-400 mt-2">in {{ goalCalculation.missingType === 'exam' ? 'deinen restlichen Klausuren' : goalCalculation.missingType === 'other' ? 'deinen restlichen Sonstigen Leistungen' : 'deinen restlichen Noten' }}</p>
+                                    <p class="text-xs text-slate-400 mt-2">{{ gradeSystem === '6' ? 'sein (oder besser)' : 'Punkte sein (oder mehr)' }}</p>
+                                </div>
+                                <div v-else class="text-sm text-slate-500 text-center py-4">
+                                    Trag mindestens eine Note ein, damit die Rechnung starten kann.
                                 </div>
                             </div>
                         </div>
@@ -4727,40 +4736,56 @@
                 const activeSubjectData = computed(() => processedData.value.semesterSubjects.find(s => s.id === selectedSubject.value?.id));
 
                 // ── ZIELNOTE-RECHNER ──
+                // Modell: "Was muss meine NÄCHSTE Note in Kategorie X sein, um mein Ziel zu erreichen?"
+                // Funktioniert für jedes Fach — auch für Fächer ohne Klausuren (z.B. Sport), weil man
+                // die Kategorie frei wählt statt anzunehmen, dass "die leere Kategorie" automatisch fehlt.
                 const goalTargetPoints = ref(gradeSystem.value === '6' ? 2 : 10);
                 watch(gradeSystem, (v) => { goalTargetPoints.value = v === '6' ? 2 : 10; });
+                const goalCategory = ref('other'); // 'exam' | 'other'
+                watch(selectedSubject, (s) => {
+                    if (!s) return;
+                    // Sinnvollen Default wählen: Kategorie mit Gewicht > 0, bevorzugt die mit weniger Noten bisher
+                    if (s.examWeight === 0) goalCategory.value = 'other';
+                    else if (s.examWeight === 100) goalCategory.value = 'exam';
+                });
                 const goalCalculation = computed(() => {
                     const s = activeSubjectData.value;
                     if (!s) return { status: 'no-data' };
+                    const wE = (s.examWeight ?? 50) / 100, wO = 1 - wE;
+                    const category = (wE === 0) ? 'other' : (wO === 0) ? 'exam' : goalCategory.value;
+                    if (category === 'exam' && wE === 0) return { status: 'not-applicable' };
+                    if (category === 'other' && wO === 0) return { status: 'not-applicable' };
+
                     const grades = (s.semesterGrades || []).filter(g => !g.pending);
                     const exams = grades.filter(g => g.type === 'Klausur');
                     const others = grades.filter(g => g.type !== 'Klausur');
-                    if (exams.length === 0 && others.length === 0) return { status: 'no-data' };
-                    if (exams.length > 0 && others.length > 0) return { status: 'already-final' };
-
-                    const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
+                    const sumE = exams.reduce((a, b) => a + b.points, 0), nE = exams.length;
+                    const sumO = others.reduce((a, b) => a + b.points, 0), nO = others.length;
                     const target = goalTargetPoints.value;
-                    let neededAvg, missingType, missingWeight, knownAvg, knownWeight;
-                    if (exams.length === 0) {
-                        // Klausuranteil fehlt noch komplett
-                        knownAvg = others.reduce((a, b) => a + b.points, 0) / others.length;
-                        knownWeight = wO; missingWeight = wE; missingType = 'exam';
+
+                    let neededAvg;
+                    if (category === 'exam') {
+                        const otherAvg = nO > 0 ? sumO / nO : null;
+                        const newN = nE + 1;
+                        neededAvg = (otherAvg === null || wO === 0)
+                            ? (target * newN - sumE)
+                            : (((target - otherAvg * wO) / wE) * newN - sumE);
                     } else {
-                        // Sonstige-Anteil fehlt noch komplett
-                        knownAvg = exams.reduce((a, b) => a + b.points, 0) / exams.length;
-                        knownWeight = wE; missingWeight = wO; missingType = 'other';
+                        const examAvg = nE > 0 ? sumE / nE : null;
+                        const newN = nO + 1;
+                        neededAvg = (examAvg === null || wE === 0)
+                            ? (target * newN - sumO)
+                            : (((target - examAvg * wE) / wO) * newN - sumO);
                     }
-                    if (missingWeight === 0) return { status: 'already-final' }; // die fehlende Kategorie zählt eh nicht mit rein
-                    neededAvg = (target - knownAvg * knownWeight) / missingWeight;
 
                     const best = gradeSystem.value === '6' ? 1 : 15;
+                    const worst = gradeSystem.value === '6' ? 6 : 0;
                     const isUnreachable = gradeSystem.value === '6' ? neededAvg < best : neededAvg > best;
+                    const isTrivial = gradeSystem.value === '6' ? neededAvg > worst : neededAvg < worst; // selbst die schlechteste Note würde reichen
                     if (isUnreachable) return { status: 'unreachable' };
 
-                    // Sinnvoll begrenzen auf den gültigen Notenbereich für die Anzeige
-                    const worst = gradeSystem.value === '6' ? 6 : 0;
                     const clamped = gradeSystem.value === '6' ? Math.max(best, Math.min(worst, neededAvg)) : Math.min(best, Math.max(worst, neededAvg));
-                    return { status: 'ok', neededAvg: clamped, missingType };
+                    return { status: isTrivial ? 'trivial' : 'ok', neededAvg: clamped, category, wE, wO };
                 });
                 
                 const sortedGrades = computed(() => {
@@ -5125,7 +5150,7 @@
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
                     currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
-                    subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData, goalTargetPoints, goalCalculation,
+                    subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData, goalTargetPoints, goalCategory, goalCalculation,
                     sortedSubjectsList, subjects, formatNumber, formatDate, isToday, handleAuth, handleLogout,
                     openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal, openGradeFromPlannerTask,
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
