@@ -2054,18 +2054,33 @@
                     <div v-else class="space-y-4">
                         <p class="text-xs font-bold uppercase text-slate-400 tracking-widest">{{ bulkImportParsed.filter(r => r.date && r.subjectId).length }} von {{ bulkImportParsed.length }} bereit</p>
                         <div class="space-y-2.5 max-h-[45vh] overflow-y-auto no-scrollbar pr-1">
-                            <div v-for="(row, idx) in bulkImportParsed" :key="idx" class="bg-black/20 border rounded-2xl p-3.5 flex items-center gap-3" :class="row.date && row.subjectId ? (row.timetableWarning ? 'border-amber-500/30' : 'border-white/5') : 'border-amber-500/30'">
+                            <div v-for="(row, idx) in bulkImportParsed" :key="idx" class="bg-black/20 border rounded-2xl p-3.5 flex items-center gap-3 relative" :class="row.date && row.subjectId ? (row.timetableWarning ? 'border-amber-500/30' : 'border-white/5') : 'border-amber-500/30'">
                                 <div class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center" :class="row.date && row.subjectId ? (row.timetableWarning ? 'bg-amber-500/15 text-amber-400' : 'bg-emerald-500/15 text-emerald-400') : 'bg-amber-500/15 text-amber-400'">
                                     <i :data-lucide="row.date && row.subjectId ? (row.timetableWarning ? 'alert-triangle' : 'check') : 'alert-triangle'" class="w-4.5 h-4.5"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-xs text-slate-500 truncate">{{ row.raw }}</p>
-                                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                    <div class="flex items-center gap-2 mt-1.5 flex-wrap relative">
                                         <input type="date" :value="row.date || ''" @change="bulkImportSetDate(idx, $event.target.value)" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-2.5 py-1 outline-none" :class="!row.date ? 'border-amber-500/40' : ''" />
-                                        <select :value="row.subjectId || ''" @change="bulkImportSetSubject(idx, $event.target.value)" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-2.5 py-1 outline-none">
-                                            <option value="" disabled>Fach wählen</option>
-                                            <option v-for="s in subjects" :key="s.id" :value="s.id">{{ s.name }}</option>
-                                        </select>
+
+                                        <!-- Eigener, app-gestylter Fach-Dropdown statt natives <select> -->
+                                        <button type="button" @click="bulkImportOpenPickerIdx = bulkImportOpenPickerIdx === idx ? null : idx"
+                                                class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-2.5 py-1 outline-none flex items-center gap-1.5 cursor-pointer">
+                                            <span v-if="row.subjectId" class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: subjects.find(s => s.id === row.subjectId)?.color }"></span>
+                                            <span>{{ row.subjectId ? (subjects.find(s => s.id === row.subjectId)?.name || 'Fach wählen') : 'Fach wählen' }}</span>
+                                            <i data-lucide="chevron-down" class="w-3 h-3 shrink-0" :style="bulkImportOpenPickerIdx === idx ? 'transform: rotate(180deg)' : ''"></i>
+                                        </button>
+
+                                        <div v-if="bulkImportOpenPickerIdx === idx" class="absolute top-full left-0 mt-2 z-30 bg-[#17171d] border border-white/10 rounded-2xl p-1.5 w-48 max-h-56 overflow-y-auto no-scrollbar shadow-2xl">
+                                            <button v-for="s in subjects" :key="s.id" type="button"
+                                                    @click="bulkImportSetSubject(idx, s.id); bulkImportOpenPickerIdx = null"
+                                                    class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-xs font-bold cursor-pointer transition-colors"
+                                                    :class="row.subjectId === s.id ? 'bg-white/10 text-white' : 'text-slate-300 active:bg-white/5'">
+                                                <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: s.color }"></span>
+                                                {{ s.name }}
+                                            </button>
+                                            <p v-if="subjects.length === 0" class="text-xs text-slate-500 text-center py-3">Keine Fächer angelegt</p>
+                                        </div>
                                     </div>
                                     <p v-if="row.timetableWarning" class="text-[10px] text-amber-400 mt-1">Laut Stundenplan hast du {{ row.subjectName }} an diesem Wochentag nicht — Datum prüfen?</p>
                                 </div>
@@ -2715,29 +2730,15 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Verbesserter PWA-Service-Worker-Registrierungsprozess mit Verweis auf echtes Manifest
+        // PWA-Service-Worker-Registrierung (ohne kaputten Blob-Fallback — Service Worker
+        // dürfen laut Spezifikation NICHT von einer blob:-URL registriert werden, das
+        // führte bisher zu einem "Failed to register a ServiceWorker"-Fehler in der Konsole).
         if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
                     console.log('SchoolFlow PWA Service-Worker erfolgreich registriert.', reg.scope);
                 }).catch(err => {
-                    // Fallback-Registrierung falls sw.js nicht vorhanden
-                    try {
-                        const swCode = `
-                            self.addEventListener('install', (e) => self.skipWaiting());
-                            self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-                            self.addEventListener('fetch', (e) => {
-                                if (e.request.url.startsWith(self.location.origin)) {
-                                    e.respondWith(fetch(e.request).catch(() => new Response("Offline Mode")));
-                                }
-                            });
-                        `;
-                        const swBlob = new Blob([swCode], {type: 'application/javascript'});
-                        const swURL = URL.createObjectURL(swBlob);
-                        navigator.serviceWorker.register(swURL);
-                    } catch (swErr) {
-                        console.warn('PWA Service Worker Fallback gescheitert:', swErr);
-                    }
+                    console.warn('PWA Service Worker konnte nicht registriert werden (App funktioniert trotzdem normal, nur Offline-Modus/Installierbarkeit evtl. eingeschränkt):', err);
                 });
             });
         }
@@ -4060,7 +4061,7 @@
                         const isAnimating = animatingDoneTasks.value.has(t.id);
                         const isLeaving = leavingTasks.value.has(t.id);
                         return isFuture && (isNotDone || isAnimating || isLeaving);
-                    });
+                    }).sort((a, b) => new Date(a.date) - new Date(b.date));
                 });
 
                 const pastTasks = computed(() => {
@@ -4273,6 +4274,7 @@
                 // Freitext einfügen (z.B. aus einem Terminplan kopiert), Zeile für Zeile
                 // nach Datum + Fach parsen, als Vorschau zeigen und gesammelt anlegen.
                 const isBulkImportOpen = ref(false);
+                const bulkImportOpenPickerIdx = ref(null);
                 const bulkImportText = ref('');
                 const bulkImportParsed = ref([]);
                 const openBulkImport = () => {
@@ -4351,15 +4353,32 @@
                     if (!user.value) return;
                     const validRows = bulkImportParsed.value.filter(r => r.date && r.subjectId);
                     if (validRows.length === 0) return;
-                    try {
-                        await Promise.all(validRows.map(r => {
-                            const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
-                            return setDoc(taskRef, { title: r.title || 'Klausur', type: 'Klausur', subjectId: r.subjectId, date: r.date, done: false, notes: '' });
-                        }));
+
+                    // allSettled statt all: ein einzelner Fehler darf nicht dazu führen, dass der
+                    // Rest der Liste stillschweigend gar nicht erst versucht/gespeichert wird.
+                    const results = await Promise.allSettled(validRows.map(r => {
+                        const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
+                        return setDoc(taskRef, { title: r.title || 'Klausur', type: 'Klausur', subjectId: r.subjectId, date: r.date, done: false, notes: '' });
+                    }));
+
+                    const failedRows = [];
+                    results.forEach((res, i) => {
+                        if (res.status === 'rejected') {
+                            console.error('Fehler beim Eintragen von', validRows[i].raw, res.reason);
+                            failedRows.push(validRows[i]);
+                        }
+                    });
+
+                    if (failedRows.length === 0) {
                         isBulkImportOpen.value = false;
                         bulkImportText.value = '';
                         bulkImportParsed.value = [];
-                    } catch (e) { console.error('Fehler beim Massen-Import der Klausurtermine', e); }
+                    } else {
+                        // Erfolgreich gespeicherte Zeilen aus der Liste entfernen, fehlgeschlagene
+                        // stehen lassen, damit man sie erneut versuchen kann.
+                        bulkImportParsed.value = bulkImportParsed.value.filter(r => failedRows.includes(r) || !(r.date && r.subjectId));
+                        alert(`${validRows.length - failedRows.length} von ${validRows.length} Terminen wurden eingetragen. ${failedRows.length} sind fehlgeschlagen (z.B. wegen Verbindungsproblemen) — bitte nochmal "Alle eintragen" drücken.`);
+                    }
                 };
 
                 const spawnConfetti = (btn) => {
@@ -4952,7 +4971,7 @@
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
-                    isBulkImportOpen, bulkImportText, bulkImportParsed, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
+                    isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe, swipeState, taskSwipeState,
                     modalDragStart, modalDragMove, modalDragEnd,
