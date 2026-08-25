@@ -1013,6 +1013,21 @@
                         </div>
                     </div>
 
+                    <!-- Nächste-Klausur-Countdown -->
+                    <div v-if="nextExamCountdown" class="card-enter card-enter-2 glass-card p-5 flex items-center gap-4 cursor-pointer" @click="currentTab = 'planner'; plannerTab = 'upcoming'">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center shrink-0 relative" :style="{ backgroundColor: nextExamCountdown.subject.color + '22', color: nextExamCountdown.subject.color }">
+                            <i data-lucide="alarm-clock" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">Nächste {{ nextExamCountdown.type }} · {{ nextExamCountdown.subject.name }}</p>
+                            <h3 class="text-lg sm:text-xl font-black text-white truncate">{{ nextExamCountdown.title }}</h3>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="text-3xl sm:text-4xl font-black text-accent leading-none">{{ nextExamCountdown.daysUntil }}</div>
+                            <div class="text-[10px] font-bold uppercase text-slate-500 tracking-widest mt-1">{{ nextExamCountdown.daysUntil === 1 ? 'Tag' : 'Tage' }}</div>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-stretch">
                         <!-- Linke Seite: Schnitt (Ø Points) -->
                         <div class="md:col-span-6 card-enter card-enter-2">
@@ -1183,6 +1198,36 @@
                                     <canvas id="trendChart" style="background: transparent; min-height: 160px;"></canvas>
                                 </div>
                             </div>
+
+                            <!-- Zielnote-Rechner -->
+                            <div class="glass-card p-5 sm:p-6">
+                                <p class="text-xs font-black uppercase tracking-widest text-slate-400 mb-1 flex items-center gap-2">
+                                    <i data-lucide="target" class="w-5 h-5 text-accent"></i> Zielnote-Rechner
+                                </p>
+                                <p class="text-[11px] text-slate-500 mb-5">Was du in den restlichen Noten dieses Halbjahres im Schnitt brauchst</p>
+
+                                <div class="flex items-center gap-3 mb-5">
+                                    <span class="text-xs font-bold text-slate-400 shrink-0">Zielpunktzahl</span>
+                                    <input type="number" :min="gradeSystem === '6' ? 1 : 0" :max="gradeSystem === '6' ? 6 : 15" v-model.number="goalTargetPoints"
+                                           class="w-20 bg-black/20 border border-white/5 rounded-full text-center font-black text-white py-2 outline-none" />
+                                    <span class="text-xs text-slate-500">{{ gradeSystem === '6' ? '(1 = beste Note)' : 'von 15 Punkten' }}</span>
+                                </div>
+
+                                <div v-if="goalCalculation.status === 'no-data'" class="text-sm text-slate-500 text-center py-4">
+                                    Trag mindestens eine Note ein, damit die Rechnung starten kann.
+                                </div>
+                                <div v-else-if="goalCalculation.status === 'already-final'" class="bg-black/20 border border-white/5 rounded-2xl p-4 text-center">
+                                    <p class="text-sm font-bold text-slate-300">Alle Notenanteile (Klausur & Sonstige) sind schon vorhanden — der Schnitt steht fest bei <span class="text-white font-black">{{ formatNumber(activeSubjectData.finalPoints) }}</span>.</p>
+                                </div>
+                                <div v-else-if="goalCalculation.status === 'unreachable'" class="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 text-center">
+                                    <p class="text-sm font-bold text-rose-400">Ziel ist rechnerisch nicht mehr erreichbar — selbst {{ gradeSystem === '6' ? 'die beste Note' : '15 Punkte' }} in den restlichen Noten würden nicht reichen.</p>
+                                </div>
+                                <div v-else-if="goalCalculation.status === 'ok'" class="bg-accent-dim border border-accent-border rounded-2xl p-5 text-center">
+                                    <p class="text-xs font-bold text-slate-300 mb-2">Du brauchst im Schnitt mindestens</p>
+                                    <div class="text-5xl font-black text-accent-light">{{ formatNumber(goalCalculation.neededAvg) }}</div>
+                                    <p class="text-xs text-slate-400 mt-2">in {{ goalCalculation.missingType === 'exam' ? 'deinen restlichen Klausuren' : goalCalculation.missingType === 'other' ? 'deinen restlichen Sonstigen Leistungen' : 'deinen restlichen Noten' }}</p>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Rechte Spalte (Notenliste) -->
@@ -1296,6 +1341,15 @@
 
                     <!-- Listenansichten -->
                     <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="space-y-4">
+                        <!-- Auswahlmodus-Leiste -->
+                        <div v-if="taskSelectionMode" class="flex items-center justify-between bg-accent-dim2 border border-accent-border rounded-full px-5 py-3 sticky top-2 z-20">
+                            <button @click="exitTaskSelectionMode" class="text-xs font-black uppercase text-slate-300 cursor-pointer">Abbrechen</button>
+                            <span class="text-xs font-black text-accent-light">{{ selectedTaskIds.size }} ausgewählt</span>
+                            <button @click="deleteSelectedTasks" :disabled="selectedTaskIds.size === 0" class="flex items-center gap-1.5 text-xs font-black uppercase text-rose-400 cursor-pointer disabled:opacity-40">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Löschen
+                            </button>
+                        </div>
+
                         <p v-if="(plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks).length === 0" class="text-center py-12 text-slate-500 font-bold text-xs sm:text-sm">
                             Keine Aufgaben in dieser Ansicht.
                         </p>
@@ -1313,18 +1367,24 @@
                                 </div>
                                 
                                 <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-3xl"
-                                     @touchstart.stop="startTaskSwipe($event, t.id)"
-                                     @touchmove.stop="moveTaskSwipe($event)"
-                                     @touchend.stop="endTaskSwipe($event, t)"
-                                     @mousedown="startTaskSwipe($event, t.id)"
-                                     @mousemove="moveTaskSwipe($event)"
-                                     @mouseup="endTaskSwipe($event, t)"
-                                     @mouseleave="endTaskSwipe($event, t, true)"
+                                     :class="taskSelectionMode && selectedTaskIds.has(t.id) ? 'border-accent bg-accent-dim' : ''"
+                                     @touchstart.stop="taskSelectionMode ? null : (startTaskSwipe($event, t.id), taskLongPressStart($event, t.id))"
+                                     @touchmove.stop="taskSelectionMode ? null : (moveTaskSwipe($event), taskLongPressMove($event))"
+                                     @touchend.stop="taskSelectionMode ? toggleTaskSelection(t.id) : (endTaskSwipe($event, t), taskLongPressEnd())"
+                                     @mousedown="taskSelectionMode ? null : startTaskSwipe($event, t.id)"
+                                     @mousemove="taskSelectionMode ? null : moveTaskSwipe($event)"
+                                     @mouseup="taskSelectionMode ? toggleTaskSelection(t.id) : endTaskSwipe($event, t)"
+                                     @mouseleave="taskSelectionMode ? null : endTaskSwipe($event, t, true)"
                                      :ref="el => { if(el) taskSwipeRefs[t.id] = el }"
                                      style="touch-action: pan-y;">
                                     
                                     <div class="flex items-center gap-4 overflow-hidden">
-                                        <button @click.stop="toggleTaskDone(t, $event)" 
+                                        <button v-if="taskSelectionMode" @click.stop="toggleTaskSelection(t.id)"
+                                                class="shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors"
+                                                :class="selectedTaskIds.has(t.id) ? 'bg-accent border-accent' : 'border-slate-500'">
+                                            <i v-if="selectedTaskIds.has(t.id)" data-lucide="check" class="w-5 h-5 text-white"></i>
+                                        </button>
+                                        <button v-else @click.stop="toggleTaskDone(t, $event)" 
                                                 class="task-done-btn shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-accent'">
                                             <i v-if="t.done" data-lucide="check" class="check-icon w-5 h-5 text-white"></i>
@@ -1345,7 +1405,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="flex shrink-0">
+                                    <div v-if="!taskSelectionMode" class="flex shrink-0">
                                         <button @click.stop="openEditTaskModal(t)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-accent active:bg-accent-dim transition-colors cursor-pointer">
                                             <i data-lucide="edit-2" class="w-5 h-5"></i>
                                         </button>
@@ -2802,6 +2862,7 @@
                         calMonth.value = new Date().getMonth();
                         calYear.value = new Date().getFullYear();
                     }
+                    if (tab !== 'upcoming' && tab !== 'past') exitTaskSelectionMode();
                 });
                 // Stundenplan: pro Wochentag eine Liste von Fach-IDs, tageweise erfasst
                 const weekdayKeys = ['mo', 'di', 'mi', 'do', 'fr', 'sa', 'so'];
@@ -3371,6 +3432,59 @@
                 const swipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
                 const taskSwipeRefs = ref({});
                 const taskSwipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
+
+                // ── MEHRFACHAUSWAHL: lange gedrückt halten auf einer Aufgabe aktiviert den Auswahlmodus ──
+                const taskSelectionMode = ref(false);
+                const selectedTaskIds = ref(new Set());
+                let taskLongPressTimer = null;
+                let taskLongPressMoved = false;
+                let taskLongPressStartPos = { x: 0, y: 0 };
+                const taskLongPressStart = (e, id) => {
+                    if (taskSelectionMode.value) return; // im Auswahlmodus reicht ein normaler Tap zum Toggeln
+                    const touch = e.touches ? e.touches[0] : e;
+                    taskLongPressMoved = false;
+                    taskLongPressStartPos = { x: touch.clientX, y: touch.clientY };
+                    clearTimeout(taskLongPressTimer);
+                    taskLongPressTimer = setTimeout(() => {
+                        if (!taskLongPressMoved) {
+                            taskSelectionMode.value = true;
+                            selectedTaskIds.value = new Set([id]);
+                            if (navigator.vibrate) navigator.vibrate(15);
+                        }
+                    }, 480);
+                };
+                const taskLongPressMove = (e) => {
+                    if (!taskLongPressTimer) return;
+                    const touch = e.touches ? e.touches[0] : e;
+                    const dx = Math.abs(touch.clientX - taskLongPressStartPos.x);
+                    const dy = Math.abs(touch.clientY - taskLongPressStartPos.y);
+                    if (dx > 10 || dy > 10) {
+                        taskLongPressMoved = true;
+                        clearTimeout(taskLongPressTimer);
+                    }
+                };
+                const taskLongPressEnd = () => {
+                    clearTimeout(taskLongPressTimer);
+                };
+                const toggleTaskSelection = (id) => {
+                    const s = new Set(selectedTaskIds.value);
+                    if (s.has(id)) s.delete(id); else s.add(id);
+                    selectedTaskIds.value = s;
+                    if (s.size === 0) taskSelectionMode.value = false;
+                };
+                const exitTaskSelectionMode = () => {
+                    taskSelectionMode.value = false;
+                    selectedTaskIds.value = new Set();
+                };
+                const deleteSelectedTasks = async () => {
+                    if (!user.value || selectedTaskIds.value.size === 0) return;
+                    const ids = [...selectedTaskIds.value];
+                    if (!confirm(`${ids.length} Aufgabe${ids.length > 1 ? 'n' : ''} wirklich löschen?`)) return;
+                    try {
+                        await Promise.allSettled(ids.map(id => deleteDoc(doc(db, 'users', user.value.uid, 'tasks', id))));
+                    } catch (e) { console.error('Fehler beim Löschen der ausgewählten Aufgaben', e); }
+                    exitTaskSelectionMode();
+                };
 
                 // Planner Swiping
                 const plannerTouchStart = ref({ x: 0, y: 0 });
@@ -4064,6 +4178,16 @@
                     }).sort((a, b) => new Date(a.date) - new Date(b.date));
                 });
 
+                // Countdown zur nächsten anstehenden Klausur/Test fürs Dashboard
+                const nextExamCountdown = computed(() => {
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    const next = upcomingTasks.value.find(t => t.type === 'Klausur' || t.type === 'Test');
+                    if (!next) return null;
+                    const taskDate = new Date(next.date + 'T00:00:00');
+                    const daysUntil = Math.round((taskDate - today) / 86400000);
+                    return { ...next, daysUntil };
+                });
+
                 const pastTasks = computed(() => {
                     const today = new Date();
                     today.setHours(0,0,0,0);
@@ -4601,6 +4725,43 @@
                 });
 
                 const activeSubjectData = computed(() => processedData.value.semesterSubjects.find(s => s.id === selectedSubject.value?.id));
+
+                // ── ZIELNOTE-RECHNER ──
+                const goalTargetPoints = ref(gradeSystem.value === '6' ? 2 : 10);
+                watch(gradeSystem, (v) => { goalTargetPoints.value = v === '6' ? 2 : 10; });
+                const goalCalculation = computed(() => {
+                    const s = activeSubjectData.value;
+                    if (!s) return { status: 'no-data' };
+                    const grades = (s.semesterGrades || []).filter(g => !g.pending);
+                    const exams = grades.filter(g => g.type === 'Klausur');
+                    const others = grades.filter(g => g.type !== 'Klausur');
+                    if (exams.length === 0 && others.length === 0) return { status: 'no-data' };
+                    if (exams.length > 0 && others.length > 0) return { status: 'already-final' };
+
+                    const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
+                    const target = goalTargetPoints.value;
+                    let neededAvg, missingType, missingWeight, knownAvg, knownWeight;
+                    if (exams.length === 0) {
+                        // Klausuranteil fehlt noch komplett
+                        knownAvg = others.reduce((a, b) => a + b.points, 0) / others.length;
+                        knownWeight = wO; missingWeight = wE; missingType = 'exam';
+                    } else {
+                        // Sonstige-Anteil fehlt noch komplett
+                        knownAvg = exams.reduce((a, b) => a + b.points, 0) / exams.length;
+                        knownWeight = wE; missingWeight = wO; missingType = 'other';
+                    }
+                    if (missingWeight === 0) return { status: 'already-final' }; // die fehlende Kategorie zählt eh nicht mit rein
+                    neededAvg = (target - knownAvg * knownWeight) / missingWeight;
+
+                    const best = gradeSystem.value === '6' ? 1 : 15;
+                    const isUnreachable = gradeSystem.value === '6' ? neededAvg < best : neededAvg > best;
+                    if (isUnreachable) return { status: 'unreachable' };
+
+                    // Sinnvoll begrenzen auf den gültigen Notenbereich für die Anzeige
+                    const worst = gradeSystem.value === '6' ? 6 : 0;
+                    const clamped = gradeSystem.value === '6' ? Math.max(best, Math.min(worst, neededAvg)) : Math.min(best, Math.max(worst, neededAvg));
+                    return { status: 'ok', neededAvg: clamped, missingType };
+                });
                 
                 const sortedGrades = computed(() => {
                     // Für Klassen 5-10: im HJ2 auch Noten aus HJ1 anzeigen
@@ -4964,16 +5125,17 @@
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
                     currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
-                    subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData,
+                    subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData, goalTargetPoints, goalCalculation,
                     sortedSubjectsList, subjects, formatNumber, formatDate, isToday, handleAuth, handleLogout,
                     openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal, openGradeFromPlannerTask,
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
                     examScores, adjustColor,
-                    tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
+                    tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, nextExamCountdown, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
                     swipeRefs, startSwipe, moveSwipe, endSwipe, taskSwipeRefs, startTaskSwipe, moveTaskSwipe, endTaskSwipe, swipeState, taskSwipeState,
+                    taskSelectionMode, selectedTaskIds, taskLongPressStart, taskLongPressMove, taskLongPressEnd, toggleTaskSelection, exitTaskSelectionMode, deleteSelectedTasks,
                     modalDragStart, modalDragMove, modalDragEnd,
                     getCalculatedSemesterPoints,
                     isInstallGuideModalOpen, triggerInstall, isInstalled, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings, handleForgotPassword, handleDeleteAccount,
