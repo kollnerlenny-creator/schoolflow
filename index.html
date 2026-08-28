@@ -2223,7 +2223,7 @@
 
         <!-- Aufgabe/Prüfung Modal -->
         <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col overflow-hidden"
                  @touchstart="modalDragStart($event, 'isTaskModalOpen')"
                  @touchmove="modalDragMove($event)"
                  @touchend="modalDragEnd($event)">
@@ -2232,13 +2232,15 @@
                 <button @click="closeModal('isTaskModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
-                <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
-                
-                <div v-if="subjects.length === 0" class="text-center py-8 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-sm animate-pulse">
-                    Bitte erstelle zuerst ein Fach unter "Fächer", bevor du Aufgaben eintragen kannst.
-                </div>
-                
-                <div v-else class="space-y-6">
+
+                <div class="overflow-y-auto no-scrollbar p-6 sm:p-8 pb-4">
+                    <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
+                    
+                    <div v-if="subjects.length === 0" class="text-center py-8 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-sm animate-pulse">
+                        Bitte erstelle zuerst ein Fach unter "Fächer", bevor du Aufgaben eintragen kannst.
+                    </div>
+                    
+                    <div v-else class="space-y-6">
                     <input type="text" placeholder="Titel (z.B. Vokabeln, Analysis Test)" required v-model="taskForm.title" class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-bold text-lg text-white placeholder:text-slate-600 modal-input" />
                     
                     <div class="flex gap-2 bg-black/20 p-1.5 rounded-full border border-white/5">
@@ -2315,11 +2317,12 @@
                         <label class="text-xs font-bold uppercase text-slate-400 ml-1 block mb-3">Notizen {{ taskForm.type !== 'Hausaufgabe' ? '(z.B. Lernstoff, Themen)' : '(optional)' }}</label>
                         <textarea v-model="taskForm.notes" rows="3" placeholder="z.B. Kapitel 4-6, Vokabeln Unit 3, Formelsammlung mitbringen..." class="w-full bg-black/20 border border-white/5 p-5 rounded-3xl font-medium text-sm text-white placeholder:text-slate-600 modal-input resize-none no-scrollbar"></textarea>
                     </div>
-
-                    <div class="pt-4 flex gap-4">
-                        <button @click="handleSaveTask" class="flex-1 btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Speichern</button>
-                        <button v-if="taskForm.id" @click="handleDeleteTask(taskForm.id)" class="w-16 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                     </div>
+                </div>
+
+                <div v-if="subjects.length > 0" class="shrink-0 p-6 sm:p-8 pt-4 border-t border-white/5 flex gap-4">
+                    <button @click="handleSaveTask" class="flex-1 btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Speichern</button>
+                    <button v-if="taskForm.id" @click="handleDeleteTask(taskForm.id)" class="w-16 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
                 </div>
             </div>
         </div>
@@ -4425,32 +4428,34 @@
 
                 const handleSaveTask = async () => {
                     if (!user.value || !taskForm.value.title || !taskForm.value.subjectId) return;
+                    const formSnapshot = { ...taskForm.value };
+                    closeModal('isTaskModalOpen');
                     try {
-                        const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done, notes: taskForm.value.notes || '', studyStatus: taskForm.value.studyStatus || 'none' };
-                        if (taskForm.value.id) {
-                            if (taskForm.value.repeatGroupId && taskForm.value.applyToSeries) {
+                        const taskData = { title: formSnapshot.title, type: formSnapshot.type, subjectId: formSnapshot.subjectId, date: formSnapshot.date, done: formSnapshot.done, notes: formSnapshot.notes || '', studyStatus: formSnapshot.studyStatus || 'none' };
+                        if (formSnapshot.id) {
+                            if (formSnapshot.repeatGroupId && formSnapshot.applyToSeries) {
                                 // Auf diese & alle zukünftigen Wiederholungen anwenden (Datum bleibt je Instanz individuell)
                                 const seriesData = { title: taskData.title, type: taskData.type, subjectId: taskData.subjectId, notes: taskData.notes, studyStatus: taskData.studyStatus };
-                                const originalDate = taskForm.value._originalDate || taskForm.value.date;
-                                const affected = tasks.value.filter(t => t.repeatGroupId === taskForm.value.repeatGroupId && t.date >= originalDate);
+                                const originalDate = formSnapshot._originalDate || formSnapshot.date;
+                                const affected = tasks.value.filter(t => t.repeatGroupId === formSnapshot.repeatGroupId && t.date >= originalDate);
                                 await Promise.all(affected.map(t => {
-                                    const isThisOne = t.id === taskForm.value.id;
-                                    return updateDoc(doc(db, 'users', user.value.uid, 'tasks', t.id), isThisOne ? { ...seriesData, date: taskForm.value.date, done: taskData.done } : seriesData);
+                                    const isThisOne = t.id === formSnapshot.id;
+                                    return updateDoc(doc(db, 'users', user.value.uid, 'tasks', t.id), isThisOne ? { ...seriesData, date: formSnapshot.date, done: taskData.done } : seriesData);
                                 }));
                             } else {
-                                await updateDoc(doc(db, 'users', user.value.uid, 'tasks', taskForm.value.id), taskData);
+                                await updateDoc(doc(db, 'users', user.value.uid, 'tasks', formSnapshot.id), taskData);
                             }
-                        } else if (taskForm.value.repeat && taskForm.value.repeat !== 'none') {
+                        } else if (formSnapshot.repeat && formSnapshot.repeat !== 'none') {
                             // Wiederholte Aufgaben: mehrere Instanzen anlegen, verknüpft über repeatGroupId
                             const repeatGroupId = doc(collection(db, 'users', user.value.uid, 'tasks')).id;
                             const MAX_OCCURRENCES = 60;
                             const DEFAULT_OCCURRENCES = 10;
-                            const dates = [taskForm.value.date];
+                            const dates = [formSnapshot.date];
                             let i = 1;
                             while (i < MAX_OCCURRENCES) {
-                                const nextDate = addRepeatInterval(taskForm.value.date, taskForm.value.repeat, i);
-                                if (taskForm.value.repeatUntil) {
-                                    if (nextDate > taskForm.value.repeatUntil) break;
+                                const nextDate = addRepeatInterval(formSnapshot.date, formSnapshot.repeat, i);
+                                if (formSnapshot.repeatUntil) {
+                                    if (nextDate > formSnapshot.repeatUntil) break;
                                 } else if (i >= DEFAULT_OCCURRENCES) {
                                     break;
                                 }
@@ -4459,13 +4464,12 @@
                             }
                             await Promise.all(dates.map(dateStr => {
                                 const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
-                                return setDoc(taskRef, { ...taskData, date: dateStr, repeat: taskForm.value.repeat, repeatGroupId });
+                                return setDoc(taskRef, { ...taskData, date: dateStr, repeat: formSnapshot.repeat, repeatGroupId });
                             }));
                         } else {
                             const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
                             await setDoc(taskRef, taskData);
                         }
-                        closeModal('isTaskModalOpen');
                     } catch (err) { 
                         console.error("Fehler beim Speichern der Aufgabe: ", err); 
                     }
