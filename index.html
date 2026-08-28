@@ -2270,6 +2270,27 @@
                         <i data-lucide="calendar" class="w-6 h-6 text-accent"></i>
                     </div>
 
+                    <div v-if="!taskForm.id" class="bg-black/20 border border-white/5 rounded-3xl p-5">
+                        <div class="flex items-center justify-between cursor-pointer" @click="taskForm.repeat = (taskForm.repeat && taskForm.repeat !== 'none') ? 'none' : 'weekly'">
+                            <span class="font-bold text-sm text-white flex items-center gap-2"><i data-lucide="repeat" class="w-4.5 h-4.5 text-accent"></i> Wiederholt sich</span>
+                            <div class="w-12 h-7 rounded-full relative transition-colors" :class="(taskForm.repeat && taskForm.repeat !== 'none') ? 'toggle-accent-on' : 'bg-white/10'">
+                                <div class="absolute top-1 w-5 h-5 rounded-full bg-white transition-all" :class="(taskForm.repeat && taskForm.repeat !== 'none') ? 'left-6' : 'left-1'"></div>
+                            </div>
+                        </div>
+                        <div v-if="taskForm.repeat && taskForm.repeat !== 'none'" class="mt-4 space-y-3">
+                            <div class="flex gap-2 bg-black/20 p-2 rounded-full border border-white/5">
+                                <button type="button" @click="taskForm.repeat = 'daily'" :class="taskForm.repeat === 'daily' ? 'bg-white/10 text-white' : 'text-slate-500'" class="flex-1 py-2.5 rounded-full text-[10px] font-black uppercase cursor-pointer transition-colors">Täglich</button>
+                                <button type="button" @click="taskForm.repeat = 'weekly'" :class="taskForm.repeat === 'weekly' ? 'bg-white/10 text-white' : 'text-slate-500'" class="flex-1 py-2.5 rounded-full text-[10px] font-black uppercase cursor-pointer transition-colors">Wöchentlich</button>
+                                <button type="button" @click="taskForm.repeat = 'monthly'" :class="taskForm.repeat === 'monthly' ? 'bg-white/10 text-white' : 'text-slate-500'" class="flex-1 py-2.5 rounded-full text-[10px] font-black uppercase cursor-pointer transition-colors">Monatlich</button>
+                                <button type="button" @click="taskForm.repeat = 'yearly'" :class="taskForm.repeat === 'yearly' ? 'bg-white/10 text-white' : 'text-slate-500'" class="flex-1 py-2.5 rounded-full text-[10px] font-black uppercase cursor-pointer transition-colors">Jährlich</button>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold uppercase text-slate-500 ml-1 block mb-2">Endet am (optional, sonst 10x)</label>
+                                <input type="date" v-model="taskForm.repeatUntil" :min="taskForm.date" class="w-full bg-black/20 border border-white/5 p-3.5 rounded-2xl font-bold text-sm text-white modal-input [color-scheme:dark]" />
+                            </div>
+                        </div>
+                    </div>
+
                     <div v-if="taskForm.type !== 'Hausaufgabe'">
                         <label class="text-xs font-bold uppercase text-slate-400 ml-1 block mb-3">Lernstand</label>
                         <div class="flex gap-2 bg-black/20 p-2 rounded-full border border-white/5">
@@ -4362,16 +4383,16 @@
                 const prevSelectMonth = () => { if(calSelectMonth.value === 0) { calSelectMonth.value = 11; calSelectYear.value--; } else { calSelectMonth.value--; } };
 
                 const openTaskModal = () => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyStatus: 'none' };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyStatus: 'none', repeat: 'none', repeatUntil: '' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 };
                 const openTaskModalWithDate = (dateStr) => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false, notes: '', studyStatus: 'none' };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false, notes: '', studyStatus: 'none', repeat: 'none', repeatUntil: '' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 }
-                const openEditTaskModal = (task) => { taskForm.value = { studyStatus: 'none', ...task }; isTaskModalOpen.value = true; refreshIcons(); };
+                const openEditTaskModal = (task) => { taskForm.value = { studyStatus: 'none', repeat: 'none', repeatUntil: '', ...task }; isTaskModalOpen.value = true; refreshIcons(); };
                 
                 const openEditTaskFromPlanner = (compositeId) => {
                     const taskId = compositeId.replace('task-', '');
@@ -4381,12 +4402,43 @@
                     }
                 };
 
+                // Berechnet das nächste Datum für ein Wiederholungsintervall
+                const addRepeatInterval = (dateStr, interval, stepCount) => {
+                    const d = new Date(dateStr + 'T00:00:00');
+                    if (interval === 'daily') d.setDate(d.getDate() + stepCount);
+                    else if (interval === 'weekly') d.setDate(d.getDate() + 7 * stepCount);
+                    else if (interval === 'monthly') d.setMonth(d.getMonth() + stepCount);
+                    else if (interval === 'yearly') d.setFullYear(d.getFullYear() + stepCount);
+                    return d.toISOString().split('T')[0];
+                };
+
                 const handleSaveTask = async () => {
                     if (!user.value || !taskForm.value.title || !taskForm.value.subjectId) return;
                     try {
                         const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done, notes: taskForm.value.notes || '', studyStatus: taskForm.value.studyStatus || 'none' };
                         if (taskForm.value.id) {
                             await updateDoc(doc(db, 'users', user.value.uid, 'tasks', taskForm.value.id), taskData);
+                        } else if (taskForm.value.repeat && taskForm.value.repeat !== 'none') {
+                            // Wiederholte Aufgaben: mehrere Instanzen anlegen, verknüpft über repeatGroupId
+                            const repeatGroupId = doc(collection(db, 'users', user.value.uid, 'tasks')).id;
+                            const MAX_OCCURRENCES = 60;
+                            const DEFAULT_OCCURRENCES = 10;
+                            const dates = [taskForm.value.date];
+                            let i = 1;
+                            while (i < MAX_OCCURRENCES) {
+                                const nextDate = addRepeatInterval(taskForm.value.date, taskForm.value.repeat, i);
+                                if (taskForm.value.repeatUntil) {
+                                    if (nextDate > taskForm.value.repeatUntil) break;
+                                } else if (i >= DEFAULT_OCCURRENCES) {
+                                    break;
+                                }
+                                dates.push(nextDate);
+                                i++;
+                            }
+                            await Promise.all(dates.map(dateStr => {
+                                const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
+                                return setDoc(taskRef, { ...taskData, date: dateStr, repeat: taskForm.value.repeat, repeatGroupId });
+                            }));
                         } else {
                             const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
                             await setDoc(taskRef, taskData);
