@@ -1369,10 +1369,13 @@
                                  :data-task-id="t.id"
                                  :style="{ animationDelay: (tIdx * 0.045) + 's' }"
                                  :class="leavingTasks.has(t.id) ? 'task-item-leaving' : (taskSwipeState.id === t.id ? 'overflow-hidden' : 'overflow-visible')">
-                                <div class="absolute inset-0 bg-rose-600 rounded-3xl flex items-center justify-between px-6 z-0 transition-opacity duration-150"
+                                <div class="absolute inset-0 bg-rose-600 rounded-3xl flex items-center justify-end px-6 z-0 transition-opacity duration-150"
                                      :style="taskSwipeState.id === t.id && taskSwipeState.currentX < -20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
                                     <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
-                                    <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
+                                </div>
+                                <div class="absolute inset-0 bg-accent rounded-3xl flex items-center justify-start px-6 z-0 transition-opacity duration-150"
+                                     :style="taskSwipeState.id === t.id && taskSwipeState.currentX > 20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
+                                    <i data-lucide="edit-2" class="text-white w-6 h-6"></i>
                                 </div>
                                 
                                 <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-3xl"
@@ -1413,11 +1416,6 @@
                                                       :title="t.studyStatus === 'ready' ? 'Fertig gelernt' : 'Lernen läuft'"></span>
                                             </p>
                                         </div>
-                                    </div>
-                                    <div v-if="!taskSelectionMode" class="flex shrink-0">
-                                        <button @click.stop="openEditTaskModal(t)" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-accent active:bg-accent-dim transition-colors cursor-pointer">
-                                            <i data-lucide="edit-2" class="w-5 h-5"></i>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -2289,6 +2287,19 @@
                                 <input type="date" v-model="taskForm.repeatUntil" :min="taskForm.date" class="w-full bg-black/20 border border-white/5 p-3.5 rounded-2xl font-bold text-sm text-white modal-input [color-scheme:dark]" />
                             </div>
                         </div>
+                    </div>
+
+                    <div v-if="taskForm.id && taskForm.repeatGroupId" class="bg-black/20 border border-white/5 rounded-3xl p-5">
+                        <div class="flex items-center gap-2 text-sm font-bold text-white mb-3">
+                            <i data-lucide="repeat" class="w-4.5 h-4.5 text-accent"></i> Teil einer Wiederholungsserie
+                        </div>
+                        <div class="flex items-center justify-between cursor-pointer" @click="taskForm.applyToSeries = !taskForm.applyToSeries">
+                            <span class="text-xs font-semibold text-slate-300 pr-3">Änderungen auf diese & alle zukünftigen Wiederholungen anwenden</span>
+                            <div class="w-12 h-7 rounded-full relative transition-colors shrink-0" :class="taskForm.applyToSeries ? 'toggle-accent-on' : 'bg-white/10'">
+                                <div class="absolute top-1 w-5 h-5 rounded-full bg-white transition-all" :class="taskForm.applyToSeries ? 'left-6' : 'left-1'"></div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-2">Ausgeschaltet: nur diese einzelne Aufgabe wird geändert.</p>
                     </div>
 
                     <div v-if="taskForm.type !== 'Hausaufgabe'">
@@ -4392,7 +4403,7 @@
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 }
-                const openEditTaskModal = (task) => { taskForm.value = { studyStatus: 'none', repeat: 'none', repeatUntil: '', ...task }; isTaskModalOpen.value = true; refreshIcons(); };
+                const openEditTaskModal = (task) => { taskForm.value = { studyStatus: 'none', repeat: 'none', repeatUntil: '', applyToSeries: false, ...task, _originalDate: task.date }; isTaskModalOpen.value = true; refreshIcons(); };
                 
                 const openEditTaskFromPlanner = (compositeId) => {
                     const taskId = compositeId.replace('task-', '');
@@ -4417,7 +4428,18 @@
                     try {
                         const taskData = { title: taskForm.value.title, type: taskForm.value.type, subjectId: taskForm.value.subjectId, date: taskForm.value.date, done: taskForm.value.done, notes: taskForm.value.notes || '', studyStatus: taskForm.value.studyStatus || 'none' };
                         if (taskForm.value.id) {
-                            await updateDoc(doc(db, 'users', user.value.uid, 'tasks', taskForm.value.id), taskData);
+                            if (taskForm.value.repeatGroupId && taskForm.value.applyToSeries) {
+                                // Auf diese & alle zukünftigen Wiederholungen anwenden (Datum bleibt je Instanz individuell)
+                                const seriesData = { title: taskData.title, type: taskData.type, subjectId: taskData.subjectId, notes: taskData.notes, studyStatus: taskData.studyStatus };
+                                const originalDate = taskForm.value._originalDate || taskForm.value.date;
+                                const affected = tasks.value.filter(t => t.repeatGroupId === taskForm.value.repeatGroupId && t.date >= originalDate);
+                                await Promise.all(affected.map(t => {
+                                    const isThisOne = t.id === taskForm.value.id;
+                                    return updateDoc(doc(db, 'users', user.value.uid, 'tasks', t.id), isThisOne ? { ...seriesData, date: taskForm.value.date, done: taskData.done } : seriesData);
+                                }));
+                            } else {
+                                await updateDoc(doc(db, 'users', user.value.uid, 'tasks', taskForm.value.id), taskData);
+                            }
                         } else if (taskForm.value.repeat && taskForm.value.repeat !== 'none') {
                             // Wiederholte Aufgaben: mehrere Instanzen anlegen, verknüpft über repeatGroupId
                             const repeatGroupId = doc(collection(db, 'users', user.value.uid, 'tasks')).id;
@@ -5052,10 +5074,13 @@
                     if (!taskSwipeState.value.isDragging || !taskSwipeState.value.id) return;
                     const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                     let diff = currentX - taskSwipeState.value.startX;
-                    if(diff > 8) diff = 8; // tiny right rubber-band
-                    if(diff < -130) {
-                        const over = -diff - 130;
-                        diff = -(130 + over * 0.25);
+                    if(diff > 100) {
+                        const over = diff - 100;
+                        diff = 100 + over * 0.25;
+                    }
+                    if(diff < -190) {
+                        const over = -diff - 190;
+                        diff = -(190 + over * 0.25);
                     }
                     taskSwipeState.value.currentX = diff;
                     const el = taskSwipeRefs.value[taskSwipeState.value.id];
@@ -5067,10 +5092,12 @@
                     const el = taskSwipeRefs.value[taskSwipeState.value.id];
                     if (el) {
                         el.classList.remove('dragging');
-                        if (!forceReset && taskSwipeState.value.currentX < -110) {
+                        if (!forceReset && taskSwipeState.value.currentX < -170) {
                             if(confirm(`Möchtest du die Aufgabe "${task.title}" wirklich löschen?`)) {
                                 handleDeleteTask(task.id);
                             }
+                        } else if (!forceReset && taskSwipeState.value.currentX > 85) {
+                            openEditTaskModal(task);
                         }
                         // Spring snap-back
                         el.style.transition = 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)';
