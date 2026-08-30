@@ -64,6 +64,9 @@
             background-size: 300% 300%;
             animation: recap-ring-spin 4s ease infinite;
         }
+        .recap-ring-seen {
+            background: rgba(245, 158, 11, 0.55);
+        }
         @keyframes recap-ring-spin {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -1054,8 +1057,10 @@
                 <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
                     
                     <!-- Große, extrem prominente Begrüßung im Vordergrund -->
-                    <div class="card-enter card-enter-1 rounded-3xl relative" :class="weeklyRecapAvailable ? 'recap-ring p-[3px] cursor-pointer' : ''" @click="weeklyRecapAvailable && openWeeklyRecap()">
-                        <div class="text-center py-8 sm:py-10 bg-white/[0.02] border border-white/5 rounded-3xl relative overflow-hidden backdrop-blur-md shadow-2xl" :class="weeklyRecapAvailable ? 'border-0' : ''">
+                    <div class="card-enter card-enter-1 rounded-3xl relative"
+                         :class="weeklyRecapAvailable ? 'recap-ring p-[3px] cursor-pointer' : (weeklyRecapWeekReady ? 'recap-ring-seen p-[2px] cursor-pointer' : '')"
+                         @click="weeklyRecapWeekReady && openWeeklyRecap()">
+                        <div class="text-center py-8 sm:py-10 bg-white/[0.02] border border-white/5 rounded-3xl relative overflow-hidden backdrop-blur-md shadow-2xl" :class="weeklyRecapWeekReady ? 'border-0' : ''">
                             <div class="absolute -left-10 -top-10 w-36 h-32 bg-accent-dim2 rounded-full blur-2xl"></div>
                             <div class="absolute -right-10 -bottom-10 w-36 h-32 bg-violet-600/10 rounded-full blur-2xl"></div>
                             <div class="relative z-10 space-y-2">
@@ -1063,12 +1068,16 @@
                                 <h2 class="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-md">
                                     {{ welcomeMessage }}
                                 </h2>
-                                <p v-if="!weeklyRecapAvailable" class="text-slate-400 text-sm sm:text-base font-medium max-w-md mx-auto px-4 leading-relaxed">
+                                <p v-if="!weeklyRecapWeekReady" class="text-slate-400 text-sm sm:text-base font-medium max-w-md mx-auto px-4 leading-relaxed">
                                     Schön, dass du da bist! Dein Schulalltag im perfekten Fluss – alles auf einen Blick. ✨
                                 </p>
-                                <div v-else class="inline-flex items-center gap-2 mt-1 bg-white/10 border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm">
+                                <div v-else-if="weeklyRecapAvailable" class="inline-flex items-center gap-2 mt-1 bg-white/10 border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm">
                                     <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
                                     <span class="text-xs sm:text-sm font-bold text-white">Dein Wochenrückblick ist da — antippen!</span>
+                                </div>
+                                <div v-else class="inline-flex items-center gap-1.5 mt-1 text-amber-400/90">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                    <span class="text-[11px] font-bold uppercase tracking-wide">Wochenrückblick ansehen</span>
                                 </div>
                             </div>
                         </div>
@@ -4466,11 +4475,17 @@
                     return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
                 };
                 const currentWeekKey = computed(() => getISOWeekKey(new Date()));
-                const weeklyRecapAvailable = computed(() => {
+                // Ab dem eingestellten Wochentag bis Sonntag sichtbar (nicht nur am exakten Tag),
+                // damit man sich den Rückblick auch später in der Woche noch mehrmals anschauen kann.
+                const weeklyRecapWeekReady = computed(() => {
                     if (!user.value) return false;
-                    const isRecapDay = new Date().getDay() === weeklyRecapWeekday.value;
-                    return isRecapDay && lastWeeklyRecapViewedWeek.value !== currentWeekKey.value;
+                    const todayIso = new Date().getDay() === 0 ? 7 : new Date().getDay();
+                    const recapDayIso = weeklyRecapWeekday.value === 0 ? 7 : weeklyRecapWeekday.value;
+                    return todayIso >= recapDayIso;
                 });
+                const weeklyRecapSeen = computed(() => lastWeeklyRecapViewedWeek.value === currentWeekKey.value);
+                // Beibehalten für Abwärtskompatibilität: "verfügbar UND noch nicht gesehen" (voller Regenbogen-Ring)
+                const weeklyRecapAvailable = computed(() => weeklyRecapWeekReady.value && !weeklyRecapSeen.value);
                 // Alle Statistiken für den Wochenrückblick berechnen
                 const weeklyRecapData = computed(() => {
                     const { mondayStr, sundayStr } = getCurrentWeekRange();
@@ -5581,7 +5596,7 @@
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, nextExamCountdown, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     todayOverview,
-                    isWeeklyRecapOpen, weeklyRecapSlideIndex, weeklyRecapWeekday, tempWeeklyRecapWeekday, weeklyRecapAvailable, weeklyRecapData,
+                    isWeeklyRecapOpen, weeklyRecapSlideIndex, weeklyRecapWeekday, tempWeeklyRecapWeekday, weeklyRecapAvailable, weeklyRecapWeekReady, weeklyRecapSeen, weeklyRecapData,
                     openWeeklyRecap, closeWeeklyRecap, nextRecapSlide, prevRecapSlide,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
