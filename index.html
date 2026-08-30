@@ -55,6 +55,61 @@
         .btn-accent:hover { opacity: 0.88; }
         .pill-indicator { background: var(--accent) !important; }
         .toggle-accent-on { background: var(--accent) !important; }
+        .recap-slide-bg-0 { background: linear-gradient(160deg, #6366f1, #8b5cf6); }
+        .recap-slide-bg-1 { background: linear-gradient(160deg, #10b981, #059669); }
+        .recap-slide-bg-2 { background: linear-gradient(160deg, #f59e0b, #ea580c); }
+        .recap-slide-bg-3 { background: linear-gradient(160deg, #ec4899, #db2777); }
+        .recap-ring {
+            background: linear-gradient(135deg, #f59e0b, #ef4444, #ec4899, #8b5cf6, #6366f1, #f59e0b);
+            background-size: 300% 300%;
+            animation: recap-ring-spin 4s ease infinite;
+        }
+        @keyframes recap-ring-spin {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .progress-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 10px;
+            border-radius: 999px;
+            background: linear-gradient(to right, var(--progress-color) var(--progress), rgba(255,255,255,0.08) var(--progress));
+            outline: none;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid var(--progress-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+        }
+        .progress-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid var(--progress-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            cursor: pointer;
+        }
+        .progress-slider::-moz-range-track {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+        }
+        .progress-slider::-moz-range-progress {
+            height: 10px;
+            border-radius: 999px;
+            background: var(--progress-color);
+        }
         .notif-badge { background: var(--accent) !important; }
 
         [v-cloak] { display: none; }
@@ -972,7 +1027,7 @@
                         <i data-lucide="user-plus" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
                     </button>
                     <!-- Einstellungen -->
-                    <button @click="isAppSettingsModalOpen = true" title="Einstellungen" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-slate-500 active:bg-white/5 transition-all cursor-pointer header-action-btn">
+                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; isAppSettingsModalOpen = true" title="Einstellungen" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-slate-500 active:bg-white/5 transition-all cursor-pointer header-action-btn">
                         <i data-lucide="settings" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
                     </button>
                     <button @click="handleLogout" title="Abmelden" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-slate-500 active:bg-white/5 transition-all cursor-pointer header-action-btn">
@@ -999,18 +1054,44 @@
                 <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
                     
                     <!-- Große, extrem prominente Begrüßung im Vordergrund -->
-                    <div class="card-enter card-enter-1 text-center py-8 sm:py-10 bg-white/[0.02] border border-white/5 rounded-3xl relative overflow-hidden backdrop-blur-md shadow-2xl">
-                        <div class="absolute -left-10 -top-10 w-36 h-32 bg-accent-dim2 rounded-full blur-2xl"></div>
-                        <div class="absolute -right-10 -bottom-10 w-36 h-32 bg-violet-600/10 rounded-full blur-2xl"></div>
-                        <div class="relative z-10 space-y-2">
-                            <span class="text-[11px] font-black uppercase tracking-[0.3em] text-accent">Dashboard</span>
-                            <h2 class="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-md">
-                                {{ welcomeMessage }}
-                            </h2>
-                            <p class="text-slate-400 text-sm sm:text-base font-medium max-w-md mx-auto px-4 leading-relaxed">
-                                Schön, dass du da bist! Dein Schulalltag im perfekten Fluss – alles auf einen Blick. ✨
-                            </p>
+                    <div class="card-enter card-enter-1 rounded-3xl relative" :class="weeklyRecapAvailable ? 'recap-ring p-[3px] cursor-pointer' : ''" @click="weeklyRecapAvailable && openWeeklyRecap()">
+                        <div class="text-center py-8 sm:py-10 bg-white/[0.02] border border-white/5 rounded-3xl relative overflow-hidden backdrop-blur-md shadow-2xl" :class="weeklyRecapAvailable ? 'border-0' : ''">
+                            <div class="absolute -left-10 -top-10 w-36 h-32 bg-accent-dim2 rounded-full blur-2xl"></div>
+                            <div class="absolute -right-10 -bottom-10 w-36 h-32 bg-violet-600/10 rounded-full blur-2xl"></div>
+                            <div class="relative z-10 space-y-2">
+                                <span class="text-[11px] font-black uppercase tracking-[0.3em] text-accent">Dashboard</span>
+                                <h2 class="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-md">
+                                    {{ welcomeMessage }}
+                                </h2>
+                                <p v-if="!weeklyRecapAvailable" class="text-slate-400 text-sm sm:text-base font-medium max-w-md mx-auto px-4 leading-relaxed">
+                                    Schön, dass du da bist! Dein Schulalltag im perfekten Fluss – alles auf einen Blick. ✨
+                                </p>
+                                <div v-else class="inline-flex items-center gap-2 mt-1 bg-white/10 border border-white/20 rounded-full px-4 py-2 backdrop-blur-sm">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+                                    <span class="text-xs sm:text-sm font-bold text-white">Dein Wochenrückblick ist da — antippen!</span>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Heute-Widget: die wichtigsten Dinge auf einen Blick -->
+                    <div v-if="todayOverview.lessons.length > 0 || todayOverview.tasksToday.length > 0" class="card-enter card-enter-2 glass-card p-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i data-lucide="sun" class="w-4.5 h-4.5 text-accent"></i>
+                            <h3 class="font-black text-sm text-white uppercase tracking-wide">Heute</h3>
+                        </div>
+                        <div v-if="todayOverview.lessons.length > 0" class="flex flex-wrap gap-2 mb-3">
+                            <span v-for="s in todayOverview.lessons" :key="s.id" class="text-[11px] font-bold px-3 py-1.5 rounded-full" :style="{ backgroundColor: s.color + '22', color: s.color }">{{ s.name }}</span>
+                        </div>
+                        <div v-if="todayOverview.tasksToday.length > 0" class="space-y-2">
+                            <div v-for="t in todayOverview.tasksToday.slice(0, 3)" :key="t.id" class="flex items-center gap-2.5 text-sm">
+                                <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
+                                <span class="font-semibold text-white truncate">{{ t.title }}</span>
+                                <span class="text-[10px] text-slate-500 uppercase shrink-0 ml-auto">{{ t.type }}</span>
+                            </div>
+                            <p v-if="todayOverview.tasksToday.length > 3" class="text-[11px] text-slate-500 pl-4.5">+ {{ todayOverview.tasksToday.length - 3 }} weitere</p>
+                        </div>
+                        <p v-else class="text-xs text-slate-500">Keine offenen Aufgaben für heute. 🎉</p>
                     </div>
 
                     <!-- Nächste-Klausur-Countdown -->
@@ -1410,11 +1491,13 @@
                                             <p class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1.5">
                                                 {{ t.type }} • {{ formatDate(t.date) }}
                                                 <i v-if="t.notes" data-lucide="sticky-note" class="w-3 h-3 text-accent shrink-0" title="Hat Notizen"></i>
-                                                <span v-if="t.type !== 'Hausaufgabe' && t.studyStatus && t.studyStatus !== 'none'"
-                                                      class="w-1.5 h-1.5 rounded-full shrink-0"
-                                                      :class="t.studyStatus === 'ready' ? 'bg-emerald-400' : 'bg-amber-400'"
-                                                      :title="t.studyStatus === 'ready' ? 'Fertig gelernt' : 'Lernen läuft'"></span>
                                             </p>
+                                            <div v-if="t.type !== 'Hausaufgabe' && t.studyProgress > 0" class="flex items-center gap-1.5 mt-1.5 pr-4">
+                                                <div class="flex-1 h-1 rounded-full bg-white/10 overflow-hidden max-w-[90px]">
+                                                    <div class="h-full rounded-full" :style="{ width: t.studyProgress + '%', backgroundColor: progressColor(t.studyProgress) }"></div>
+                                                </div>
+                                                <span class="text-[9px] font-bold" :style="{ color: progressColor(t.studyProgress) }">{{ t.studyProgress }}%</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1503,11 +1586,11 @@
                                          class="rounded-lg sm:rounded-2xl flex flex-col items-start justify-start relative p-1 sm:p-2.5 border cal-day overflow-hidden h-[48px] sm:h-auto"
                                          :class="[
                                             'sm:aspect-auto sm:min-h-[64px] md:min-h-[76px]',
-                                            day.isCurrentMonth ? 'bg-white/[0.03] text-white border-white/5 hover:border-accent-border cursor-pointer' : 'bg-transparent text-slate-800 border-transparent pointer-events-none',
+                                            day.isCurrentMonth ? 'bg-white/[0.03] text-white border-white/5 hover:border-accent-border cursor-pointer' : 'bg-transparent text-slate-600 border-transparent hover:border-white/10 cursor-pointer opacity-50 hover:opacity-80',
                                             isToday(day.date) && selectedCalendarDate !== day.date ? 'border-accent-border/60' : '',
-                                            selectedCalendarDate === day.date ? 'border-accent bg-accent-dim' : ''
+                                            selectedCalendarDate === day.date ? 'border-accent bg-accent-dim opacity-100' : ''
                                          ]"
-                                         @click="day.isCurrentMonth && selectCalendarDay(day.date)">
+                                         @click="selectCalendarDay(day.date)">
                                         
                                         <span class="font-black text-[11px] sm:text-sm md:text-base ml-0.5 shrink-0 flex items-center gap-1" :class="selectedCalendarDate === day.date ? 'text-accent-light' : (isToday(day.date) ? 'text-accent' : '')">
                                             {{ day.day }}
@@ -2305,12 +2388,17 @@
                         <p class="text-[10px] text-slate-500 mt-2">Ausgeschaltet: nur diese einzelne Aufgabe wird geändert.</p>
                     </div>
 
-                    <div v-if="taskForm.type !== 'Hausaufgabe'">
-                        <label class="text-xs font-bold uppercase text-slate-400 ml-1 block mb-3">Lernstand</label>
-                        <div class="flex gap-2 bg-black/20 p-2 rounded-full border border-white/5">
-                            <button type="button" @click="taskForm.studyStatus = 'none'" :class="taskForm.studyStatus === 'none' || !taskForm.studyStatus ? 'bg-white/10 text-white' : 'text-slate-500'" class="flex-1 py-3 rounded-full text-[11px] font-black uppercase cursor-pointer transition-colors">Nicht angefangen</button>
-                            <button type="button" @click="taskForm.studyStatus = 'started'" :class="taskForm.studyStatus === 'started' ? 'bg-amber-500/80 text-white' : 'text-slate-500'" class="flex-1 py-3 rounded-full text-[11px] font-black uppercase cursor-pointer transition-colors">Dabei</button>
-                            <button type="button" @click="taskForm.studyStatus = 'ready'" :class="taskForm.studyStatus === 'ready' ? 'bg-emerald-500/80 text-white' : 'text-slate-500'" class="flex-1 py-3 rounded-full text-[11px] font-black uppercase cursor-pointer transition-colors">Fertig gelernt</button>
+                    <div v-if="taskForm.type !== 'Hausaufgabe'" class="bg-black/20 border border-white/5 p-5 rounded-3xl">
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-xs font-bold uppercase text-slate-400 ml-1 block">Lernfortschritt</label>
+                            <span class="font-black text-lg" :style="{ color: progressColor(taskForm.studyProgress) }">{{ taskForm.studyProgress || 0 }}%</span>
+                        </div>
+                        <input type="range" min="0" max="100" step="5" v-model.number="taskForm.studyProgress"
+                               class="w-full progress-slider" :style="{ '--progress': (taskForm.studyProgress || 0) + '%', '--progress-color': progressColor(taskForm.studyProgress) }" />
+                        <div class="flex gap-2 mt-4">
+                            <button v-for="p in [0, 25, 50, 75, 100]" :key="p" type="button" @click="taskForm.studyProgress = p"
+                                    class="flex-1 py-2 rounded-full text-[10px] font-black uppercase cursor-pointer transition-colors"
+                                    :class="(taskForm.studyProgress || 0) === p ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'">{{ p }}%</button>
                         </div>
                     </div>
 
@@ -2324,6 +2412,78 @@
                 <div v-if="subjects.length > 0" class="shrink-0 p-6 sm:p-8 pt-4 border-t border-white/5 flex gap-4">
                     <button @click="handleSaveTask" class="flex-1 btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Speichern</button>
                     <button v-if="taskForm.id" @click="handleDeleteTask(taskForm.id)" class="w-16 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WOCHENRÜCKBLICK STORY -->
+        <div v-if="isWeeklyRecapOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-black">
+            <div class="w-full h-full sm:max-w-sm sm:h-[92vh] sm:rounded-[2.5rem] sm:my-auto relative overflow-hidden select-none"
+                 :class="{
+                    'recap-slide-bg-0': weeklyRecapSlideIndex === 0,
+                    'recap-slide-bg-1': weeklyRecapSlideIndex === 1,
+                    'recap-slide-bg-2': weeklyRecapSlideIndex === 2,
+                    'recap-slide-bg-3': weeklyRecapSlideIndex === 3
+                 }">
+                
+                <!-- Fortschritts-Segmente oben -->
+                <div class="absolute top-4 left-4 right-4 flex gap-1.5 z-20">
+                    <div v-for="n in 4" :key="n" class="flex-1 h-1 rounded-full bg-white/25 overflow-hidden">
+                        <div class="h-full bg-white rounded-full transition-all" :style="{ width: (n - 1) < weeklyRecapSlideIndex ? '100%' : (n - 1 === weeklyRecapSlideIndex ? '100%' : '0%') }"></div>
+                    </div>
+                </div>
+
+                <button @click="closeWeeklyRecap" class="absolute top-9 right-4 z-20 w-9 h-9 rounded-full bg-black/20 flex items-center justify-center text-white cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+
+                <!-- Tap-Zonen für Navigation -->
+                <div class="absolute inset-0 flex z-10">
+                    <div class="w-[35%] h-full cursor-pointer" @click="prevRecapSlide"></div>
+                    <div class="w-[65%] h-full cursor-pointer" @click="nextRecapSlide"></div>
+                </div>
+
+                <!-- Slide-Inhalt -->
+                <div class="relative z-0 h-full flex flex-col items-center justify-center text-center px-8 sm:px-10">
+
+                    <!-- Slide 0: Intro -->
+                    <div v-if="weeklyRecapSlideIndex === 0" class="space-y-4 animate-fade-in">
+                        <i data-lucide="sparkles" class="w-14 h-14 text-white mx-auto"></i>
+                        <h2 class="text-3xl sm:text-4xl font-black text-white leading-tight">Dein Wochen­rückblick</h2>
+                        <p class="text-white/70 font-semibold text-sm">{{ formatDate(weeklyRecapData.mondayStr) }} – {{ formatDate(weeklyRecapData.sundayStr) }}</p>
+                    </div>
+
+                    <!-- Slide 1: Aufgaben -->
+                    <div v-else-if="weeklyRecapSlideIndex === 1" class="space-y-4 animate-fade-in">
+                        <i data-lucide="check-circle-2" class="w-14 h-14 text-white mx-auto"></i>
+                        <p class="text-white/70 font-bold uppercase tracking-widest text-xs">Aufgaben erledigt</p>
+                        <h2 class="text-6xl sm:text-7xl font-black text-white">{{ weeklyRecapData.tasksDone }}<span class="text-3xl text-white/50"> / {{ weeklyRecapData.tasksTotal }}</span></h2>
+                        <p class="text-white/80 font-semibold text-sm max-w-xs mx-auto">
+                            {{ weeklyRecapData.tasksTotal === 0 ? 'Keine Aufgaben diese Woche eingetragen.' : (weeklyRecapData.tasksDone === weeklyRecapData.tasksTotal ? 'Alles erledigt — stark! 🔥' : 'Weiter dran bleiben!') }}
+                        </p>
+                    </div>
+
+                    <!-- Slide 2: Lernfortschritt -->
+                    <div v-else-if="weeklyRecapSlideIndex === 2" class="space-y-4 animate-fade-in">
+                        <i data-lucide="trending-up" class="w-14 h-14 text-white mx-auto"></i>
+                        <p class="text-white/70 font-bold uppercase tracking-widest text-xs">Ø Lernfortschritt</p>
+                        <h2 class="text-6xl sm:text-7xl font-black text-white">{{ weeklyRecapData.avgProgress !== null ? weeklyRecapData.avgProgress + '%' : '–' }}</h2>
+                        <p class="text-white/80 font-semibold text-sm max-w-xs mx-auto">
+                            {{ weeklyRecapData.avgProgress === null ? 'Keine Klausuren/Tests diese Woche.' : 'bei Klausuren & Tests dieser Woche.' }}
+                        </p>
+                    </div>
+
+                    <!-- Slide 3: Noten & Abschluss -->
+                    <div v-else-if="weeklyRecapSlideIndex === 3" class="space-y-4 animate-fade-in">
+                        <i data-lucide="award" class="w-14 h-14 text-white mx-auto"></i>
+                        <p class="text-white/70 font-bold uppercase tracking-widest text-xs">Neue Noten</p>
+                        <h2 class="text-6xl sm:text-7xl font-black text-white">{{ weeklyRecapData.gradesCount }}</h2>
+                        <p v-if="weeklyRecapData.bestGrade" class="text-white/80 font-semibold text-sm max-w-xs mx-auto">
+                            Beste Note: {{ weeklyRecapData.bestGrade.points }} Punkte in {{ weeklyRecapData.bestGrade.subjectName }} 🎉
+                        </p>
+                        <p v-else class="text-white/80 font-semibold text-sm max-w-xs mx-auto">Keine neuen Noten diese Woche.</p>
+                        <button @click.stop="closeWeeklyRecap" class="mt-4 bg-white/15 border border-white/30 backdrop-blur-sm text-white font-black uppercase text-xs px-6 py-3.5 rounded-full cursor-pointer">Weiter so! ✌️</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2438,6 +2598,24 @@
                         <button @click="requestPushPermission" class="w-full mt-1 bg-accent-dim2 border border-accent-border text-accent py-3.5 rounded-full font-black uppercase text-xs cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-accent-dim2">
                             <i data-lucide="bell-ring" class="w-4 h-4"></i> Benachrichtigungen aktivieren
                         </button>
+                    </div>
+
+                    <!-- NEU: Wochenrückblick -->
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3 settings-section">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-accent"></i>
+                            <label class="text-xs font-bold uppercase text-slate-400">Wochenrückblick</label>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-normal -mt-1">An welchem Tag soll dein Wochenrückblick verfügbar sein?</p>
+                        <select v-model.number="tempWeeklyRecapWeekday" class="w-full bg-black/20 border border-white/5 p-3.5 rounded-2xl font-bold text-sm text-white modal-input">
+                            <option :value="1">Montag</option>
+                            <option :value="2">Dienstag</option>
+                            <option :value="3">Mittwoch</option>
+                            <option :value="4">Donnerstag</option>
+                            <option :value="5">Freitag</option>
+                            <option :value="6">Samstag</option>
+                            <option :value="0">Sonntag</option>
+                        </select>
                     </div>
 
                     <div class="pt-2 settings-section settings-section-5">
@@ -2971,12 +3149,17 @@
                 const isDatePickerOpen = ref(false);
                 const isAppSettingsModalOpen = ref(false);
                 const isInstallGuideModalOpen = ref(false);
+                const isWeeklyRecapOpen = ref(false);
+                const weeklyRecapSlideIndex = ref(0);
+                const weeklyRecapWeekday = ref(0); // 0 = Sonntag ... 6 = Samstag (JS getDay())
+                const tempWeeklyRecapWeekday = ref(0);
+                const lastWeeklyRecapViewedWeek = ref('');
 
                 // FORMS & SETTINGS
                 const subjectForm = ref({ name: '', isLK: false, color: '#6366f1', examWeight: 50, abiType: null, icon: 'book-open' });
                 const gradeForm = ref({ id: null, points: 10, type: 'Klausur', label: '', date: '', pending: false });
                 const gradeFormSourceTaskId = ref(null);
-                const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyStatus: 'none' });
+                const taskForm = ref({ id: null, title: '', type: 'Hausaufgabe', subjectId: '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyProgress: 0 });
                 const tempReportCardPoints = ref(3);
                 const selectedReportCardKey = ref('11/1'); // key für reportCardGrades Map
                 
@@ -3738,6 +3921,11 @@
                         if (typeof data.examRemindersEnabled === 'boolean') examRemindersEnabled.value = data.examRemindersEnabled;
                         if (typeof data.examReminderDays === 'number') examReminderDays.value = data.examReminderDays;
                         if (typeof data.examReminderTime === 'string') examReminderTime.value = data.examReminderTime;
+                        if (typeof data.weeklyRecapWeekday === 'number') {
+                            weeklyRecapWeekday.value = data.weeklyRecapWeekday;
+                            tempWeeklyRecapWeekday.value = data.weeklyRecapWeekday;
+                        }
+                        if (typeof data.lastWeeklyRecapViewedWeek === 'string') lastWeeklyRecapViewedWeek.value = data.lastWeeklyRecapViewedWeek;
                         abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     }
                     autoSetCurrentHalfYear();
@@ -3819,12 +4007,14 @@
                     startYear.value = tempStartYear.value;
                     currentClass.value = tempCurrentClass.value;
                     gradeSystem.value = tempGradeSystem.value;
+                    weeklyRecapWeekday.value = tempWeeklyRecapWeekday.value;
                     abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), {
                         startYear: startYear.value,
                         displayName: displayName.value,
                         currentClass: currentClass.value,
-                        gradeSystem: gradeSystem.value
+                        gradeSystem: gradeSystem.value,
+                        weeklyRecapWeekday: weeklyRecapWeekday.value
                     }, { merge: true });
                     // Subjects-Listener neu starten wenn Klasse zwischen Unter-/Oberstufe wechselt
                     const crossedBoundary = (prevClass >= 11) !== (currentClass.value >= 11);
@@ -4084,6 +4274,13 @@
                 const refreshIcons = () => nextTick(() => { if (window.lucide) lucide.createIcons(); });
                 const formatNumber = (num) => (num === null || isNaN(num)) ? '-' : num.toFixed(2).replace('.', ',');
                 const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString('de-DE') : '';
+                const progressColor = (p) => {
+                    const val = p || 0;
+                    if (val >= 100) return '#34d399'; // emerald
+                    if (val >= 50) return '#fbbf24'; // amber
+                    if (val > 0) return '#fb923c'; // orange
+                    return '#64748b'; // slate
+                };
                 const isToday = (dateStr) => { const d = new Date(); return dateStr === `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 
                 const handleAuth = async () => {
@@ -4204,6 +4401,18 @@
                     }
                 };
 
+                // ── HEUTE-WIDGET ──
+                const todayOverview = computed(() => {
+                    const now = new Date();
+                    const localStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+                    const dowKeys = ['so','mo','di','mi','do','fr','sa'];
+                    const todayKey = dowKeys[now.getDay()];
+                    const lessonSubjectIds = timetable.value[todayKey] || [];
+                    const lessons = lessonSubjectIds.map(id => subjects.value.find(s => s.id === id)).filter(Boolean);
+                    const tasksToday = enrichedTasks.value.filter(t => t.date === localStr && !t.done);
+                    return { lessons, tasksToday, dateStr: localStr };
+                });
+
                 const enrichedTasks = computed(() => {
                     return tasks.value.map(t => {
                         const subject = subjects.value.find(s => s.id === t.subjectId) || { name: 'Unbekannt', color: '#94a3b8' };
@@ -4232,6 +4441,97 @@
                     const daysUntil = Math.round((taskDate - today) / 86400000);
                     return { ...next, daysUntil };
                 });
+
+                // ── WOCHENRÜCKBLICK ("Story") ──
+                // Liefert Montag & Sonntag der aktuellen Kalenderwoche als YYYY-MM-DD
+                const getCurrentWeekRange = () => {
+                    const now = new Date();
+                    const dow = now.getDay();
+                    const distanceToMonday = dow === 0 ? -6 : 1 - dow;
+                    const monday = new Date(now);
+                    monday.setDate(now.getDate() + distanceToMonday);
+                    monday.setHours(0,0,0,0);
+                    const sunday = new Date(monday);
+                    sunday.setDate(monday.getDate() + 6);
+                    const toStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                    return { monday, sunday, mondayStr: toStr(monday), sundayStr: toStr(sunday) };
+                };
+                // Eindeutiger Schlüssel für die aktuelle ISO-Kalenderwoche, z.B. "2026-W35"
+                const getISOWeekKey = (date) => {
+                    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+                    const dayNum = d.getUTCDay() || 7;
+                    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+                    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+                    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+                    return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+                };
+                const currentWeekKey = computed(() => getISOWeekKey(new Date()));
+                const weeklyRecapAvailable = computed(() => {
+                    if (!user.value) return false;
+                    const isRecapDay = new Date().getDay() === weeklyRecapWeekday.value;
+                    return isRecapDay && lastWeeklyRecapViewedWeek.value !== currentWeekKey.value;
+                });
+                // Alle Statistiken für den Wochenrückblick berechnen
+                const weeklyRecapData = computed(() => {
+                    const { mondayStr, sundayStr } = getCurrentWeekRange();
+                    const inWeek = (dateStr) => dateStr >= mondayStr && dateStr <= sundayStr;
+
+                    const weekTasks = enrichedTasks.value.filter(t => inWeek(t.date));
+                    const tasksDone = weekTasks.filter(t => t.done).length;
+                    const tasksTotal = weekTasks.length;
+
+                    const studyTasks = weekTasks.filter(t => t.type !== 'Hausaufgabe');
+                    const avgProgress = studyTasks.length > 0
+                        ? Math.round(studyTasks.reduce((sum, t) => sum + (t.studyProgress || 0), 0) / studyTasks.length)
+                        : null;
+
+                    const newGrades = subjects.value.flatMap(s => (s.grades || []).map(g => ({ ...g, subjectName: s.name, subjectColor: s.color })))
+                        .filter(g => g.date && inWeek(g.date));
+                    const gradesCount = newGrades.length;
+                    const avgGradePoints = gradesCount > 0
+                        ? (newGrades.reduce((sum, g) => sum + (g.points || 0), 0) / gradesCount)
+                        : null;
+                    const bestGrade = gradesCount > 0
+                        ? newGrades.reduce((best, g) => (g.points > best.points ? g : best), newGrades[0])
+                        : null;
+
+                    return { tasksDone, tasksTotal, avgProgress, gradesCount, avgGradePoints, bestGrade, mondayStr, sundayStr };
+                });
+
+                let weeklyRecapTimer = null;
+                const WEEKLY_RECAP_SLIDE_COUNT = 4;
+                const clearWeeklyRecapTimer = () => { if (weeklyRecapTimer) { clearTimeout(weeklyRecapTimer); weeklyRecapTimer = null; } };
+                const scheduleWeeklyRecapAdvance = () => {
+                    clearWeeklyRecapTimer();
+                    weeklyRecapTimer = setTimeout(() => { nextRecapSlide(); }, 5000);
+                };
+                const openWeeklyRecap = () => {
+                    weeklyRecapSlideIndex.value = 0;
+                    isWeeklyRecapOpen.value = true;
+                    scheduleWeeklyRecapAdvance();
+                    // Als gesehen markieren, sobald geöffnet — der farbige Ring verschwindet direkt
+                    lastWeeklyRecapViewedWeek.value = currentWeekKey.value;
+                    if (user.value) {
+                        setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { lastWeeklyRecapViewedWeek: currentWeekKey.value }, { merge: true }).catch(() => {});
+                    }
+                    refreshIcons();
+                };
+                const closeWeeklyRecap = () => {
+                    clearWeeklyRecapTimer();
+                    isWeeklyRecapOpen.value = false;
+                };
+                const nextRecapSlide = () => {
+                    if (weeklyRecapSlideIndex.value >= WEEKLY_RECAP_SLIDE_COUNT - 1) { closeWeeklyRecap(); return; }
+                    weeklyRecapSlideIndex.value++;
+                    scheduleWeeklyRecapAdvance();
+                    refreshIcons();
+                };
+                const prevRecapSlide = () => {
+                    if (weeklyRecapSlideIndex.value <= 0) return;
+                    weeklyRecapSlideIndex.value--;
+                    scheduleWeeklyRecapAdvance();
+                    refreshIcons();
+                };
 
                 const pastTasks = computed(() => {
                     const today = new Date();
@@ -4321,6 +4621,13 @@
 
                 const selectCalendarDay = (dateStr) => {
                     selectedCalendarDate.value = dateStr;
+                    // Falls der geklickte Tag zu einem anderen Monat gehört (Monatsüberlauf-Tag),
+                    // automatisch dorthin wechseln, damit die Ansicht konsistent bleibt.
+                    const [y, m] = dateStr.split('-').map(Number);
+                    if (m - 1 !== calMonth.value || y !== calYear.value) {
+                        calMonth.value = m - 1;
+                        calYear.value = y;
+                    }
                     refreshIcons();
                 };
 
@@ -4402,16 +4709,25 @@
                 const prevSelectMonth = () => { if(calSelectMonth.value === 0) { calSelectMonth.value = 11; calSelectYear.value--; } else { calSelectMonth.value--; } };
 
                 const openTaskModal = () => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyStatus: 'none', repeat: 'none', repeatUntil: '' };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: new Date().toISOString().split('T')[0], done: false, notes: '', studyProgress: 0, repeat: 'none', repeatUntil: '' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 };
                 const openTaskModalWithDate = (dateStr) => {
-                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false, notes: '', studyStatus: 'none', repeat: 'none', repeatUntil: '' };
+                    taskForm.value = { id: null, title: '', type: 'Hausaufgabe', subjectId: subjects.value[0]?.id || '', date: dateStr, done: false, notes: '', studyProgress: 0, repeat: 'none', repeatUntil: '' };
                     isTaskModalOpen.value = true;
                     refreshIcons();
                 }
-                const openEditTaskModal = (task) => { taskForm.value = { studyStatus: 'none', repeat: 'none', repeatUntil: '', applyToSeries: false, ...task, _originalDate: task.date }; isTaskModalOpen.value = true; refreshIcons(); };
+                const openEditTaskModal = (task) => {
+                    // Migration: alte Aufgaben mit studyStatus statt studyProgress umrechnen
+                    let migratedProgress = task.studyProgress;
+                    if (migratedProgress === undefined) {
+                        migratedProgress = task.studyStatus === 'ready' ? 100 : (task.studyStatus === 'started' ? 50 : 0);
+                    }
+                    taskForm.value = { studyProgress: 0, repeat: 'none', repeatUntil: '', applyToSeries: false, ...task, studyProgress: migratedProgress, _originalDate: task.date };
+                    isTaskModalOpen.value = true;
+                    refreshIcons();
+                };
                 
                 const openEditTaskFromPlanner = (compositeId) => {
                     const taskId = compositeId.replace('task-', '');
@@ -4436,11 +4752,11 @@
                     const formSnapshot = { ...taskForm.value };
                     closeModal('isTaskModalOpen');
                     try {
-                        const taskData = { title: formSnapshot.title, type: formSnapshot.type, subjectId: formSnapshot.subjectId, date: formSnapshot.date, done: formSnapshot.done, notes: formSnapshot.notes || '', studyStatus: formSnapshot.studyStatus || 'none' };
+                        const taskData = { title: formSnapshot.title, type: formSnapshot.type, subjectId: formSnapshot.subjectId, date: formSnapshot.date, done: formSnapshot.done, notes: formSnapshot.notes || '', studyProgress: formSnapshot.studyProgress || 0 };
                         if (formSnapshot.id) {
                             if (formSnapshot.repeatGroupId && formSnapshot.applyToSeries) {
                                 // Auf diese & alle zukünftigen Wiederholungen anwenden (Datum bleibt je Instanz individuell)
-                                const seriesData = { title: taskData.title, type: taskData.type, subjectId: taskData.subjectId, notes: taskData.notes, studyStatus: taskData.studyStatus };
+                                const seriesData = { title: taskData.title, type: taskData.type, subjectId: taskData.subjectId, notes: taskData.notes, studyProgress: taskData.studyProgress };
                                 const originalDate = formSnapshot._originalDate || formSnapshot.date;
                                 const affected = tasks.value.filter(t => t.repeatGroupId === formSnapshot.repeatGroupId && t.date >= originalDate);
                                 await Promise.all(affected.map(t => {
@@ -5259,11 +5575,14 @@
                     currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, selectedSubject, lkBonusActive,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData, goalTargetPoints, goalCategory, goalCalculation,
-                    sortedSubjectsList, subjects, formatNumber, formatDate, isToday, handleAuth, handleLogout,
+                    sortedSubjectsList, subjects, formatNumber, formatDate, progressColor, isToday, handleAuth, handleLogout,
                     openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal, openGradeFromPlannerTask,
                     handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
                     examScores, adjustColor,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, nextExamCountdown, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
+                    todayOverview,
+                    isWeeklyRecapOpen, weeklyRecapSlideIndex, weeklyRecapWeekday, tempWeeklyRecapWeekday, weeklyRecapAvailable, weeklyRecapData,
+                    openWeeklyRecap, closeWeeklyRecap, nextRecapSlide, prevRecapSlide,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
