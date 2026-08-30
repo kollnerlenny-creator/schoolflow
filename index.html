@@ -2223,17 +2223,17 @@
 
         <!-- Aufgabe/Prüfung Modal -->
         <div v-if="isTaskModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col overflow-hidden"
-                 @touchstart="modalDragStart($event, 'isTaskModalOpen')"
-                 @touchmove="modalDragMove($event)"
-                 @touchend="modalDragEnd($event)">
-                <div class="modal-drag-handle md:hidden"></div>
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col overflow-hidden">
+                <div class="modal-drag-handle md:hidden shrink-0"
+                     @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')"
+                     @touchmove.stop="modalDragMove($event)"
+                     @touchend.stop="modalDragEnd($event)"></div>
                 
                 <button @click="closeModal('isTaskModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
 
-                <div class="overflow-y-auto no-scrollbar p-6 sm:p-8 pb-4">
+                <div class="overflow-y-auto no-scrollbar p-6 sm:p-8 pb-4" @touchstart="modalDragStart($event, 'isTaskModalOpen')" @touchmove="modalDragMove($event)" @touchend="modalDragEnd($event)">
                     <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ taskForm.id ? 'Aufgabe bearbeiten' : 'Neue Aufgabe' }}</h2>
                     
                     <div v-if="subjects.length === 0" class="text-center py-8 text-rose-400 bg-rose-500/10 rounded-3xl border border-rose-500/20 font-bold text-sm animate-pulse">
@@ -2251,7 +2251,8 @@
 
                     <div class="bg-black/20 border border-white/5 p-5 rounded-3xl">
                         <label class="text-xs font-bold uppercase text-slate-400 ml-1 block mb-3">Fach auswählen</label>
-                        <div class="grid grid-cols-2 gap-3.5 max-h-48 overflow-y-auto no-scrollbar">
+                        <div class="grid grid-cols-2 gap-3.5 max-h-48 overflow-y-auto no-scrollbar"
+                             @touchstart.stop @touchmove.stop @touchend.stop>
                             <button v-for="s in subjects" :key="s.id" @click="taskForm.subjectId = s.id"
                                     class="p-4 rounded-xl border text-left flex items-center gap-3 transition-colors cursor-pointer"
                                     :class="taskForm.subjectId === s.id ? 'bg-white/10 border-accent' : 'bg-transparent border-white/5'">
@@ -3475,7 +3476,7 @@
                 const swipeRefs = ref({});
                 const swipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
                 const taskSwipeRefs = ref({});
-                const taskSwipeState = ref({ id: null, startX: 0, currentX: 0, isDragging: false });
+                const taskSwipeState = ref({ id: null, startX: 0, startY: 0, currentX: 0, isDragging: false, axis: null });
 
                 // ── MEHRFACHAUSWAHL: lange gedrückt halten auf einer Aufgabe aktiviert den Auswahlmodus ──
                 const taskSelectionMode = ref(false);
@@ -4268,7 +4269,9 @@
                     const prevLastDay = new Date(calYear.value, calMonth.value, 0).getDate();
                     for(let i = startPad - 1; i >= 0; i--) {
                         const d = new Date(calYear.value, calMonth.value - 1, prevLastDay - i);
-                        days.push({ day: prevLastDay - i, isCurrentMonth: false, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` });
+                        const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        days.push({ day: prevLastDay - i, isCurrentMonth: false, date: localStr, tasks: dayTasks });
                     }
 
                     for(let i = 1; i <= lastDay.getDate(); i++) {
@@ -4281,7 +4284,9 @@
                     const remaining = 42 - days.length;
                     for(let i = 1; i <= remaining; i++) {
                         const d = new Date(calYear.value, calMonth.value + 1, i);
-                        days.push({ day: i, isCurrentMonth: false, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` });
+                        const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        days.push({ day: i, isCurrentMonth: false, date: localStr, tasks: dayTasks });
                     }
                     return days;
                 });
@@ -5070,14 +5075,34 @@
 
                 const startTaskSwipe = (e, id) => {
                     if(isTaskModalOpen.value) return;
-                    taskSwipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, currentX: 0, isDragging: true };
+                    const startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                    taskSwipeState.value = { id, startX: e.type.includes('touch') ? e.touches[0].clientX : e.clientX, startY, currentX: 0, isDragging: true, axis: null };
                     const el = taskSwipeRefs.value[id];
                     if (el) { el.classList.add('dragging'); el.style.willChange = 'transform'; }
                 };
                 const moveTaskSwipe = (e) => {
                     if (!taskSwipeState.value.isDragging || !taskSwipeState.value.id) return;
                     const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-                    let diff = currentX - taskSwipeState.value.startX;
+                    const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                    const diffXRaw = currentX - taskSwipeState.value.startX;
+                    const diffYRaw = currentY - (taskSwipeState.value.startY || currentY);
+
+                    // Achsen-Sperre: erst ab einer klaren, überwiegend horizontalen Bewegung wird
+                    // überhaupt gewischt. Bei vertikaler Bewegung (Scrollen der Liste) wird die
+                    // Geste sofort verworfen, damit Scrollen nicht versehentlich Bearbeiten/Löschen auslöst.
+                    if (!taskSwipeState.value.axis) {
+                        if (Math.abs(diffXRaw) < 12 && Math.abs(diffYRaw) < 12) return;
+                        if (Math.abs(diffYRaw) > Math.abs(diffXRaw) * 0.6) {
+                            // Vertikale Geste erkannt -> Swipe abbrechen, normales Scrollen zulassen
+                            const el = taskSwipeRefs.value[taskSwipeState.value.id];
+                            if (el) { el.classList.remove('dragging'); el.style.willChange = ''; }
+                            taskSwipeState.value = { id: null, startX: 0, startY: 0, currentX: 0, isDragging: false, axis: null };
+                            return;
+                        }
+                        taskSwipeState.value.axis = 'x';
+                    }
+
+                    let diff = diffXRaw;
                     if(diff > 100) {
                         const over = diff - 100;
                         diff = 100 + over * 0.25;
@@ -5108,7 +5133,7 @@
                         el.style.transform = 'translateX(0px)';
                         setTimeout(() => { el.style.transition = ''; }, 450);
                     }
-                    taskSwipeState.value = { id: null, startX: 0, currentX: 0, isDragging: false };
+                    taskSwipeState.value = { id: null, startX: 0, startY: 0, currentX: 0, isDragging: false, axis: null };
                 };
 
                 // Chart.js: transparent canvas background by default
