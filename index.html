@@ -1471,14 +1471,14 @@
                                 </div>
                                 
                                 <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item modal-glass border rounded-3xl"
-                                     :class="taskSelectionMode && selectedTaskIds.has(t.id) ? 'border-accent bg-accent-dim' : ''"
-                                     @touchstart.stop="taskSelectionMode ? null : (startTaskSwipe($event, t.id), taskLongPressStart($event, t.id))"
-                                     @touchmove.stop="taskSelectionMode ? null : (moveTaskSwipe($event), taskLongPressMove($event))"
-                                     @touchend.stop="taskSelectionMode ? toggleTaskSelection(t.id) : (endTaskSwipe($event, t), taskLongPressEnd())"
-                                     @mousedown="taskSelectionMode ? null : startTaskSwipe($event, t.id)"
-                                     @mousemove="taskSelectionMode ? null : moveTaskSwipe($event)"
-                                     @mouseup="taskSelectionMode ? toggleTaskSelection(t.id) : endTaskSwipe($event, t)"
-                                     @mouseleave="taskSelectionMode ? null : endTaskSwipe($event, t, true)"
+                                     :class="[taskSelectionMode && selectedTaskIds.has(t.id) ? 'border-accent bg-accent-dim' : '', t.isGoogleEvent ? 'border-[#4285F4]/20' : '']"
+                                     @touchstart.stop="(taskSelectionMode || t.isGoogleEvent) ? null : (startTaskSwipe($event, t.id), taskLongPressStart($event, t.id))"
+                                     @touchmove.stop="(taskSelectionMode || t.isGoogleEvent) ? null : (moveTaskSwipe($event), taskLongPressMove($event))"
+                                     @touchend.stop="taskSelectionMode ? toggleTaskSelection(t.id) : (t.isGoogleEvent ? null : (endTaskSwipe($event, t), taskLongPressEnd()))"
+                                     @mousedown="(taskSelectionMode || t.isGoogleEvent) ? null : startTaskSwipe($event, t.id)"
+                                     @mousemove="(taskSelectionMode || t.isGoogleEvent) ? null : moveTaskSwipe($event)"
+                                     @mouseup="taskSelectionMode ? toggleTaskSelection(t.id) : (t.isGoogleEvent ? null : endTaskSwipe($event, t))"
+                                     @mouseleave="(taskSelectionMode || t.isGoogleEvent) ? null : endTaskSwipe($event, t, true)"
                                      :ref="el => { if(el) taskSwipeRefs[t.id] = el }"
                                      style="touch-action: pan-y;">
                                     
@@ -1488,6 +1488,9 @@
                                                 :class="selectedTaskIds.has(t.id) ? 'bg-accent border-accent' : 'border-slate-500'">
                                             <i v-if="selectedTaskIds.has(t.id)" data-lucide="check" class="w-5 h-5 text-white"></i>
                                         </button>
+                                        <div v-else-if="t.isGoogleEvent" class="shrink-0 w-8.5 h-8.5 rounded-full flex items-center justify-center bg-[#4285F4]/15">
+                                            <i data-lucide="calendar" class="w-4 h-4 text-[#4285F4]"></i>
+                                        </div>
                                         <button v-else @click.stop="toggleTaskDone(t, $event)" 
                                                 class="task-done-btn shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-accent'">
@@ -1511,6 +1514,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <a v-if="t.isGoogleEvent" :href="t.htmlLink" target="_blank" rel="noopener" @click.stop class="shrink-0 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:bg-accent-dim transition-colors cursor-pointer">
+                                        <i data-lucide="external-link" class="w-4.5 h-4.5"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -2629,9 +2635,12 @@
                         <p class="text-xs text-slate-500 leading-normal -mt-1">Zeigt deine Google-Kalender-Termine zusätzlich in SchoolFlow an (nur lesend, keine Änderung an deinem Google Kalender).</p>
                         <div v-if="googleCalendarConnected" class="flex items-center justify-between bg-black/20 border border-white/5 rounded-2xl p-3.5">
                             <span class="flex items-center gap-2 text-xs font-bold text-emerald-400">
-                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Verbunden
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Verbunden — {{ googleEvents.length }} Termine geladen
                             </span>
-                            <button @click="disconnectGoogleCalendar" class="text-[11px] font-black uppercase text-rose-400 hover:underline cursor-pointer">Trennen</button>
+                            <div class="flex items-center gap-3">
+                                <button @click="fetchGoogleCalendarEvents" :disabled="googleCalendarSyncing" class="text-[11px] font-black uppercase text-accent hover:underline cursor-pointer disabled:opacity-50">{{ googleCalendarSyncing ? '...' : 'Aktualisieren' }}</button>
+                                <button @click="disconnectGoogleCalendar" class="text-[11px] font-black uppercase text-rose-400 hover:underline cursor-pointer">Trennen</button>
+                            </div>
                         </div>
                         <button v-else @click="connectGoogleCalendar" :disabled="googleCalendarSyncing" class="w-full bg-white text-slate-900 font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60">
                             <i data-lucide="loader-2" v-if="googleCalendarSyncing" class="w-4 h-4 animate-spin"></i>
@@ -4478,13 +4487,15 @@
                 const upcomingTasks = computed(() => {
                     const today = new Date();
                     today.setHours(0,0,0,0);
-                    return enrichedTasks.value.filter(t => {
+                    const ownUpcoming = enrichedTasks.value.filter(t => {
                         const isFuture = new Date(t.date) >= today;
                         const isNotDone = !t.done;
                         const isAnimating = animatingDoneTasks.value.has(t.id);
                         const isLeaving = leavingTasks.value.has(t.id);
                         return isFuture && (isNotDone || isAnimating || isLeaving);
-                    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+                    });
+                    const googleUpcoming = googleEvents.value.filter(t => new Date(t.date) >= today);
+                    return [...ownUpcoming, ...googleUpcoming].sort((a, b) => new Date(a.date) - new Date(b.date));
                 });
 
                 // Countdown zur nächsten anstehenden Klausur/Test fürs Dashboard
@@ -4565,14 +4576,24 @@
                         const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&timeMin=${timeMin.toISOString()}&timeMax=${timeMax.toISOString()}&maxResults=250`;
                         const res = await fetch(url, { headers: { Authorization: `Bearer ${googleAccessToken}` } });
                         if (res.status === 401) {
-                            // Token abgelaufen — Verbindung zurücksetzen, Nutzer muss sich neu verbinden
                             googleCalendarConnected.value = false;
                             googleAccessToken = null;
                             googleCalendarError.value = 'Verbindung ist abgelaufen. Bitte erneut verbinden.';
                             return;
                         }
-                        if (!res.ok) throw new Error('Fehler beim Laden der Google-Kalender-Termine');
+                        if (res.status === 403) {
+                            const body = await res.json().catch(() => null);
+                            console.error('Google Kalender 403:', body);
+                            googleCalendarError.value = 'Zugriff verweigert (403). Prüfe in der Google Cloud Console, ob der Bereich "calendar.readonly" freigegeben ist, und verbinde dich neu.';
+                            return;
+                        }
+                        if (!res.ok) {
+                            const body = await res.text().catch(() => '');
+                            console.error('Google Kalender Fehler', res.status, body);
+                            throw new Error('Fehler beim Laden der Google-Kalender-Termine (Status ' + res.status + ')');
+                        }
                         const data = await res.json();
+                        console.log('Google Kalender: Rohdaten erhalten, Anzahl Items:', (data.items || []).length, data.items);
                         googleEvents.value = (data.items || [])
                             .filter(ev => ev.status !== 'cancelled' && (ev.start?.date || ev.start?.dateTime))
                             .map(ev => ({
@@ -4587,10 +4608,11 @@
                                 htmlLink: ev.htmlLink,
                                 subject: { name: 'Google Kalender', color: '#4285F4' }
                             }));
+                        console.log('Google Kalender: nach Filter übernommene Termine:', googleEvents.value.length, googleEvents.value);
                         googleCalendarError.value = '';
                     } catch (err) {
                         console.error('Google Kalender Fehler:', err);
-                        googleCalendarError.value = 'Termine konnten nicht geladen werden.';
+                        googleCalendarError.value = 'Termine konnten nicht geladen werden: ' + err.message;
                     } finally {
                         googleCalendarSyncing.value = false;
                     }
@@ -5800,7 +5822,7 @@
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, nextExamCountdown, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     todayOverview,
                     isWeeklyRecapOpen, weeklyRecapSlideIndex, weeklyRecapWeekday, tempWeeklyRecapWeekday, weeklyRecapAvailable, weeklyRecapWeekReady, weeklyRecapSeen, weeklyRecapData,
-                    googleCalendarConnected, googleCalendarSyncing, googleCalendarError, connectGoogleCalendar, disconnectGoogleCalendar,
+                    googleCalendarConnected, googleCalendarSyncing, googleCalendarError, connectGoogleCalendar, disconnectGoogleCalendar, googleEvents, fetchGoogleCalendarEvents,
                     openWeeklyRecap, closeWeeklyRecap, nextRecapSlide, prevRecapSlide, recapProgressPercent, recapDragStart, recapDragMove, recapDragEnd,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
