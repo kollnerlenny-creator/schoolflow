@@ -13,6 +13,8 @@
     <title>SchoolFlow - Gymnasiale Oberstufe</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Identity Services (für Google Kalender Anbindung) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- Vue.js 3 Production Build -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Lucide Icons CDN -->
@@ -1691,13 +1693,16 @@
                             </div>
 
                             <div v-else class="space-y-4">
-                                <div v-for="t in selectedDayTasks" :key="t.id" class="flex items-center justify-between p-4 bg-black/30 border border-white/5 rounded-3xl gap-2.5">
+                                <div v-for="t in selectedDayTasks" :key="t.id" class="flex items-center justify-between p-4 bg-black/30 border border-white/5 rounded-3xl gap-2.5" :class="t.isGoogleEvent ? 'border-[#4285F4]/20' : ''">
                                     <div class="flex items-center gap-3.5 min-w-0">
-                                        <button @click="toggleTaskDone(t, $event)" 
+                                        <button v-if="!t.isGoogleEvent" @click="toggleTaskDone(t, $event)" 
                                                 class="task-done-btn shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-500 hover:border-accent'">
                                             <i v-if="t.done" data-lucide="check" class="w-4 h-4 text-white"></i>
                                         </button>
+                                        <div v-else class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center bg-[#4285F4]/15">
+                                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#4285F4]"></i>
+                                        </div>
                                         <div class="min-w-0">
                                             <div class="flex items-center gap-2 min-w-0">
                                                 <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
@@ -1710,9 +1715,12 @@
                                         <span class="text-[9px] sm:text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-accent-dim border border-accent-border text-accent-light">
                                             {{ t.type }}
                                         </span>
-                                        <button @click="openEditTaskModal(t)" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:bg-accent-dim transition-colors cursor-pointer">
+                                        <button v-if="!t.isGoogleEvent" @click="openEditTaskModal(t)" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:bg-accent-dim transition-colors cursor-pointer">
                                             <i data-lucide="edit-2" class="w-5 h-5"></i>
                                         </button>
+                                        <a v-else :href="t.htmlLink" target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 active:bg-accent-dim transition-colors cursor-pointer">
+                                            <i data-lucide="external-link" class="w-4.5 h-4.5"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -2433,12 +2441,15 @@
                     'recap-slide-bg-1': weeklyRecapSlideIndex === 1,
                     'recap-slide-bg-2': weeklyRecapSlideIndex === 2,
                     'recap-slide-bg-3': weeklyRecapSlideIndex === 3
-                 }">
+                 }"
+                 @touchstart="recapDragStart($event)"
+                 @touchmove="recapDragMove($event)"
+                 @touchend="recapDragEnd($event)">
                 
                 <!-- Fortschritts-Segmente oben -->
                 <div class="absolute top-4 left-4 right-4 flex gap-1.5 z-20">
                     <div v-for="n in 4" :key="n" class="flex-1 h-1 rounded-full bg-white/25 overflow-hidden">
-                        <div class="h-full bg-white rounded-full transition-all" :style="{ width: (n - 1) < weeklyRecapSlideIndex ? '100%' : (n - 1 === weeklyRecapSlideIndex ? '100%' : '0%') }"></div>
+                        <div class="h-full bg-white rounded-full" :style="{ width: (n - 1) < weeklyRecapSlideIndex ? '100%' : (n - 1 === weeklyRecapSlideIndex ? recapProgressPercent + '%' : '0%') }"></div>
                     </div>
                 </div>
 
@@ -2607,6 +2618,26 @@
                         <button @click="requestPushPermission" class="w-full mt-1 bg-accent-dim2 border border-accent-border text-accent py-3.5 rounded-full font-black uppercase text-xs cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-accent-dim2">
                             <i data-lucide="bell-ring" class="w-4 h-4"></i> Benachrichtigungen aktivieren
                         </button>
+                    </div>
+
+                    <!-- NEU: Google Kalender -->
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3 settings-section">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="calendar" class="w-5 h-5 text-[#4285F4]"></i>
+                            <label class="text-xs font-bold uppercase text-slate-400">Google Kalender</label>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-normal -mt-1">Zeigt deine Google-Kalender-Termine zusätzlich in SchoolFlow an (nur lesend, keine Änderung an deinem Google Kalender).</p>
+                        <div v-if="googleCalendarConnected" class="flex items-center justify-between bg-black/20 border border-white/5 rounded-2xl p-3.5">
+                            <span class="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Verbunden
+                            </span>
+                            <button @click="disconnectGoogleCalendar" class="text-[11px] font-black uppercase text-rose-400 hover:underline cursor-pointer">Trennen</button>
+                        </div>
+                        <button v-else @click="connectGoogleCalendar" :disabled="googleCalendarSyncing" class="w-full bg-white text-slate-900 font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60">
+                            <i data-lucide="loader-2" v-if="googleCalendarSyncing" class="w-4 h-4 animate-spin"></i>
+                            {{ googleCalendarSyncing ? 'Verbinde...' : 'Mit Google Kalender verbinden' }}
+                        </button>
+                        <p v-if="googleCalendarError" class="text-[11px] text-rose-400 font-semibold">{{ googleCalendarError }}</p>
                     </div>
 
                     <!-- NEU: Wochenrückblick -->
@@ -3018,6 +3049,10 @@
         // "Zertifikat für Web-Push-Verfahren generieren" → den langen Schlüssel hier einfügen
         const FCM_VAPID_KEY = "BBpnnwrOlFqNwFHXupcMAPcMvflEUhms6Ui3XOD3MO5SYXsT2_WhyCwG3xPctwiZN_D4_lEzJF4ecn6oxsHwVRI";
 
+        // Google Calendar Anbindung (read-only) — OAuth-Client-ID aus Google Cloud Console
+        const GOOGLE_CLIENT_ID = "968757647135-vbulfc2qhguc6b83kv5arkpun544fp18.apps.googleusercontent.com";
+        const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -3160,7 +3195,14 @@
                 const isInstallGuideModalOpen = ref(false);
                 const isWeeklyRecapOpen = ref(false);
                 const weeklyRecapSlideIndex = ref(0);
+                const recapProgressPercent = ref(0);
                 const weeklyRecapWeekday = ref(0); // 0 = Sonntag ... 6 = Samstag (JS getDay())
+                const googleCalendarConnected = ref(false);
+                const googleCalendarSyncing = ref(false);
+                const googleCalendarError = ref('');
+                const googleEvents = ref([]);
+                let googleTokenClient = null;
+                let googleAccessToken = null;
                 const tempWeeklyRecapWeekday = ref(0);
                 const lastWeeklyRecapViewedWeek = ref('');
 
@@ -3935,6 +3977,10 @@
                             tempWeeklyRecapWeekday.value = data.weeklyRecapWeekday;
                         }
                         if (typeof data.lastWeeklyRecapViewedWeek === 'string') lastWeeklyRecapViewedWeek.value = data.lastWeeklyRecapViewedWeek;
+                        if (typeof data.googleCalendarConnected === 'boolean' && data.googleCalendarConnected) {
+                            // War schon einmal verbunden -> im Hintergrund ohne Popup versuchen neu zu verbinden
+                            setTimeout(() => silentlyReconnectGoogleCalendar(), 500);
+                        }
                         abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     }
                     autoSetCurrentHalfYear();
@@ -4418,7 +4464,7 @@
                     const todayKey = dowKeys[now.getDay()];
                     const lessonSubjectIds = timetable.value[todayKey] || [];
                     const lessons = lessonSubjectIds.map(id => subjects.value.find(s => s.id === id)).filter(Boolean);
-                    const tasksToday = enrichedTasks.value.filter(t => t.date === localStr && !t.done);
+                    const tasksToday = [...enrichedTasks.value.filter(t => t.date === localStr && !t.done), ...googleEvents.value.filter(t => t.date === localStr)];
                     return { lessons, tasksToday, dateStr: localStr };
                 });
 
@@ -4451,7 +4497,106 @@
                     return { ...next, daysUntil };
                 });
 
-                // ── WOCHENRÜCKBLICK ("Story") ──
+                // ── GOOGLE KALENDER ANBINDUNG (read-only) ──
+                const initGoogleTokenClient = () => {
+                    if (googleTokenClient || typeof google === 'undefined' || !google.accounts) return;
+                    googleTokenClient = google.accounts.oauth2.initTokenClient({
+                        client_id: GOOGLE_CLIENT_ID,
+                        scope: GOOGLE_CALENDAR_SCOPE,
+                        callback: (response) => {
+                            googleCalendarSyncing.value = false;
+                            if (response.error) {
+                                googleCalendarError.value = 'Verbindung wurde nicht erlaubt.';
+                                return;
+                            }
+                            googleAccessToken = response.access_token;
+                            googleCalendarConnected.value = true;
+                            googleCalendarError.value = '';
+                            if (user.value) {
+                                setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleCalendarConnected: true }, { merge: true }).catch(() => {});
+                            }
+                            fetchGoogleCalendarEvents();
+                        }
+                    });
+                };
+                const connectGoogleCalendar = () => {
+                    googleCalendarError.value = '';
+                    initGoogleTokenClient();
+                    if (!googleTokenClient) {
+                        // GIS-Skript lädt evtl. noch — kurz erneut versuchen
+                        setTimeout(() => {
+                            initGoogleTokenClient();
+                            if (!googleTokenClient) { googleCalendarError.value = 'Google-Login konnte nicht geladen werden. Bitte Seite neu laden.'; return; }
+                            googleCalendarSyncing.value = true;
+                            googleTokenClient.requestAccessToken({ prompt: 'consent' });
+                        }, 800);
+                        return;
+                    }
+                    googleCalendarSyncing.value = true;
+                    googleTokenClient.requestAccessToken({ prompt: 'consent' });
+                };
+                // Versucht, ohne erneuten Login-Popup einen Token zu bekommen (z.B. beim App-Start,
+                // wenn schon einmal verbunden wurde). Zeigt keine Fehlermeldung, wenn es nicht klappt.
+                const silentlyReconnectGoogleCalendar = () => {
+                    initGoogleTokenClient();
+                    if (!googleTokenClient) return;
+                    googleCalendarSyncing.value = true;
+                    googleTokenClient.requestAccessToken({ prompt: '' });
+                };
+                const disconnectGoogleCalendar = async () => {
+                    if (googleAccessToken && typeof google !== 'undefined' && google.accounts) {
+                        google.accounts.oauth2.revoke(googleAccessToken, () => {});
+                    }
+                    googleAccessToken = null;
+                    googleCalendarConnected.value = false;
+                    googleEvents.value = [];
+                    if (user.value) {
+                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleCalendarConnected: false }, { merge: true }).catch(() => {});
+                    }
+                };
+                const fetchGoogleCalendarEvents = async () => {
+                    if (!googleAccessToken) return;
+                    googleCalendarSyncing.value = true;
+                    try {
+                        const timeMin = new Date();
+                        timeMin.setDate(timeMin.getDate() - 30);
+                        const timeMax = new Date();
+                        timeMax.setDate(timeMax.getDate() + 120);
+                        const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&timeMin=${timeMin.toISOString()}&timeMax=${timeMax.toISOString()}&maxResults=250`;
+                        const res = await fetch(url, { headers: { Authorization: `Bearer ${googleAccessToken}` } });
+                        if (res.status === 401) {
+                            // Token abgelaufen — Verbindung zurücksetzen, Nutzer muss sich neu verbinden
+                            googleCalendarConnected.value = false;
+                            googleAccessToken = null;
+                            googleCalendarError.value = 'Verbindung ist abgelaufen. Bitte erneut verbinden.';
+                            return;
+                        }
+                        if (!res.ok) throw new Error('Fehler beim Laden der Google-Kalender-Termine');
+                        const data = await res.json();
+                        googleEvents.value = (data.items || [])
+                            .filter(ev => ev.status !== 'cancelled' && (ev.start?.date || ev.start?.dateTime))
+                            .map(ev => ({
+                                id: 'google-' + ev.id,
+                                title: ev.summary || '(Ohne Titel)',
+                                date: ev.start.date || ev.start.dateTime.split('T')[0],
+                                type: 'Google Kalender',
+                                notes: ev.description || '',
+                                done: false,
+                                studyProgress: 0,
+                                isGoogleEvent: true,
+                                htmlLink: ev.htmlLink,
+                                subject: { name: 'Google Kalender', color: '#4285F4' }
+                            }));
+                        googleCalendarError.value = '';
+                    } catch (err) {
+                        console.error('Google Kalender Fehler:', err);
+                        googleCalendarError.value = 'Termine konnten nicht geladen werden.';
+                    } finally {
+                        googleCalendarSyncing.value = false;
+                    }
+                };
+
+
                 // Liefert Montag & Sonntag der aktuellen Kalenderwoche als YYYY-MM-DD
                 const getCurrentWeekRange = () => {
                     const now = new Date();
@@ -4514,11 +4659,29 @@
                 });
 
                 let weeklyRecapTimer = null;
+                let recapAnimFrame = null;
                 const WEEKLY_RECAP_SLIDE_COUNT = 4;
-                const clearWeeklyRecapTimer = () => { if (weeklyRecapTimer) { clearTimeout(weeklyRecapTimer); weeklyRecapTimer = null; } };
+                const clearWeeklyRecapTimer = () => {
+                    if (weeklyRecapTimer) { clearTimeout(weeklyRecapTimer); weeklyRecapTimer = null; }
+                    if (recapAnimFrame) { cancelAnimationFrame(recapAnimFrame); recapAnimFrame = null; }
+                };
+                // Animiert den Fortschrittsbalken des aktuellen Slides über die volle Anzeigedauer (5s)
+                // und wechselt danach automatisch zum nächsten Slide — der Balken läuft also sichtbar mit.
                 const scheduleWeeklyRecapAdvance = () => {
                     clearWeeklyRecapTimer();
-                    weeklyRecapTimer = setTimeout(() => { nextRecapSlide(); }, 5000);
+                    recapProgressPercent.value = 0;
+                    const duration = 5000;
+                    const start = performance.now();
+                    const step = (now) => {
+                        const elapsed = now - start;
+                        recapProgressPercent.value = Math.min(100, (elapsed / duration) * 100);
+                        if (elapsed < duration) {
+                            recapAnimFrame = requestAnimationFrame(step);
+                        } else {
+                            nextRecapSlide();
+                        }
+                    };
+                    recapAnimFrame = requestAnimationFrame(step);
                 };
                 const openWeeklyRecap = () => {
                     weeklyRecapSlideIndex.value = 0;
@@ -4546,6 +4709,44 @@
                     weeklyRecapSlideIndex.value--;
                     scheduleWeeklyRecapAdvance();
                     refreshIcons();
+                };
+
+                // Nach-unten-Wischen zum Schließen der Story
+                const recapDrag = ref({ active: false, startY: 0, currentY: 0, el: null });
+                const recapDragStart = (e) => {
+                    const touch = e.touches[0];
+                    recapDrag.value = { active: true, startY: touch.clientY, currentY: 0, el: e.currentTarget };
+                    clearWeeklyRecapTimer(); // Auto-Advance pausieren, solange gezogen wird
+                    e.currentTarget.style.transition = 'none';
+                };
+                const recapDragMove = (e) => {
+                    if (!recapDrag.value.active) return;
+                    const touch = e.touches[0];
+                    const diff = touch.clientY - recapDrag.value.startY;
+                    if (diff <= 0) return; // nur nach unten ziehen
+                    recapDrag.value.currentY = diff;
+                    const el = recapDrag.value.el;
+                    if (el) {
+                        el.style.transform = `translateY(${diff}px) scale(${Math.max(0.9, 1 - diff / 1000)})`;
+                        el.style.opacity = String(Math.max(0.4, 1 - diff / 400));
+                    }
+                };
+                const recapDragEnd = () => {
+                    if (!recapDrag.value.active) return;
+                    const { currentY, el } = recapDrag.value;
+                    recapDrag.value.active = false;
+                    if (currentY > 120) {
+                        closeWeeklyRecap();
+                        if (el) { el.style.cssText = ''; }
+                        return;
+                    }
+                    if (el) {
+                        el.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease';
+                        el.style.transform = 'translateY(0px) scale(1)';
+                        el.style.opacity = '1';
+                        setTimeout(() => { el.style.cssText = ''; }, 320);
+                    }
+                    scheduleWeeklyRecapAdvance(); // Auto-Advance fortsetzen
                 };
 
                 const pastTasks = computed(() => {
@@ -4585,14 +4786,14 @@
                     for(let i = startPad - 1; i >= 0; i--) {
                         const d = new Date(calYear.value, calMonth.value - 1, prevLastDay - i);
                         const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        const dayTasks = [...enrichedTasks.value.filter(t => t.date === localStr), ...googleEvents.value.filter(t => t.date === localStr)];
                         days.push({ day: prevLastDay - i, isCurrentMonth: false, date: localStr, tasks: dayTasks });
                     }
 
                     for(let i = 1; i <= lastDay.getDate(); i++) {
                         const d = new Date(calYear.value, calMonth.value, i);
                         const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        const dayTasks = [...enrichedTasks.value.filter(t => t.date === localStr), ...googleEvents.value.filter(t => t.date === localStr)];
                         days.push({ day: i, isCurrentMonth: true, date: localStr, tasks: dayTasks });
                     }
 
@@ -4600,7 +4801,7 @@
                     for(let i = 1; i <= remaining; i++) {
                         const d = new Date(calYear.value, calMonth.value + 1, i);
                         const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        const dayTasks = [...enrichedTasks.value.filter(t => t.date === localStr), ...googleEvents.value.filter(t => t.date === localStr)];
                         days.push({ day: i, isCurrentMonth: false, date: localStr, tasks: dayTasks });
                     }
                     return days;
@@ -4620,7 +4821,7 @@
                         const nextD = new Date(monday);
                         nextD.setDate(monday.getDate() + i);
                         const localStr = `${nextD.getFullYear()}-${String(nextD.getMonth()+1).padStart(2,'0')}-${String(nextD.getDate()).padStart(2,'0')}`;
-                        const dayTasks = enrichedTasks.value.filter(t => t.date === localStr);
+                        const dayTasks = [...enrichedTasks.value.filter(t => t.date === localStr), ...googleEvents.value.filter(t => t.date === localStr)];
                         days.push({
                             day: nextD.getDate(),
                             date: localStr,
@@ -4631,7 +4832,9 @@
                 });
 
                 const selectedDayTasks = computed(() => {
-                    return enrichedTasks.value.filter(t => t.date === selectedCalendarDate.value);
+                    const own = enrichedTasks.value.filter(t => t.date === selectedCalendarDate.value);
+                    const google = googleEvents.value.filter(t => t.date === selectedCalendarDate.value);
+                    return [...own, ...google];
                 });
 
                 const selectCalendarDay = (dateStr) => {
@@ -5597,7 +5800,8 @@
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, nextExamCountdown, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     todayOverview,
                     isWeeklyRecapOpen, weeklyRecapSlideIndex, weeklyRecapWeekday, tempWeeklyRecapWeekday, weeklyRecapAvailable, weeklyRecapWeekReady, weeklyRecapSeen, weeklyRecapData,
-                    openWeeklyRecap, closeWeeklyRecap, nextRecapSlide, prevRecapSlide,
+                    googleCalendarConnected, googleCalendarSyncing, googleCalendarError, connectGoogleCalendar, disconnectGoogleCalendar,
+                    openWeeklyRecap, closeWeeklyRecap, nextRecapSlide, prevRecapSlide, recapProgressPercent, recapDragStart, recapDragMove, recapDragEnd,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
                     isDatePickerOpen, datepickerDays, calSelectMonth, calSelectYear, openDatePicker, selectDate, isSelectedDate, nextSelectMonth, prevSelectMonth,
