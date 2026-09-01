@@ -4509,12 +4509,14 @@
                 });
 
                 // ── GOOGLE KALENDER ANBINDUNG (read-only) ──
+                let googleConnectTimeout = null;
                 const initGoogleTokenClient = () => {
                     if (googleTokenClient || typeof google === 'undefined' || !google.accounts) return;
                     googleTokenClient = google.accounts.oauth2.initTokenClient({
                         client_id: GOOGLE_CLIENT_ID,
                         scope: GOOGLE_CALENDAR_SCOPE,
                         callback: (response) => {
+                            if (googleConnectTimeout) { clearTimeout(googleConnectTimeout); googleConnectTimeout = null; }
                             googleCalendarSyncing.value = false;
                             if (response.error) {
                                 googleCalendarError.value = 'Verbindung wurde nicht erlaubt.';
@@ -4527,6 +4529,20 @@
                                 setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleCalendarConnected: true }, { merge: true }).catch(() => {});
                             }
                             fetchGoogleCalendarEvents();
+                        },
+                        error_callback: (err) => {
+                            // Wird ausgelöst, wenn z.B. das Popup blockiert wurde oder Google die
+                            // Anmeldung verweigert (häufig in eingebetteten Browsern/Vorschau-Fenstern)
+                            if (googleConnectTimeout) { clearTimeout(googleConnectTimeout); googleConnectTimeout = null; }
+                            googleCalendarSyncing.value = false;
+                            console.error('Google OAuth Fehler:', err);
+                            if (err && err.type === 'popup_failed_to_open') {
+                                googleCalendarError.value = 'Das Google-Login-Fenster wurde blockiert. Bitte Pop-ups für diese Seite erlauben und erneut versuchen.';
+                            } else if (err && err.type === 'popup_closed') {
+                                googleCalendarError.value = 'Anmeldefenster wurde geschlossen, bevor der Zugriff bestätigt wurde.';
+                            } else {
+                                googleCalendarError.value = 'Google-Login ist fehlgeschlagen. Falls du in einer App-internen Vorschau bist: öffne die Seite in einem normalen Browser-Tab und versuche es erneut.';
+                            }
                         }
                     });
                 };
@@ -4540,11 +4556,25 @@
                             if (!googleTokenClient) { googleCalendarError.value = 'Google-Login konnte nicht geladen werden. Bitte Seite neu laden.'; return; }
                             googleCalendarSyncing.value = true;
                             googleTokenClient.requestAccessToken({ prompt: 'consent' });
+                            armGoogleConnectTimeout();
                         }, 800);
                         return;
                     }
                     googleCalendarSyncing.value = true;
                     googleTokenClient.requestAccessToken({ prompt: 'consent' });
+                    armGoogleConnectTimeout();
+                };
+                // Sicherheitsnetz: falls Google nach 20s weder Erfolg noch Fehler meldet
+                // (z.B. weil das Popup in einer eingebetteten Ansicht steckenbleibt), Zustand zurücksetzen
+                // statt für immer bei "Verbinde..." hängen zu bleiben.
+                const armGoogleConnectTimeout = () => {
+                    if (googleConnectTimeout) clearTimeout(googleConnectTimeout);
+                    googleConnectTimeout = setTimeout(() => {
+                        if (googleCalendarSyncing.value && !googleCalendarConnected.value) {
+                            googleCalendarSyncing.value = false;
+                            googleCalendarError.value = 'Zeitüberschreitung. Falls du diese Seite in einer eingebetteten Vorschau (z.B. Vercel-Vorschau, In-App-Browser) geöffnet hast: bitte in einem normalen Browser-Tab öffnen und erneut versuchen.';
+                        }
+                    }, 20000);
                 };
                 // Versucht, ohne erneuten Login-Popup einen Token zu bekommen (z.B. beim App-Start,
                 // wenn schon einmal verbunden wurde). Zeigt keine Fehlermeldung, wenn es nicht klappt.
@@ -4553,6 +4583,8 @@
                     if (!googleTokenClient) return;
                     googleCalendarSyncing.value = true;
                     googleTokenClient.requestAccessToken({ prompt: '' });
+                    if (googleConnectTimeout) clearTimeout(googleConnectTimeout);
+                    googleConnectTimeout = setTimeout(() => { googleCalendarSyncing.value = false; }, 8000);
                 };
                 const disconnectGoogleCalendar = async () => {
                     if (googleAccessToken && typeof google !== 'undefined' && google.accounts) {
