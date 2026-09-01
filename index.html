@@ -15,6 +15,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Google Identity Services (für Google Kalender Anbindung) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- jsPDF (für PDF-Export von Notenspiegel/Statistiken) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <!-- Vue.js 3 Production Build -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Lucide Icons CDN -->
@@ -2516,6 +2519,48 @@
             </div>
         </div>
 
+        <!-- PDF-EXPORT MODAL -->
+        <div v-if="isPdfExportModalOpen" class="fixed inset-0 z-[110] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[85vh] flex flex-col overflow-hidden">
+                <div class="modal-drag-handle md:hidden shrink-0" @click="isPdfExportModalOpen = false"></div>
+                <button @click="isPdfExportModalOpen = false" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+
+                <div class="overflow-y-auto no-scrollbar p-6 sm:p-8 pb-4">
+                    <h2 class="text-2xl font-black text-white mb-2 pr-10">PDF exportieren</h2>
+                    <p class="text-xs text-slate-500 mb-6">Wähle, welche Halbjahre im Notenspiegel enthalten sein sollen. Statistiken werden immer mit exportiert.</p>
+
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-bold uppercase text-slate-500">Halbjahre</span>
+                        <button @click="pdfExportSelectedHalfYears = pdfExportSelectedHalfYears.length === allAvailableHalfYears.length ? [] : [...allAvailableHalfYears]" class="text-[11px] font-black uppercase text-accent hover:underline cursor-pointer">
+                            {{ pdfExportSelectedHalfYears.length === allAvailableHalfYears.length ? 'Keine' : 'Alle' }} auswählen
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div v-for="hy in allAvailableHalfYears" :key="hy" @click="togglePdfHalfYear(hy)"
+                             class="flex items-center justify-between gap-3 bg-black/20 border border-white/5 rounded-2xl p-3.5 cursor-pointer">
+                            <span class="text-sm font-bold text-white">{{ hy }}</span>
+                            <div class="w-11 h-6 rounded-full relative transition-colors shrink-0" :class="pdfExportSelectedHalfYears.includes(hy) ? 'toggle-accent-on' : 'bg-white/10'">
+                                <div class="absolute top-1 w-4 h-4 rounded-full bg-white transition-all" :class="pdfExportSelectedHalfYears.includes(hy) ? 'left-6' : 'left-1'"></div>
+                            </div>
+                        </div>
+                        <p v-if="allAvailableHalfYears.length === 0" class="text-center text-xs text-slate-500 py-6">Noch keine Halbjahre mit Noten vorhanden.</p>
+                    </div>
+                </div>
+
+                <div class="shrink-0 p-6 sm:p-8 pt-4 border-t border-white/5">
+                    <button @click="generatePdfExport" :disabled="pdfExportSelectedHalfYears.length === 0 || pdfExportGenerating"
+                            class="w-full btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-50">
+                        <i data-lucide="loader-2" v-if="pdfExportGenerating" class="w-5 h-5 animate-spin"></i>
+                        <i data-lucide="file-down" v-else class="w-5 h-5"></i>
+                        {{ pdfExportGenerating ? 'Wird erstellt...' : 'PDF erstellen' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- APP-EINSTELLUNGEN MODAL -->
         <div v-if="isAppSettingsModalOpen" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
             <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12 max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar"
@@ -2625,6 +2670,18 @@
                         </div>
                         <button @click="requestPushPermission" class="w-full mt-1 bg-accent-dim2 border border-accent-border text-accent py-3.5 rounded-full font-black uppercase text-xs cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-accent-dim2">
                             <i data-lucide="bell-ring" class="w-4 h-4"></i> Benachrichtigungen aktivieren
+                        </button>
+                    </div>
+
+                    <!-- NEU: PDF-Export -->
+                    <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-3 settings-section">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="file-down" class="w-5 h-5 text-accent"></i>
+                            <label class="text-xs font-bold uppercase text-slate-400">PDF-Export</label>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-normal -mt-1">Notenspiegel & Statistiken als PDF exportieren — du wählst, welche Halbjahre enthalten sein sollen.</p>
+                        <button @click="openPdfExportModal" class="w-full bg-white/10 border border-white/10 text-white font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center gap-2 cursor-pointer">
+                            <i data-lucide="file-down" class="w-4 h-4"></i> PDF exportieren
                         </button>
                     </div>
 
@@ -3229,6 +3286,9 @@
                 const googleEvents = ref([]);
                 const googleCalendarList = ref([]); // Liste aller verfügbaren Google-Kalender
                 const googleSelectedCalendarIds = ref([]); // Welche davon synchronisiert werden sollen
+                const isPdfExportModalOpen = ref(false);
+                const pdfExportSelectedHalfYears = ref([]);
+                const pdfExportGenerating = ref(false);
                 let googleTokenClient = null;
                 let googleAccessToken = null;
                 const tempWeeklyRecapWeekday = ref(0);
@@ -5531,6 +5591,210 @@
                     return { semesterSubjects, avgPoints: sumW ? sump / sumW : 0, avgGrade: sumW ? pointsToGrade(sump/sumW) : null, pointsDistribution };
                 });
 
+                // Wie processedData, aber für ein beliebiges Halbjahr statt nur das aktuell ausgewählte —
+                // wird für den PDF-Export gebraucht, um auch vergangene Halbjahre auswerten zu können.
+                const computeSemesterDataFor = (halfYear) => {
+                    const [cls, hj] = halfYear.split('/').map(Number);
+                    let relevantSemesters = [halfYear];
+                    if (cls <= 10 && hj === 2) relevantSemesters = [`${cls}/1`, `${cls}/2`];
+
+                    const semesterSubjects = subjects.value.map(s => {
+                        const allGrades = s.grades || [];
+                        const grades = allGrades.filter(g => relevantSemesters.includes(g.semester) && !g.pending);
+                        const exams = grades.filter(g => g.type === 'Klausur');
+                        const others = grades.filter(g => g.type !== 'Klausur');
+                        const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
+                        const avgE = exams.length ? exams.reduce((a, b) => a + b.points, 0) / exams.length : null;
+                        const avgO = others.length ? others.reduce((a, b) => a + b.points, 0) / others.length : null;
+                        let final = null;
+                        if (avgE !== null && avgO !== null) final = (avgE * wE) + (avgO * wO);
+                        else if (avgE !== null) final = avgE;
+                        else if (avgO !== null) final = avgO;
+                        const rcg = s.reportCardGrades?.[halfYear] ?? null;
+                        const weight = (s.isLK && lkBonusActive.value) ? 2 : 1;
+                        return { ...s, semesterGrades: grades, avgE, avgO, finalPoints: final, reportCardGrade: rcg, weight };
+                    }).filter(s => s.semesterGrades.length > 0 || s.reportCardGrade !== null);
+
+                    const active = semesterSubjects.filter(s => s.finalPoints !== null || s.reportCardGrade !== null);
+                    const sump = active.reduce((a, b) => a + ((b.reportCardGrade !== null ? b.reportCardGrade : b.finalPoints) * b.weight), 0);
+                    const sumW = active.reduce((a, b) => a + b.weight, 0);
+                    return { halfYear, semesterSubjects, avgPoints: sumW ? sump / sumW : null };
+                };
+
+                // Alle Halbjahre, für die es tatsächlich Noten oder Zeugniswerte gibt, plus die aktuell
+                // aktiven — damit im PDF-Export auch vergangene Schuljahre auswählbar sind.
+                const allAvailableHalfYears = computed(() => {
+                    const set = new Set(halfYears.value);
+                    subjects.value.forEach(s => {
+                        (s.grades || []).forEach(g => { if (g.semester) set.add(g.semester); });
+                        Object.keys(s.reportCardGrades || {}).forEach(k => set.add(k));
+                    });
+                    return [...set].sort((a, b) => {
+                        const [ca, ha] = a.split('/').map(Number);
+                        const [cb, hb] = b.split('/').map(Number);
+                        return ca !== cb ? ca - cb : ha - hb;
+                    });
+                });
+
+                const togglePdfHalfYear = (hy) => {
+                    const idx = pdfExportSelectedHalfYears.value.indexOf(hy);
+                    if (idx === -1) pdfExportSelectedHalfYears.value.push(hy);
+                    else pdfExportSelectedHalfYears.value.splice(idx, 1);
+                };
+                const openPdfExportModal = () => {
+                    if (pdfExportSelectedHalfYears.value.length === 0) pdfExportSelectedHalfYears.value = [...halfYears.value];
+                    isPdfExportModalOpen.value = true;
+                };
+
+                const generatePdfExport = () => {
+                    if (typeof window.jspdf === 'undefined' || pdfExportSelectedHalfYears.value.length === 0) return;
+                    pdfExportGenerating.value = true;
+                    try {
+                        const { jsPDF } = window.jspdf;
+                        const docPdf = new jsPDF({ unit: 'pt', format: 'a4' });
+                        const pageWidth = docPdf.internal.pageSize.getWidth();
+                        const accentRGB = [99, 102, 241]; // #6366f1 — SchoolFlow-Markenfarbe
+                        const selectedSorted = [...pdfExportSelectedHalfYears.value].sort((a, b) => {
+                            const [ca, ha] = a.split('/').map(Number);
+                            const [cb, hb] = b.split('/').map(Number);
+                            return ca !== cb ? ca - cb : ha - hb;
+                        });
+
+                        // ── HEADER / LOGO ──
+                        const drawHeader = () => {
+                            docPdf.setFillColor(...accentRGB);
+                            docPdf.roundedRect(40, 36, 34, 34, 9, 9, 'F');
+                            docPdf.setTextColor(255, 255, 255);
+                            docPdf.setFont('helvetica', 'bold');
+                            docPdf.setFontSize(15);
+                            docPdf.text('SF', 57, 58, { align: 'center' });
+                            docPdf.setTextColor(20, 20, 30);
+                            docPdf.setFontSize(19);
+                            docPdf.text('SchoolFlow', 84, 54);
+                            docPdf.setFont('helvetica', 'normal');
+                            docPdf.setFontSize(9);
+                            docPdf.setTextColor(120, 120, 130);
+                            docPdf.text('Notenspiegel & Statistik', 84, 67);
+                            docPdf.setDrawColor(230, 230, 235);
+                            docPdf.line(40, 84, pageWidth - 40, 84);
+                        };
+                        drawHeader();
+
+                        docPdf.setTextColor(20, 20, 30);
+                        docPdf.setFont('helvetica', 'bold');
+                        docPdf.setFontSize(11);
+                        const nameLine = displayName.value ? `${displayName.value} — ` : '';
+                        docPdf.text(`${nameLine}Export vom ${new Date().toLocaleDateString('de-DE')}`, 40, 108);
+                        docPdf.setFont('helvetica', 'normal');
+                        docPdf.setFontSize(9.5);
+                        docPdf.setTextColor(100, 100, 110);
+                        docPdf.text(`Enthaltene Halbjahre: ${selectedSorted.join(', ')}`, 40, 122);
+
+                        let cursorY = 148;
+                        const gradeLabel = (s) => {
+                            const val = s.reportCardGrade !== null ? s.reportCardGrade : s.finalPoints;
+                            return val !== null && val !== undefined ? val.toFixed(1) : '–';
+                        };
+
+                        // ── PRO HALBJAHR EINE NOTENTABELLE ──
+                        selectedSorted.forEach((hy) => {
+                            const semData = computeSemesterDataFor(hy);
+                            if (cursorY > 700) { docPdf.addPage(); drawHeader(); cursorY = 108; }
+                            docPdf.setFont('helvetica', 'bold');
+                            docPdf.setFontSize(13);
+                            docPdf.setTextColor(...accentRGB);
+                            docPdf.text(`Halbjahr ${hy}`, 40, cursorY);
+                            cursorY += 10;
+
+                            if (semData.semesterSubjects.length === 0) {
+                                docPdf.setFont('helvetica', 'italic');
+                                docPdf.setFontSize(9.5);
+                                docPdf.setTextColor(140, 140, 150);
+                                docPdf.text('Keine Noten in diesem Halbjahr erfasst.', 40, cursorY + 14);
+                                cursorY += 34;
+                                return;
+                            }
+
+                            const rows = semData.semesterSubjects.map(s => [
+                                s.name + (s.isLK ? ' (LK)' : ''),
+                                s.avgE !== null && s.avgE !== undefined ? s.avgE.toFixed(1) : '–',
+                                s.avgO !== null && s.avgO !== undefined ? s.avgO.toFixed(1) : '–',
+                                gradeLabel(s)
+                            ]);
+                            docPdf.autoTable({
+                                startY: cursorY,
+                                head: [['Fach', 'Ø Klausuren', 'Ø Sonstige', 'Endnote']],
+                                body: rows,
+                                theme: 'striped',
+                                styles: { fontSize: 9.5, cellPadding: 6, textColor: [40, 40, 50] },
+                                headStyles: { fillColor: accentRGB, textColor: [255, 255, 255], fontStyle: 'bold' },
+                                margin: { left: 40, right: 40 },
+                                foot: [['Halbjahresschnitt', '', '', semData.avgPoints !== null ? semData.avgPoints.toFixed(2) + ' Pkt.' : '–']],
+                                footStyles: { fillColor: [245, 245, 250], textColor: [20, 20, 30], fontStyle: 'bold' }
+                            });
+                            cursorY = docPdf.lastAutoTable.finalY + 26;
+                        });
+
+                        // ── STATISTIK-SEITE (immer dabei) ──
+                        if (cursorY > 620) { docPdf.addPage(); drawHeader(); cursorY = 108; }
+                        docPdf.setFont('helvetica', 'bold');
+                        docPdf.setFontSize(13);
+                        docPdf.setTextColor(...accentRGB);
+                        docPdf.text('Statistiken', 40, cursorY);
+                        cursorY += 16;
+
+                        const allSelectedGrades = subjects.value.flatMap(s => (s.grades || []).filter(g => !g.pending && selectedSorted.includes(g.semester)));
+                        const overallAvg = allSelectedGrades.length ? allSelectedGrades.reduce((a, b) => a + b.points, 0) / allSelectedGrades.length : null;
+                        const examCount = allSelectedGrades.filter(g => g.type === 'Klausur').length;
+                        const otherCount = allSelectedGrades.length - examCount;
+
+                        const subjectAverages = selectedSorted.flatMap(hy => computeSemesterDataFor(hy).semesterSubjects.map(s => ({ hy, name: s.name, val: s.reportCardGrade ?? s.finalPoints })))
+                            .filter(s => s.val !== null && s.val !== undefined);
+                        const best = subjectAverages.length ? subjectAverages.reduce((a, b) => (b.val > a.val ? b : a)) : null;
+                        const worst = subjectAverages.length ? subjectAverages.reduce((a, b) => (b.val < a.val ? b : a)) : null;
+
+                        const totalTasksAllTime = tasks.value.length;
+                        const doneTasksAllTime = tasks.value.filter(t => t.done).length;
+                        const completionRate = totalTasksAllTime ? Math.round((doneTasksAllTime / totalTasksAllTime) * 100) : null;
+                        const progressTasks = tasks.value.filter(t => t.type !== 'Hausaufgabe' && (t.studyProgress || 0) > 0);
+                        const avgStudyProgress = progressTasks.length ? Math.round(progressTasks.reduce((a, b) => a + (b.studyProgress || 0), 0) / progressTasks.length) : null;
+
+                        const statRows = [
+                            ['Notendurchschnitt (gewählte Halbjahre)', overallAvg !== null ? overallAvg.toFixed(2) + ' Pkt.' : '–'],
+                            ['Erfasste Noten insgesamt', `${allSelectedGrades.length} (${examCount} Klausuren, ${otherCount} sonstige)`],
+                            ['Bestes Fach', best ? `${best.name} (${best.hy}) — ${best.val.toFixed(1)} Pkt.` : '–'],
+                            ['Schwächstes Fach', worst ? `${worst.name} (${worst.hy}) — ${worst.val.toFixed(1)} Pkt.` : '–'],
+                            ['Aufgaben erledigt (gesamt)', totalTasksAllTime ? `${doneTasksAllTime} / ${totalTasksAllTime} (${completionRate}%)` : '–'],
+                            ['Ø Lernfortschritt bei Klausuren/Tests', avgStudyProgress !== null ? avgStudyProgress + '%' : '–']
+                        ];
+                        docPdf.autoTable({
+                            startY: cursorY,
+                            body: statRows,
+                            theme: 'plain',
+                            styles: { fontSize: 10, cellPadding: 7, textColor: [40, 40, 50] },
+                            columnStyles: { 0: { fontStyle: 'bold', textColor: [80, 80, 95] }, 1: { halign: 'right' } },
+                            margin: { left: 40, right: 40 }
+                        });
+
+                        // Fußzeile mit Seitenzahlen
+                        const pageCount = docPdf.internal.getNumberOfPages();
+                        for (let i = 1; i <= pageCount; i++) {
+                            docPdf.setPage(i);
+                            docPdf.setFont('helvetica', 'normal');
+                            docPdf.setFontSize(8);
+                            docPdf.setTextColor(160, 160, 170);
+                            docPdf.text(`SchoolFlow — Seite ${i} von ${pageCount}`, pageWidth / 2, 820, { align: 'center' });
+                        }
+
+                        docPdf.save(`SchoolFlow_Notenspiegel_${new Date().toISOString().split('T')[0]}.pdf`);
+                        isPdfExportModalOpen.value = false;
+                    } catch (err) {
+                        console.error('PDF-Export Fehler:', err);
+                    } finally {
+                        pdfExportGenerating.value = false;
+                    }
+                };
+
                 const activeSubjectData = computed(() => processedData.value.semesterSubjects.find(s => s.id === selectedSubject.value?.id));
 
                 // ── ZIELNOTE-RECHNER ──
@@ -5983,6 +6247,7 @@
                     isWeeklyRecapOpen, weeklyRecapSlideIndex, weeklyRecapWeekday, tempWeeklyRecapWeekday, weeklyRecapAvailable, weeklyRecapWeekReady, weeklyRecapSeen, weeklyRecapData,
                     googleCalendarConnected, googleCalendarSyncing, googleCalendarError, connectGoogleCalendar, disconnectGoogleCalendar, googleEvents, fetchGoogleCalendarEvents,
                     googleCalendarList, googleSelectedCalendarIds, toggleGoogleCalendarSelection,
+                    isPdfExportModalOpen, pdfExportSelectedHalfYears, pdfExportGenerating, allAvailableHalfYears, openPdfExportModal, togglePdfHalfYear, generatePdfExport,
                     openWeeklyRecap, closeWeeklyRecap, nextRecapSlide, prevRecapSlide, recapProgressPercent, recapDragStart, recapDragMove, recapDragEnd,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
