@@ -2644,7 +2644,22 @@
                                 <button @click="disconnectGoogleCalendar" class="text-[11px] font-black uppercase text-rose-400 hover:underline cursor-pointer">Trennen</button>
                             </div>
                         </div>
-                        <button v-else @click="connectGoogleCalendar" :disabled="googleCalendarSyncing" class="w-full bg-white text-slate-900 font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60">
+                        <!-- Auswahl, welche Google-Kalender synchronisiert werden -->
+                        <div v-if="googleCalendarConnected && googleCalendarList.length > 0" class="space-y-2 pt-1">
+                            <p class="text-[10px] font-bold uppercase text-slate-500 ml-1">Welche Kalender synchronisieren?</p>
+                            <div v-for="cal in googleCalendarList" :key="cal.id" @click="toggleGoogleCalendarSelection(cal.id)"
+                                 class="flex items-center justify-between gap-3 bg-black/20 border border-white/5 rounded-2xl p-3 cursor-pointer">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: cal.color }"></span>
+                                    <span class="text-xs font-semibold text-white truncate">{{ cal.name }}</span>
+                                    <span v-if="cal.primary" class="text-[9px] font-black uppercase text-slate-500 shrink-0">Haupt</span>
+                                </div>
+                                <div class="w-11 h-6 rounded-full relative transition-colors shrink-0" :class="googleSelectedCalendarIds.includes(cal.id) ? 'toggle-accent-on' : 'bg-white/10'">
+                                    <div class="absolute top-1 w-4 h-4 rounded-full bg-white transition-all" :class="googleSelectedCalendarIds.includes(cal.id) ? 'left-6' : 'left-1'"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button v-if="!googleCalendarConnected" @click="connectGoogleCalendar" :disabled="googleCalendarSyncing" class="w-full bg-white text-slate-900 font-bold text-sm py-3.5 rounded-2xl flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60">
                             <i data-lucide="loader-2" v-if="googleCalendarSyncing" class="w-4 h-4 animate-spin"></i>
                             {{ googleCalendarSyncing ? 'Verbinde...' : 'Mit Google Kalender verbinden' }}
                         </button>
@@ -3212,6 +3227,8 @@
                 const googleCalendarSyncing = ref(false);
                 const googleCalendarError = ref('');
                 const googleEvents = ref([]);
+                const googleCalendarList = ref([]); // Liste aller verfügbaren Google-Kalender
+                const googleSelectedCalendarIds = ref([]); // Welche davon synchronisiert werden sollen
                 let googleTokenClient = null;
                 let googleAccessToken = null;
                 const tempWeeklyRecapWeekday = ref(0);
@@ -3988,9 +4005,14 @@
                             tempWeeklyRecapWeekday.value = data.weeklyRecapWeekday;
                         }
                         if (typeof data.lastWeeklyRecapViewedWeek === 'string') lastWeeklyRecapViewedWeek.value = data.lastWeeklyRecapViewedWeek;
+                        if (Array.isArray(data.googleSelectedCalendarIds)) googleSelectedCalendarIds.value = data.googleSelectedCalendarIds;
                         if (typeof data.googleCalendarConnected === 'boolean' && data.googleCalendarConnected) {
-                            // War schon einmal verbunden -> im Hintergrund ohne Popup versuchen neu zu verbinden
-                            setTimeout(() => silentlyReconnectGoogleCalendar(), 500);
+                            // Zwischengespeicherte Termine sofort zeigen — kein Popup nötig dafür
+                            loadGoogleCalendarCache();
+                            googleCalendarConnected.value = true;
+                            // Nur alle paar Stunden versuchen, im Hintergrund einen frischen Token zu holen
+                            // (nicht bei jedem App-Start), damit kein Google-Auswahlfenster ständig aufpoppt.
+                            maybeSilentlyReconnectGoogleCalendar();
                         }
                         abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
                     }
@@ -4543,7 +4565,7 @@
                             if (user.value) {
                                 setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleCalendarConnected: true }, { merge: true }).catch(() => {});
                             }
-                            fetchGoogleCalendarEvents();
+                            fetchGoogleCalendarList();
                         },
                         error_callback: (err) => {
                             // Wird ausgelöst, wenn z.B. das Popup blockiert wurde oder Google die
@@ -4596,10 +4618,44 @@
                 const silentlyReconnectGoogleCalendar = () => {
                     initGoogleTokenClient();
                     if (!googleTokenClient) return;
-                    googleCalendarSyncing.value = true;
                     googleTokenClient.requestAccessToken({ prompt: '' });
                     if (googleConnectTimeout) clearTimeout(googleConnectTimeout);
                     googleConnectTimeout = setTimeout(() => { googleCalendarSyncing.value = false; }, 8000);
+                };
+                // Google kann ein still angefordertes Token (prompt:'') in manchen Browsern trotzdem kurz
+                // mit einem sichtbaren Konto-Auswahlfenster beantworten (Drittanbieter-Cookie-Einschränkung).
+                // Um das nicht bei jedem App-Öffnen zu zeigen, wird das höchstens alle 6 Stunden versucht —
+                // dazwischen werden einfach die zwischengespeicherten Termine angezeigt.
+                const SILENT_RECONNECT_MIN_INTERVAL_MS = 6 * 60 * 60 * 1000;
+                const maybeSilentlyReconnectGoogleCalendar = () => {
+                    if (!user.value) return;
+                    const key = `schoolflow_google_last_silent_${user.value.uid}`;
+                    const last = parseInt(localStorage.getItem(key) || '0', 10);
+                    if (Date.now() - last < SILENT_RECONNECT_MIN_INTERVAL_MS) return;
+                    localStorage.setItem(key, String(Date.now()));
+                    silentlyReconnectGoogleCalendar();
+                };
+                // Zwischenspeicherung der Google-Termine/Kalenderliste in localStorage, damit sie beim
+                // App-Start sofort da sind, ohne jedes Mal einen frischen Token/Popup zu benötigen.
+                const saveGoogleCalendarCache = () => {
+                    if (!user.value) return;
+                    try {
+                        localStorage.setItem(`schoolflow_google_cache_${user.value.uid}`, JSON.stringify({
+                            events: googleEvents.value,
+                            calendarList: googleCalendarList.value,
+                            savedAt: Date.now()
+                        }));
+                    } catch (e) { /* Speicher voll o.ä. — ignorieren */ }
+                };
+                const loadGoogleCalendarCache = () => {
+                    if (!user.value) return;
+                    try {
+                        const raw = localStorage.getItem(`schoolflow_google_cache_${user.value.uid}`);
+                        if (!raw) return;
+                        const cached = JSON.parse(raw);
+                        if (Array.isArray(cached.events)) googleEvents.value = cached.events;
+                        if (Array.isArray(cached.calendarList)) googleCalendarList.value = cached.calendarList;
+                    } catch (e) { /* korrupter Cache — ignorieren */ }
                 };
                 const disconnectGoogleCalendar = async () => {
                     if (googleAccessToken && typeof google !== 'undefined' && google.accounts) {
@@ -4608,58 +4664,114 @@
                     googleAccessToken = null;
                     googleCalendarConnected.value = false;
                     googleEvents.value = [];
+                    googleCalendarList.value = [];
                     if (user.value) {
                         await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleCalendarConnected: false }, { merge: true }).catch(() => {});
+                        localStorage.removeItem(`schoolflow_google_cache_${user.value.uid}`);
+                        localStorage.removeItem(`schoolflow_google_last_silent_${user.value.uid}`);
                     }
                 };
-                const fetchGoogleCalendarEvents = async () => {
+                // Lädt alle Kalender, auf die der Nutzer Zugriff hat (privat, geteilt, Feiertage, ...)
+                const fetchGoogleCalendarList = async () => {
                     if (!googleAccessToken) return;
                     googleCalendarSyncing.value = true;
                     try {
-                        const timeMin = new Date();
-                        timeMin.setDate(timeMin.getDate() - 30);
-                        const timeMax = new Date();
-                        timeMax.setDate(timeMax.getDate() + 120);
-                        const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&timeMin=${timeMin.toISOString()}&timeMax=${timeMax.toISOString()}&maxResults=250`;
-                        const res = await fetch(url, { headers: { Authorization: `Bearer ${googleAccessToken}` } });
+                        const res = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=250', {
+                            headers: { Authorization: `Bearer ${googleAccessToken}` }
+                        });
                         if (res.status === 401) {
                             googleCalendarConnected.value = false;
                             googleAccessToken = null;
                             googleCalendarError.value = 'Verbindung ist abgelaufen. Bitte erneut verbinden.';
                             return;
                         }
-                        if (res.status === 403) {
-                            const body = await res.json().catch(() => null);
-                            console.error('Google Kalender 403:', body);
-                            googleCalendarError.value = 'Zugriff verweigert (403). Prüfe in der Google Cloud Console, ob der Bereich "calendar.readonly" freigegeben ist, und verbinde dich neu.';
-                            return;
-                        }
-                        if (!res.ok) {
-                            const body = await res.text().catch(() => '');
-                            console.error('Google Kalender Fehler', res.status, body);
-                            throw new Error('Fehler beim Laden der Google-Kalender-Termine (Status ' + res.status + ')');
-                        }
+                        if (!res.ok) throw new Error('Kalenderliste konnte nicht geladen werden (Status ' + res.status + ')');
                         const data = await res.json();
-                        console.log('Google Kalender: Rohdaten erhalten, Anzahl Items:', (data.items || []).length, data.items);
-                        googleEvents.value = (data.items || [])
-                            .filter(ev => ev.status !== 'cancelled' && (ev.start?.date || ev.start?.dateTime))
-                            .map(ev => ({
-                                id: 'google-' + ev.id,
-                                title: ev.summary || '(Ohne Titel)',
-                                date: ev.start.date || ev.start.dateTime.split('T')[0],
-                                type: 'Google Kalender',
-                                notes: ev.description || '',
-                                done: false,
-                                studyProgress: 0,
-                                isGoogleEvent: true,
-                                htmlLink: ev.htmlLink,
-                                subject: { name: 'Google Kalender', color: '#4285F4' }
-                            }));
-                        console.log('Google Kalender: nach Filter übernommene Termine:', googleEvents.value.length, googleEvents.value);
+                        googleCalendarList.value = (data.items || []).map(cal => ({
+                            id: cal.id,
+                            name: cal.summaryOverride || cal.summary,
+                            color: cal.backgroundColor || '#4285F4',
+                            primary: !!cal.primary
+                        }));
+                        // Falls noch keine Auswahl gespeichert ist: alle Kalender, die auch in Google
+                        // selbst sichtbar/aktiv sind ("selected"), als Standard übernehmen.
+                        if (googleSelectedCalendarIds.value.length === 0) {
+                            const defaultSelected = (data.items || []).filter(cal => cal.selected !== false).map(cal => cal.id);
+                            googleSelectedCalendarIds.value = defaultSelected.length > 0 ? defaultSelected : googleCalendarList.value.map(c => c.id);
+                        }
+                        persistGoogleSelectedCalendars();
                         googleCalendarError.value = '';
+                        fetchGoogleCalendarEvents();
                     } catch (err) {
-                        console.error('Google Kalender Fehler:', err);
-                        googleCalendarError.value = 'Termine konnten nicht geladen werden: ' + err.message;
+                        console.error('Google Kalenderliste Fehler:', err);
+                        googleCalendarError.value = 'Kalenderliste konnte nicht geladen werden: ' + err.message;
+                        googleCalendarSyncing.value = false;
+                    }
+                };
+                const persistGoogleSelectedCalendars = () => {
+                    if (!user.value) return;
+                    setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleSelectedCalendarIds: googleSelectedCalendarIds.value }, { merge: true }).catch(() => {});
+                };
+                const toggleGoogleCalendarSelection = (calId) => {
+                    const idx = googleSelectedCalendarIds.value.indexOf(calId);
+                    if (idx === -1) googleSelectedCalendarIds.value.push(calId);
+                    else googleSelectedCalendarIds.value.splice(idx, 1);
+                    persistGoogleSelectedCalendars();
+                    fetchGoogleCalendarEvents();
+                };
+                // Ruft Termine aus allen ausgewählten Kalendern parallel ab und führt sie zusammen
+                const fetchGoogleCalendarEvents = async () => {
+                    if (!googleAccessToken) return;
+                    if (googleSelectedCalendarIds.value.length === 0) { googleEvents.value = []; return; }
+                    googleCalendarSyncing.value = true;
+                    try {
+                        const timeMin = new Date();
+                        timeMin.setDate(timeMin.getDate() - 30);
+                        const timeMax = new Date();
+                        timeMax.setDate(timeMax.getDate() + 120);
+
+                        const fetchOne = async (calId) => {
+                            const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calId)}/events?singleEvents=true&orderBy=startTime&timeMin=${timeMin.toISOString()}&timeMax=${timeMax.toISOString()}&maxResults=250`;
+                            const res = await fetch(url, { headers: { Authorization: `Bearer ${googleAccessToken}` } });
+                            if (res.status === 401) throw { authExpired: true };
+                            if (!res.ok) { console.warn('Kalender', calId, 'Fehler', res.status); return []; }
+                            const data = await res.json();
+                            const calInfo = googleCalendarList.value.find(c => c.id === calId);
+                            const calColor = calInfo?.color || '#4285F4';
+                            const calName = calInfo?.name || 'Google Kalender';
+                            return (data.items || [])
+                                .filter(ev => ev.status !== 'cancelled' && (ev.start?.date || ev.start?.dateTime))
+                                .map(ev => ({
+                                    id: 'google-' + calId + '-' + ev.id,
+                                    title: ev.summary || '(Ohne Titel)',
+                                    date: ev.start.date || ev.start.dateTime.split('T')[0],
+                                    type: 'Google Kalender',
+                                    notes: ev.description || '',
+                                    done: false,
+                                    studyProgress: 0,
+                                    isGoogleEvent: true,
+                                    htmlLink: ev.htmlLink,
+                                    subject: { name: calName, color: calColor }
+                                }));
+                        };
+
+                        const results = await Promise.all(googleSelectedCalendarIds.value.map(id => fetchOne(id).catch(err => {
+                            if (err && err.authExpired) throw err;
+                            return [];
+                        })));
+                        googleEvents.value = results.flat();
+                        googleCalendarError.value = '';
+                        saveGoogleCalendarCache();
+                        console.log('Google Kalender: Termine aus', googleSelectedCalendarIds.value.length, 'Kalender(n) geladen:', googleEvents.value.length);
+                    } catch (err) {
+                        if (err && err.authExpired) {
+                            googleCalendarConnected.value = false;
+                            googleAccessToken = null;
+                            googleCalendarError.value = 'Verbindung ist abgelaufen. Bitte erneut verbinden.';
+                        } else {
+                            console.error('Google Kalender Fehler:', err);
+                            googleCalendarError.value = 'Termine konnten nicht geladen werden.';
+                        }
                     } finally {
                         googleCalendarSyncing.value = false;
                     }
@@ -5870,6 +5982,7 @@
                     todayOverview,
                     isWeeklyRecapOpen, weeklyRecapSlideIndex, weeklyRecapWeekday, tempWeeklyRecapWeekday, weeklyRecapAvailable, weeklyRecapWeekReady, weeklyRecapSeen, weeklyRecapData,
                     googleCalendarConnected, googleCalendarSyncing, googleCalendarError, connectGoogleCalendar, disconnectGoogleCalendar, googleEvents, fetchGoogleCalendarEvents,
+                    googleCalendarList, googleSelectedCalendarIds, toggleGoogleCalendarSelection,
                     openWeeklyRecap, closeWeeklyRecap, nextRecapSlide, prevRecapSlide, recapProgressPercent, recapDragStart, recapDragMove, recapDragEnd,
                     navigateCalendar, nextMonth, prevMonth, openTaskModal, openTaskModalWithDate, openEditTaskModal, openEditTaskFromPlanner, handleSaveTask, handleDeleteTask, toggleTaskDone, leavingTasks,
                     isBulkImportOpen, bulkImportText, bulkImportParsed, bulkImportOpenPickerIdx, openBulkImport, parseBulkImportText, bulkImportSetSubject, bulkImportSetDate, bulkImportRemoveRow, handleBulkImportSave,
