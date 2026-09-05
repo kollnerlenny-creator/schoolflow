@@ -2105,6 +2105,7 @@
                                 <span class="font-black text-accent text-sm">% Klausur</span>
                             </div>
                         </div>
+                        <p v-if="isSettingsModalOpen" class="text-[11px] text-slate-500 -mt-2 ml-2">Gilt nur für Halbjahr {{ selectedHalfYear }} — andere Halbjahre bleiben unverändert.</p>
                         <input type="range" min="0" max="100" step="10" v-model.number="subjectForm.examWeight" class="custom-range" />
                         <div class="flex justify-between px-1">
                             <span v-for="n in [0,10,20,30,40,50,60,70,80,90,100]" :key="n" class="text-[11px] text-slate-600 font-bold">{{ n === 0 || n === 50 || n === 100 ? n : '·' }}</span>
@@ -5465,6 +5466,14 @@
                     return Math.max(1.0, Math.min(6.0, (17 - p) / 3));
                 };
 
+                // Liefert die für ein bestimmtes Halbjahr geltende Klausurgewichtung: eine explizite
+                // Übersteuerung für dieses Halbjahr (examWeightByHalfYear), sonst der Fach-Standardwert.
+                // So bleibt eine Änderung z.B. für 12/1 auf andere Halbjahre wie 11/2 ohne Auswirkung.
+                const getExamWeightFor = (subject, halfYear) => {
+                    const override = subject.examWeightByHalfYear?.[halfYear];
+                    return (override !== undefined && override !== null) ? override : (subject.examWeight ?? 50);
+                };
+
                 // Chronologischer Verlauf des offiziellen Gesamtdurchschnitts im gewählten Halbjahr —
                 // rechnet nach jeder Note exakt dieselbe Formel wie processedData.avgPoints neu,
                 // aber nur mit den bis zu diesem Zeitpunkt eingetragenen Noten.
@@ -5493,15 +5502,7 @@
                             const gradesUpTo = (s.grades || []).filter(g => relevantSemesters.includes(g.semester) && !g.pending && g.date <= cutoffDate);
                             const exams = gradesUpTo.filter(g => g.type === 'Klausur');
                             const others = gradesUpTo.filter(g => g.type !== 'Klausur');
-                            const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
-                            const avgE = exams.length ? exams.reduce((a, b) => a + b.points, 0) / exams.length : null;
-                            const avgO = others.length ? others.reduce((a, b) => a + b.points, 0) / others.length : null;
-                            let final = null;
-                            if (avgE !== null && avgO !== null) final = (avgE * wE) + (avgO * wO);
-                            else if (avgE !== null) final = avgE;
-                            else if (avgO !== null) final = avgO;
-                            // Zeugnisnoten bewusst NICHT einbeziehen: die haben kein Datum und würden
-                            // den Verlauf ab dem allerersten Zeitpunkt künstlich einfrieren.
+                            const wE = (getExamWeightFor(s, selectedHalfYear.value)) / 100, wO = 1 - wE;
                             const weight = (s.isLK && lkBonusActive.value) ? 2 : 1;
                             return { finalPoints: final, weight };
                         });
@@ -5524,7 +5525,7 @@
                     if (hg.length === 0) return '-';
                     const ex = hg.filter(g => g.type === 'Klausur');
                     const ot = hg.filter(g => g.type !== 'Klausur');
-                    const wE = (subject.examWeight || 50) / 100;
+                    const wE = (getExamWeightFor(subject, sem)) / 100;
                     
                     const aE = ex.length ? ex.reduce((a, b) => a + b.points, 0) / ex.length : null;
                     const aO = ot.length ? ot.reduce((a, b) => a + b.points, 0) / ot.length : null;
@@ -5556,7 +5557,8 @@
                         const rawSemGrades = allGrades.filter(g => relevantSemesters.includes(g.semester));
                         const exams = grades.filter(g => g.type === 'Klausur');
                         const others = grades.filter(g => g.type !== 'Klausur');
-                        const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
+                        const resolvedExamWeight = getExamWeightFor(s, selectedHalfYear.value);
+                        const wE = resolvedExamWeight / 100, wO = 1 - wE;
                         const avgE = exams.length ? exams.reduce((a, b) => a + b.points, 0) / exams.length : null;
                         const avgO = others.length ? others.reduce((a, b) => a + b.points, 0) / others.length : null;
                         let final = null;
@@ -5565,7 +5567,10 @@
                         else if (avgO !== null) final = avgO;
                         const rcg = s.reportCardGrades?.[selectedHalfYear.value] ?? null;
                         const weight = (s.isLK && lkBonusActive.value) ? 2 : 1;
-                        return { ...s, semesterGrades: rawSemGrades, finalPoints: final, reportCardGrade: rcg, finalGrade: pointsToGrade(final), weight };
+                        // examWeight hier bewusst mit dem für DIESES Halbjahr aufgelösten Wert überschreiben,
+                        // damit UI-Stellen, die selectedSubject/activeSubjectData.examWeight lesen, automatisch
+                        // den richtigen, halbjahresspezifischen Wert sehen.
+                        return { ...s, semesterGrades: rawSemGrades, finalPoints: final, reportCardGrade: rcg, finalGrade: pointsToGrade(final), weight, examWeight: resolvedExamWeight };
                     });
 
                     const active = semesterSubjects.filter(s => s.finalPoints !== null || s.reportCardGrade !== null);
@@ -5603,7 +5608,7 @@
                         const grades = allGrades.filter(g => relevantSemesters.includes(g.semester) && !g.pending);
                         const exams = grades.filter(g => g.type === 'Klausur');
                         const others = grades.filter(g => g.type !== 'Klausur');
-                        const wE = (s.examWeight || 50) / 100, wO = 1 - wE;
+                        const wE = (getExamWeightFor(s, halfYear)) / 100, wO = 1 - wE;
                         const avgE = exams.length ? exams.reduce((a, b) => a + b.points, 0) / exams.length : null;
                         const avgO = others.length ? others.reduce((a, b) => a + b.points, 0) / others.length : null;
                         let final = null;
@@ -5926,11 +5931,16 @@
                     if (isSettingsModalOpen.value) {
                         // Nur Metadaten updaten - grades/semesterGrades NICHT anfassen!
                         const { name, isLK, color, examWeight, abiType, icon } = subjectForm.value;
+                        // Klausurgewichtung gilt NUR für das aktuell ausgewählte Halbjahr — als
+                        // Übersteuerung in examWeightByHalfYear speichern, damit andere Halbjahre
+                        // (z.B. 11/2, wenn gerade 12/1 bearbeitet wird) unverändert bleiben.
+                        const existingOverrides = selectedSubject.value.examWeightByHalfYear || {};
+                        const examWeightByHalfYear = { ...existingOverrides, [selectedHalfYear.value]: examWeight };
                         await updateDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id),
-                            { name, isLK, color, examWeight, abiType, icon });
-                        selectedSubject.value = { ...selectedSubject.value, name, isLK, color, examWeight, abiType, icon };
+                            { name, isLK, color, abiType, icon, examWeightByHalfYear });
+                        selectedSubject.value = { ...selectedSubject.value, name, isLK, color, abiType, icon, examWeightByHalfYear, examWeight };
                     } else {
-                        await setDoc(doc(collection(db, 'users', user.value.uid, collName)), { ...subjectForm.value, grades: [], reportCardGrades: {} });
+                        await setDoc(doc(collection(db, 'users', user.value.uid, collName)), { ...subjectForm.value, grades: [], reportCardGrades: {}, examWeightByHalfYear: {} });
                     }
                     closeSubjectModal();
                 };
