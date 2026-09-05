@@ -5503,6 +5503,14 @@
                             const exams = gradesUpTo.filter(g => g.type === 'Klausur');
                             const others = gradesUpTo.filter(g => g.type !== 'Klausur');
                             const wE = (getExamWeightFor(s, selectedHalfYear.value)) / 100, wO = 1 - wE;
+                            const avgE = exams.length ? exams.reduce((a, b) => a + b.points, 0) / exams.length : null;
+                            const avgO = others.length ? others.reduce((a, b) => a + b.points, 0) / others.length : null;
+                            let final = null;
+                            if (avgE !== null && avgO !== null) final = (avgE * wE) + (avgO * wO);
+                            else if (avgE !== null) final = avgE;
+                            else if (avgO !== null) final = avgO;
+                            // Zeugnisnoten bewusst NICHT einbeziehen: die haben kein Datum und würden
+                            // den Verlauf ab dem allerersten Zeitpunkt künstlich einfrieren.
                             const weight = (s.isLK && lkBonusActive.value) ? 2 : 1;
                             return { finalPoints: final, weight };
                         });
