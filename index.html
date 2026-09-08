@@ -5872,13 +5872,17 @@
                     }
                     
                     const dbGrades = (activeSubjectData.value?.semesterGrades || []);
-                    
+                    const gradedTaskIds = new Set(dbGrades.map(g => g.sourceTaskId).filter(Boolean));
+
                     const plannerUpcoming = tasks.value
                         .filter(t => {
                             const belongsToSubject = t.subjectId === selectedSubject.value?.id;
                             const isExamOrTest = t.type === 'Test' || t.type === 'Klausur';
                             const belongsToCurrentSemester = determineSemesterFromDate(t.date) === selectedHalfYear.value;
-                            return belongsToSubject && isExamOrTest && !t.done && belongsToCurrentSemester;
+                            // Bewusst NICHT nach t.done filtern: auch wenn man die Aufgabe im Planer
+                            // abgehakt hat, soll sie hier stehen bleiben, bis die Note eingetragen wurde.
+                            // Sobald aber eine Note für sie existiert, nicht mehr zusätzlich als Platzhalter zeigen.
+                            return belongsToSubject && isExamOrTest && belongsToCurrentSemester && !gradedTaskIds.has(t.id);
                         })
                         .map(t => ({
                             id: 'task-' + t.id,
@@ -5978,7 +5982,8 @@
                             const ng = { 
                                 ...gradeForm.value, 
                                 id: gradeForm.value.id || crypto.randomUUID(), 
-                                semester: calculatedSemester 
+                                semester: calculatedSemester,
+                                sourceTaskId: gradeFormSourceTaskId.value || gradeForm.value.sourceTaskId || null
                             };
                             t.update(ref, { grades: gradeForm.value.id ? grades.map(g => g.id === ng.id ? ng : g) : [...grades, ng] });
                         });
