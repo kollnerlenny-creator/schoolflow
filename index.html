@@ -7,8 +7,8 @@
     <meta name="theme-color" content="#f7f3eb">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_logo_032fa275.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_logo_032fa275.svg">
     <link rel="apple-touch-icon" href="/assets/aistudio/schooly_app_logo_032fa275.svg">
-    <link rel="icon" type="image/png" href="icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Schooly - Gymnasiale Oberstufe</title>
@@ -1565,7 +1565,8 @@
             <main class="min-h-[60vh] pb-44">
                 
                 <!-- 1. DASHBOARD / HOME (Zweispaltig & Touch-optimiert - Expressive Shapes) -->
-                <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-4xl mx-auto">
+                <!-- 1. DASHBOARD / HOME (Zweispaltig & Desktop-optimiert) -->
+                <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 animate-fade-in max-w-5xl mx-auto">
                     
                     <!-- Große, prominente Begrüßung mit Notenschnitt im Überblick -->
                     <div class="bg-white rounded-[2rem] p-6 sm:p-8 border border-[#ede3d8] shadow-xs relative overflow-hidden transition-all">
@@ -1609,50 +1610,58 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Heute-Widget im Soft Linen Design -->
-                    <div v-if="todayOverview && ((todayOverview.lessons && todayOverview.lessons.length > 0) || (todayOverview.tasksToday && todayOverview.tasksToday.length > 0))" class="card-enter card-enter-2 bg-[#f4ece4] rounded-[1.75rem] p-5 border border-[#ede3d8] shadow-xs">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full bg-[#fed8b1] text-[#825500] flex items-center justify-center">
-                                    <i data-lucide="sun" class="w-4.5 h-4.5"></i>
+
+                    <!-- Laptop / Desktop 2-Spalten-Layout (7 Spalten Links / 5 Spalten Rechts) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                        <!-- Linke Spalte (lg:col-span-7): Heute im Fokus + Nächste Klausur -->
+                        <div class="lg:col-span-7 space-y-6">
+                            
+                            <!-- Heute-Widget im Soft Linen Design -->
+                            <div v-if="todayOverview && ((todayOverview.lessons && todayOverview.lessons.length > 0) || (todayOverview.tasksToday && todayOverview.tasksToday.length > 0))" class="card-enter card-enter-2 bg-[#f4ece4] rounded-[1.75rem] p-5 border border-[#ede3d8] shadow-xs">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full bg-[#fed8b1] text-[#825500] flex items-center justify-center">
+                                            <i data-lucide="sun" class="w-4.5 h-4.5"></i>
+                                        </div>
+                                        <h3 class="font-extrabold text-sm sm:text-base text-[#1f1b16] font-['Epilogue']">Heute im Fokus</h3>
+                                    </div>
+                                    <span class="text-xs font-bold text-[#6E665E]">{{ dateFocusRangeStr }}</span>
                                 </div>
-                                <h3 class="font-extrabold text-sm sm:text-base text-[#1f1b16] font-['Epilogue']">Heute im Fokus</h3>
+                                <div v-if="todayOverview && todayOverview.lessons && todayOverview.lessons.length > 0" class="flex flex-wrap gap-2 mb-3">
+                                    <span v-for="s in todayOverview.lessons" :key="s.id" class="text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-[#ede3d8] shadow-2xs" :style="{ color: s.color }">{{ s.name }}</span>
+                                </div>
+                                <div v-if="todayOverview && todayOverview.tasksToday && todayOverview.tasksToday.length > 0" class="space-y-2">
+                                    <div v-for="t in todayOverview.tasksToday.slice(0, 3)" :key="t.id" class="flex items-center gap-2.5 text-sm bg-white p-3 rounded-2xl border border-[#ede3d8]">
+                                        <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
+                                        <span class="font-bold text-[#1f1b16] truncate">{{ t.title }}</span>
+                                        <span class="text-[10px] text-[#6E665E] uppercase font-bold shrink-0 ml-auto">{{ t.type }}</span>
+                                    </div>
+                                    <p v-if="todayOverview && todayOverview.tasksToday && todayOverview.tasksToday.length > 3" class="text-xs text-[#6E665E] pl-2">+ {{ todayOverview && todayOverview.tasksToday ? todayOverview.tasksToday.length - 3 : 0 }} weitere</p>
+                                </div>
+                                <p v-else class="text-xs text-[#6E665E]">Keine offenen Aufgaben für heute. 🎉</p>
                             </div>
-                            <span class="text-xs font-bold text-[#6E665E]">{{ dateFocusRangeStr }}</span>
-                        </div>
-                        <div v-if="todayOverview && todayOverview.lessons && todayOverview.lessons.length > 0" class="flex flex-wrap gap-2 mb-3">
-                            <span v-for="s in todayOverview.lessons" :key="s.id" class="text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-[#ede3d8] shadow-2xs" :style="{ color: s.color }">{{ s.name }}</span>
-                        </div>
-                        <div v-if="todayOverview && todayOverview.tasksToday && todayOverview.tasksToday.length > 0" class="space-y-2">
-                            <div v-for="t in todayOverview.tasksToday.slice(0, 3)" :key="t.id" class="flex items-center gap-2.5 text-sm bg-white p-3 rounded-2xl border border-[#ede3d8]">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
-                                <span class="font-bold text-[#1f1b16] truncate">{{ t.title }}</span>
-                                <span class="text-[10px] text-[#6E665E] uppercase font-bold shrink-0 ml-auto">{{ t.type }}</span>
+
+                            <!-- Nächste-Klausur-Countdown Card -->
+                            <div v-if="nextExamCountdown" class="card-enter card-enter-2 bg-white rounded-[1.75rem] p-5 border border-[#ede3d8] flex items-center gap-4 cursor-pointer shadow-xs hover:shadow-md transition-shadow" @click="currentTab = 'planner'; plannerTab = 'upcoming'">
+                                <div class="w-13 h-13 rounded-2xl bg-[#fee2e2] text-[#b91c1c] flex items-center justify-center shrink-0 shadow-xs">
+                                    <i data-lucide="alarm-clock" class="w-6 h-6"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[11px] font-black uppercase tracking-wider text-[#b91c1c]">Nächste {{ nextExamCountdown.type }} • {{ nextExamCountdown.subject.name }}</p>
+                                    <h3 class="text-base sm:text-lg font-bold text-[#1f1b16] font-['Epilogue'] truncate">{{ nextExamCountdown.title }}</h3>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <div class="text-3xl sm:text-4xl font-black text-[#2d694c] leading-none">{{ nextExamCountdown.daysUntil }}</div>
+                                    <div class="text-[10px] font-bold uppercase text-[#6E665E] tracking-wider mt-1">{{ nextExamCountdown.daysUntil === 1 ? 'Tag' : 'Tage' }}</div>
+                                </div>
                             </div>
-                            <p v-if="todayOverview && todayOverview.tasksToday && todayOverview.tasksToday.length > 3" class="text-xs text-[#6E665E] pl-2">+ {{ todayOverview && todayOverview.tasksToday ? todayOverview.tasksToday.length - 3 : 0 }} weitere</p>
-                        </div>
-                        <p v-else class="text-xs text-[#6E665E]">Keine offenen Aufgaben für heute. 🎉</p>
-                    </div>
 
-                    <!-- Nächste-Klausur-Countdown Card -->
-                    <div v-if="nextExamCountdown" class="card-enter card-enter-2 bg-white rounded-[1.75rem] p-5 border border-[#ede3d8] flex items-center gap-4 cursor-pointer shadow-xs hover:shadow-md transition-shadow" @click="currentTab = 'planner'; plannerTab = 'upcoming'">
-                        <div class="w-13 h-13 rounded-2xl bg-[#fee2e2] text-[#b91c1c] flex items-center justify-center shrink-0 shadow-xs">
-                            <i data-lucide="alarm-clock" class="w-6 h-6"></i>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-[11px] font-black uppercase tracking-wider text-[#b91c1c]">Nächste {{ nextExamCountdown.type }} • {{ nextExamCountdown.subject.name }}</p>
-                            <h3 class="text-base sm:text-lg font-bold text-[#1f1b16] font-['Epilogue'] truncate">{{ nextExamCountdown.title }}</h3>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <div class="text-3xl sm:text-4xl font-black text-[#2d694c] leading-none">{{ nextExamCountdown.daysUntil }}</div>
-                            <div class="text-[10px] font-bold uppercase text-[#6E665E] tracking-wider mt-1">{{ nextExamCountdown.daysUntil === 1 ? 'Tag' : 'Tage' }}</div>
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-
-                        <!-- Rechte Seite: LK-Faktor & Nächste Aufgaben -->
-                        <div class="md:col-span-6 space-y-5 card-enter card-enter-3">
+                        <!-- Rechte Spalte (lg:col-span-5): LK-Faktor & Nächste Aufgaben & Schnellzugriff -->
+                        <div class="lg:col-span-5 space-y-6 card-enter card-enter-3">
+                            
                             <!-- LK-Bonus Toggle Widget -->
                             <div v-if="gradeSystem !== '6'" @click="lkBonusActive = !lkBonusActive" class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex justify-between items-center cursor-pointer shadow-xs hover:shadow-md transition-shadow">
                                 <div class="flex items-center gap-3.5 min-w-0">
@@ -1697,6 +1706,32 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Desktop Schnell-Aktionen Card -->
+                            <div class="bg-[#fcfaf6] rounded-[1.75rem] p-5 border border-[#ede3d8] shadow-2xs space-y-3">
+                                <h4 class="text-xs font-black uppercase tracking-wider text-[#6E665E]">Schnellzugriff</h4>
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <button @click="currentTab = 'subjects'" class="p-3 bg-white hover:bg-[#f4ece4] border border-[#ede3d8] rounded-2xl text-left transition-all flex items-center gap-2.5 cursor-pointer shadow-2xs active:scale-95">
+                                        <div class="w-8 h-8 rounded-xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center shrink-0">
+                                            <i data-lucide="book-open" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-bold text-[#1f1b16] block leading-tight">Fächer</span>
+                                            <span class="text-[10px] text-[#6E665E]">Übersicht</span>
+                                        </div>
+                                    </button>
+                                    <button @click="openTaskModal" class="p-3 bg-white hover:bg-[#f4ece4] border border-[#ede3d8] rounded-2xl text-left transition-all flex items-center gap-2.5 cursor-pointer shadow-2xs active:scale-95">
+                                        <div class="w-8 h-8 rounded-xl bg-[#fed8b1] text-[#825500] flex items-center justify-center shrink-0">
+                                            <i data-lucide="plus" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-bold text-[#1f1b16] block leading-tight">Termin</span>
+                                            <span class="text-[10px] text-[#6E665E]">Hinzufügen</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
