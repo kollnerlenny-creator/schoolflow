@@ -1,0 +1,8 @@
+{
+  "name": "Schooly",
+  "description": "Organisiere dein Schulleben mit Schooly – Dein smarter Begleiter für Noten, Termine und mehr.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

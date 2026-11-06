@@ -1,0 +1,222 @@
+---
+name: Warm Pastel Student Planner
+colors:
+  surface: '#fff8f4'
+  surface-dim: '#e2d8d1'
+  surface-bright: '#fff8f4'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#fcf2ea'
+  surface-container: '#f6ece4'
+  surface-container-high: '#f0e6df'
+  surface-container-highest: '#eae1d9'
+  on-surface: '#1f1b16'
+  on-surface-variant: '#404943'
+  inverse-surface: '#34302b'
+  inverse-on-surface: '#f9efe7'
+  outline: '#707972'
+  outline-variant: '#c0c9c1'
+  surface-tint: '#2d694c'
+  primary: '#2d694c'
+  on-primary: '#ffffff'
+  primary-container: '#6ca987'
+  on-primary-container: '#003c25'
+  inverse-primary: '#95d4b0'
+  secondary: '#825500'
+  on-secondary: '#ffffff'
+  secondary-container: '#fec168'
+  on-secondary-container: '#774e00'
+  tertiary: '#455e91'
+  on-tertiary: '#ffffff'
+  tertiary-container: '#849cd3'
+  on-tertiary-container: '#183363'
+  error: '#ba1a1a'
+  on-error: '#ffffff'
+  error-container: '#ffdad6'
+  on-error-container: '#93000a'
+  primary-fixed: '#b1f1cb'
+  primary-fixed-dim: '#95d4b0'
+  on-primary-fixed: '#002112'
+  on-primary-fixed-variant: '#0f5135'
+  secondary-fixed: '#ffddb2'
+  secondary-fixed-dim: '#f8bc63'
+  on-secondary-fixed: '#291800'
+  on-secondary-fixed-variant: '#624000'
+  tertiary-fixed: '#d8e2ff'
+  tertiary-fixed-dim: '#aec6ff'
+  on-tertiary-fixed: '#001a43'
+  on-tertiary-fixed-variant: '#2d4677'
+  background: '#fff8f4'
+  on-background: '#1f1b16'
+  surface-variant: '#eae1d9'
+typography:
+  display-lg:
+    fontFamily: Epilogue
+    fontSize: 40px
+    fontWeight: '700'
+    lineHeight: 48px
+    letterSpacing: -0.02em
+  display-lg-mobile:
+    fontFamily: Epilogue
+    fontSize: 30px
+    fontWeight: '700'
+    lineHeight: 38px
+    letterSpacing: -0.02em
+  headline-lg:
+    fontFamily: Epilogue
+    fontSize: 28px
+    fontWeight: '600'
+    lineHeight: 36px
+    letterSpacing: -0.015em
+  headline-md:
+    fontFamily: Epilogue
+    fontSize: 22px
+    fontWeight: '600'
+    lineHeight: 30px
+    letterSpacing: -0.01em
+  headline-sm:
+    fontFamily: Epilogue
+    fontSize: 18px
+    fontWeight: '600'
+    lineHeight: 26px
+    letterSpacing: 0em
+  body-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 16px
+    fontWeight: '500'
+    lineHeight: 24px
+    letterSpacing: 0em
+  body-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 22px
+    letterSpacing: 0em
+  body-sm:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 12px
+    fontWeight: '400'
+    lineHeight: 18px
+    letterSpacing: 0.01em
+  label-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 14px
+    fontWeight: '600'
+    lineHeight: 20px
+    letterSpacing: 0.01em
+  label-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 12px
+    fontWeight: '700'
+    lineHeight: 16px
+    letterSpacing: 0.02em
+  label-sm:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 11px
+    fontWeight: '700'
+    lineHeight: 14px
+    letterSpacing: 0.04em
+rounded:
+  sm: 0.5rem
+  DEFAULT: 1rem
+  md: 1.5rem
+  lg: 2rem
+  xl: 3rem
+  full: 9999px
+spacing:
+  gutter: 1rem
+  gutter-md: 1.5rem
+  gutter-lg: 2rem
+  margin: 1rem
+  margin-md: 1.5rem
+  margin-lg: 2.5rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 1rem
+  space-lg: 1.5rem
+  space-xl: 2rem
+  space-2xl: 3rem
+---
+
+## Brand & Style
+
+This design system is tailored for an intentional, calm, and uplifting student productivity dashboard and lifestyle calendar. It pairs the comforting tactile warmth of Japanese stationery and risograph print culture with ultra-modern digital ergonomics. The audience comprises university and high school students, self-directed learners, and mindful knowledge workers who feel overwhelmed by sterile, corporate-grade project management tools.
+
+The visual style embraces tactile minimalism with soft organic warmth. It relies on generous negative space, gentle paper-toned canvas layers, pill-shaped micro-elements, and oversized rounded squircles (24px to 32px radii). The emotional resonance is gentle, encouraging, and frictionless—evoking clean desk spaces, smooth milk pens, and tactile morning planners without visual noise or stressful alert patterns.
+
+## Colors
+
+The palette is founded on warm, tactile tones that prevent screen fatigue during long study sessions.
+
+- **Background Canvas & Containers:** The base canvas lives on creamy warm paper (`#FDFBF7`), transitioning to warm linen beige (`#F5EFE6`) for card containers, with pure white (`#FFFFFF`) reserved for active raised squircle modules.
+- **Primary (Sage Mint Green, `#6CA987`):** Represents growth, focus sessions, and completed tasks. Paired with soft tint backgrounds (`#EAF3EE`) for low-cognitive-load status pills.
+- **Secondary (Warm Honey Peach / Butter Yellow, `#F4B860`):** Denotes active focus blocks, ongoing tasks, and priority highlights. Backed by tint layers (`#FCF2E3`).
+- **Tertiary (Soft Periwinkle Blue, `#8FA7DF`):** Reserved for academic lectures, exams, calendar matrix markers, and project links. Tint container at `#EDF2FB`.
+- **Accent Muted Terracotta (`#DF7356`):** Provides a warm, non-hostile indicator for urgent deadlines and overdue habits, supported by tint `#FBECE8`.
+- **Neutrals:** Text and iconography steer clear of harsh synthetic black, relying on espresso charcoal (`#38332E`) for headlines, warm slate brown (`#6E665E`) for subtext and calendar day initials, and subtle warm dividers (`#EAE3D6`).
+
+## Typography
+
+The typography leverages an editorial interplay between a structured, organic display sans (`Epilogue`) and a rounded, highly legible interface typeface (`Plus Jakarta Sans`).
+
+- **Display & Headlines (Epilogue):** Chosen for its characterful geometric ink traps and editorial presence. It gives calendar headers, course titles, and metric summaries a polished, published look.
+- **Body & Labels (Plus Jakarta Sans):** Its open counters and friendly circular terminals maintain crisp legibility across dense calendar matrix dots, time trackers, subject chips, and sub-labels.
+- **Rhythm & Numbers:** Tabular figure alignments are enforced for metric counters, time pickers, and day matrices to prevent layout jitter during data updates.
+
+## Layout & Spacing
+
+The layout embraces a soft modular card rhythm designed around squircle content tiles that effortlessly nest together.
+
+- **Grid Systems:**
+  - **Mobile (< 768px):** Single-column stacked stream with 16px lateral canvas margins (`space-md`). Multi-action elements inside squircle cards use a flexible 2-to-4 column mini-grid with 8px gaps (`space-sm`).
+  - **Tablet (768px - 1024px):** 6-column modular card layout with 24px margins (`margin-md`) and 16px gutters (`gutter-md`).
+  - **Desktop (> 1024px):** 12-column layout with 40px outer canvas margins (`margin-lg`) and 24px gutters (`gutter-lg`), organizing the screen into an active sidebar, daily calendar matrix, and modular study tracker canvas.
+- **Internal Padding Philosophy:** Cards avoid cramped borders. Content within main squircle tiles carries a minimum of 20px to 24px padding (`space-lg`) to preserve a light, breathable feel.
+
+## Elevation & Depth
+
+This system intentionally eliminates harsh drop shadows in favor of tonal surface layering, ultra-diffused warm ambient glows, and low-contrast borders.
+
+- **Layer 0 (Canvas Base):** Warm paper tone (`#FDFBF7`). Completely flat.
+- **Layer 1 (Recessed/Grouping Beds):** Tinted linen containers (`#F5EFE6`) that group nested modules like calendar matrices and habit streaks.
+- **Layer 2 (Primary Interactive Squircle Cards):** Pure white (`#FFFFFF`) or soft pastel card surfaces. Elevated by a custom warm-tinted ambient shadow: `box-shadow: 0 8px 24px -4px rgba(78, 62, 45, 0.05), 0 2px 6px -1px rgba(78, 62, 45, 0.03)`.
+- **Layer 3 (Floating Action & Overlays):** Interactive dialogs, weekly recap sheets, and floating play controls rely on an expanded ambient shadow: `box-shadow: 0 16px 36px -6px rgba(78, 62, 45, 0.08), 0 4px 12px -2px rgba(78, 62, 45, 0.04)`.
+- **Borders & Outlines:** Hard lines are replaced by soft hairline borders (`1px solid #ECE4D7` or `1px solid rgba(255, 255, 255, 0.6)`) to preserve clean separation on high-resolution displays.
+
+## Shapes
+
+The cornerstone of this design system is its super-soft, inviting silhouette language.
+
+- **Squircle Cards (24px to 32px):** Primary content modules, calendar summary panels, and daily schedule containers use `rounded-3xl` (24px) on small viewports and 32px (`rounded-4xl` equivalent) on desktop layouts.
+- **Full Pill Profiles (`rounded-full` / 9999px):** All chip tags, day-of-week active indicators, pill-shaped calendar counters, progress capsule bars, and primary CTAs use complete pill geometry.
+- **Micro Inputs & Buttons:** Secondary input fields and numeric loggers utilize 16px to 20px corners, matching the generous curve family.
+
+## Components
+
+### Buttons
+- **Primary Buttons:** Capsule pill (`rounded-full`), height 48px (desktop) / 44px (mobile). Background in soft Sage Mint (`#6CA987`) or warm Espresso (`#38332E`) with pure white text, paired with `label-lg` styling. Subtle press transition scaling down to `0.98`.
+- **Secondary / Action Pill Buttons:** Light tinted backgrounds (`#EAF3EE` or `#FCF2E3`) with matching high-contrast label typography. No heavy outlines.
+- **Icon Action Buttons:** Circular buttons (`40px × 40px` or `44px × 44px`) on subtle beige backgrounds (`#F5EFE6`), housing simplified rounded iconography.
+
+### Chips & Filter Pills
+- Fully rounded pills (`height: 32px; padding: 0 14px;`).
+- Inactive state: Paper linen (`#F5EFE6`) with slate brown text (`#6E665E`).
+- Active state: Saturated pastel tint (e.g., Honey Peach `#FCF2E3` with `#38332E` text), accented with a leading 6px circular dot indicator.
+
+### Calendar Day-Matrix
+- Matrix container nested inside a 24px squircle card.
+- Days rendered as 36px circles or soft squircles (12px radius).
+- Today / Active state: Solid Sage Mint (`#6CA987`) circle with white bold text.
+- Completion dots: Micro-pills (6px diameter) placed directly beneath the day number in periwinkle, terracotta, or mint, denoting planned course categories.
+
+### Progress Capsules & Habit Cards
+- Progress tracks use 12px to 16px thick capsule channels (`#EAE3D6`) filled with smooth pastel fills (`#6CA987` or `#F4B860`).
+- Multi-metric activity bars stack rounded segments separated by 2px gaps.
+
+### Form Inputs & Numeric Steppers
+- Height 48px with 16px border-radius.
+- Warm paper fill (`#FAF6EF`), zero outer stroke by default, transitioning to a 1.5px soft mint border (`#6CA987`) on active focus without loud blue rings.
+
+### Checkboxes & Habit Toggles
+- Squircles with 8px radius rather than rigid squares.
+- Unchecked: 1.5px warm beige border (`#DCD3C4`) on white surface.
+- Checked: Smooth animated fill of Sage Mint (`#6CA987`) with a thick creamy check icon.
