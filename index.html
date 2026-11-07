@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="/assets/aistudio/schooly_app_logo_032fa275.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Schooly - Gymnasiale Oberstufe</title>
+    <title>Schooly</title>
     <!-- Google Fonts: Epilogue, Plus Jakarta Sans & Roboto (Warm Pastel Student Planner Typography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -345,7 +345,7 @@
 
         .glider-dot-glow {
             position: absolute;
-            top: -2.5px;
+            top: 3px;
             left: 50%;
             transform: translateX(-50%);
             width: 18px;
@@ -422,13 +422,17 @@
 
         /* ── M3 INPUTS & FORM ELEMENTS ── */
         .modal-input,
-        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(.login-input),
         select,
         textarea {
             background-color: #ffffff !important;
             border: 1px solid #ded6c8 !important;
             color: #1f1b16 !important;
             border-radius: 1.25rem !important; /* 20px shape */
+        }
+        .login-input {
+            background-color: transparent !important;
+            border: none !important;
         }
         input:focus, select:focus, textarea:focus, .modal-input:focus {
             border-color: #2d694c !important;
@@ -1454,27 +1458,27 @@
                     </div>
 
                     <form @submit.prevent="handleAuth" class="space-y-5">
-                        <div class="bg-[#efe8dc] border border-[#cec5b8] rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-white transition-all shadow-sm">
+                        <div class="bg-[#efe8dc] border border-[#cec5b8] rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-[#efe8dc] transition-all shadow-sm">
                             <i data-lucide="mail" class="text-accent mr-3.5 w-5 h-5 shrink-0"></i>
-                            <input required type="email" placeholder="E-Mail Adresse" v-model="email" class="bg-transparent w-full outline-none text-base font-bold text-[#1e1b16] placeholder:text-[#7d766b]" />
+                            <input required type="email" placeholder="E-Mail Adresse" v-model="email" class="login-input bg-transparent w-full outline-none text-base font-bold text-[#1e1b16] placeholder:text-[#7d766b]" />
                         </div>
                         
-                        <div class="bg-[#efe8dc] border border-[#cec5b8] rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-white transition-all shadow-sm relative">
+                        <div class="bg-[#efe8dc] border border-[#cec5b8] rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-[#efe8dc] transition-all shadow-sm relative">
                             <i data-lucide="lock" class="text-accent mr-3.5 w-5 h-5 shrink-0"></i>
-                            <input required :type="showPassword ? 'text' : 'password'" placeholder="Passwort" v-model="password" class="bg-transparent w-full outline-none text-base font-bold text-[#1e1b16] placeholder:text-[#7d766b] pr-10" />
+                            <input required :type="showPassword ? 'text' : 'password'" placeholder="Passwort" v-model="password" class="login-input bg-transparent w-full outline-none text-base font-bold text-[#1e1b16] placeholder:text-[#7d766b] pr-10" />
                             <button type="button" @click="togglePasswordVisibility" class="absolute right-4 text-[#7d766b] hover:text-[#1e1b16] cursor-pointer focus:outline-none h-9 w-9 flex items-center justify-center">
                                 <i :data-lucide="showPassword ? 'eye-off' : 'eye'" class="w-5 h-5 text-accent/80"></i>
                             </button>
                         </div>
 
                         <!-- Einladungscode Feld (nur beim Registrieren) -->
-                        <div v-if="isRegistering" class="bg-[#efe8dc] border border-accent-border rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-white transition-all shadow-sm">
+                        <div v-if="isRegistering" class="bg-[#efe8dc] border border-accent-border rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-[#efe8dc] transition-all shadow-sm">
                             <i data-lucide="ticket" class="text-accent mr-3.5 w-5 h-5 shrink-0"></i>
                             <input 
                                 type="text" 
                                 placeholder="Einladungscode" 
                                 v-model="inviteCode"
-                                class="bg-transparent w-full outline-none text-base font-black text-accent placeholder:text-[#7d766b] uppercase tracking-widest"
+                                class="login-input bg-transparent w-full outline-none text-base font-black text-accent placeholder:text-[#7d766b] uppercase tracking-widest"
                                 autocomplete="off"
                             />
                         </div>
@@ -1521,31 +1525,32 @@
                     </button>
                     <div class="min-w-0 cursor-pointer" @click="currentTab = 'home'; selectedSubject = null">
                         <p class="text-[11px] sm:text-xs font-semibold text-[#6E665E] leading-tight truncate">Gymnasium • {{ currentClass }}. Klasse</p>
-                        <img src="/assets/schooly_logo_transparent.png" alt="Schooly Logo" class="h-6 sm:h-7 w-auto object-contain my-0.5" />
+                        <img src="/assets/schooly_logo_transparent.png" alt="Schooly Logo" class="h-8 sm:h-9.5 md:h-10 w-auto object-contain my-0.5" />
                     </div>
                 </div>
                 
-                <!-- Right Actions: Notification Bell + Sage Green Plus Button + Settings/Friends -->
-                <div class="flex items-center gap-2 shrink-0">
-                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn hidden xs:flex items-center gap-1.5 px-3 py-2 bg-[#f0e6df] hover:bg-[#e6dcd3] rounded-full border border-[#ede3d8] text-[#1f1b16] font-bold text-xs transition-all cursor-pointer active:scale-95">
+                <!-- Right Actions: Notification Bell + Sage Green Plus Button + Settings/Friends (Gleichgroß am Laptop) -->
+                <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn hidden md:flex items-center gap-1.5 px-3 py-2 bg-[#f0e6df] hover:bg-[#e6dcd3] rounded-full border border-[#ede3d8] text-[#1f1b16] font-bold text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11">
                         <i data-lucide="download" class="w-4 h-4 shrink-0"></i>
                         <span class="whitespace-nowrap">Installieren</span>
                     </button>
-                    <!-- Glocken-Symbol (Benachrichtigungen) in Soft Linen Kreis -->
+                    <!-- Glocken-Symbol (Benachrichtigungen) -->
                     <button @click="isNotificationsOpen = true" title="Benachrichtigungen" class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
-                        <i data-lucide="bell" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
+                        <i data-lucide="bell" class="w-5 h-5"></i>
                         <span v-if="unreadNotifications && unreadNotifications.length > 0" class="absolute top-1 right-1 w-3.5 h-3.5 bg-[#dc2626] rounded-full text-[9px] font-black text-white flex items-center justify-center leading-none">{{ unreadNotifications.length > 9 ? '9+' : unreadNotifications.length }}</span>
                     </button>
                     <!-- Grüner Plus Button (Neuer Termin / Aufgabe) -->
                     <button @click="openTaskModal" title="Termin / Aufgabe hinzufügen" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white flex items-center justify-center shadow-sm active:scale-95 transition-all cursor-pointer">
-                        <i data-lucide="plus" class="w-5.5 h-5.5 sm:w-6 sm:h-6 stroke-[2.5]"></i>
+                        <i data-lucide="plus" class="w-5.5 h-5.5 stroke-[2.5]"></i>
                     </button>
-                    <!-- Einstellungen / Freunde Dropdown oder Schnell-Buttons -->
-                    <button @click="isFriendsOpen = true" title="Freunde" class="w-8 h-8 rounded-full flex items-center justify-center text-[#6E665E] hover:text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <!-- Freunde Button (Gleiche Größe wie die anderen Buttons) -->
+                    <button @click="isFriendsOpen = true" title="Freunde" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
+                        <i data-lucide="user-plus" class="w-5 h-5"></i>
                     </button>
-                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; isAppSettingsModalOpen = true" title="Einstellungen" class="w-8 h-8 rounded-full flex items-center justify-center text-[#6E665E] hover:text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
+                    <!-- Einstellungen Button (Gleiche Größe wie die anderen Buttons) -->
+                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
                     </button>
                 </div>
             </header>
@@ -1568,8 +1573,9 @@
                 <!-- 1. DASHBOARD / HOME (Zweispaltig & Desktop-optimiert) -->
                 <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 animate-fade-in max-w-5xl mx-auto">
                     
-                    <!-- Große, prominente Begrüßung mit Notenschnitt im Überblick -->
-                    <div class="bg-white rounded-[2rem] p-6 sm:p-8 border border-[#ede3d8] shadow-xs relative overflow-hidden transition-all">
+                    <!-- Große, prominente Begrüßung mit Notenschnitt im Überblick (Farblich hervorgehoben) -->
+                    <div class="bg-gradient-to-br from-[#f5efe6] via-[#faf6ef] to-[#eef4f0] rounded-[2rem] p-6 sm:p-8 border border-[#dfd4c4] shadow-xs relative overflow-hidden transition-all">
+                        <div class="absolute -right-12 -top-12 w-48 h-48 bg-[#2d694c]/6 rounded-full blur-2xl pointer-events-none"></div>
                         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div class="space-y-2 min-w-0 flex-1">
                                 <div class="flex items-center gap-2 text-xs font-bold text-[#6E665E]">
@@ -1593,15 +1599,20 @@
                             </div>
 
                             <!-- PROMINENTER NOTENSCHNITT-KASTEN (Sofort auf den 1. Blick!) -->
-                            <div class="bg-[#fcfaf6] p-4.5 sm:p-5 rounded-2xl border border-[#ede3d8] flex items-center gap-4 shrink-0 shadow-2xs hover:shadow-xs transition-all">
+                            <div class="bg-white/95 backdrop-blur-xs p-4.5 sm:p-5 rounded-2xl border border-[#ded3c2] flex items-center gap-4 shrink-0 shadow-sm hover:shadow-md transition-all">
                                 <div class="w-13 h-13 rounded-2xl bg-[#2d694c] text-white flex items-center justify-center font-black text-2xl shrink-0 shadow-xs">
                                     <i data-lucide="award" class="w-7 h-7 text-white"></i>
                                 </div>
                                 <div>
                                     <span class="text-[10px] font-black uppercase tracking-wider text-[#6E665E] block leading-none mb-1">SCHNITT HJ {{ selectedHalfYear }}</span>
-                                    <div class="text-2xl sm:text-3xl font-black text-[#1f1b16] font-['Epilogue'] leading-none flex items-baseline gap-1">
+                                    <div class="text-2xl sm:text-3xl font-black text-[#1f1b16] font-['Epilogue'] leading-none flex items-baseline gap-1.5 flex-wrap">
                                         <span>{{ processedData?.overallAvg ? formatNumber(processedData.overallAvg) : '0,0' }}</span>
-                                        <span class="text-xs font-bold text-[#6E665E]">{{ gradeSystem === '6' ? 'Schnitt' : 'Punkte' }}</span>
+                                        <span class="text-xs font-bold text-[#6E665E]">{{ gradeSystem === '6' ? 'Schnitt' : 'Pkt.' }}</span>
+                                        <span v-if="gradeSystem !== '6'" 
+                                              class="text-xs sm:text-sm font-black text-[#2d694c] bg-[#2d694c]/10 px-2.5 py-0.5 rounded-full border border-[#2d694c]/20 ml-1 inline-flex items-center gap-1 shadow-2xs">
+                                            <span class="text-[9px] uppercase tracking-wider text-[#2d694c]/70 font-bold">Note</span>
+                                            <span>{{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}</span>
+                                        </span>
                                     </div>
                                     <span class="text-[11px] font-bold text-[#2d694c] mt-1 block">
                                         {{ (processedData?.semesterSubjects || []).length }} Fächer · {{ getTotalGradesCount() }} Noten
@@ -2196,35 +2207,40 @@
                         </div>
                     </div>
 
-                    <!-- LIQUID SEGMENTED DOCK (Monat / Woche / Anstehend / Plan) -->
-                    <div class="max-w-md mx-auto mb-6 px-1">
+                    <!-- LIQUID SEGMENTED DOCK (Monat / Woche / Anstehend / Vergangen / Plan) -->
+                    <div class="w-full max-w-xl lg:max-w-2xl mx-auto mb-6 px-2 sm:px-4">
                         <nav class="liquid-dock relative p-1.5 flex justify-between items-center rounded-full select-none shadow-xs" @touchstart.stop @touchmove.stop @touchend.stop>
                             <div class="liquid-glass-glider pointer-events-none"
                                  :style="{
-                                     width: 'calc((100% - 12px) / 4)',
-                                     left: `calc(6px + ${activePlannerSubNavIndex} * ((100% - 12px) / 4))`
+                                     width: 'calc((100% - 12px) / 5)',
+                                     left: `calc(6px + ${activePlannerSubNavIndex} * ((100% - 12px) / 5))`
                                  }">
                                 <div class="glider-specular-top"></div>
                                 <div class="glider-dot-glow"></div>
                             </div>
                             <button @click="plannerTab = 'calendar'; calendarViewMode = 'month'"
-                                    class="relative z-10 flex-1 py-2 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                                    class="relative z-10 flex-1 py-2.5 sm:py-3 px-1 sm:px-3 rounded-full text-[11px] xs:text-xs sm:text-sm md:text-[13.5px] transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
                                     :class="activePlannerSubNavIndex === 0 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
                                 <span>Monat</span>
                             </button>
                             <button @click="plannerTab = 'calendar'; calendarViewMode = 'week'"
-                                    class="relative z-10 flex-1 py-2 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                                    class="relative z-10 flex-1 py-2.5 sm:py-3 px-1 sm:px-3 rounded-full text-[11px] xs:text-xs sm:text-sm md:text-[13.5px] transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
                                     :class="activePlannerSubNavIndex === 1 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
                                 <span>Woche</span>
                             </button>
                             <button @click="plannerTab = 'upcoming'"
-                                    class="relative z-10 flex-1 py-2 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                                    class="relative z-10 flex-1 py-2.5 sm:py-3 px-1 sm:px-3 rounded-full text-[11px] xs:text-xs sm:text-sm md:text-[13.5px] transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
                                     :class="activePlannerSubNavIndex === 2 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
                                 <span>Anstehend</span>
                             </button>
-                            <button @click="plannerTab = 'timetable'"
-                                    class="relative z-10 flex-1 py-2 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                            <button @click="plannerTab = 'past'"
+                                    class="relative z-10 flex-1 py-2.5 sm:py-3 px-1 sm:px-3 rounded-full text-[11px] xs:text-xs sm:text-sm md:text-[13.5px] transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
                                     :class="activePlannerSubNavIndex === 3 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
+                                <span>Vergangen</span>
+                            </button>
+                            <button @click="plannerTab = 'timetable'"
+                                    class="relative z-10 flex-1 py-2.5 sm:py-3 px-1 sm:px-3 rounded-full text-[11px] xs:text-xs sm:text-sm md:text-[13.5px] transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                                    :class="activePlannerSubNavIndex === 4 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
                                 <span>Plan</span>
                             </button>
                         </nav>
@@ -2876,7 +2892,12 @@
                                 </span>
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Gesamtschnitt</span>
                             </div>
-                            <div class="text-4xl font-black text-[#1f1b16] font-['Epilogue'] leading-none">{{ formatNumber(processedData?.avgPoints) }}</div>
+                            <div class="text-3xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] leading-none flex items-baseline gap-2 flex-wrap">
+                                <span>{{ formatNumber(processedData?.avgPoints) }}</span>
+                                <span v-if="gradeSystem !== '6'" class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-2.5 py-0.5 rounded-full border border-[#2d694c]/20">
+                                    Note {{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}
+                                </span>
+                            </div>
                             <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Ø aller Fächer' : 'Ø Punkte gewichtet' }}</div>
                         </div>
                     </div>
@@ -2969,6 +2990,129 @@
                                     <div class="text-[11px] text-[#6E665E] font-medium">{{ getSubjectGradesCount(s) }} Noten</div>
                                 </div>
                                 <div class="text-xl font-black shrink-0 font-['Epilogue']" :style="{ color: s.color }">{{ formatNumber(s.finalPoints) }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FREUNDES-VERGLEICH (Insights Feature) -->
+                    <div class="bg-white rounded-[2rem] p-5 sm:p-7 border border-[#ede3d8] shadow-xs stats-card-enter space-y-5" style="animation-delay:0.32s">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center shrink-0">
+                                    <i data-lucide="swords" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-[#1f1b16] text-base sm:text-lg font-['Epilogue']">Notenvergleich mit Freunden</h3>
+                                    <p class="text-xs text-[#6E665E] font-medium">Vergleiche deinen Schnitt & Noten direkt im Halbjahr {{ selectedHalfYear }}</p>
+                                </div>
+                            </div>
+                            <button @click="isFriendsOpen = true; friendsTab = 'members'" class="text-xs font-bold text-[#2d694c] hover:underline flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
+                                <i data-lucide="user-plus" class="w-4 h-4"></i> Freunde verwalten
+                            </button>
+                        </div>
+
+                        <!-- Freunde-Wahl Leiste -->
+                        <div v-if="!friends || friends.length === 0" class="text-center py-8 bg-[#f4ece4] rounded-2xl border border-[#ede3d8] space-y-2">
+                            <p class="text-sm font-bold text-[#1f1b16]">Noch keine Freunde verbunden</p>
+                            <p class="text-xs text-[#6E665E]">Verbinde dich mit Mitschülern über das Freunde-Symbol oben, um eure Schnitte zu vergleichen.</p>
+                            <button @click="isFriendsOpen = true; friendsTab = 'members'" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
+                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
+                            </button>
+                        </div>
+
+                        <div v-else class="space-y-4">
+                            <!-- Freund-Auswahl Chips -->
+                            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                                <button v-for="f in friends" :key="f.uid"
+                                        @click="selectedFriend = f"
+                                        type="button"
+                                        class="flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95"
+                                        :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-[#2d694c] text-white border-[#23533c] shadow-xs' : 'bg-[#f4ece4] hover:bg-[#eae0d5] text-[#1f1b16] border-[#ede3d8]'">
+                                    <div class="w-5 h-5 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-[10px] shrink-0 font-black">
+                                        <img v-if="f.photoUrl && (f.photoUrl.startsWith('data:') || f.photoUrl.startsWith('http'))" :src="f.photoUrl" class="w-full h-full object-cover" />
+                                        <span v-else-if="f.photoUrl">{{ f.photoUrl }}</span>
+                                        <span v-else>{{ f.displayName ? f.displayName[0].toUpperCase() : '?' }}</span>
+                                    </div>
+                                    <span>{{ f.displayName || f.email }}</span>
+                                </button>
+                            </div>
+
+                            <!-- Head-to-Head Duell Widget -->
+                            <div v-if="selectedFriend" class="bg-gradient-to-br from-[#faf6ef] to-[#f2ece2] rounded-3xl p-5 sm:p-6 border border-[#ded3c2] space-y-4 shadow-xs">
+                                <div class="grid grid-cols-7 gap-2 items-center">
+                                    <!-- Du / Ich -->
+                                    <div class="col-span-3 flex flex-col items-center text-center">
+                                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#2d694c]/20">
+                                            <img v-if="userAvatar && (userAvatar.startsWith('data:') || userAvatar.startsWith('http'))" :src="userAvatar" class="w-full h-full object-cover" />
+                                            <span v-else-if="userAvatar" class="text-2xl">{{ userAvatar }}</span>
+                                            <span v-else class="font-extrabold text-[#2d694c] text-sm">{{ displayName ? displayName.slice(0,2).toUpperCase() : 'ICH' }}</span>
+                                        </div>
+                                        <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ displayName || 'Du' }}</h4>
+                                        <span class="text-[10px] text-[#6E665E]">Kl. {{ currentClass }}</span>
+                                        <div class="mt-2 text-2xl sm:text-3xl font-black text-[#2d694c] font-['Epilogue'] leading-none">
+                                            {{ comparisonSummary ? formatNumber(comparisonSummary.myOverall) : '-' }}
+                                        </div>
+                                        <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Dein Ø</span>
+                                    </div>
+
+                                    <!-- VS Mitte -->
+                                    <div class="col-span-1 flex flex-col items-center justify-center text-center">
+                                        <span class="w-8 h-8 rounded-full bg-white border border-[#ded5c7] text-[#1f1b16] flex items-center justify-center text-xs font-black shadow-xs">
+                                            VS
+                                        </span>
+                                        <div v-if="comparisonSummary" class="text-[10px] font-black mt-2 text-[#6E665E] whitespace-nowrap">
+                                            {{ comparisonSummary.myWins }}:{{ comparisonSummary.friendWins }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Freund -->
+                                    <div class="col-span-3 flex flex-col items-center text-center">
+                                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#825500]/20">
+                                            <img v-if="selectedFriend.photoUrl && (selectedFriend.photoUrl.startsWith('data:') || selectedFriend.photoUrl.startsWith('http'))" :src="selectedFriend.photoUrl" class="w-full h-full object-cover" />
+                                            <span v-else-if="selectedFriend.photoUrl" class="text-2xl">{{ selectedFriend.photoUrl }}</span>
+                                            <span v-else class="font-extrabold text-[#825500] text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
+                                        </div>
+                                        <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
+                                        <span class="text-[10px] text-[#6E665E]">Kl. {{ selectedFriend.currentClass || '?' }}</span>
+                                        <div class="mt-2 text-2xl sm:text-3xl font-black text-[#825500] font-['Epilogue'] leading-none">
+                                            {{ comparisonSummary ? formatNumber(comparisonSummary.friendOverall) : '-' }}
+                                        </div>
+                                        <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Freund Ø</span>
+                                    </div>
+                                </div>
+
+                                <!-- Lead Badge -->
+                                <div v-if="comparisonSummary && comparisonSummary.myOverall !== null && comparisonSummary.friendOverall !== null" class="pt-3 border-t border-[#ded5c7] text-center">
+                                    <span v-if="comparisonSummary.diff > 0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                        🏆 +{{ formatNumber(comparisonSummary.diff) }} Pkt Vorsprung für dich!
+                                    </span>
+                                    <span v-else-if="comparisonSummary.diff < -0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-200">
+                                        ⚡ {{ formatNumber(Math.abs(comparisonSummary.diff)) }} Pkt Rückstand — Aufholjagd gestartet!
+                                    </span>
+                                    <span v-else class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-white text-[#1f1b16] border border-[#ede3d8]">
+                                        🤝 Absoluter Gleichstand im Schnitt!
+                                    </span>
+                                </div>
+
+                                <!-- Gemeinsame Fächer Vergleichsliste -->
+                                <div v-if="comparisonData && comparisonData.length > 0" class="space-y-2 pt-2">
+                                    <h5 class="text-xs font-bold uppercase tracking-wider text-[#6E665E] flex items-center justify-between">
+                                        <span>Gemeinsame Fächer</span>
+                                        <span>{{ comparisonData.length }} Fächer</span>
+                                    </h5>
+                                    <div v-for="row in comparisonData" :key="row.subjectName"
+                                         class="grid grid-cols-3 gap-3 items-center bg-white border border-[#ede3d8] rounded-2xl px-4 py-2.5">
+                                        <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.myAvg >= row.friendAvg ? 'text-[#2d694c]' : 'text-rose-600') : 'text-[#1f1b16]'">
+                                            {{ row.myAvg !== null ? formatNumber(row.myAvg) : '–' }}
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="text-xs font-bold text-[#1f1b16] block truncate">{{ row.subjectName }}</span>
+                                        </div>
+                                        <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.friendAvg >= row.myAvg ? 'text-[#825500]' : 'text-[#6E665E]') : 'text-[#1f1b16]'">
+                                            {{ row.friendAvg !== null ? formatNumber(row.friendAvg) : '–' }}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -6853,8 +6997,9 @@
                     if (plannerTab.value === 'calendar') {
                         return calendarViewMode.value === 'week' ? 1 : 0;
                     }
-                    if (plannerTab.value === 'upcoming' || plannerTab.value === 'past') return 2;
-                    if (plannerTab.value === 'timetable') return 3;
+                    if (plannerTab.value === 'upcoming') return 2;
+                    if (plannerTab.value === 'past') return 3;
+                    if (plannerTab.value === 'timetable') return 4;
                     return 0;
                 });
 
