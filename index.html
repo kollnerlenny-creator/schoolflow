@@ -2803,24 +2803,24 @@
                                 <div class="bg-white/90 backdrop-blur-xs p-3.5 rounded-2xl border border-[#ded5c7] shadow-2xs">
                                     <div class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E]">Unterkurse (&lt; 5 Pkt.)</div>
                                     <div class="text-xl sm:text-2xl font-black font-['Epilogue'] leading-tight mt-0.5"
-                                         :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 3 ? 'text-rose-600' : 'text-[#1f1b16]'">
+                                         :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'text-rose-600' : 'text-[#1f1b16]'">
                                         {{ saxonAbiturResult.anzahl_unterkurse_gesamt }} <span class="text-[11px] font-bold text-[#857e72]">/ max. 8</span>
                                     </div>
                                     <div class="text-[10px] font-semibold text-[#6E665E] mt-0.5">
-                                        LK: {{ saxonAbiturResult.anzahl_unterkurse_lk }} / max. 3
+                                        LK: {{ saxonAbiturResult.anzahl_unterkurse_lk }} / max. 4
                                     </div>
                                 </div>
 
-                                <!-- Einbringung KHE Kachel -->
+                                <!-- Einbringung Kurse Kachel -->
                                 <div class="bg-white/90 backdrop-blur-xs p-3.5 rounded-2xl border border-[#ded5c7] shadow-2xs">
-                                    <div class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E]">Einbringung (KHE)</div>
+                                    <div class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E]">Einbringung (Kurse)</div>
                                     <div class="text-xl sm:text-2xl font-black text-[#2d694c] font-['Epilogue'] leading-tight mt-0.5">
-                                        {{ saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }} <span class="text-[11px] font-bold text-[#857e72]">/ 40 KHE</span>
+                                        {{ saxonAbiturResult.anzahl_kurse_gesamt || saxonAbiturResult.eingebrachte_kurse.length }} <span class="text-[11px] font-bold text-[#857e72]">/ 40 Kurse</span>
                                     </div>
                                     <div class="text-[10px] font-semibold text-[#6E665E] mt-0.5">
-                                        {{ saxonAbiturResult.gestrichene_kurse.length }} Kurse geklammert
+                                        8 LK (2x) + 32 GK (1x) · 48 KHE
                                     </div>
-                                    <div v-if="saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) > 40" class="mt-1 text-[9px] font-black text-[#825500] bg-[#fed8b1]/60 px-1.5 py-0.5 rounded-md leading-tight inline-block" title="Gesetzliche Pflichtüberbelegung nach § 24 SOGYA. Punkte werden durch die sächsische Divisionsformel fair auf 40 KHE normiert.">
+                                    <div v-if="saxonAbiturResult.anzahl_gk_kurse > 32" class="mt-1 text-[9px] font-black text-[#825500] bg-[#fed8b1]/60 px-1.5 py-0.5 rounded-md leading-tight inline-block" title="Gesetzliche Pflichtüberbelegung nach § 24 SOGYA. Punkte werden durch die sächsische Divisionsformel fair auf 40 KHE normiert.">
                                         Pflichtüberbelegung · Nach SOGYA skaliert
                                     </div>
                                 </div>
@@ -2919,6 +2919,41 @@
                                         <option v-for="s in subjects.filter(x => !x.isLK && x.name !== saxonP3 && x.name !== saxonP4)" :key="s.id" :value="s.name">{{ s.name }}</option>
                                     </select>
                                     <span class="text-[10px] text-[#857e72] mt-1 block">Pflichteinbringung 4 Halbjahre</span>
+                                </div>
+                            </div>
+
+                            <!-- SOGYA FÄCHERWAHL CHECK STATUS -->
+                            <div class="p-3 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                                 :class="saxonAbiturResult.faecherwahl_gueltig ? 'bg-[#f2f8f4] border-[#cfe2d7]' : 'bg-[#fff8f2] border-[#f5dfc2]'">
+                                <div class="flex items-center gap-2">
+                                    <i :data-lucide="saxonAbiturResult.faecherwahl_gueltig ? 'check-circle' : 'info'" class="w-4 h-4 shrink-0"
+                                       :class="saxonAbiturResult.faecherwahl_gueltig ? 'text-[#2d694c]' : 'text-[#825500]'"></i>
+                                    <span class="font-bold text-[#1f1b16]">
+                                        Sächsische Fächerwahl:
+                                        <span class="font-black" :class="saxonAbiturResult.faecherwahl_gueltig ? 'text-[#2d694c]' : 'text-[#825500]'">
+                                            {{ saxonAbiturResult.faecherwahl_gueltig ? 'Alle Vorgaben erfüllt ✓' : 'Prüfung erforderlich' }}
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-2 flex-wrap text-[11px] font-bold">
+                                    <span class="px-2.5 py-1 rounded-full border"
+                                          :class="saxonAbiturResult.faecherwahl_details?.lkHasMathOrDeutsch ? 'bg-white text-[#2d694c] border-[#cfe2d7]' : 'bg-rose-50 text-rose-700 border-rose-300'">
+                                        1 LK Mathe/Deutsch {{ saxonAbiturResult.faecherwahl_details?.lkHasMathOrDeutsch ? '✓' : '✗' }}
+                                    </span>
+                                    <span class="px-2.5 py-1 rounded-full border"
+                                          :class="saxonAbiturResult.faecherwahl_details?.hasDeutschExam && saxonAbiturResult.faecherwahl_details?.hasMatheExam ? 'bg-white text-[#2d694c] border-[#cfe2d7]' : 'bg-rose-50 text-rose-700 border-rose-300'">
+                                        Mathe & Deutsch in P1–P5 {{ saxonAbiturResult.faecherwahl_details?.hasDeutschExam && saxonAbiturResult.faecherwahl_details?.hasMatheExam ? '✓' : '✗' }}
+                                    </span>
+                                    <span class="px-2.5 py-1 rounded-full border"
+                                          :class="saxonAbiturResult.faecherwahl_details?.hasAf1 && saxonAbiturResult.faecherwahl_details?.hasAf2 && saxonAbiturResult.faecherwahl_details?.hasAf3 ? 'bg-white text-[#2d694c] border-[#cfe2d7]' : 'bg-rose-50 text-rose-700 border-rose-300'">
+                                        3 Aufgabenfelder {{ saxonAbiturResult.faecherwahl_details?.hasAf1 && saxonAbiturResult.faecherwahl_details?.hasAf2 && saxonAbiturResult.faecherwahl_details?.hasAf3 ? '✓' : '✗' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div v-if="!saxonAbiturResult.faecherwahl_gueltig" class="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs font-medium space-y-1">
+                                <div v-for="(err, eIdx) in saxonAbiturResult.faecherwahl_fehler" :key="eIdx" class="flex items-center gap-1.5">
+                                    <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0 text-rose-600"></i>
+                                    <span>{{ err }}</span>
                                 </div>
                             </div>
 
@@ -3093,9 +3128,9 @@
                                 <div>
                                     <h3 class="text-lg font-black text-[#1f1b16] font-['Epilogue'] flex items-center gap-2">
                                         <i data-lucide="check-square" class="w-5 h-5 text-[#2d694c]"></i>
-                                        <span>Block I: Kurseinbringung (Exakt 40 Kurse gewichtet)</span>
+                                        <span>Block I: Kurseinbringung (Exakt 40 Kurse: 8 LK + 32 GK)</span>
                                     </h3>
-                                    <p class="text-xs text-[#6E665E] mt-0.5">LKs zählen doppelt (16 KHE), Grundkurse einfach (24 KHE). Pflichtfächer sind fest, der Rest wird automatisch mit den besten Noten belegt.</p>
+                                    <p class="text-xs text-[#6E665E] mt-0.5">8 LK-Halbjahre zählen doppelt (16 KHE), 32 Grundkurse einfach (32 KHE). Pflichtkurse sind fest eingebracht, freie Plätze werden mit den notenbesten Grundkursen belegt.</p>
                                 </div>
 
                                 <div class="flex items-center gap-2 flex-wrap">
@@ -3217,14 +3252,14 @@
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-xs font-black text-[#1f1b16] flex items-center gap-1.5">
                                             <i data-lucide="check-circle-2" class="w-4 h-4 text-[#2d694c]"></i>
-                                            <span>Eingebrachte Kurse ({{ saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }} KHE)</span>
+                                            <span>Eingebrachte Kurse ({{ saxonAbiturResult.anzahl_kurse_gesamt || saxonAbiturResult.eingebrachte_kurse.length }} Kurse · {{ saxonAbiturResult.anzahl_gewichtete_khe || saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }} KHE)</span>
                                         </span>
                                         <span class="text-[10px] font-extrabold text-[#2d694c] bg-[#2d694c]/10 px-2 py-0.5 rounded-full">
-                                            Exakt 40 gewertet
+                                            Exakt 40 Kurse gewertet
                                         </span>
                                     </div>
                                     <p class="text-[11px] text-[#6E665E] mb-2 leading-relaxed">
-                                        16 LK-Wertungseinheiten (8 Halbjahre doppelt) + 24 GK-Wertungseinheiten fließen in Block I ein.
+                                        16 LK-Wertungseinheiten (8 Halbjahre doppelt) + 32 GK-Wertungseinheiten (32 Halbjahre einfach) fließen in Block I ein.
                                     </p>
                                     <div class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto no-scrollbar pt-1">
                                         <span v-for="c in saxonAbiturResult.eingebrachte_kurse" :key="c.fach + c.halbjahr"
@@ -3295,16 +3330,16 @@
 
                                 <!-- Regel B: Unterkurse Block I -->
                                 <div class="p-4 rounded-2xl border flex items-start gap-3.5 transition-all"
-                                     :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 3 ? 'bg-rose-50 border-rose-300' : 'bg-[#f4ece4]/60 border-[#ede3d8]'">
+                                     :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'bg-rose-50 border-rose-300' : 'bg-[#f4ece4]/60 border-[#ede3d8]'">
                                     <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                                         :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 3 ? 'bg-rose-600 text-white' : 'bg-[#2d694c] text-white'">
-                                        <i :data-lucide="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 3 ? 'x' : 'check'" class="w-4.5 h-4.5"></i>
+                                         :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'bg-rose-600 text-white' : 'bg-[#2d694c] text-white'">
+                                        <i :data-lucide="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'x' : 'check'" class="w-4.5 h-4.5"></i>
                                     </div>
                                     <div>
-                                        <div class="text-sm font-black text-[#1f1b16]">Regel B: Maximal 8 Unterkurse (&lt; 5 Pkt.), davon max. 3 LK</div>
-                                        <p class="text-xs text-[#6E665E] mt-0.5">In Block I dürfen höchstens 8 Kurshalbjahresergebnisse unter 5 Punkten eingebracht werden, davon maximal 3 im Leistungskursbereich.</p>
-                                        <span class="text-xs font-bold mt-1 block" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 3 ? 'text-rose-600' : 'text-[#2d694c]'">
-                                            Aktuell: {{ saxonAbiturResult.anzahl_unterkurse_gesamt }} Unterkurse gesamt (max. 8) · {{ saxonAbiturResult.anzahl_unterkurse_lk }} LK-Unterkurse (max. 3)
+                                        <div class="text-sm font-black text-[#1f1b16]">Regel B: Maximal 8 Unterkurse (&lt; 5 Pkt.), davon max. 4 LK</div>
+                                        <p class="text-xs text-[#6E665E] mt-0.5">In Block I dürfen höchstens 8 Kurshalbjahresergebnisse unter 5 Punkten eingebracht werden, davon maximal 4 im Leistungskursbereich.</p>
+                                        <span class="text-xs font-bold mt-1 block" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'text-rose-600' : 'text-[#2d694c]'">
+                                            Aktuell: {{ saxonAbiturResult.anzahl_unterkurse_gesamt }} Unterkurse gesamt (max. 8) · {{ saxonAbiturResult.anzahl_unterkurse_lk }} LK-Unterkurse (max. 4)
                                         </span>
                                     </div>
                                 </div>
@@ -3350,10 +3385,40 @@
                                     </div>
                                     <div>
                                         <div class="text-sm font-black text-[#1f1b16]">Regel E: Prüfungshürde (min. 3 Prüfungen ≥ 20 Pkt. mit min. 1 LK)</div>
-                                        <p class="text-xs text-[#6E665E] mt-0.5">In mindestens 3 der 5 Prüfungen (darunter mindestens in einem Leistungskurs) müssen jeweils mindestens 5 Punkte (20 Punkte vierfach) erreicht werden.</p>
+                                        <p class="text-xs text-[#6E665E] mt-0.5">In mindestens 3 der 5 Prüfungen (darunter mindestens in einem Leistungskurs) müssen jeweils mindestens 5 Punkte in einfacher Wertung (20 Punkte vierfach) erreicht werden.</p>
                                         <span class="text-xs font-bold mt-1 block" :class="saxonAbiturResult.fehler_code === 'PRUEFUNGSHUERDE_VERLETZT' ? 'text-rose-600' : 'text-[#2d694c]'">
                                             Status: {{ saxonAbiturResult.fehler_code === 'PRUEFUNGSHUERDE_VERLETZT' ? 'Noch nicht erfüllt' : 'Erfüllt ✓' }}
                                         </span>
+                                    </div>
+                                </div>
+
+                                <!-- Regel F: Fächerwahl & Aufgabenfelder (SOGYA) -->
+                                <div class="p-4 rounded-2xl border flex items-start gap-3.5 transition-all"
+                                     :class="!saxonAbiturResult.faecherwahl_gueltig ? 'bg-rose-50 border-rose-300' : 'bg-[#f4ece4]/60 border-[#ede3d8]'">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                                         :class="!saxonAbiturResult.faecherwahl_gueltig ? 'bg-rose-600 text-white' : 'bg-[#2d694c] text-white'">
+                                        <i :data-lucide="!saxonAbiturResult.faecherwahl_gueltig ? 'alert-triangle' : 'check'" class="w-4.5 h-4.5"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-black text-[#1f1b16]">Regel F: Fächerwahl & Aufgabenfelder (SOGYA)</div>
+                                        <p class="text-xs text-[#6E665E] mt-0.5">Mindestens 1 LK muss Deutsch oder Mathe sein. Unter P1–P5 müssen zwingend Deutsch und Mathe sein sowie alle 3 Aufgabenfelder (AF I, AF II, AF III) vertreten sein.</p>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
+                                            <div class="p-2 rounded-xl text-xs font-bold border"
+                                                 :class="saxonAbiturResult.faecherwahl_details?.lkHasMathOrDeutsch ? 'bg-[#f2f8f4] text-[#2d694c] border-[#cfe2d7]' : 'bg-rose-50 text-rose-700 border-rose-200'">
+                                                LK: 1x Mathe/Deutsch {{ saxonAbiturResult.faecherwahl_details?.lkHasMathOrDeutsch ? '✓' : '✗' }}
+                                            </div>
+                                            <div class="p-2 rounded-xl text-xs font-bold border"
+                                                 :class="saxonAbiturResult.faecherwahl_details?.hasDeutschExam && saxonAbiturResult.faecherwahl_details?.hasMatheExam ? 'bg-[#f2f8f4] text-[#2d694c] border-[#cfe2d7]' : 'bg-rose-50 text-rose-700 border-rose-200'">
+                                                P1–P5: Mathe & Deutsch {{ saxonAbiturResult.faecherwahl_details?.hasDeutschExam && saxonAbiturResult.faecherwahl_details?.hasMatheExam ? '✓' : '✗' }}
+                                            </div>
+                                            <div class="p-2 rounded-xl text-xs font-bold border"
+                                                 :class="saxonAbiturResult.faecherwahl_details?.hasAf1 && saxonAbiturResult.faecherwahl_details?.hasAf2 && saxonAbiturResult.faecherwahl_details?.hasAf3 ? 'bg-[#f2f8f4] text-[#2d694c] border-[#cfe2d7]' : 'bg-rose-50 text-rose-700 border-rose-200'">
+                                                3 Aufgabenfelder {{ saxonAbiturResult.faecherwahl_details?.hasAf1 && saxonAbiturResult.faecherwahl_details?.hasAf2 && saxonAbiturResult.faecherwahl_details?.hasAf3 ? '✓' : '✗' }}
+                                            </div>
+                                        </div>
+                                        <div v-if="!saxonAbiturResult.faecherwahl_gueltig" class="mt-2 text-xs font-bold text-rose-700">
+                                            <span v-for="(f, i) in saxonAbiturResult.faecherwahl_fehler" :key="i" class="block">• {{ f }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -3504,20 +3569,18 @@
                                     </div>
                                     <div class="bg-white/80 p-2.5 rounded-xl border border-[#ded5c7]">
                                         <span class="text-[9.5px] font-bold text-[#6E665E] uppercase block">Unterkurse (&lt;5)</span>
-                                        <span class="text-sm font-black" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 ? 'text-rose-600' : 'text-[#1f1b16]'">
-                                            {{ saxonAbiturResult.anzahl_unterkurse_gesamt }} <span class="text-[10px] text-[#857e72]">/ max. 8</span>
+                                        <span class="text-sm font-black" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'text-rose-600' : 'text-[#1f1b16]'">
+                                            {{ saxonAbiturResult.anzahl_unterkurse_gesamt }} <span class="text-[10px] text-[#857e72]">/ 8 (LK: {{ saxonAbiturResult.anzahl_unterkurse_lk }}/4)</span>
                                         </span>
                                     </div>
                                     <div class="bg-white/80 p-2.5 rounded-xl border border-[#ded5c7]">
                                         <span class="text-[9.5px] font-bold text-[#6E665E] uppercase block">Einbringung</span>
                                         <span class="text-sm font-black text-[#2d694c]">
-                                            {{ saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }} <span class="text-[10px] text-[#857e72]">/ 40 KHE</span>
+                                            {{ saxonAbiturResult.anzahl_kurse_gesamt || saxonAbiturResult.eingebrachte_kurse.length }} <span class="text-[10px] text-[#857e72]">/ 40 Kurse</span>
                                         </span>
                                     </div>
                                 </div>
-                                <div v-if="saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) > 40" class="mt-2 text-[10px] font-bold text-[#825500] bg-[#fed8b1]/60 px-2 py-1 rounded-lg">
-                                    💡 <strong>42 / 40 KHE:</strong> Gesetzliche Pflichtüberbelegung nach § 24 SOGYA. Dein Ergebnis wird fair auf 40 KHE skaliert!
-                                </div>
+                                
                             </div>
 
                             <!-- Menü Überschrift -->
@@ -3567,7 +3630,7 @@
                                                     Kurseinbringung
                                                 </h3>
                                                 <span class="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 bg-[#2d694c]/15 text-[#2d694c]">
-                                                    {{ saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }} / 40 KHE
+                                                    {{ saxonAbiturResult.anzahl_kurse_gesamt || saxonAbiturResult.eingebrachte_kurse.length }} / 40 Kurse
                                                 </span>
                                             </div>
                                             <div class="text-[11px] text-[#6E665E] font-medium mt-0.5 truncate">
@@ -3825,12 +3888,11 @@
                                     <div class="flex items-center justify-between">
                                         <h4 class="text-xs font-black uppercase text-[#1f1b16]">Kurse in Block I</h4>
                                         <span class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-2.5 py-0.5 rounded-full">
-                                            {{ saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }} / 40 KHE
+                                            {{ saxonAbiturResult.anzahl_kurse_gesamt || saxonAbiturResult.eingebrachte_kurse.length }} / 40 Kurse · {{ saxonAbiturResult.anzahl_gewichtete_khe }} KHE
                                         </span>
                                     </div>
-                                    <div v-if="saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) > 40" class="p-3 bg-[#fdf8f0] border border-[#f5dfc2] rounded-xl text-xs text-[#6d4500]">
-                                        <strong>Warum {{ saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }} / 40 KHE?</strong><br>
-                                        Alle gesetzlichen Pflichtbelegungen (2 LKs * 4 * 2 + 7 Pflicht-Grundkursbereiche) müssen vollständig eingebracht werden. Nach SOGYA wird dein Gesamtergebnis über die Divisionsmethode <code class="bg-[#fed8b1]/60 px-1 rounded">(Punkte ÷ {{ saxonAbiturResult.eingebrachte_kurse.reduce((a,c)=>a+c.gewichtung,0) }}) × 40</code> fair normiert!
+                                    <div class="p-3 bg-[#fdf8f0] border border-[#f5dfc2] rounded-xl text-xs text-[#6d4500]">
+                                        <strong>40 Kurse nach SOGYA:</strong> 8 LK-Halbjahre (doppelt gewertet = 16 KHE) + 32 GK-Halbjahre (einfach = 32 KHE). Insgesamt 48 Wertungseinheiten normiert auf 40 Kurse (max. 600 Pkt., Min. 200).
                                     </div>
                                     <div class="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto no-scrollbar pt-1">
                                         <span v-for="c in saxonAbiturResult.eingebrachte_kurse" :key="c.fach + c.halbjahr"
@@ -3915,9 +3977,9 @@
                                             <span>Kein 0-Punkte-Kurs</span>
                                             <span class="font-black" :class="saxonAbiturResult.eingebrachte_kurse.some(c => c.punkte === 0) ? 'text-rose-600' : 'text-[#2d694c]'">{{ saxonAbiturResult.eingebrachte_kurse.some(c => c.punkte === 0) ? 'Fehler' : 'Erfüllt ✓' }}</span>
                                         </div>
-                                        <div class="p-2.5 rounded-xl border flex items-center justify-between text-xs" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 ? 'bg-rose-50 border-rose-300' : 'bg-[#faf7f2] border-[#ede3d8]'">
-                                            <span>Max. 8 Unterkurse (&lt;5 P.)</span>
-                                            <span class="font-black" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 ? 'text-rose-600' : 'text-[#2d694c]'">{{ saxonAbiturResult.anzahl_unterkurse_gesamt }} / 8</span>
+                                        <div class="p-2.5 rounded-xl border flex items-center justify-between text-xs" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'bg-rose-50 border-rose-300' : 'bg-[#faf7f2] border-[#ede3d8]'">
+                                            <span>Unterkurse (gesamt ≤ 8, LK ≤ 4)</span>
+                                            <span class="font-black" :class="saxonAbiturResult.anzahl_unterkurse_gesamt > 8 || saxonAbiturResult.anzahl_unterkurse_lk > 4 ? 'text-rose-600' : 'text-[#2d694c]'">{{ saxonAbiturResult.anzahl_unterkurse_gesamt }}/8 (LK: {{ saxonAbiturResult.anzahl_unterkurse_lk }}/4)</span>
                                         </div>
                                         <div class="p-2.5 rounded-xl border flex items-center justify-between text-xs" :class="saxonAbiturResult.punkte_block_1_skaliert < 200 ? 'bg-rose-50 border-rose-300' : 'bg-[#faf7f2] border-[#ede3d8]'">
                                             <span>Min. 200 Pkt. in Block I</span>
@@ -3930,6 +3992,10 @@
                                         <div class="p-2.5 rounded-xl border flex items-center justify-between text-xs" :class="saxonAbiturResult.fehler_code === 'PRUEFUNGSHUERDE_VERLETZT' ? 'bg-rose-50 border-rose-300' : 'bg-[#faf7f2] border-[#ede3d8]'">
                                             <span>Prüfungshürde (min. 3 mit 1 LK)</span>
                                             <span class="font-black" :class="saxonAbiturResult.fehler_code === 'PRUEFUNGSHUERDE_VERLETZT' ? 'text-rose-600' : 'text-[#2d694c]'">{{ saxonAbiturResult.fehler_code === 'PRUEFUNGSHUERDE_VERLETZT' ? 'Offen' : 'Erfüllt ✓' }}</span>
+                                        </div>
+                                        <div class="p-2.5 rounded-xl border flex items-center justify-between text-xs" :class="!saxonAbiturResult.faecherwahl_gueltig ? 'bg-rose-50 border-rose-300' : 'bg-[#faf7f2] border-[#ede3d8]'">
+                                            <span>Fächerwahl & Aufgabenfelder</span>
+                                            <span class="font-black" :class="!saxonAbiturResult.faecherwahl_gueltig ? 'text-rose-600' : 'text-[#2d694c]'">{{ !saxonAbiturResult.faecherwahl_gueltig ? 'Prüfen' : 'Erfüllt ✓' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -3967,6 +4033,8 @@
 
                     <!-- Schnellübersicht: 4 KPI-Kacheln -->
                     <div class="grid grid-cols-2 gap-3 stats-card-enter" style="animation-delay:0.05s">
+                        <!-- Schnellübersicht: 4 KPI-Kacheln -->
+                        <div class="grid grid-cols-2 gap-3 stats-card-enter" style="animation-delay:0.05s">
                         <!-- Beste Note -->
                         <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
                             <div class="flex items-center gap-1.5 mb-1">
@@ -4105,6 +4173,8 @@
                         </div>
                     </div>
 
+
+
                     <!-- FREUNDES-VERGLEICH (Insights Feature) -->
                     <div class="bg-white rounded-[2rem] p-5 sm:p-7 border border-[#ede3d8] shadow-xs stats-card-enter space-y-5" style="animation-delay:0.32s">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -4227,6 +4297,7 @@
                             </div>
                         </div>
                     </div>
+                    </div> <!-- / Ende Sektion 3 Charts -->
                 </div>
 
             </main>
@@ -8981,7 +9052,7 @@
                     ['P1', 'P2', 'P3', 'P4', 'P5'].forEach(key => {
                         const raw = rawPruefungen[key];
                         const n = Number(raw);
-                        if (raw !== undefined && raw !== null && raw !== '' && !isNaN(n) && n > 0) {
+                        if (raw !== undefined && raw !== null && raw !== '' && !isNaN(n) && n >= 0) {
                             validPoints.push(n);
                         } else {
                             hasMissingData = true;
@@ -8992,7 +9063,7 @@
                         semesters.forEach(sem => {
                             const raw = rawKhe[fach]?.[sem];
                             const n = Number(raw);
-                            if (raw !== undefined && raw !== null && raw !== '' && !isNaN(n) && n > 0) {
+                            if (raw !== undefined && raw !== null && raw !== '' && !isNaN(n) && n >= 0) {
                                 validPoints.push(n);
                             } else {
                                 hasMissingData = true;
@@ -9027,7 +9098,7 @@
                         semesters.forEach(sem => {
                             const raw = rawKhe[fach]?.[sem];
                             const n = Number(raw);
-                            if (raw !== undefined && raw !== null && raw !== '' && !isNaN(n) && n > 0) {
+                            if (raw !== undefined && raw !== null && raw !== '' && !isNaN(n) && n >= 0) {
                                 ptsList.push(n);
                             }
                         });
@@ -9095,7 +9166,8 @@
 
                     const fixCourse = (fach, halbjahr, gewichtung, grund) => {
                         const k = `${fach}__${halbjahr}`;
-                        if (fixedKeys.has(k)) return;
+                        if (fixedKeys.has(k)) return false;
+
                         const item = allCourses.find(c => c.key === k);
                         const pts = item ? item.punkte : (khe[fach]?.[halbjahr] ?? computedAvgPoints);
                         fixedKeys.add(k);
@@ -9106,6 +9178,7 @@
                             gewichtung,
                             grund
                         });
+                        return true;
                     };
 
                     const resolveSubjectOrReplacement = (origFach) => {
@@ -9119,7 +9192,10 @@
                         return origFach;
                     };
 
-                    // ── BLOCK I: KURSEINBRINGUNG ──
+                    // ── BLOCK I: KURSEINBRINGUNG & OPTIMIERUNG ──
+                    // SCHRITT 1: Pflichtkurse sperren (Zwingende Einbringung)
+
+                    // 1. Leistungskurse (LK): Alle 8 Halbjahresergebnisse (4 Semester x 2 LKs) doppelt gewertet
                     [lk1, lk2].forEach(lkFach => {
                         if (lkFach && subjectsList.includes(lkFach)) {
                             semesters.forEach(sem => {
@@ -9130,19 +9206,30 @@
 
                     const lkCats = [getCat(lk1), getCat(lk2)];
 
-                    // Deutsch
+                    // 2. Abiturprüfungsfächer P3, P4, P5 (4 Halbjahre je Fach)
+                    [
+                        { fach: p3, label: 'P3' },
+                        { fach: p4, label: 'P4' },
+                        { fach: p5, label: 'P5' }
+                    ].forEach(({ fach, label }) => {
+                        if (fach && fach !== lk1 && fach !== lk2 && subjectsList.includes(fach)) {
+                            semesters.forEach(sem => {
+                                fixCourse(fach, sem, 1, `Pflicht-GK Prüfungsfach (${label})`);
+                            });
+                        }
+                    });
+
+                    // 3. Kernfächer: Deutsch & Mathematik (4 Halbjahre)
                     if (!lkCats.includes('D')) {
-                        const dSub = subjectsList.find(s => getCat(s) === 'D');
+                        const dSub = subjectsList.find(s => getCat(s) === 'D' && s !== lk1 && s !== lk2);
                         if (dSub) semesters.forEach(sem => fixCourse(dSub, sem, 1, 'Pflicht-GK Deutsch'));
                     }
-
-                    // Mathematik
                     if (!lkCats.includes('M')) {
-                        const mSub = subjectsList.find(s => getCat(s) === 'M');
+                        const mSub = subjectsList.find(s => getCat(s) === 'M' && s !== lk1 && s !== lk2);
                         if (mSub) semesters.forEach(sem => fixCourse(mSub, sem, 1, 'Pflicht-GK Mathematik'));
                     }
 
-                    // Fortgeführte Fremdsprache
+                    // 4. Fremdsprache: 4 Halbjahre einer fortgeführten Fremdsprache
                     if (!lkCats.includes('FS')) {
                         const fsSubs = subjectsList.filter(s => getCat(s) === 'FS' && s !== lk1 && s !== lk2);
                         if (fsSubs.length > 0) {
@@ -9159,59 +9246,62 @@
                         }
                     }
 
-                    // Naturwissenschaften (Biologie, Chemie, Physik ODER Ersatzfach z.B. Informatik)
-                    if (!lkCats.includes('NW')) {
-                        let nwSub = null;
-                        let isRep = false;
-                        for (const testOrig of ['Chemie', 'Physik', 'Biologie']) {
-                            const rep = resolveSubjectOrReplacement(testOrig);
-                            if (rep !== testOrig && subjectsList.includes(rep)) {
-                                nwSub = rep;
-                                isRep = true;
-                                break;
-                            }
+                    // 4. Naturwissenschaftliche 8-Kurs-Regel (MINT-Gruppe [BIO, CH, PH, INF]):
+                    // Finde die zwei am besten benoteten Fächer aus [BIO, CH, PH, INF].
+                    // Sperre von diesen beiden Fächern jeweils alle 4 Halbjahre für die Einbringung (-> 8 Kurse).
+                    // Bedingung: Mindestens ein Fach davon muss eine klassische NaWi (BIO, CH, PH) sein. INF darf als zweites Fach fungieren.
+                    const isClassicNw = (fach) => getCat(fach) === 'NW';
+                    const isInfo = (fach) => getCat(fach) === 'Informatik';
+                    const isMint = (fach) => isClassicNw(fach) || isInfo(fach);
+
+                    const mintSubjects = subjectsList.filter(s => isMint(s));
+                    const mintScores = mintSubjects.map(s => {
+                        const sum = semesters.reduce((acc, sem) => acc + (khe[s]?.[sem] ?? computedAvgPoints), 0);
+                        return { name: s, isClassic: isClassicNw(s), sum };
+                    });
+                    mintScores.sort((a, b) => b.sum - a.sum);
+
+                    const classicMint = mintScores.filter(m => m.isClassic);
+                    const infMint = mintScores.find(m => !m.isClassic);
+
+                    let selectedMintSubs = [];
+                    if (classicMint.length >= 2) {
+                        if (infMint && infMint.sum > classicMint[1].sum) {
+                            selectedMintSubs = [classicMint[0].name, infMint.name];
+                        } else {
+                            selectedMintSubs = [classicMint[0].name, classicMint[1].name];
                         }
-                        if (!nwSub) {
-                            const nwCandidates = subjectsList.filter(s => getCat(s) === 'NW' && s !== lk1 && s !== lk2);
-                            if (nwCandidates.length > 0) {
-                                let bestSum = -1;
-                                nwCandidates.forEach(s => {
-                                    const sum = semesters.reduce((acc, sem) => acc + (khe[s]?.[sem] ?? computedAvgPoints), 0);
-                                    if (sum > bestSum) {
-                                        bestSum = sum;
-                                        nwSub = s;
-                                    }
-                                });
-                            }
-                        }
-                        if (nwSub) {
-                            semesters.forEach(sem => fixCourse(nwSub, sem, 1, isRep ? 'Pflicht-GK Naturwissenschaft (Ersatzfach)' : 'Pflicht-GK Naturwissenschaft'));
-                        }
+                    } else if (classicMint.length === 1) {
+                        selectedMintSubs = [classicMint[0].name];
+                        if (infMint) selectedMintSubs.push(infMint.name);
+                    } else {
+                        selectedMintSubs = mintScores.slice(0, 2).map(m => m.name);
                     }
 
-                    // Kunst oder Musik (2 Halbjahre)
+                    selectedMintSubs.forEach(sub => {
+                        semesters.forEach(sem => fixCourse(sub, sem, 1, 'Pflicht-GK MINT (8-Kurs-Regel: 4x Fach A + 4x Fach B)'));
+                    });
+
+                    // 6. Kunst / Musik: Mindestens 2 Halbjahre (die 2 besten Halbjahre)
                     const kumuCourses = allCourses.filter(c => c.category === 'KuMu' && !c.isLK && !fixedKeys.has(c.key));
                     kumuCourses.sort((a, b) => b.punkte - a.punkte);
                     kumuCourses.slice(0, 2).forEach(c => fixCourse(c.fach, c.halbjahr, 1, 'Pflicht-GK Kunst/Musik'));
 
-                    // Geschichte (Allgemeinbildend: 4 Halbjahre gem. SOGYA Broschüre S. 14; Berufliches: 2 Halbjahre der Stufe 12/13)
-                    if (!lkCats.includes('Ge')) {
+                    // 7. Geschichte: 4 Halbjahre (falls nicht Prüfungsfach)
+                    if (!lkCats.includes('Ge') && p3 !== 'Geschichte' && p4 !== 'Geschichte' && p5 !== 'Geschichte') {
                         const geSub = subjectsList.find(s => getCat(s) === 'Ge' && s !== lk1 && s !== lk2);
                         if (geSub) {
-                            const geSems = (schultyp === "Berufliches Gymnasium") ? year12Sems : semesters;
-                            geSems.forEach(sem => fixCourse(geSub, sem, 1, 'Pflicht-GK Geschichte'));
+                            semesters.forEach(sem => fixCourse(geSub, sem, 1, 'Pflicht-GK Geschichte (4 Halbjahre)'));
                         }
                     }
 
-                    // Geo / GRW (kann auch durch Ersatzfach ersetzt sein)
+                    // 8. Geo / GRW: Mindestens 2 Halbjahre in Geographie oder Gemeinschaftskunde
                     if (!lkCats.includes('GeoGRW')) {
                         let geoSub = null;
-                        let isRep = false;
                         for (const testOrig of ['Geographie', 'GRW', 'Gemeinschaftskunde']) {
                             const rep = resolveSubjectOrReplacement(testOrig);
                             if (rep !== testOrig && subjectsList.includes(rep)) {
                                 geoSub = rep;
-                                isRep = true;
                                 break;
                             }
                         }
@@ -9220,7 +9310,7 @@
                             if (geoCandidates.length > 0) {
                                 let bestSum = -1;
                                 geoCandidates.forEach(s => {
-                                    const sum = year12Sems.reduce((acc, sem) => acc + (khe[s]?.[sem] ?? (subjectAverages[s] ?? computedAvgPoints)), 0);
+                                    const sum = year12Sems.reduce((acc, sem) => acc + (khe[s]?.[sem] ?? computedAvgPoints), 0);
                                     if (sum > bestSum) {
                                         bestSum = sum;
                                         geoSub = s;
@@ -9229,67 +9319,78 @@
                             }
                         }
                         if (geoSub) {
-                            year12Sems.forEach(sem => fixCourse(geoSub, sem, 1, isRep ? 'Pflicht-GK Geo/GRW (Ersatzfach)' : 'Pflicht-GK Geo/GRW'));
+                            year12Sems.forEach(sem => fixCourse(geoSub, sem, 1, 'Pflicht-GK Geo/GRW'));
                         }
                     }
 
-                    // Religion oder Ethik (2 Halbjahre)
-                    const reEtCourses = allCourses.filter(c => c.category === 'ReEt' && !c.isLK && !fixedKeys.has(c.key));
-                    reEtCourses.sort((a, b) => b.punkte - a.punkte);
-                    reEtCourses.slice(0, 2).forEach(c => fixCourse(c.fach, c.halbjahr, 1, 'Pflicht-GK Religion/Ethik'));
+                    // 9. Religion / Ethik: Mindestens 2 Halbjahre (die 2 besten Halbjahre)
+                    if (!lkCats.includes('ReEt')) {
+                        const reEtCourses = allCourses.filter(c => c.category === 'ReEt' && !c.isLK && !fixedKeys.has(c.key));
+                        reEtCourses.sort((a, b) => b.punkte - a.punkte);
+                        reEtCourses.slice(0, 2).forEach(c => fixCourse(c.fach, c.halbjahr, 1, 'Pflicht-GK Religion/Ethik'));
+                    }
 
-                    // P3, P4, P5
-                    [
-                        { fach: p3, label: 'P3' },
-                        { fach: p4, label: 'P4' },
-                        { fach: p5, label: 'P5' }
-                    ].forEach(({ fach, label }) => {
-                        if (fach && fach !== lk1 && fach !== lk2 && subjectsList.includes(fach)) {
-                            semesters.forEach(sem => {
-                                fixCourse(fach, sem, 1, `Pflicht-GK Prüfungsfach (${label})`);
-                            });
-                        }
-                    });
-
-                    // Schritt 2b: Mindesteinbringung aus jedem belegten Fach (mindestens 1 Halbjahr)
-                    // Gemäß SOGYA / Broschüre S. 14: "Aus jedem belegten Fach ist mindestens ein Kurshalbjahresergebnis einzubringen."
+                    // 10. Mindestbelegung: Mindestens 1 Halbjahr aus jedem sonstigen belegten Fach (Ausnahme: Sport)
                     subjectsList.forEach(fach => {
+                        const isSport = (getCat(fach) === 'Sport' || fach.toLowerCase().includes('sport'));
+                        if (isSport) return; // Sport hat keine Mindestbelegungspflicht
+
                         const alreadyHas = eingebrachte.some(c => c.fach === fach);
                         if (!alreadyHas) {
                             const subjectCourses = allCourses.filter(c => c.fach === fach && !fixedKeys.has(c.key));
                             if (subjectCourses.length > 0) {
                                 subjectCourses.sort((a, b) => b.punkte - a.punkte);
-                                const best = subjectCourses[0];
-                                fixCourse(fach, best.halbjahr, 1, 'Mindesteinbringung (mind. 1 Halbjahr je belegtem Fach)');
+                                fixCourse(fach, subjectCourses[0].halbjahr, 1, 'Mindesteinbringung (1 Halbjahr je belegtem Fach)');
                             }
                         }
                     });
 
-                    // Schritt 3: Auffüllen bis zur 40-KHE-Grenze
-                    let currentKHE = eingebrachte.reduce((acc, c) => acc + c.gewichtung, 0);
+                    // SCHRITT 2: Optimierungs-Algorithmus (Auffüllen auf 40)
+                    // • Restpool bilden: Alle noch nicht gewählten Halbjahre aller Fächer
+                    let restpool = allCourses.filter(c => !c.isLK && !fixedKeys.has(c.key));
 
-                    if (currentKHE < 40) {
-                        const remainingGK = allCourses.filter(c => !c.isLK && !fixedKeys.has(c.key));
-                        remainingGK.sort((a, b) => b.punkte - a.punkte);
-                        for (const candidate of remainingGK) {
-                            if (currentKHE >= 40) break;
-                            fixCourse(candidate.fach, candidate.halbjahr, 1, 'Wahl-GK (Bester Einbringer)');
-                            currentKHE += 1;
+                    // • Sport-Filter: Sportkurse mit weniger als 5 Punkten sofort aus dem Restpool löschen
+                    restpool = restpool.filter(c => {
+                        const isSport = (c.category === 'Sport' || c.fach.toLowerCase().includes('sport'));
+                        if (isSport && c.punkte < 5) return false;
+                        return true;
+                    });
+
+                    // • Sortierung: Den Restpool absteigend nach Notenpunktzahl sortieren
+                    restpool.sort((a, b) => b.punkte - a.punkte);
+
+                    // • Auffüllen: Die punktbesten Kurse aus dem Restpool hinzufügen, bis exakt 32 Grundkurse (40 gesamt) erreicht sind
+                    let currentGKCount = eingebrachte.filter(c => c.gewichtung === 1).length;
+                    for (const candidate of restpool) {
+                        if (currentGKCount >= 32) break;
+                        if (fixCourse(candidate.fach, candidate.halbjahr, 1, 'Wahl-GK (Bester Einbringer)')) {
+                            currentGKCount = eingebrachte.filter(c => c.gewichtung === 1).length;
                         }
                     }
 
                     const gestrichene_kurse = allCourses
                         .filter(c => !fixedKeys.has(c.key))
-                        .map(c => ({ fach: c.fach, halbjahr: c.halbjahr, punkte: c.punkte }));
+                        .map(c => ({
+                            fach: c.fach,
+                            halbjahr: c.halbjahr,
+                            punkte: c.punkte,
+                            isLK: c.isLK,
+                            category: c.category,
+                            gewichtung: 0,
+                            grund: 'Überzählig: Klammerung schützt den Abiturschnitt'
+                        }));
 
-                    // Punkte Block I
-                    const punkte_block_1_roh = eingebrachte.reduce((sum, c) => sum + (c.punkte * c.gewichtung), 0);
-                    const anzahl_gewichtete_khe = eingebrachte.reduce((sum, c) => sum + c.gewichtung, 0);
+                    // SCHRITT 3: Mathematische Berechnung
+                    const summe_32_gks = eingebrachte.filter(c => c.gewichtung === 1).reduce((sum, c) => sum + c.punkte, 0);
+                    const summe_8_lfs = eingebrachte.filter(c => c.gewichtung === 2).reduce((sum, c) => sum + c.punkte, 0);
+
+                    const punkte_block_1_roh = summe_32_gks + (summe_8_lfs * 2);
+                    const anzahl_gewichtete_khe = eingebrachte.reduce((sum, c) => sum + c.gewichtung, 0); // Exakt 48 (8*2 + 32)
                     const punkte_block_1_skaliert = anzahl_gewichtete_khe > 0
                         ? Math.round((punkte_block_1_roh / anzahl_gewichtete_khe) * 40)
                         : 0;
 
-                    // Block II
+                    // Block II: 5 Prüfungen in 4-facher Wertung (max. 300 Punkte)
                     const p1Score = Number(pruefungen.P1 ?? computedAvgPoints);
                     const p2Score = Number(pruefungen.P2 ?? computedAvgPoints);
                     const p3Score = Number(pruefungen.P3 ?? computedAvgPoints);
@@ -9299,12 +9400,46 @@
 
                     const gesamtpunktzahl = punkte_block_1_skaliert + punkte_block_2;
 
+                    // SCHRITT 4: Validierung (Die "Block I OK"-Prüfung)
+                    const unterkurseGesamt = eingebrachte.filter(c => c.punkte < 5).length;
+                    const unterkurseLK = eingebrachte.filter(c => c.gewichtung === 2 && c.punkte < 5).length;
+                    const unterkurseGK = eingebrachte.filter(c => c.gewichtung === 1 && c.punkte < 5).length;
+
+                    // Fächerwahl- & Aufgabenfelder-Prüfung (SOGYA Sachsen)
+                    const lk1Cat = getCat(lk1);
+                    const lk2Cat = getCat(lk2);
+                    const lkHasMathOrDeutsch = (lk1Cat === 'D' || lk1Cat === 'M' || lk2Cat === 'D' || lk2Cat === 'M');
+
+                    const examCategories = [getCat(p1), getCat(p2), getCat(p3), getCat(p4), getCat(p5)];
+                    const hasDeutschExam = examCategories.includes('D');
+                    const hasMatheExam = examCategories.includes('M');
+                    const hasAf1 = examCategories.some(c => ['D', 'FS', 'KuMu'].includes(c));
+                    const hasAf2 = examCategories.some(c => ['Ge', 'GeoGRW', 'ReEt', 'Philosophie'].includes(c));
+                    const hasAf3 = examCategories.some(c => ['M', 'NW', 'Informatik', 'Astronomie'].includes(c));
+
+                    const faecherwahlFehler = [];
+                    if (!lkHasMathOrDeutsch) {
+                        faecherwahlFehler.push("Einer der beiden Leistungskurse (P1 oder P2) muss zwingend Deutsch oder Mathematik sein.");
+                    }
+                    if (!hasDeutschExam || !hasMatheExam) {
+                        faecherwahlFehler.push("Unter den 5 Abiturprüfungen müssen zwingend sowohl Deutsch als auch Mathematik sein.");
+                    }
+                    if (!hasAf1) {
+                        faecherwahlFehler.push("Das Aufgabenfeld I (sprachlich-künstlerisch) muss mit mindestens einem Prüfungsfach abgedeckt sein.");
+                    }
+                    if (!hasAf2) {
+                        faecherwahlFehler.push("Das Aufgabenfeld II (gesellschaftswissenschaftlich) muss mit mindestens einem Prüfungsfach abgedeckt sein.");
+                    }
+                    if (!hasAf3) {
+                        faecherwahlFehler.push("Das Aufgabenfeld III (mathematisch-naturwissenschaftlich) muss mit mindestens einem Prüfungsfach abgedeckt sein.");
+                    }
+
                     // Status & Validierung
                     let status = hasMissingData ? "Prognose (unvollständige Daten)" : "Bestanden";
                     let fehler_code = null;
                     let fehler_details = null;
 
-                    // Regel A: Kein 0-Punkte-Kurs eingebracht
+                    // 1. Nullpunkte-Check: Kein einziger der 40 eingebrachten Kurse darf 0 Punkte haben.
                     const zeroCourse = eingebrachte.find(c => c.punkte === 0);
                     if (zeroCourse) {
                         status = "Nicht bestanden";
@@ -9312,36 +9447,37 @@
                         fehler_details = `Ein eingebrachter Kurs hat 0 Punkte (${zeroCourse.fach}, Halbjahr ${zeroCourse.halbjahr}). Ein belegter Kurs darf nicht 0 Punkte haben.`;
                     }
 
-                    // Regel B: Maximal 8 Unterkurse (< 5 Pkt.), davon max. 3 im LK
-                    const unterkurseGesamt = eingebrachte.filter(c => c.punkte < 5).length;
-                    const unterkurseLK = eingebrachte.filter(c => c.gewichtung === 2 && c.punkte < 5).length;
-                    if (!fehler_code && (unterkurseGesamt > 8 || unterkurseLK > 3)) {
+                    // 2. Defizite-Check: Maximal 8 Kurse unter 5 Pkt., davon max. 4 im LK.
+                    if (!fehler_code && (unterkurseGesamt > 8 || unterkurseLK > 4)) {
                         status = "Nicht bestanden";
                         fehler_code = "UNTERKURSE_BLOCK_1_UEBERSCHRITTEN";
-                        if (unterkurseGesamt > 8 && unterkurseLK > 3) {
-                            fehler_details = `Zu viele Unterkurse in Block I: ${unterkurseGesamt} unter 5 Punkten (erlaubt: maximal 8), davon ${unterkurseLK} im Leistungskursbereich (erlaubt: maximal 3).`;
+                        if (unterkurseGesamt > 8 && unterkurseLK > 4) {
+                            fehler_details = `Zu viele Unterkurse in Block I: ${unterkurseGesamt} unter 5 Punkten (erlaubt: maximal 8), davon ${unterkurseLK} im Leistungskursbereich (erlaubt: maximal 4).`;
                         } else if (unterkurseGesamt > 8) {
                             fehler_details = `Zu viele Unterkurse in Block I: ${unterkurseGesamt} unter 5 Punkten eingebracht (erlaubt: maximal 8).`;
                         } else {
-                            fehler_details = `Zu viele Unterkurse im Leistungskursbereich: ${unterkurseLK} LK-Halbjahre unter 5 Punkten (erlaubt: maximal 3).`;
+                            fehler_details = `Zu viele Unterkurse im Leistungskursbereich: ${unterkurseLK} LK-Halbjahre unter 5 Punkten (erlaubt: maximal 4).`;
                         }
                     }
 
-                    // Regel C: Mindestpunktzahl Block I >= 200
+                    // 3. Mindestpunktzahl Block I >= 200 (max. 600)
                     if (!fehler_code && punkte_block_1_skaliert < 200) {
                         if (!hasMissingData) status = "Nicht bestanden";
                         fehler_code = "MINDESTPUNKTZAHL_BLOCK_1";
-                        fehler_details = `Mindestpunktzahl in Block I noch nicht erreicht: ${punkte_block_1_skaliert} Punkte (erforderlich: mindestens 200 Punkte).`;
+                        fehler_details = `Mindestpunktzahl in Block I noch nicht erreicht: ${punkte_block_1_skaliert} Punkte (erforderlich: mindestens 200 von 600 Punkten).`;
                     }
 
-                    // Regel D: Mindestpunktzahl Block II >= 100
+                    // Block I Validierung ("Block I OK"-Prüfung)
+                    const block1_ok = (!zeroCourse && unterkurseGesamt <= 8 && unterkurseLK <= 4 && punkte_block_1_skaliert >= 200);
+
+                    // 4. Mindestpunktzahl Block II >= 100 (max. 300)
                     if (!fehler_code && punkte_block_2 < 100) {
                         if (!hasMissingData) status = "Nicht bestanden";
                         fehler_code = "MINDESTPUNKTZAHL_BLOCK_2";
-                        fehler_details = `Mindestpunktzahl in Block II noch nicht erreicht: ${punkte_block_2} Punkte (erforderlich: mindestens 100 Punkte).`;
+                        fehler_details = `Mindestpunktzahl in Block II noch nicht erreicht: ${punkte_block_2} Punkte (erforderlich: mindestens 100 von 300 Punkten).`;
                     }
 
-                    // Regel E: Prüfungshürde
+                    // 5. Prüfungshürde in Block II (min. 3 Prüfungen >= 5 Pkt. in einfacher Wertung, darunter min. 1 LK)
                     const passedExams = [
                         { name: p1, score: p1Score, isLK: true },
                         { name: p2, score: p2Score, isLK: true },
@@ -9355,9 +9491,9 @@
                         if (!hasMissingData) status = "Nicht bestanden";
                         fehler_code = "PRUEFUNGSHUERDE_VERLETZT";
                         if (passedExams.length < 3) {
-                            fehler_details = `Prüfungshürde in Block II noch nicht erfüllt: Nur in ${passedExams.length} Prüfungsfächern wurden mindestens 5 Punkte erreicht (erforderlich: mindestens 3 Prüfungen).`;
+                            fehler_details = `Prüfungshürde in Block II noch nicht erfüllt: Nur in ${passedExams.length} Prüfungsfächern wurden mindestens 5 Punkte in einfacher Wertung erreicht (erforderlich: mindestens 3 Prüfungen).`;
                         } else {
-                            fehler_details = `Prüfungshürde in Block II noch nicht erfüllt: Mindestens einer der beiden Leistungskurse (P1, P2) muss mindestens 5 Punkte erreichen.`;
+                            fehler_details = `Prüfungshürde in Block II noch nicht erfüllt: Mindestens einer der beiden Leistungskurse (P1, P2) muss in der Prüfung mindestens 5 Punkte in einfacher Wertung erreichen.`;
                         }
                     }
 
@@ -9365,7 +9501,7 @@
                     if (!fehler_code && gesamtpunktzahl < 300) {
                         if (!hasMissingData) status = "Nicht bestanden";
                         fehler_code = "MINDESTPUNKTZAHL_GESAMT";
-                        fehler_details = `Abitur noch nicht bestanden: ${gesamtpunktzahl} Gesamtpunkte erreicht (erforderlich: mindestens 300 Punkte).`;
+                        fehler_details = `Abitur noch nicht bestanden: ${gesamtpunktzahl} Gesamtpunkte erreicht (erforderlich: mindestens 300 von 900 Punkten).`;
                     }
 
                     // KMK-Notenumrechnung
@@ -9376,11 +9512,31 @@
                         status,
                         fehler_code,
                         fehler_details,
+                        block1_ok,
                         punkte_block_1_skaliert,
+                        punkte_block_1_roh,
+                        summe_32_gks,
+                        summe_8_lfs,
+                        anzahl_gewichtete_khe,
+                        anzahl_kurse_gesamt: eingebrachte.length,
+                        anzahl_lk_kurse: eingebrachte.filter(c => c.gewichtung === 2).length,
+                        anzahl_gk_kurse: eingebrachte.filter(c => c.gewichtung === 1).length,
                         punkte_block_2,
                         gesamtpunktzahl,
                         abiturnote,
                         anzahl_unterkurse_gesamt: unterkurseGesamt,
+                        anzahl_unterkurse_lk: unterkurseLK,
+                        anzahl_unterkurse_gk: unterkurseGK,
+                        faecherwahl_gueltig: faecherwahlFehler.length === 0,
+                        faecherwahl_fehler: faecherwahlFehler,
+                        faecherwahl_details: {
+                            lkHasMathOrDeutsch,
+                            hasDeutschExam,
+                            hasMatheExam,
+                            hasAf1,
+                            hasAf2,
+                            hasAf3
+                        },
                         simulated_pruefungen: simulatedExamScores,
                         pruefungen_ergebnisse: pruefungen,
                         eingebrachte_kurse: eingebrachte.map(c => ({
@@ -9388,7 +9544,9 @@
                             halbjahr: c.halbjahr,
                             punkte: c.punkte,
                             gewichtung: c.gewichtung,
-                            grund: c.grund
+                            grund: c.grund,
+                            isLK: c.gewichtung === 2,
+                            category: getCat(c.fach)
                         })),
                         gestrichene_kurse
                     };
@@ -9716,6 +9874,115 @@
                 }, { immediate: true });
 
                 watch([saxonActiveSubTab, saxonMobileSection], () => { nextTick(refreshIcons); });
+
+                // STATS / INSIGHTS TAB STATE (Notentabelle & Streichungsanalyse)
+                const statsTab = ref('table'); // 'table' (Notenübersicht) | 'streichungen' (Streichungen & Prognosen) | 'charts' (Diagramme) | 'all' (Vollansicht)
+                const statsStreichungenFilter = ref('all'); // 'all' | 'eingebracht' | 'gestrichen' | 'prognose'
+                const statsMobileViewMode = ref('table'); // 'table' | 'cards'
+                const activeStatsTabNavIndex = computed(() => {
+                    if (statsTab.value === 'table') return 0;
+                    if (statsTab.value === 'streichungen') return 1;
+                    if (statsTab.value === 'charts') return 2;
+                    if (statsTab.value === 'all') return 3;
+                    return 0;
+                });
+                watch(statsTab, () => { nextTick(refreshIcons); });
+
+                const isCoursePrognose = (fach, halbjahr) => {
+                    const subj = (subjects.value || []).find(s => s.name === fach);
+                    if (!subj) return true;
+                    const res = getSubjectSemesterResolved(subj, halbjahr);
+                    return !res.isReal;
+                };
+
+                const getCourseSubjectColor = (fach) => {
+                    const subj = (subjects.value || []).find(s => s.name === fach);
+                    return subj ? (subj.color || '#2d694c') : '#2d694c';
+                };
+
+                const allAnalyzedCourses = computed(() => {
+                    const eingebrachte = (saxonAbiturResult.value?.eingebrachte_kurse || []).map(c => ({
+                        ...c,
+                        isEingebracht: true,
+                        isPrognose: isCoursePrognose(c.fach, c.halbjahr),
+                        color: getCourseSubjectColor(c.fach)
+                    }));
+                    const gestrichene = (saxonAbiturResult.value?.gestrichene_kurse || []).map(c => ({
+                        ...c,
+                        gewichtung: 0,
+                        grund: 'Überzählig: Klammerung schützt den Schnitt',
+                        isEingebracht: false,
+                        isPrognose: isCoursePrognose(c.fach, c.halbjahr),
+                        color: getCourseSubjectColor(c.fach)
+                    }));
+                    return [...eingebrachte, ...gestrichene].sort((a, b) => {
+                        if (a.fach !== b.fach) return a.fach.localeCompare(b.fach);
+                        return a.halbjahr.localeCompare(b.halbjahr);
+                    });
+                });
+
+                const filteredAnalyzedCourses = computed(() => {
+                    const list = allAnalyzedCourses.value;
+                    if (statsStreichungenFilter.value === 'eingebracht') return list.filter(c => c.isEingebracht);
+                    if (statsStreichungenFilter.value === 'gestrichen') return list.filter(c => !c.isEingebracht);
+                    if (statsStreichungenFilter.value === 'prognose') return list.filter(c => c.isPrognose);
+                    return list;
+                });
+
+                const coursesGroupedBySubject = computed(() => {
+                    const map = {};
+                    allAnalyzedCourses.value.forEach(c => {
+                        if (!map[c.fach]) {
+                            const subj = (subjects.value || []).find(s => s.name === c.fach);
+                            map[c.fach] = {
+                                name: c.fach,
+                                color: c.color,
+                                isLK: c.isLK || (subj ? subj.isLK : false),
+                                category: c.category,
+                                courses: []
+                            };
+                        }
+                        map[c.fach].courses.push(c);
+                    });
+                    return Object.values(map);
+                });
+
+                const getSubjectFourSemesterAverage = (subject) => {
+                    if (!subject) return '-';
+                    const sems = (saxonSchoolType.value === "Berufliches Gymnasium")
+                        ? ["12/1", "12/2", "13/1", "13/2"]
+                        : ["11/1", "11/2", "12/1", "12/2"];
+                    const pts = sems.map(sem => getSubjectSemesterResolved(subject, sem).points);
+                    if (!pts.length) return '-';
+                    const avg = pts.reduce((a, b) => a + b, 0) / pts.length;
+                    return avg.toFixed(1).replace('.', ',');
+                };
+
+                const getSemesterOverallAverage = (sem) => {
+                    const list = subjects.value || [];
+                    if (!list.length) return '-';
+                    const pts = list.map(s => getSubjectSemesterResolved(s, sem).points);
+                    if (!pts.length) return '-';
+                    const avg = pts.reduce((a, b) => a + b, 0) / pts.length;
+                    return avg.toFixed(1).replace('.', ',');
+                };
+
+                const getFourSemesterGrandAverage = () => {
+                    const list = subjects.value || [];
+                    if (!list.length) return '-';
+                    const sems = (saxonSchoolType.value === "Berufliches Gymnasium")
+                        ? ["12/1", "12/2", "13/1", "13/2"]
+                        : ["11/1", "11/2", "12/1", "12/2"];
+                    let total = 0, count = 0;
+                    list.forEach(s => {
+                        sems.forEach(sem => {
+                            total += getSubjectSemesterResolved(s, sem).points;
+                            count++;
+                        });
+                    });
+                    if (!count) return '-';
+                    return (total / count).toFixed(1).replace('.', ',');
+                };
 
                 // Alle Halbjahre, für die es tatsächlich Noten oder Zeugniswerte gibt, plus die aktuell
                 // aktiven — damit im PDF-Export auch vergangene Schuljahre auswählbar sind.
@@ -10493,6 +10760,7 @@
                     getLkCount, getGkCount, getSubjectNameById, getSubjectColorById, getTotalGradesCount, getTypeGradesCount, getSubjectGradesCount, getBestGrade, getWorstGrade, getTypePercentage, getTypeAverage, getValidBulkImportCount, getFormattedTimetableDays, subjectDetailGradeTab, filteredSubjectGrades, getPointsTier, getGrade6Tier,
                     examScores, saxonSchoolType, saxonP3, saxonP4, saxonP5, saxonActiveSubTab, saxonMobileSection, activeSaxonMobileIndex, saxonSimulatedGrades, saxonSubjectCategories, saxonErsatzfaecher, saxonInputPayload, saxonAbiturResult, saveExamScores, setSimulatedGrade, stepSemesterPoints, presetAllGrades, autoProjectAllGrades, resetSimulatedGrades, syncRealGrades, getSubjectSemesterResolved, detectSubjectCategory, getCategoryLabel, calculateSaxonAbitur,
                     getSimulatedExamScore, autoProjectExamScores, setExamScoreToSimulation,
+                    statsTab, activeStatsTabNavIndex, statsStreichungenFilter, statsMobileViewMode, isCoursePrognose, getCourseSubjectColor, allAnalyzedCourses, filteredAnalyzedCourses, coursesGroupedBySubject, getSubjectFourSemesterAverage, getSemesterOverallAverage, getFourSemesterGrandAverage,
 
                     halfYears, colorOptions, subjectIcons, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
