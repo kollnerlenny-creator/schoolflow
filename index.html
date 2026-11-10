@@ -1432,20 +1432,15 @@
                         </div>
 
                         <!-- Einladungscode Feld (nur beim Registrieren) -->
-                        <div v-if="isRegistering" class="space-y-1.5">
-                            <div class="bg-[#efe8dc] border border-accent-border rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-[#efe8dc] transition-all shadow-sm">
-                                <i data-lucide="ticket" class="text-accent mr-3.5 w-5 h-5 shrink-0"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Einladungscode" 
-                                    v-model="inviteCode"
-                                    class="login-input bg-transparent w-full outline-none text-base font-black text-accent placeholder:text-[#7d766b] uppercase tracking-widest"
-                                    autocomplete="off"
-                                />
-                                <button type="button" @click="inviteCode = 'ADMIN2026'" title="Master Admin Code (ADMIN2026) verwenden" class="text-[10px] font-black px-2 py-1 bg-[#2d694c]/15 text-[#2d694c] hover:bg-[#2d694c]/25 rounded-lg shrink-0 cursor-pointer transition-colors active:scale-95">
-                                    Admin 🔑
-                                </button>
-                            </div>
+                        <div v-if="isRegistering" class="bg-[#efe8dc] border border-accent-border rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-[#efe8dc] transition-all shadow-sm">
+                            <i data-lucide="ticket" class="text-accent mr-3.5 w-5 h-5 shrink-0"></i>
+                            <input 
+                                type="text" 
+                                placeholder="Einladungscode" 
+                                v-model="inviteCode"
+                                class="login-input bg-transparent w-full outline-none text-base font-black text-accent placeholder:text-[#7d766b] uppercase tracking-widest"
+                                autocomplete="off"
+                            />
                         </div>
 
                         <p v-if="authError" class="text-rose-600 text-xs font-bold text-center bg-rose-500/10 py-3.5 px-5 rounded-full border border-rose-500/20 animate-pulse">{{ authError }}</p>
@@ -1462,7 +1457,150 @@
             </div>
         </div>
 
-        <!-- HAUPT APP (Volle Breite für Laptop/PC optimiert, aber voll auf Mobile vergrößert) -->
+        <!-- STANDALONE ADMIN CONSOLE (Keine Notenapp-Ansicht, rein für Admin-Verwaltung) -->
+        <div v-else-if="user && isAdmin" class="min-h-screen bg-[#f7f3eb] font-sans p-4 sm:p-8">
+            <div class="max-w-6xl mx-auto space-y-8 animate-fade-in">
+                <!-- Standalone Admin Header -->
+                <header class="bg-white rounded-[2rem] p-6 border border-[#e5ded2] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-[#2d694c] text-white flex items-center justify-center font-black shadow-sm shrink-0">
+                            <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h1 class="text-xl sm:text-2xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight">Schooly Admin Console</h1>
+                                <span class="px-2.5 py-0.5 rounded-full bg-[#2d694c]/15 text-[#2d694c] font-black text-[10px] uppercase tracking-wider">Master Admin</span>
+                            </div>
+                            <p class="text-xs font-bold text-[#6E665E]">Angemeldet als: {{ user.email }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" @click="fetchInviteCodes" class="px-4 py-2.5 rounded-full bg-[#f0e6df] hover:bg-[#e6dcd3] text-[#524d44] font-black text-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span>Aktualisieren</span>
+                        </button>
+                        <button type="button" @click="handleLogout" class="px-5 py-2.5 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-black text-xs transition-all cursor-pointer shadow-xs active:scale-95 flex items-center gap-1.5">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            <span>Abmelden</span>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- KPI Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <div class="bg-white rounded-[1.75rem] p-5 border border-[#e5ded2] shadow-xs space-y-1">
+                        <span class="text-xs font-black uppercase text-[#6E665E]">Gesamt Einladungscodes</span>
+                        <p class="text-3xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue']">{{ adminInviteCodes.length }}</p>
+                        <p class="text-[11px] text-[#2d694c] font-bold">Generierte Registrierungsschlüssel</p>
+                    </div>
+                    <div class="bg-white rounded-[1.75rem] p-5 border border-[#e5ded2] shadow-xs space-y-1">
+                        <span class="text-xs font-black uppercase text-[#6E665E]">Freie / Aktive Codes</span>
+                        <p class="text-3xl sm:text-4xl font-black text-[#2d694c] font-['Epilogue']">{{ adminInviteCodes.filter(c => !c.used).length }}</p>
+                        <p class="text-[11px] text-[#2d694c] font-bold">Bereit für neue Schüler</p>
+                    </div>
+                    <div class="bg-white rounded-[1.75rem] p-5 border border-[#e5ded2] shadow-xs space-y-1">
+                        <span class="text-xs font-black uppercase text-[#6E665E]">Verwendete Codes</span>
+                        <p class="text-3xl sm:text-4xl font-black text-[#825500] font-['Epilogue']">{{ adminInviteCodes.filter(c => c.used).length }}</p>
+                        <p class="text-[11px] text-[#825500] font-bold">Aktiv eingelöste Konten</p>
+                    </div>
+                </div>
+
+                <!-- Code Generator & List Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Left: Create Code Card -->
+                    <div class="lg:col-span-5 bg-white rounded-[2rem] p-6 border border-[#e5ded2] shadow-sm space-y-5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-2xl bg-[#f4ece4] text-[#2d694c] flex items-center justify-center font-black shrink-0">
+                                <i data-lucide="plus-circle" class="w-5 h-5 text-[#2d694c]"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-black text-[#1f1b16] font-['Epilogue']">Neuen Code erstellen</h2>
+                                <p class="text-xs font-bold text-[#6E665E]">Schlüssel für neue Registrierungen freischalten</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-xs font-black uppercase tracking-wider text-[#524d44] block">Code-Bezeichnung</label>
+                            <div class="flex gap-2">
+                                <input type="text" v-model="newAdminInviteCode" placeholder="z.B. SCHOOLY-2026" 
+                                       class="flex-1 bg-[#efe8dc] border border-[#cec5b8] rounded-xl px-4 py-3 text-sm font-black uppercase text-[#1f1b16] outline-none focus:border-accent" />
+                                <button type="button" @click="newAdminInviteCode = 'SCHOOLY-' + Math.random().toString(36).substring(2,7).toUpperCase()" 
+                                        title="Zufallscode generieren" 
+                                        class="px-3.5 bg-[#f0e6df] hover:bg-[#e6dcd3] rounded-xl text-sm font-bold text-[#524d44] cursor-pointer active:scale-95">
+                                    🎲
+                                </button>
+                            </div>
+
+                            <button type="button" @click="createInviteCode" :disabled="adminInviteLoading" 
+                                    class="w-full bg-[#2d694c] hover:bg-[#23533c] text-white py-4 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md cursor-pointer active:scale-95 flex items-center justify-center gap-2">
+                                <i data-lucide="key" class="w-4 h-4"></i>
+                                <span>Code freischalten & speichern</span>
+                            </button>
+
+                            <p v-if="adminInviteMsg" class="text-xs font-bold text-center text-[#2d694c] bg-[#2d694c]/10 py-2.5 px-3 rounded-xl animate-pulse">
+                                {{ adminInviteMsg }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Codes Live Table -->
+                    <div class="lg:col-span-7 bg-white rounded-[2rem] p-6 border border-[#e5ded2] shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b border-[#ede3d8] pb-3">
+                            <h2 class="text-lg font-black text-[#1f1b16] font-['Epilogue']">Einladungscodes Live-Übersicht</h2>
+                            <span class="text-xs font-black px-3 py-1 rounded-full bg-[#f4ece4] text-[#2d694c]">{{ adminInviteCodes.length }} Codes</span>
+                        </div>
+
+                        <div v-if="adminInviteLoading && adminInviteCodes.length === 0" class="text-center py-10 text-xs font-bold text-[#6E665E]">
+                            <i data-lucide="loader-2" class="w-8 h-8 animate-spin mx-auto mb-2 text-[#2d694c]"></i>
+                            Lade Firestore Einladungscodes...
+                        </div>
+
+                        <div v-else-if="adminInviteCodes.length === 0" class="text-center py-10 bg-[#f7f3eb] rounded-2xl border border-[#ede3d8] text-xs font-bold text-[#6E665E]">
+                            Keine Einladungscodes in Firestore. Erstelle links deinen ersten Code!
+                        </div>
+
+                        <div v-else class="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+                            <div v-for="c in adminInviteCodes" :key="c.id" 
+                                 class="bg-[#fcfaf7] hover:bg-[#f7f2ea] transition-colors rounded-2xl p-4 border border-[#ede3d8] flex items-center justify-between gap-3 shadow-2xs">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                                        <span class="font-black text-base text-[#1f1b16] uppercase tracking-wider font-mono">{{ c.id }}</span>
+                                        <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase"
+                                              :class="c.used ? 'bg-slate-200 text-slate-600' : 'bg-[#2d694c]/15 text-[#2d694c]'">
+                                            {{ c.used ? 'Verwendet' : 'Frei & Aktiv ✓' }}
+                                        </span>
+                                    </div>
+                                    <p v-if="c.used && c.usedBy" class="text-xs text-[#6E665E] font-semibold truncate">
+                                        Eingelöst von: <span class="font-black text-[#1f1b16]">{{ c.usedBy }}</span>
+                                    </p>
+                                    <p class="text-[10px] text-[#857e72] font-medium">
+                                        Erstellt am: {{ c.createdAt ? formatDate(c.createdAt) : '–' }}
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button type="button" @click="copyCodeToClipboard(c.id)" title="Code in Zwischenablage kopieren" 
+                                            class="p-2.5 rounded-xl bg-[#f0e6df] hover:bg-[#e6dcd3] flex items-center justify-center text-[#524d44] cursor-pointer active:scale-95 transition-all">
+                                        <i data-lucide="copy" class="w-4 h-4"></i>
+                                    </button>
+                                    <button type="button" @click="toggleInviteCodeStatus(c)" title="Status umschalten (Frei <-> Verwendet)" 
+                                            class="p-2.5 rounded-xl bg-[#f0e6df] hover:bg-[#e6dcd3] flex items-center justify-center text-[#524d44] cursor-pointer active:scale-95 transition-all">
+                                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                                    </button>
+                                    <button type="button" @click="deleteInviteCode(c.id)" title="Code löschen" 
+                                            class="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 flex items-center justify-center cursor-pointer active:scale-95 transition-all">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HAUPT APP (Für reguläre Schüler: Notenapp Layout) -->
         <div v-else class="w-full max-w-md md:max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 xs:px-5 pt-6 md:pt-10">
             <!-- STITCH TOP HEADER (Auf Home-Dashboard aktiv) -->
             <header v-if="!selectedSubject && currentTab === 'home'" class="mb-5 sm:mb-7 flex justify-between items-center gap-2">
@@ -6456,7 +6594,7 @@
                     if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
                 };
 
-                // Alle registrierten Nutzer laden (außer mich selbst)
+                // Alle registrierten Nutzer laden (außer mich selbst & keine Admins)
                 const loadAllMembers = (uid) => {
                     if (!uid) return;
                     if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
@@ -6469,7 +6607,7 @@
                         unsubscribeAllMembers = onSnap2(col2(db, 'publicProfiles'), snap => {
                             allMembers.value = snap.docs
                                 .map(d => ({ uid: d.id, ...d.data() }))
-                                .filter(m => m.uid !== uid);
+                                .filter(m => m.uid !== uid && m.isAdmin !== true && (m.displayName || '').toLowerCase() !== 'admin');
                             refreshIcons();
                         }, err => {
                             if (err && err.code !== 'permission-denied') console.warn('[GradeFlow] publicProfiles listener:', err.code);
@@ -6477,14 +6615,23 @@
                     } catch (e) { console.warn('[GradeFlow] loadAllMembers:', e.message); }
                 };
 
-                // Schreibt/aktualisiert oeffentliches Profil bei jedem Login
+                // Schreibt/aktualisiert oeffentliches Profil bei jedem Login (NUR für Schüler, Admins bleiben unsichtbar)
                 const ensurePublicProfile = async (uid) => {
                     try {
-                        if (!displayName.value) return;
+                        if (!displayName.value || isAdmin.value) {
+                            if (isAdmin.value) {
+                                try {
+                                    const { deleteDoc: delD, doc: docFn } = window.__firestoreModule;
+                                    await delD(docFn(db, 'publicProfiles', uid));
+                                } catch (_) {}
+                            }
+                            return;
+                        }
                         const profileData = {
                             displayName: displayName.value,
                             currentClass: currentClass.value || '',
                             photoUrl: userAvatar.value || '',
+                            isAdmin: false,
                             updatedAt: new Date().toISOString()
                         };
                         await setDoc(doc(db, 'publicProfiles', uid), profileData, { merge: true });
