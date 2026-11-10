@@ -3,8 +3,8 @@
   "short_name": "Schooly",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fcf9f4",
-  "theme_color": "#2d694c",
+  "background_color": "#f7f3eb",
+  "theme_color": "#f7f3eb",
   "icons": [
     {
       "src": "/assets/aistudio/schooly_app_icon_7d45ac62.svg",

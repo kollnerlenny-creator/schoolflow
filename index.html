@@ -1321,6 +1321,14 @@
     
 
     <div id="app" v-cloak>
+        <!-- OFFLINE STATUS BANNER (Dezenter Hinweis, wenn das Gerät offline ist) -->
+        <transition enter-active-class="transition duration-300 ease-out" enter-from-class="-translate-y-4 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-200 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="-translate-y-4 opacity-0">
+            <div v-if="!isOnline" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2 bg-[#2d2926]/90 backdrop-blur-md text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/10 pointer-events-none">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span>Offline &middot; Noten werden lokal gesichert &amp; später synchronisiert</span>
+            </div>
+        </transition>
+
         <!-- LOADING SCREEN -->
         <div v-if="authLoading" class="h-screen flex items-center justify-center text-accent">
             <i data-lucide="loader-2" class="animate-spin w-14 h-14"></i>
@@ -2096,7 +2104,7 @@
                                     </div>
                                 </div>
                                 <div v-if="activeSubjectData && activeSubjectData.finalGrade != null && activeSubjectData.reportCardGrade == null" class="bg-[#fed8b1] text-[#825500] px-3 py-1 rounded-full text-xs font-black self-center">
-                                    Note {{ formatNumber(activeSubjectData.finalGrade) }}
+                                    {{ formatNumber(activeSubjectData.finalGrade) }}
                                 </div>
                             </div>
 
@@ -2166,9 +2174,11 @@
 
                                 <!-- Noten-Elemente -->
                                 <div v-for="g in filteredSubjectGrades" :key="g.id" 
-                                     class="bg-white rounded-[1.65rem] p-4 sm:p-4.5 border border-[#ede3d8] flex items-center justify-between gap-3.5 shadow-2xs hover:shadow-xs hover:border-[#2d694c]/35 transition-all cursor-pointer group"
+                                     class="bg-white rounded-[1.65rem] p-4 sm:p-4.5 border border-[#ede3d8] flex items-center justify-between gap-3.5 shadow-2xs hover:shadow-xs hover:border-[#2d694c]/35 transition-all cursor-pointer group relative"
                                      @click="g.isFromPlanner ? openGradeFromPlannerTask(g.id) : openEditGradeModal(g)">
                                     
+                                    <!-- Delete Button (Removed) -->
+
                                     <div class="flex items-center gap-3.5 min-w-0 flex-1">
                                         <!-- Punktzahl / Icon Badge -->
                                         <div v-if="g.isFromPlanner || g.pending" class="w-12 h-12 rounded-2xl bg-[#fef3c7] text-[#b45309] flex items-center justify-center border border-[#fde68a] shrink-0">
@@ -4854,124 +4864,64 @@
                             </button>
                         </div>
 
-                        <!-- HORIZONTALER LINEAL / TAPE-MEASURE NOTEN-REGLER (HELLER SCHOOLY STIL) -->
-                        <div v-if="!gradeForm.pending" class="bg-[#fcfaf6] p-5 sm:p-6 rounded-[2rem] border border-[#ede3d8] shadow-sm relative overflow-hidden">
-                            <!-- Prominente Punkte- & Notenanzeige mit Stepper -->
-                            <div class="flex items-center justify-between gap-3 mb-5 select-none">
-                                <button type="button"
-                                        @click="gradeForm.points = Math.max(gradeSystem === '6' ? 1 : 0, (Number(gradeForm.points) || 0) - 1)"
-                                        class="w-12 h-12 rounded-2xl bg-[#f4ece4] hover:bg-[#eadecf] active:scale-90 text-[#1f1b16] flex items-center justify-center font-black text-2xl transition-all cursor-pointer border border-[#ded5c7] shrink-0 shadow-2xs">
-                                    −
-                                </button>
-
-                                <div class="flex-1 flex flex-col items-center justify-center text-center">
-                                    <div class="flex items-baseline gap-2">
-                                        <span class="text-6xl sm:text-7xl font-black font-['Epilogue'] tracking-tight transition-all duration-200 text-[#1f1b16]">
-                                            {{ gradeSystem === '6' ? gradeForm.points : String(gradeForm.points).padStart(2, '0') }}
-                                        </span>
-                                        <span class="text-xs sm:text-sm font-black text-[#6E665E] uppercase tracking-widest">
-                                            {{ gradeSystem === '6' ? 'Note' : 'Pkt' }}
-                                        </span>
-                                    </div>
-                                    <!-- Dynamisches Notenäquivalent-Badge -->
-                                    <div class="mt-1.5 px-3.5 py-1 rounded-full border text-xs font-black inline-flex items-center gap-2 transition-all max-w-[95%] truncate shadow-2xs"
-                                         :class="gradeSystem === '6' ? [getGrade6Tier(gradeForm.points).bg, getGrade6Tier(gradeForm.points).color] : [getPointsTier(gradeForm.points).bg, getPointsTier(gradeForm.points).color]">
-                                        <span class="w-2 h-2 rounded-full shrink-0 animate-pulse"
-                                              :class="gradeSystem === '6' ? (gradeForm.points <= 2 ? 'bg-emerald-500' : gradeForm.points <= 4 ? 'bg-amber-500' : 'bg-rose-500') : (gradeForm.points >= 10 ? 'bg-emerald-500' : gradeForm.points >= 5 ? 'bg-amber-500' : 'bg-rose-500')"></span>
-                                        <span class="truncate">{{ gradeSystem === '6' ? getGrade6Tier(gradeForm.points).label : (getPointsTier(gradeForm.points).grade + ' · ' + getPointsTier(gradeForm.points).label) }}</span>
-                                    </div>
+                        <!-- NOTENAUSWAHL (DIREKT-AUSWAHL OHNE SCHIEBEREGLER) -->
+                        <div v-if="!gradeForm.pending" class="bg-[#fcfaf6] p-5 sm:p-6 rounded-[2rem] border border-[#ede3d8] shadow-sm space-y-4">
+                            <!-- Aktuell ausgewählte Note Header -->
+                            <div class="flex items-center justify-between gap-3 select-none pb-3 border-b border-[#ede3d8]">
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-4xl sm:text-5xl font-black font-['Epilogue'] tracking-tight text-[#1f1b16]">
+                                        {{ gradeSystem === '6' ? gradeForm.points : String(gradeForm.points).padStart(2, '0') }}
+                                    </span>
+                                    <span class="text-xs sm:text-sm font-black text-[#6E665E] uppercase tracking-widest">
+                                        {{ gradeSystem === '6' ? 'Note' : 'Punkte' }}
+                                    </span>
                                 </div>
 
-                                <button type="button"
-                                        @click="gradeForm.points = Math.min(gradeSystem === '6' ? 6 : 15, (Number(gradeForm.points) || 0) + 1)"
-                                        class="w-12 h-12 rounded-2xl bg-[#f4ece4] hover:bg-[#eadecf] active:scale-90 text-[#1f1b16] flex items-center justify-center font-black text-2xl transition-all cursor-pointer border border-[#ded5c7] shrink-0 shadow-2xs">
-                                    +
-                                </button>
-                            </div>
-
-                            <!-- INTERAKTIVER LINEAL- & SKALEN-TAPE REGLER -->
-                            <div class="relative w-full py-3 mb-3 bg-[#f4ece4] rounded-2xl border border-[#ded5c7] overflow-hidden select-none touch-none shadow-inner group">
-                                
-                                <!-- Zentrale Nadel / Zeiger -->
-                                <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center justify-between">
-                                    <div class="w-2.5 h-2.5 bg-[#2d694c] rotate-45 transform translate-y-0.5 shadow-[0_0_8px_rgba(45,105,76,0.6)]"></div>
-                                    <div class="w-1 flex-1 bg-[#2d694c] rounded-full shadow-[0_0_8px_rgba(45,105,76,0.5)]"></div>
-                                    <div class="w-2.5 h-2.5 bg-[#2d694c] rotate-45 transform -translate-y-0.5 shadow-[0_0_8px_rgba(45,105,76,0.6)]"></div>
+                                <!-- Dynamisches Notenäquivalent-Badge -->
+                                <div class="px-3.5 py-1.5 rounded-full border text-xs font-black inline-flex items-center gap-2 shadow-2xs"
+                                     :class="gradeSystem === '6' ? [getGrade6Tier(gradeForm.points).bg, getGrade6Tier(gradeForm.points).color] : [getPointsTier(gradeForm.points).bg, getPointsTier(gradeForm.points).color]">
+                                    <span class="w-2 h-2 rounded-full shrink-0 animate-pulse"
+                                          :class="gradeSystem === '6' ? (gradeForm.points <= 2 ? 'bg-emerald-500' : gradeForm.points <= 4 ? 'bg-amber-500' : 'bg-rose-500') : (gradeForm.points >= 10 ? 'bg-emerald-500' : gradeForm.points >= 5 ? 'bg-amber-500' : 'bg-rose-500')"></span>
+                                    <span class="truncate">{{ gradeSystem === '6' ? getGrade6Tier(gradeForm.points).label : (getPointsTier(gradeForm.points).grade + ' · ' + getPointsTier(gradeForm.points).label) }}</span>
                                 </div>
-
-                                <!-- Fade Vignette Links & Rechts (Heller Verlauf) -->
-                                <div class="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#f4ece4] to-transparent z-10 pointer-events-none"></div>
-                                <div class="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#f4ece4] to-transparent z-10 pointer-events-none"></div>
-
-                                <!-- Gleitende Lineal-Skala (Invertiert: Wischen nach Links erhöht Punktzahl) -->
-                                <div class="relative h-20 transition-transform duration-300 ease-out flex items-center"
-                                     :style="{
-                                         transform: `translateX(calc(50% - ${(gradeSystem === '6' ? 6 - gradeForm.points : 15 - gradeForm.points) * 52 + 26}px))`
-                                     }">
-                                    <div v-for="n in (gradeSystem === '6' ? [6,5,4,3,2,1] : [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0])"
-                                         :key="n"
-                                         @click="gradeForm.points = n"
-                                         class="w-[52px] h-full shrink-0 flex flex-col items-center justify-between cursor-pointer group/tick transition-opacity duration-200"
-                                         :class="gradeForm.points === n ? 'opacity-100 scale-105' : 'opacity-40 hover:opacity-80'">
-                                        
-                                        <!-- Oberste Striche -->
-                                        <div class="flex items-start justify-center gap-1.5 w-full h-8 pt-1">
-                                            <div class="w-0.5 h-2 bg-[#a3988c] rounded-full"></div>
-                                            <div class="w-0.5 h-3.5 bg-[#857e72] rounded-full"></div>
-                                            <div class="w-1 rounded-full transition-all duration-200"
-                                                 :class="gradeForm.points === n ? 'h-7 bg-[#2d694c] shadow-xs' : 'h-6 bg-[#6E665E]'"></div>
-                                            <div class="w-0.5 h-3.5 bg-[#857e72] rounded-full"></div>
-                                            <div class="w-0.5 h-2 bg-[#a3988c] rounded-full"></div>
-                                        </div>
-
-                                        <!-- Zahlen-Beschriftung -->
-                                        <span class="text-sm font-black font-['Epilogue'] tracking-tight transition-all duration-200 my-1"
-                                              :class="gradeForm.points === n ? 'text-[#2d694c] scale-125 font-black' : 'text-[#1f1b16] font-bold'">
-                                            {{ gradeSystem === '6' ? n : String(n).padStart(2, '0') }}
-                                        </span>
-
-                                        <!-- Noten-Äquivalent Kürzel -->
-                                        <span class="text-[9px] font-bold uppercase tracking-wider transition-colors duration-200"
-                                              :class="gradeForm.points === n ? 'text-[#2d694c] font-black' : 'text-[#6E665E]'">
-                                            {{ gradeSystem === '6' ? (['','1','2','3','4','5','6'][n] || '') : getPointsTier(n).grade }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Transparenter Schieberegler über der Skala (Invertiert) -->
-                                <input type="range"
-                                       :min="0"
-                                       :max="gradeSystem === '6' ? 5 : 15"
-                                       step="1"
-                                       :value="gradeSystem === '6' ? 6 - gradeForm.points : 15 - gradeForm.points"
-                                       @input="gradeForm.points = gradeSystem === '6' ? 6 - Number($event.target.value) : 15 - Number($event.target.value)"
-                                       class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-30">
                             </div>
 
-                            <!-- Hinweiszeile -->
-                            <div class="flex justify-between items-center text-[10px] font-bold text-[#6E665E] px-2 mb-4">
-                                <span>◄ Wischen oder Tippen</span>
-                                <span class="text-[#1f1b16] font-extrabold uppercase tracking-wider">{{ gradeSystem === '6' ? 'Notenskala 1–6' : '0–15 Punkte Scale' }}</span>
-                                <span>Punkte wählen ►</span>
-                            </div>
-
-                            <!-- Schnellwahl Direktauswahl Chips -->
-                            <div class="pt-3 border-t border-[#ede3d8]">
-                                <p class="text-[10px] font-black uppercase tracking-wider text-[#6E665E] text-center mb-2.5">
-                                    Schnellwahl
+                            <!-- Direktauswahl Noten-Grid -->
+                            <div>
+                                <p class="text-[11px] font-black uppercase tracking-wider text-[#6E665E] mb-3">
+                                    {{ gradeSystem === '6' ? 'Note antippen zum Auswählen' : 'Punktzahl antippen zum Auswählen' }}
                                 </p>
-                                <div :class="gradeSystem === '6' ? 'grid grid-cols-6 gap-2' : 'grid grid-cols-4 sm:grid-cols-8 gap-1.5'">
-                                    <button v-for="n in (gradeSystem === '6' ? [1,2,3,4,5,6] : [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0])"
+
+                                <!-- 0–15 Punkte Grid: 4 Spalten auf Mobile, 8 Spalten auf Tablet/Desktop -->
+                                <div v-if="gradeSystem !== '6'" class="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                                    <button v-for="n in [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0]"
                                             :key="n"
                                             type="button"
                                             @click="gradeForm.points = n"
-                                            class="py-2 px-1 rounded-xl flex flex-col items-center justify-center font-black transition-all cursor-pointer active:scale-95 border min-h-[44px]"
+                                            class="py-3 px-1 rounded-2xl flex flex-col items-center justify-center font-black transition-all cursor-pointer active:scale-95 border min-h-[54px] shadow-2xs"
                                             :class="gradeForm.points === n 
-                                                ? 'bg-[#2d694c] text-white border-[#23533c] shadow-xs scale-105 ring-2 ring-[#2d694c]/30' 
+                                                ? 'bg-[#2d694c] text-white border-[#23533c] shadow-md scale-102 ring-2 ring-[#2d694c]/30' 
                                                 : 'bg-[#f4ece4] hover:bg-[#eadecf] text-[#1f1b16] border-[#ded5c7]'">
-                                        <span class="text-xs sm:text-sm font-black">{{ gradeSystem === '6' ? n : String(n).padStart(2,'0') }}</span>
-                                        <span class="text-[9px] font-bold" :class="gradeForm.points === n ? 'text-emerald-100' : 'text-[#6E665E]'">
-                                            {{ gradeSystem === '6' ? (['','1','2','3','4','5','6'][n] || '') : getPointsTier(n).grade }}
+                                        <span class="text-base sm:text-lg font-black font-['Epilogue'] leading-tight">{{ n }}</span>
+                                        <span class="text-[10px] font-bold mt-0.5" :class="gradeForm.points === n ? 'text-emerald-100' : 'text-[#6E665E]'">
+                                            {{ getPointsTier(n).grade }}
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <!-- 1–6 Noten Grid: 3 Spalten auf Mobile, 6 Spalten auf Desktop -->
+                                <div v-else class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                                    <button v-for="n in [1,2,3,4,5,6]"
+                                            :key="n"
+                                            type="button"
+                                            @click="gradeForm.points = n"
+                                            class="py-3.5 px-2 rounded-2xl flex flex-col items-center justify-center font-black transition-all cursor-pointer active:scale-95 border min-h-[56px] shadow-2xs"
+                                            :class="gradeForm.points === n 
+                                                ? 'bg-[#2d694c] text-white border-[#23533c] shadow-md scale-102 ring-2 ring-[#2d694c]/30' 
+                                                : 'bg-[#f4ece4] hover:bg-[#eadecf] text-[#1f1b16] border-[#ded5c7]'">
+                                        <span class="text-lg sm:text-xl font-black font-['Epilogue'] leading-tight">{{ n }}</span>
+                                        <span class="text-[10px] font-bold mt-0.5 truncate max-w-full" :class="gradeForm.points === n ? 'text-emerald-100' : 'text-[#6E665E]'">
+                                            {{ getGrade6Tier(n).label }}
                                         </span>
                                     </button>
                                 </div>
@@ -4995,9 +4945,15 @@
                             <i data-lucide="calendar" class="w-6 h-6 text-accent"></i>
                         </div>
 
-                        <div class="pt-4 flex gap-4">
-                            <button @click="handleSaveGrade" class="flex-1 btn-accent py-4.5 rounded-full font-black uppercase text-sm cursor-pointer active:scale-95 transition-transform">Speichern</button>
-                            <button v-if="gradeForm.id" @click="handleDeleteGrade(gradeForm.id)" class="w-16 bg-rose-500/15 border border-rose-500/25 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                        <div class="pt-4 flex flex-col sm:flex-row gap-3">
+                            <button type="button" @click="handleSaveGrade" class="flex-1 btn-accent py-4 rounded-full font-black uppercase text-xs sm:text-sm cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-xs">
+                                <i data-lucide="check" class="w-4.5 h-4.5"></i>
+                                <span>Speichern</span>
+                            </button>
+                            <button v-if="gradeForm && (gradeForm.id || gradeForm.points !== null)" type="button" @click="handleDeleteGrade(gradeForm.id)" class="py-4 px-6 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 rounded-full font-black uppercase text-xs sm:text-sm cursor-pointer active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0">
+                                <i data-lucide="trash-2" class="w-4.5 h-4.5"></i>
+                                <span>Note löschen</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -6239,7 +6195,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, runTransaction, updateDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
         // Firestore-Modul global cachen fuer spaetere dynamische Nutzung
         window.__firestoreModule = { onSnapshot, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc };
@@ -6248,12 +6204,9 @@
             apiKey: "AIzaSyDD-CByKnBFcCnHpG94VibtXrjVcmgGj8A",
             authDomain: "gradeflow-637b7.firebaseapp.com",
             projectId: "gradeflow-637b7",
-            // TODO: In Firebase-Konsole → Projekteinstellungen → Allgemein → "Meine Apps" → Web-App findest du diese beiden Werte:
             messagingSenderId: "968757647135",
             appId: "1:968757647135:web:512a6e1ebd4e9189a8822a"
         };
-        // TODO: In Firebase-Konsole → Projekteinstellungen → Cloud Messaging → Tab "Web-Konfiguration" →
-        // "Zertifikat für Web-Push-Verfahren generieren" → den langen Schlüssel hier einfügen
         const FCM_VAPID_KEY = "BBpnnwrOlFqNwFHXupcMAPcMvflEUhms6Ui3XOD3MO5SYXsT2_WhyCwG3xPctwiZN_D4_lEzJF4ecn6oxsHwVRI";
 
         // Google Calendar Anbindung (read-only) — OAuth-Client-ID aus Google Cloud Console
@@ -6261,18 +6214,30 @@
         const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        
+        // Firestore mit Offline-Persistenz (IndexedDB) für echte Offline-Nutzung & autom. Hintergrund-Sync
+        let db;
+        try {
+            db = initializeFirestore(app, {
+                localCache: persistentLocalCache({
+                    tabManager: persistentMultipleTabManager()
+                })
+            });
+            console.log("Firebase Firestore: Offline-Persistenz (IndexedDB) aktiv.");
+        } catch (err) {
+            console.warn("Fallback zu Standard-Firestore:", err);
+            db = getFirestore(app);
+        }
+
         const auth = getAuth(app);
 
-        // PWA-Service-Worker-Registrierung (ohne kaputten Blob-Fallback — Service Worker
-        // dürfen laut Spezifikation NICHT von einer blob:-URL registriert werden, das
-        // führte bisher zu einem "Failed to register a ServiceWorker"-Fehler in der Konsole).
-        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+        // PWA-Service-Worker-Registrierung für Offline App-Shell
+        if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
                     console.log('Schooly PWA Service-Worker erfolgreich registriert.', reg.scope);
                 }).catch(err => {
-                    console.warn('PWA Service Worker konnte nicht registriert werden (App funktioniert trotzdem normal, nur Offline-Modus/Installierbarkeit evtl. eingeschränkt):', err);
+                    console.warn('PWA Service Worker konnte nicht registriert werden:', err);
                 });
             });
         }
@@ -6300,6 +6265,7 @@
                 ];
                 
                 const user = ref(null);
+                const isOnline = ref(typeof navigator !== 'undefined' ? navigator.onLine : true);
                 const authLoading = ref(true);
                 const isRegistering = ref(false);
                 const email = ref('');
@@ -7300,23 +7266,39 @@
                         deferredPrompt.value = e;
                     });
 
+                    // Online/Offline-Status überwachen
+                    window.addEventListener('online', () => {
+                        isOnline.value = true;
+                    });
+                    window.addEventListener('offline', () => {
+                        isOnline.value = false;
+                    });
+
                     onAuthStateChanged(auth, async (currentUser) => {
                         user.value = currentUser;
                         if (currentUser) {
-                            const configDoc = await getDoc(doc(db, 'users', currentUser.uid, 'settings', 'config'));
-                            if (!configDoc.exists()) {
-                                // Wenn noch kein Config-Dokument existiert, handelt es sich um eine Neuregistrierung
-                                isOnboarding.value = true;
-                            } else {
+                            try {
+                                const configDoc = await getDoc(doc(db, 'users', currentUser.uid, 'settings', 'config'));
+                                if (!configDoc.exists()) {
+                                    // Wenn noch kein Config-Dokument existiert, handelt es sich um eine Neuregistrierung
+                                    isOnboarding.value = true;
+                                } else {
+                                    isOnboarding.value = false;
+                                    // Settings aus bereits geladenen configDoc übernehmen
+                                    await loadAppSettings(currentUser.uid, configDoc);
+                                    listenToSubjects(currentUser.uid);
+                                    listenToTasks(currentUser.uid);
+                                    loadExamScores(currentUser.uid);
+                                    loadAllMembers(currentUser.uid);
+                                    loadFriendsData(currentUser.uid);
+                                    await ensurePublicProfile(currentUser.uid);
+                                }
+                            } catch (offlineErr) {
+                                console.warn('Config offline fallback:', offlineErr);
                                 isOnboarding.value = false;
-                                // Settings aus bereits geladenen configDoc übernehmen (kein zweiter Firestore-Aufruf)
-                                await loadAppSettings(currentUser.uid, configDoc);
                                 listenToSubjects(currentUser.uid);
                                 listenToTasks(currentUser.uid);
                                 loadExamScores(currentUser.uid);
-                                loadAllMembers(currentUser.uid);
-                                loadFriendsData(currentUser.uid);
-                                await ensurePublicProfile(currentUser.uid);
                             }
                         } else {
                             isOnboarding.value = false;
@@ -9903,17 +9885,15 @@
                         reEtCourses.slice(0, 2).forEach(c => fixCourse(c.fach, c.halbjahr, 1, 'Pflicht-GK Religion/Ethik'));
                     }
 
-                    // 10. Mindestbelegung: Mindestens 1 Halbjahr aus jedem sonstigen belegten Fach (Ausnahme: Sport)
+                    // 10. Mindestbelegung: Mindestens 1 Halbjahr aus jedem belegten Fach (inkl. Sport)
+                    // Regel in Sachsen (§ 24 SOGYA): Aus jedem belegten Fach muss mindestens 1 Kurshalbjahresergebnis eingebracht werden.
                     subjectsList.forEach(fach => {
-                        const isSport = (getCat(fach) === 'Sport' || fach.toLowerCase().includes('sport'));
-                        if (isSport) return; // Sport hat keine Mindestbelegungspflicht
-
                         const alreadyHas = eingebrachte.some(c => c.fach === fach);
                         if (!alreadyHas) {
                             const subjectCourses = allCourses.filter(c => c.fach === fach && !fixedKeys.has(c.key));
                             if (subjectCourses.length > 0) {
                                 subjectCourses.sort((a, b) => b.punkte - a.punkte);
-                                fixCourse(fach, subjectCourses[0].halbjahr, 1, 'Mindesteinbringung (1 Halbjahr je belegtem Fach)');
+                                fixCourse(fach, subjectCourses[0].halbjahr, 1, `Mindesteinbringung (1 Halbjahr für ${fach})`);
                             }
                         }
                     });
@@ -9936,6 +9916,7 @@
                     let currentGKCount = eingebrachte.filter(c => c.gewichtung === 1).length;
                     for (const candidate of restpool) {
                         if (currentGKCount >= 32) break;
+                        // Sport: Mindestens 1 Halbjahr ist bereits durch Schritt 10 garantiert, maximal dürfen alle 4 eingebracht werden
                         if (fixCourse(candidate.fach, candidate.halbjahr, 1, 'Wahl-GK (Bester Einbringer)')) {
                             currentGKCount = eingebrachte.filter(c => c.gewichtung === 1).length;
                         }
@@ -10878,7 +10859,14 @@
                     isGradeModalOpen.value = true;
                     refreshIcons();
                 };
-                const openEditGradeModal = (g) => { gradeForm.value={...g}; isGradeModalOpen.value=true; refreshIcons(); };
+                const openEditGradeModal = (g) => { 
+                    gradeForm.value = { 
+                        ...g, 
+                        id: g.id || ('g-' + (g.date || '') + '-' + (g.points ?? '') + '-' + (g.label || ''))
+                    }; 
+                    isGradeModalOpen.value = true; 
+                    nextTick(refreshIcons); 
+                };
                 const openReportCardModal = () => { 
                     // Standardmäßig aktuelles Halbjahr als Key vorauswählen
                     if (currentClass.value >= 11) {
@@ -10928,67 +10916,128 @@
                         gradeForm.value.date = new Date().toISOString().split('T')[0];
                     }
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
-                    const ref = doc(db, 'users', user.value.uid, collName, selectedSubject.value.id);
+                    const subId = selectedSubject.value.id;
+                    const ref = doc(db, 'users', user.value.uid, collName, subId);
+                    
+                    const calculatedSemester = determineSemesterFromDate(gradeForm.value.date);
+                    const ng = { 
+                        ...gradeForm.value, 
+                        id: gradeForm.value.id || crypto.randomUUID(), 
+                        semester: calculatedSemester,
+                        sourceTaskId: gradeFormSourceTaskId.value || gradeForm.value.sourceTaskId || null
+                    };
+
+                    // 1. Sofort lokales reaktives Update durchführen (funktioniert sofort & 100% offline!)
+                    const existingGrades = [...(selectedSubject.value.grades || [])];
+                    const updatedGrades = gradeForm.value.id 
+                        ? existingGrades.map(g => g.id === ng.id ? ng : g) 
+                        : [...existingGrades, ng];
+
+                    selectedSubject.value.grades = updatedGrades;
+                    const sIdx = subjects.value.findIndex(s => s.id === subId);
+                    if (sIdx !== -1) {
+                        subjects.value[sIdx].grades = updatedGrades;
+                        subjects.value = [...subjects.value];
+                    }
+
+                    closeModal('isGradeModalOpen');
+                    await nextTick(refreshIcons);
+
+                    // 2. An Firestore senden (mit persistentLocalCache offline-sicher in IndexedDB gespeichert & synchronisiert)
                     try {
-                        await runTransaction(db, async (t) => {
-                            const snap = await t.get(ref);
-                            const grades = snap.data().grades || [];
-                            
-                            const calculatedSemester = determineSemesterFromDate(gradeForm.value.date);
-                            
-                            const ng = { 
-                                ...gradeForm.value, 
-                                id: gradeForm.value.id || crypto.randomUUID(), 
-                                semester: calculatedSemester,
-                                sourceTaskId: gradeFormSourceTaskId.value || gradeForm.value.sourceTaskId || null
-                            };
-                            t.update(ref, { grades: gradeForm.value.id ? grades.map(g => g.id === ng.id ? ng : g) : [...grades, ng] });
-                        });
+                        await updateDoc(ref, { grades: updatedGrades });
+
                         // Wenn die Note aus einer geplanten Klausur/Test heraus eingetragen wurde: Aufgabe im Planer als erledigt markieren
                         if (gradeFormSourceTaskId.value && user.value) {
                             try {
                                 await updateDoc(doc(db, 'users', user.value.uid, 'tasks', gradeFormSourceTaskId.value), { done: true });
-                            } catch (e) { console.error('Aufgabe konnte nicht als erledigt markiert werden', e); }
+                            } catch (e) { console.warn('Aufgabe konnte nicht als erledigt markiert werden', e); }
                             gradeFormSourceTaskId.value = null;
                         }
-                        closeModal('isGradeModalOpen');
                     } catch (err) {
-                        console.error("Fehler beim Speichern der Note:", err);
-                        alert("Fehler beim Speichern: " + err.message);
+                        console.warn("Offline/Sync-Hinweis beim Speichern der Note:", err);
+                        try {
+                            await setDoc(ref, { grades: updatedGrades }, { merge: true });
+                        } catch (setErr) {
+                            console.error("Fehler beim lokalen Speichern der Note:", setErr);
+                        }
                     }
                 };
 
                 const handleDeleteGrade = async (gradeId) => {
-                    if (!user.value || !selectedSubject.value || !gradeId) return;
+                    if (!selectedSubject.value) return;
+                    const targetId = gradeId || gradeForm.value?.id;
+                    const subId = selectedSubject.value.id;
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
-                    const ref = doc(db, 'users', user.value.uid, collName, selectedSubject.value.id);
-                    await runTransaction(db, async (t) => {
-                        const snap = await t.get(ref);
-                        t.update(ref, { grades: (snap.data().grades || []).filter(g => g.id !== gradeId) });
+
+                    // 1. Sofortiges lokales Update des reaktiven Status für 100% verzögerungsfreies Feedback & Offline-Sicherheit
+                    const existingGrades = selectedSubject.value.grades || [];
+                    const filtered = existingGrades.filter(g => {
+                        if (targetId && g.id) return g.id !== targetId;
+                        if (gradeForm.value && g.date === gradeForm.value.date && g.points === gradeForm.value.points && g.label === gradeForm.value.label) return false;
+                        return true;
                     });
-                    if(isGradeModalOpen.value) closeModal('isGradeModalOpen');
+
+                    selectedSubject.value.grades = filtered;
+                    const sIdx = subjects.value.findIndex(s => s.id === subId);
+                    if (sIdx !== -1) {
+                        subjects.value[sIdx].grades = filtered;
+                        subjects.value = [...subjects.value];
+                    }
+
+                    closeModal('isGradeModalOpen');
+                    await nextTick(refreshIcons);
+
+                    // 2. An Firestore senden (wird lokal in IndexedDB gespeichert und automatisch gesynct)
+                    try {
+                        if (user.value) {
+                            const ref = doc(db, 'users', user.value.uid, collName, subId);
+                            await updateDoc(ref, { grades: filtered });
+                        }
+                    } catch (err) {
+                        console.warn("Offline/Sync-Hinweis beim Löschen der Note:", err);
+                        try {
+                            const ref = doc(db, 'users', user.value.uid, collName, subId);
+                            await setDoc(ref, { grades: filtered }, { merge: true });
+                        } catch (e) {
+                            console.error("Fehler beim Speichern der Notenänderung:", e);
+                        }
+                    }
                 };
 
                 const handleSaveReportCardGrade = async (pts) => {
                     if (user.value && selectedSubject.value) {
                         const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                         const key = selectedReportCardKey.value;
-                        const updateData = pts !== null 
-                            ? { reportCardGrades: { [key]: pts } }
-                            : {};
+                        const subId = selectedSubject.value.id;
+                        const existing = { ...(selectedSubject.value.reportCardGrades || {}) };
                         if (pts === null) {
-                            // Eintrag löschen: aktuelles reportCardGrades laden und Key entfernen
-                            const subRef = doc(db, 'users', user.value.uid, collName, selectedSubject.value.id);
-                            await runTransaction(db, async (t) => {
-                                const snap = await t.get(subRef);
-                                const existing = snap.data().reportCardGrades || {};
-                                delete existing[key];
-                                t.update(subRef, { reportCardGrades: existing });
-                            });
+                            delete existing[key];
                         } else {
-                            await setDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id), { reportCardGrades: { [key]: pts } }, { merge: true });
+                            existing[key] = pts;
                         }
+
+                        // Sofort lokales Update
+                        selectedSubject.value.reportCardGrades = existing;
+                        const sIdx = subjects.value.findIndex(s => s.id === subId);
+                        if (sIdx !== -1) {
+                            subjects.value[sIdx].reportCardGrades = existing;
+                            subjects.value = [...subjects.value];
+                        }
+
                         closeModal('isReportCardModalOpen');
+
+                        try {
+                            const subRef = doc(db, 'users', user.value.uid, collName, subId);
+                            await updateDoc(subRef, { reportCardGrades: existing });
+                        } catch (e) {
+                            try {
+                                const subRef = doc(db, 'users', user.value.uid, collName, subId);
+                                await setDoc(subRef, { reportCardGrades: existing }, { merge: true });
+                            } catch (err) {
+                                console.error('Fehler beim Speichern der Zeugnisnote:', err);
+                            }
+                        }
                     }
                 };
 
@@ -11331,7 +11380,7 @@
                 const isAdmin = computed(() => {
                     if (!user.value) return false;
                     const e = (user.value.email || '').toLowerCase();
-                    return e === 'kollnerlenny@gmail.com' || e.includes('admin') || user.value.isAdmin === true;
+                    return e === 'koellnerlenny@gmail.com' || e.includes('admin') || user.value.isAdmin === true;
                 });
 
                 const isAdminModalOpen = ref(false);
@@ -11439,7 +11488,7 @@
                     getSimulatedExamScore, autoProjectExamScores, setExamScoreToSimulation,
                     statsTab, activeStatsTabNavIndex, statsStreichungenFilter, statsMobileViewMode, isCoursePrognose, getCourseSubjectColor, allAnalyzedCourses, filteredAnalyzedCourses, coursesGroupedBySubject, getSubjectFourSemesterAverage, getSemesterOverallAverage, getFourSemesterGrandAverage,
 
-                    halfYears, colorOptions, subjectIcons, user, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
+                    halfYears, colorOptions, subjectIcons, user, isOnline, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
                     currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, selectedSubject, lkBonusActive, subjectFilter, activeSubjectFilterIndex, activePlannerSubNavIndex, activeFriendsSubNavIndex, isLKSubject,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
