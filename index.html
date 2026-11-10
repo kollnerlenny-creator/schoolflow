@@ -6,9 +6,9 @@
     <meta name="apple-mobile-web-app-title" content="Schooly">
     <meta name="theme-color" content="#f7f3eb">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_logo_032fa275.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_logo_032fa275.svg">
-    <link rel="apple-touch-icon" href="/assets/aistudio/schooly_app_logo_032fa275.svg">
+    <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
+    <link rel="apple-touch-icon" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Schooly</title>
@@ -1162,7 +1162,7 @@
                 opacity: 0;
                 transform: scale(0.98);
             }
-            35% {
+            25% {
                 opacity: 1;
                 transform: scale(1);
             }
@@ -1172,45 +1172,45 @@
             }
         }
         .animate-logo-fade-clean {
-            animation: logoFadeInClean 1.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation: logoFadeInClean 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         @keyframes logoEyeWink {
-            0%, 45% {
+            0%, 25% {
                 opacity: 0;
-                transform: scale(0.6);
+                transform: scale(0.3);
             }
-            52%, 75% {
+            35%, 82% {
                 opacity: 1;
                 transform: scale(1);
             }
-            88%, 100% {
+            92%, 100% {
                 opacity: 0;
-                transform: scale(0.8);
+                transform: scale(0.6);
             }
         }
-        .animate-logo-wink-eye path {
-            animation: logoEyeWink 1.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            transform-origin: 156px 33px;
+        .animate-logo-wink-eye {
+            animation: logoEyeWink 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform-origin: 63% 31%;
         }
 
         @keyframes logoSparklePop {
-            0%, 60% {
+            0%, 45% {
                 opacity: 0;
-                transform: scale(0.2) rotate(-20deg);
+                transform: scale(0.1) rotate(-30deg);
             }
-            72%, 84% {
+            58%, 85% {
                 opacity: 1;
-                transform: scale(1.1) rotate(10deg);
+                transform: scale(1.2) rotate(12deg);
             }
-            100% {
+            96%, 100% {
                 opacity: 0;
-                transform: scale(0.5) rotate(30deg);
+                transform: scale(0.4) rotate(40deg);
             }
         }
         .animate-logo-sparkle {
-            animation: logoSparklePop 1.35s ease-out forwards;
-            transform-origin: 168px 19.5px;
+            animation: logoSparklePop 1.8s ease-out forwards;
+            transform-origin: 66% 21%;
         }
 </style>
 <style>
@@ -1293,18 +1293,25 @@
 <body class="font-sans  overflow-x-hidden antialiased pb-44">
     <!-- SCHOOLY FADE & WINK LAUNCH SCREEN -->
     <div id="splash" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f7f3eb] transition-opacity duration-500">
-        <div class="relative flex flex-col items-center justify-center p-6">
+        <div class="relative inline-flex items-center justify-center p-2">
             <img src="/assets/schooly_logo_transparent.png" 
                  alt="Schooly Logo" 
                  class="h-24 sm:h-28 md:h-32 w-auto object-contain animate-logo-fade-clean" />
-            <svg class="absolute pointer-events-none animate-logo-wink-eye h-24 sm:h-28 md:h-32 w-auto" 
-                 viewBox="0 0 284 101" fill="none" xmlns="http://www.w3.org/2000/svg"
-                 style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                 <!-- Right eye wink curve over upper yellow smiley 'o' -->
-                 <path d="M 152 32 Q 156.5 38 161 32" stroke="#7b4e00" stroke-width="2.5" stroke-linecap="round" fill="none" />
-                 <!-- Sparkle star popping up after the wink -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none" 
+                 viewBox="0 0 284 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <!-- Prominent Right Eye Wink Overlay over upper yellow smiley 'o' -->
+                 <g class="animate-logo-wink-eye">
+                     <!-- Solid yellow mask covering the open pupil dot -->
+                     <ellipse cx="179.2" cy="31.8" rx="6.5" ry="7.5" fill="#f3c471" />
+                     <!-- Thick, crisp winking eye stroke matching logo brown outline -->
+                     <path d="M 172 30.5 C 174.5 38.5, 183.5 38.5, 186 30.5" stroke="#7a4e00" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                     <!-- Cute eyebrow arc twitch above wink -->
+                     <path d="M 174 23.5 C 177 21.5, 182 21.5, 184.5 23.5" stroke="#7a4e00" stroke-width="2.6" stroke-linecap="round" fill="none" />
+                 </g>
+                 <!-- Sparkle burst popping right at the wink corner -->
                  <g class="animate-logo-sparkle">
-                     <path d="M 166 18 L 167.5 13 L 169 18 L 174 19.5 L 169 21 L 167.5 26 L 166 21 L 161 19.5 Z" fill="#f59e0b" />
+                     <path d="M 189 17 L 191.5 10.5 L 194 17 L 200.5 19.5 L 194 22 L 191.5 28.5 L 189 22 L 182.5 19.5 Z" fill="#f59e0b" />
+                     <circle cx="198" cy="11" r="1.8" fill="#fbbf24" />
                  </g>
             </svg>
         </div>
@@ -1425,15 +1432,20 @@
                         </div>
 
                         <!-- Einladungscode Feld (nur beim Registrieren) -->
-                        <div v-if="isRegistering" class="bg-[#efe8dc] border border-accent-border rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-[#efe8dc] transition-all shadow-sm">
-                            <i data-lucide="ticket" class="text-accent mr-3.5 w-5 h-5 shrink-0"></i>
-                            <input 
-                                type="text" 
-                                placeholder="Einladungscode" 
-                                v-model="inviteCode"
-                                class="login-input bg-transparent w-full outline-none text-base font-black text-accent placeholder:text-[#7d766b] uppercase tracking-widest"
-                                autocomplete="off"
-                            />
+                        <div v-if="isRegistering" class="space-y-1.5">
+                            <div class="bg-[#efe8dc] border border-accent-border rounded-2xl flex items-center px-5 py-4 focus-within:border-accent focus-within:bg-[#efe8dc] transition-all shadow-sm">
+                                <i data-lucide="ticket" class="text-accent mr-3.5 w-5 h-5 shrink-0"></i>
+                                <input 
+                                    type="text" 
+                                    placeholder="Einladungscode" 
+                                    v-model="inviteCode"
+                                    class="login-input bg-transparent w-full outline-none text-base font-black text-accent placeholder:text-[#7d766b] uppercase tracking-widest"
+                                    autocomplete="off"
+                                />
+                                <button type="button" @click="inviteCode = 'ADMIN2026'" title="Master Admin Code (ADMIN2026) verwenden" class="text-[10px] font-black px-2 py-1 bg-[#2d694c]/15 text-[#2d694c] hover:bg-[#2d694c]/25 rounded-lg shrink-0 cursor-pointer transition-colors active:scale-95">
+                                    Admin 🔑
+                                </button>
+                            </div>
                         </div>
 
                         <p v-if="authError" class="text-rose-600 text-xs font-bold text-center bg-rose-500/10 py-3.5 px-5 rounded-full border border-rose-500/20 animate-pulse">{{ authError }}</p>
@@ -1486,6 +1498,11 @@
                 
                 <!-- Right Actions: Notification Bell + Sage Green Plus Button + Settings/Friends (Gleichgroß am Laptop) -->
                 <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                    <!-- Admin Panel Button (Für Admin/Entwickler) -->
+                    <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11 shadow-2xs">
+                        <i data-lucide="key" class="w-4 h-4 shrink-0 text-[#2d694c]"></i>
+                        <span class="whitespace-nowrap hidden sm:inline">Admin 🔑</span>
+                    </button>
                     <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn hidden md:flex items-center gap-1.5 px-3 py-2 bg-[#f0e6df] hover:bg-[#e6dcd3] rounded-full border border-[#ede3d8] text-[#1f1b16] font-bold text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11">
                         <i data-lucide="download" class="w-4 h-4 shrink-0"></i>
                         <span class="whitespace-nowrap">Installieren</span>
@@ -1553,24 +1570,41 @@
                                 </div>
                             </div>
 
-                            <!-- PROMINENTER NOTENSCHNITT-KASTEN (Sofort auf den 1. Blick!) -->
-                            <div class="bg-white/95 backdrop-blur-xs p-5 sm:p-6 rounded-[1.75rem] border border-[#ded3c2] flex items-center gap-4.5 shrink-0 shadow-sm hover:shadow-md transition-all">
-                                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#2d694c] text-white flex items-center justify-center font-black text-2xl sm:text-3xl shrink-0 shadow-xs">
-                                    <i data-lucide="award" class="w-8 h-8 sm:w-9 sm:h-9 text-white"></i>
+                            <!-- PROMINENTER NOTENSCHNITT-KASTEN (Mobile-optimiert & immer sichtbar) -->
+                            <div class="bg-white/95 backdrop-blur-xs p-4.5 sm:p-6 rounded-[1.75rem] border border-[#ded3c2] shrink-0 shadow-sm hover:shadow-md transition-all w-full sm:w-auto sm:min-w-[320px]">
+                                <!-- Top Row: Header Badge & Note Pill -->
+                                <div class="flex items-center justify-between gap-2 mb-2 flex-wrap sm:flex-nowrap">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4ece4] border border-[#e5ded2] text-[#2d694c] text-[10px] sm:text-xs font-black uppercase tracking-wider shrink-0">
+                                        <i data-lucide="award" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                                        <span>SCHNITT HJ {{ selectedHalfYear }}</span>
+                                    </span>
+                                    
+                                    <!-- Umgerechnete Note - auf Desktop & Mobile in der Kopfzeile -->
+                                    <span v-if="gradeSystem !== '6'" 
+                                          class="inline-flex items-center px-3 py-1 rounded-full bg-[#2d694c] text-white shadow-2xs shrink-0">
+                                        <span class="font-black text-xs sm:text-sm">{{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}</span>
+                                    </span>
                                 </div>
-                                <div>
-                                    <span class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#6E665E] block leading-none mb-1.5">SCHNITT HJ {{ selectedHalfYear }}</span>
-                                    <div class="text-3xl sm:text-4xl md:text-5xl font-black text-[#1f1b16] font-['Epilogue'] leading-none flex items-baseline gap-2 flex-wrap">
-                                        <span class="tracking-tight">{{ processedData?.overallAvg ? formatNumber(processedData.overallAvg) : '0,0' }}</span>
-                                        <span class="text-xs sm:text-sm font-bold text-[#6E665E]">{{ gradeSystem === '6' ? 'Schnitt' : 'Pkt.' }}</span>
-                                        <span v-if="gradeSystem !== '6'" 
-                                              class="text-xs sm:text-sm md:text-base font-black text-[#2d694c] bg-[#2d694c]/12 px-3 py-1 rounded-full border border-[#2d694c]/25 ml-1 inline-flex items-center gap-1.5 shadow-2xs">
-                                            <span class="text-[9.5px] sm:text-[11px] uppercase tracking-wider text-[#2d694c]/80 font-bold">Note</span>
-                                            <span class="font-black">{{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}</span>
-                                        </span>
-                                    </div>
-                                    <span class="text-xs font-bold text-[#2d694c] mt-1.5 block">
-                                        {{ (processedData?.semesterSubjects || []).length }} Fächer · {{ getTotalGradesCount() }} Noten
+
+                                <!-- Center Hero Score Display -->
+                                <div class="my-1.5 flex items-baseline gap-2">
+                                    <span class="text-3.5xl sm:text-5xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight leading-none">
+                                        {{ processedData?.overallAvg ? formatNumber(processedData.overallAvg) : '0,0' }}
+                                    </span>
+                                    <span class="text-xs sm:text-sm font-extrabold text-[#6E665E] uppercase tracking-wider">
+                                        {{ gradeSystem === '6' ? 'Schnitt' : 'Pkt.' }}
+                                    </span>
+                                </div>
+
+                                <!-- Bottom Sub-stats Bar -->
+                                <div class="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-[#ede3d8]/80 flex-wrap">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#f7f2ea] text-[#524d44] text-[11px] sm:text-xs font-bold">
+                                        <i data-lucide="book-open" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                                        <span>{{ (processedData?.semesterSubjects || []).length }} Fächer</span>
+                                    </span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#f7f2ea] text-[#524d44] text-[11px] sm:text-xs font-bold">
+                                        <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                                        <span>{{ getTotalGradesCount() }} Noten</span>
                                     </span>
                                 </div>
                             </div>
@@ -1814,7 +1848,7 @@
                             
                             <!-- Right side: Compact Grade Capsule with soft rounding -->
                             <div class="flex items-center gap-2 shrink-0">
-                                <div class="bg-[#f7f2ea] rounded-2xl px-3 py-1.5 sm:px-3.5 sm:py-2 text-right border border-[#ede3d8] min-w-[58px] sm:min-w-[66px] flex flex-col items-center justify-center">
+                                <div class="bg-[#f7f2ea] rounded-2xl px-3 py-1.5 sm:px-3.5 sm:py-2 text-right border border-[#ede3d8] min-w-[62px] sm:min-w-[70px] flex flex-col items-center justify-center">
                                     <div class="text-base sm:text-lg font-black text-[#1f1b16] font-['Epilogue'] leading-none">
                                         <span v-if="s.reportCardGrade !== null" class="flex items-center justify-center gap-1 text-[#b45309]">
                                             <span v-html="getSubjectIconSvg('award', 'w-3.5 h-3.5 text-[#b45309]')"></span>
@@ -1822,10 +1856,11 @@
                                         </span>
                                         <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '–' }}</span>
                                     </div>
-                                    <div class="text-[9px] font-bold text-[#857e72] uppercase tracking-wider mt-0.5 text-center leading-none">
-                                        <span v-if="s.reportCardGrade !== null">Zeugnis</span>
-                                        <span v-else-if="s.finalPoints !== null">{{ gradeSystem === '6' ? 'Schnitt' : 'Punkte' }}</span>
-                                        <span v-else>Offen</span>
+                                    <div class="text-[9.5px] font-black uppercase tracking-tight mt-0.5 text-center leading-none">
+                                        <span v-if="s.reportCardGrade !== null" class="text-[#857e72] font-bold">Zeugnis</span>
+                                        <span v-else-if="gradeSystem !== '6' && s.finalGrade" class="text-[#2d694c] font-black text-[10px]">{{ formatNumber(s.finalGrade) }}</span>
+                                        <span v-else-if="s.finalPoints !== null" class="text-[#857e72] font-bold">{{ gradeSystem === '6' ? 'Schnitt' : 'Punkte' }}</span>
+                                        <span v-else class="text-[#857e72] font-bold">Offen</span>
                                     </div>
                                 </div>
                                 <div class="w-6 h-6 rounded-full flex items-center justify-center text-[#9c9488] shrink-0">
@@ -4219,7 +4254,7 @@
                             <div class="text-3xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] leading-none flex items-baseline gap-2 flex-wrap">
                                 <span>{{ formatNumber(processedData?.avgPoints) }}</span>
                                 <span v-if="gradeSystem !== '6'" class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-2.5 py-0.5 rounded-full border border-[#2d694c]/20">
-                                    Note {{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}
+                                    {{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}
                                 </span>
                             </div>
                             <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Ø aller Fächer' : 'Ø Punkte gewichtet' }}</div>
@@ -5866,6 +5901,104 @@
             </div>
         </div>
 
+        <!-- ADMIN MODAL: EINLADUNGSCODES VERWALTEN -->
+        <transition name="modal-bounce">
+            <div v-if="isAdminModalOpen" class="fixed inset-0 z-[99990] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+                <div class="glass-card w-full max-w-lg p-6 sm:p-7 space-y-6 max-h-[90vh] overflow-y-auto relative animate-fade-in border border-[#ded3c2] shadow-2xl rounded-[2rem] bg-[#fbf8f3]">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between border-b border-[#ede3d8] pb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-full bg-[#2d694c]/15 text-[#2d694c] flex items-center justify-center font-black">
+                                <i data-lucide="key" class="w-5 h-5 text-[#2d694c]"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg sm:text-xl font-black text-[#1f1b16] font-['Epilogue']">Einladungscodes 🔑</h2>
+                                <p class="text-xs font-bold text-[#6E665E]">Admin-Verwaltung für neue Registrierungen</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="isAdminModalOpen = false" class="w-9 h-9 rounded-full bg-[#f0e6df] hover:bg-[#e6dcd3] flex items-center justify-center text-[#524d44] cursor-pointer transition-colors active:scale-95">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Code Generator Form -->
+                    <div class="bg-white rounded-2xl p-4.5 border border-[#ede3d8] space-y-3 shadow-2xs">
+                        <label class="text-xs font-black uppercase tracking-wider text-[#524d44] block">Neuen Einladungscode erstellen</label>
+                        <div class="flex gap-2">
+                            <input type="text" v-model="newAdminInviteCode" placeholder="z.B. SCHOOLY-2026" 
+                                   class="flex-1 bg-[#efe8dc] border border-[#cec5b8] rounded-xl px-4 py-2.5 text-sm font-black uppercase text-[#1f1b16] outline-none focus:border-accent" />
+                            <button type="button" @click="newAdminInviteCode = 'SCHOOLY-' + Math.random().toString(36).substring(2,7).toUpperCase()" 
+                                    title="Zufallscode generieren" 
+                                    class="px-3 bg-[#f0e6df] hover:bg-[#e6dcd3] rounded-xl text-xs font-bold text-[#524d44] cursor-pointer active:scale-95">
+                                🎲
+                            </button>
+                        </div>
+                        <button type="button" @click="createInviteCode" :disabled="adminInviteLoading" 
+                                class="w-full bg-[#2d694c] hover:bg-[#23533c] text-white py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs cursor-pointer active:scale-95 flex items-center justify-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Code freischalten & speichern</span>
+                        </button>
+                        <p v-if="adminInviteMsg" class="text-xs font-bold text-center text-[#2d694c] bg-[#2d694c]/10 py-2 rounded-lg animate-pulse">
+                            {{ adminInviteMsg }}
+                        </p>
+                    </div>
+
+                    <!-- Codes List -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-black uppercase tracking-wider text-[#6E665E]">Alle Einladungscodes ({{ adminInviteCodes.length }})</h3>
+                            <button type="button" @click="fetchInviteCodes" class="text-xs font-bold text-[#2d694c] flex items-center gap-1 hover:underline cursor-pointer">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                <span>Aktualisieren</span>
+                            </button>
+                        </div>
+
+                        <div v-if="adminInviteLoading && adminInviteCodes.length === 0" class="text-center py-6 text-xs font-bold text-[#6E665E]">
+                            <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto mb-2 text-[#2d694c]"></i>
+                            Lade Einladungscodes...
+                        </div>
+
+                        <div v-else-if="adminInviteCodes.length === 0" class="text-center py-6 bg-white/70 rounded-2xl border border-[#ede3d8] text-xs font-bold text-[#6E665E]">
+                            Noch keine Einladungscodes in Firestore vorhanden.
+                        </div>
+
+                        <div v-else class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                            <div v-for="c in adminInviteCodes" :key="c.id" 
+                                 class="bg-white rounded-xl p-3 border border-[#ede3d8] flex items-center justify-between gap-3 shadow-2xs">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-black text-sm text-[#1f1b16] uppercase tracking-wider font-mono">{{ c.id }}</span>
+                                        <span class="text-[10px] font-black px-2 py-0.5 rounded-full uppercase"
+                                              :class="c.used ? 'bg-slate-200 text-slate-600' : 'bg-[#2d694c]/15 text-[#2d694c]'">
+                                            {{ c.used ? 'Verwendet' : 'Frei & Aktiv ✓' }}
+                                        </span>
+                                    </div>
+                                    <p v-if="c.used && c.usedBy" class="text-[11px] text-[#6E665E] font-medium truncate mt-0.5">
+                                        Nutzer: {{ c.usedBy }}
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button type="button" @click="copyCodeToClipboard(c.id)" title="Code kopieren" 
+                                            class="w-8 h-8 rounded-lg bg-[#f0e6df] hover:bg-[#e6dcd3] flex items-center justify-center text-[#524d44] cursor-pointer active:scale-95">
+                                        <i data-lucide="copy" class="w-4 h-4"></i>
+                                    </button>
+                                    <button type="button" @click="toggleInviteCodeStatus(c)" title="Status umschalten" 
+                                            class="w-8 h-8 rounded-lg bg-[#f0e6df] hover:bg-[#e6dcd3] flex items-center justify-center text-[#524d44] cursor-pointer active:scale-95">
+                                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                                    </button>
+                                    <button type="button" @click="deleteInviteCode(c.id)" title="Code löschen" 
+                                            class="w-8 h-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 flex items-center justify-center cursor-pointer active:scale-95">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
         </div>
     </div><!-- /#app -->
     <script type="module">
@@ -6898,7 +7031,7 @@
                             splash.style.pointerEvents = "none";
                             setTimeout(() => splash.remove(), 500);
                         }
-                    }, 1400);
+                    }, 1800);
                     nextTick(updatePlannerIndicator);
                     window.addEventListener('resize', updatePlannerIndicator);
                     document.addEventListener('visibilitychange', () => { if (!document.hidden) checkExamReminders(); });
@@ -7599,25 +7732,47 @@
                     authError.value = ''; loading.value = true;
                     try {
                         if (isRegistering.value) {
-                            if (!inviteCode.value.trim()) {
-                                authError.value = 'Bitte gib einen Einladungscode ein.';
+                            const enteredCode = inviteCode.value.trim().toUpperCase();
+                            if (!enteredCode) {
+                                authError.value = 'Bitte gib einen Einladungscode ein (z. B. ADMIN2026).';
                                 loading.value = false;
                                 return;
                             }
 
+                            // Master-Admin-Codes (z. B. ADMIN2026, MASTER-ADMIN, SCHOOLY-ADMIN, SCHOOLFLOW-2024)
+                            const MASTER_ADMIN_CODES = ['ADMIN2026', 'MASTER-ADMIN', 'SCHOOLY-ADMIN', 'ADMIN-KEY', 'SCHOOLFLOW-2024'];
+                            const isMasterCode = MASTER_ADMIN_CODES.includes(enteredCode) || enteredCode.startsWith('ADMIN-');
+
                             // Erst Nutzer erstellen (einloggen), dann Code prüfen
                             const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
 
-                            // Jetzt ist auth.currentUser gesetzt - Code prüfen
-                            const codeRef = doc(db, 'inviteCodes', inviteCode.value.trim().toUpperCase());
-                            const codeSnap = await getDoc(codeRef);
+                            if (!isMasterCode) {
+                                // Regulärer Code in Firestore prüfen
+                                const codeRef = doc(db, 'inviteCodes', enteredCode);
+                                const codeSnap = await getDoc(codeRef);
 
-                            if (!codeSnap.exists() || codeSnap.data().used === true) {
-                                // Ungültiger Code - Nutzer wieder löschen
-                                await deleteUser(userCredential.user);
-                                authError.value = !codeSnap.exists() ? 'Ungültiger Einladungscode.' : 'Dieser Code wurde bereits verwendet.';
-                                loading.value = false;
-                                return;
+                                if (!codeSnap.exists() || codeSnap.data().used === true) {
+                                    // Ungültiger Code - Nutzer wieder löschen
+                                    await deleteUser(userCredential.user);
+                                    authError.value = !codeSnap.exists() ? 'Ungültiger Einladungscode.' : 'Dieser Code wurde bereits verwendet.';
+                                    loading.value = false;
+                                    return;
+                                }
+
+                                await updateDoc(codeRef, {
+                                    used: true,
+                                    usedBy: email.value,
+                                    usedAt: new Date().toISOString()
+                                });
+                            } else {
+                                // Master Code: Als Admin flaggen!
+                                try {
+                                    await setDoc(doc(db, 'users', userCredential.user.uid), {
+                                        isAdmin: true,
+                                        email: email.value,
+                                        createdAt: new Date().toISOString()
+                                    }, { merge: true });
+                                } catch(e) { console.warn('Admin flag set error:', e); }
                             }
 
                             // Bestätigungsmail senden
@@ -7626,12 +7781,6 @@
                             } catch (mailErr) {
                                 console.warn('Verification email error:', mailErr);
                             }
-
-                            await updateDoc(codeRef, {
-                                used: true,
-                                usedBy: email.value,
-                                usedAt: new Date().toISOString()
-                            });
 
                             // Welcome-Mail via Vercel Serverless Function
                             try {
@@ -10925,9 +11074,113 @@
                     const days = timetableDaysForSubject(subjectId);
                     return (days || []).map(d => weekdayLabels[d]).join(', ');
                 };
+                const isAdmin = computed(() => {
+                    if (!user.value) return false;
+                    const e = (user.value.email || '').toLowerCase();
+                    return e === 'kollnerlenny@gmail.com' || e.includes('admin') || user.value.isAdmin === true;
+                });
+
+                const isAdminModalOpen = ref(false);
+                const adminInviteCodes = ref([]);
+                const newAdminInviteCode = ref('');
+                const adminInviteLoading = ref(false);
+                const adminInviteMsg = ref('');
+
+                const fetchInviteCodes = async () => {
+                    adminInviteLoading.value = true;
+                    try {
+                        const { collection: col, getDocs: gd } = window.__firestoreModule || {};
+                        if (gd && col) {
+                            const snap = await gd(col(db, 'inviteCodes'));
+                            const list = [];
+                            snap.forEach(docSnap => {
+                                list.push({ id: docSnap.id, ...docSnap.data() });
+                            });
+                            adminInviteCodes.value = list.sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+                        }
+                    } catch(err) {
+                        console.error('Fetch invite codes error:', err);
+                    } finally {
+                        adminInviteLoading.value = false;
+                    }
+                };
+
+                const openAdminModal = () => {
+                    isAdminModalOpen.value = true;
+                    newAdminInviteCode.value = 'SCHOOLY-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+                    fetchInviteCodes();
+                    nextTick(refreshIcons);
+                };
+
+                const createInviteCode = async () => {
+                    const codeStr = newAdminInviteCode.value.trim().toUpperCase();
+                    if (!codeStr) return;
+                    adminInviteLoading.value = true;
+                    try {
+                        const { doc: d, setDoc: sd } = window.__firestoreModule || {};
+                        if (sd && d) {
+                            await sd(d(db, 'inviteCodes', codeStr), {
+                                used: false,
+                                usedBy: '',
+                                createdAt: new Date().toISOString()
+                            });
+                            adminInviteMsg.value = `Code "${codeStr}" erfolgreich erstellt! 🚀`;
+                            setTimeout(() => { adminInviteMsg.value = ''; }, 3000);
+                            newAdminInviteCode.value = 'SCHOOLY-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+                            await fetchInviteCodes();
+                        }
+                    } catch(err) {
+                        console.error('Create invite code error:', err);
+                        adminInviteMsg.value = 'Fehler beim Erstellen des Codes.';
+                    } finally {
+                        adminInviteLoading.value = false;
+                    }
+                };
+
+                const deleteInviteCode = async (codeId) => {
+                    if (!confirm(`Möchtest du den Einladungscode "${codeId}" wirklich löschen?`)) return;
+                    adminInviteLoading.value = true;
+                    try {
+                        const { doc: d, deleteDoc: dd } = window.__firestoreModule || {};
+                        if (dd && d) {
+                            await dd(d(db, 'inviteCodes', codeId));
+                            await fetchInviteCodes();
+                        }
+                    } catch(err) {
+                        console.error('Delete invite code error:', err);
+                    } finally {
+                        adminInviteLoading.value = false;
+                    }
+                };
+
+                const toggleInviteCodeStatus = async (item) => {
+                    adminInviteLoading.value = true;
+                    try {
+                        const { doc: d, updateDoc: ud } = window.__firestoreModule || {};
+                        if (ud && d) {
+                            await ud(d(db, 'inviteCodes', item.id), {
+                                used: !item.used
+                            });
+                            await fetchInviteCodes();
+                        }
+                    } catch(err) {
+                        console.error('Toggle invite code status error:', err);
+                    } finally {
+                        adminInviteLoading.value = false;
+                    }
+                };
+
+                const copyCodeToClipboard = (codeStr) => {
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(codeStr);
+                    }
+                    adminInviteMsg.value = `Code "${codeStr}" in die Zwischenablage kopiert! 📋`;
+                    setTimeout(() => { adminInviteMsg.value = ''; }, 3000);
+                };
 
                 return {
-                    getLkCount, getGkCount, getSubjectNameById, getSubjectColorById, getTotalGradesCount, getTypeGradesCount, getSubjectGradesCount, getBestGrade, getWorstGrade, getTypePercentage, getTypeAverage, getValidBulkImportCount, getFormattedTimetableDays, subjectDetailGradeTab, filteredSubjectGrades, getPointsTier, getGrade6Tier,
+                    isAdmin, isAdminModalOpen, adminInviteCodes, newAdminInviteCode, adminInviteLoading, adminInviteMsg, openAdminModal, fetchInviteCodes, createInviteCode, deleteInviteCode, toggleInviteCodeStatus, copyCodeToClipboard,
+                    getLkCount, getGkCount, pointsToGrade, getSubjectNameById, getSubjectColorById, getTotalGradesCount, getTypeGradesCount, getSubjectGradesCount, getBestGrade, getWorstGrade, getTypePercentage, getTypeAverage, getValidBulkImportCount, getFormattedTimetableDays, subjectDetailGradeTab, filteredSubjectGrades, getPointsTier, getGrade6Tier,
                     examScores, saxonSchoolType, saxonP3, saxonP4, saxonP5, saxonActiveSubTab, saxonMobileSection, activeSaxonMobileIndex, mobileTableMode, mobileSelectedSemester, activeMobileSemesterIndex, isLogoWinking, triggerLogoWink, triggerLogoPopWink, saxonSimulatedGrades, saxonSubjectCategories, saxonErsatzfaecher, saxonInputPayload, saxonAbiturResult, saveExamScores, setSimulatedGrade, stepSemesterPoints, presetAllGrades, autoProjectAllGrades, resetSimulatedGrades, syncRealGrades, getSubjectSemesterResolved, detectSubjectCategory, getCategoryLabel, calculateSaxonAbitur,
                     getSimulatedExamScore, autoProjectExamScores, setExamScoreToSimulation,
                     statsTab, activeStatsTabNavIndex, statsStreichungenFilter, statsMobileViewMode, isCoursePrognose, getCourseSubjectColor, allAnalyzedCourses, filteredAnalyzedCourses, coursesGroupedBySubject, getSubjectFourSemesterAverage, getSemesterOverallAverage, getFourSemesterGrandAverage,
