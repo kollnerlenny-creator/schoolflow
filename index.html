@@ -20,15 +20,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Google Identity Services (für Google Kalender Anbindung) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <!-- jsPDF (für PDF-Export von Notenspiegel/Statistiken) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- jsPDF (für PDF-Export von Notenspiegel/Statistiken, nicht blockierend) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
     <!-- Vue.js 3 Production Build -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js (nicht blockierend geladen) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script>
         // Frühes Abfangen des Chrome Installations-Events, damit es nicht verloren geht
         window.earlyDeferredPrompt = null;
@@ -1316,9 +1316,17 @@
             </svg>
         </div>
     </div>
-    
-
-    
+    <script>
+        // Failsafe: Falls die Initialisierung länger als 600ms dauert, Splash sofort ausblenden
+        setTimeout(() => {
+            const sp = document.getElementById("splash");
+            if (sp) {
+                sp.style.opacity = "0";
+                sp.style.pointerEvents = "none";
+                setTimeout(() => sp.remove(), 350);
+            }
+        }, 600);
+    </script>
 
     <div id="app" v-cloak>
         <!-- OFFLINE STATUS BANNER (Dezenter Hinweis, wenn das Gerät offline ist) -->
@@ -6544,8 +6552,20 @@
                     gesellschaftOrig: 'Geographie',
                     gesellschaftReplacement: ''
                 });
-                const subjects = ref([]);
-                const tasks = ref([]);
+                // Sofort-Fallback aus lokalem Gerätespeicher für 0ms Ladezeit beim Öffnen:
+                const lastSavedUid = localStorage.getItem('sf_last_uid') || '';
+                let initialSubjects = [];
+                let initialTasks = [];
+                if (lastSavedUid) {
+                    try {
+                        const sRaw = localStorage.getItem('sf_subjects_' + lastSavedUid);
+                        if (sRaw) initialSubjects = JSON.parse(sRaw);
+                        const tRaw = localStorage.getItem('sf_tasks_' + lastSavedUid);
+                        if (tRaw) initialTasks = JSON.parse(tRaw);
+                    } catch (_) {}
+                }
+                const subjects = ref(initialSubjects);
+                const tasks = ref(initialTasks);
 
                 // PWA INSTALL TRIGGER STATE
                 const deferredPrompt = ref(null);
@@ -7235,14 +7255,17 @@
                 });
 
                 onMounted(() => {
-                    setTimeout(() => {
+                    const hideSplash = () => {
                         const splash = document.getElementById("splash");
                         if (splash) {
                             splash.style.opacity = "0";
                             splash.style.pointerEvents = "none";
-                            setTimeout(() => splash.remove(), 500);
+                            setTimeout(() => splash.remove(), 350);
                         }
-                    }, 1800);
+                    };
+                    // Splash Screen nach maximal 200ms sanft ausblenden (nicht mehr 1.8 Sekunden warten!)
+                    setTimeout(hideSplash, 200);
+
                     nextTick(updatePlannerIndicator);
                     window.addEventListener('resize', updatePlannerIndicator);
                     document.addEventListener('visibilitychange', () => { if (!document.hidden) checkExamReminders(); });
@@ -7276,35 +7299,48 @@
 
                     onAuthStateChanged(auth, async (currentUser) => {
                         user.value = currentUser;
+                        // Sofort Lade-Spinner beenden & Splash verstecken (0ms Feedback!)
+                        authLoading.value = false;
+                        hideSplash();
+
                         if (currentUser) {
+                            try { localStorage.setItem('sf_last_uid', currentUser.uid); } catch (_) {}
+                            
+                            // Lokale zwischengespeicherte Einstellungen sofort anwenden
                             try {
-                                const configDoc = await getDoc(doc(db, 'users', currentUser.uid, 'settings', 'config'));
-                                if (!configDoc.exists()) {
-                                    // Wenn noch kein Config-Dokument existiert, handelt es sich um eine Neuregistrierung
-                                    isOnboarding.value = true;
-                                } else {
-                                    isOnboarding.value = false;
-                                    // Settings aus bereits geladenen configDoc übernehmen
-                                    await loadAppSettings(currentUser.uid, configDoc);
-                                    listenToSubjects(currentUser.uid);
-                                    listenToTasks(currentUser.uid);
-                                    loadExamScores(currentUser.uid);
+                                const cachedConfig = localStorage.getItem('sf_user_config_' + currentUser.uid);
+                                if (cachedConfig) applyConfigData(JSON.parse(cachedConfig));
+                            } catch (_) {}
+
+                            // Daten-Listener sofort starten (Firestore IndexedDB Cache antwortet sofort!)
+                            listenToSubjects(currentUser.uid);
+                            listenToTasks(currentUser.uid);
+                            loadExamScores(currentUser.uid);
+
+                            // Im Hintergrund prüfen & synchronisieren (ohne UI zu blockieren)
+                            (async () => {
+                                try {
+                                    const configPromise = getDoc(doc(db, 'users', currentUser.uid, 'settings', 'config'));
+                                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1200));
+                                    const configDoc = await Promise.race([configPromise, timeoutPromise]);
+                                    
+                                    if (configDoc && configDoc.exists()) {
+                                        isOnboarding.value = false;
+                                        await loadAppSettings(currentUser.uid, configDoc);
+                                    } else if (configDoc && !configDoc.exists() && !localStorage.getItem('sf_user_config_' + currentUser.uid)) {
+                                        isOnboarding.value = true;
+                                    }
                                     loadAllMembers(currentUser.uid);
                                     loadFriendsData(currentUser.uid);
                                     await ensurePublicProfile(currentUser.uid);
+                                } catch (bgErr) {
+                                    // Offline oder Timeout: App läuft offline voll weiter
                                 }
-                            } catch (offlineErr) {
-                                console.warn('Config offline fallback:', offlineErr);
-                                isOnboarding.value = false;
-                                listenToSubjects(currentUser.uid);
-                                listenToTasks(currentUser.uid);
-                                loadExamScores(currentUser.uid);
-                            }
+                            })();
                         } else {
                             isOnboarding.value = false;
                             unsubscribeAllListeners();
                         }
-                        authLoading.value = false;
                         refreshIcons();
                     });
                 });
@@ -7385,49 +7421,57 @@
                     }
                 };
 
+                const applyConfigData = (data) => {
+                    if (!data) return;
+                    if (data.startYear) {
+                        startYear.value = data.startYear;
+                        tempStartYear.value = data.startYear;
+                    }
+                    if (data.displayName) {
+                        displayName.value = data.displayName;
+                    }
+                    if (data.currentClass) {
+                        currentClass.value = data.currentClass;
+                        tempCurrentClass.value = data.currentClass;
+                    }
+                    if (data.gradeSystem) {
+                        gradeSystem.value = data.gradeSystem;
+                        tempGradeSystem.value = data.gradeSystem;
+                    }
+                    if (data.userAvatar) {
+                        userAvatar.value = data.userAvatar;
+                        try { localStorage.setItem('sf_user_avatar', data.userAvatar); } catch (_) {}
+                    }
+                    if (data.theme) loadTheme(data.theme);
+                    if (data.timetable) timetable.value = { ...timetable.value, ...data.timetable };
+                    if (typeof data.examRemindersEnabled === 'boolean') examRemindersEnabled.value = data.examRemindersEnabled;
+                    if (typeof data.examReminderDays === 'number') examReminderDays.value = data.examReminderDays;
+                    if (typeof data.examReminderTime === 'string') examReminderTime.value = data.examReminderTime;
+                    if (typeof data.weeklyRecapWeekday === 'number') {
+                        weeklyRecapWeekday.value = data.weeklyRecapWeekday;
+                        tempWeeklyRecapWeekday.value = data.weeklyRecapWeekday;
+                    }
+                    if (typeof data.lastWeeklyRecapViewedWeek === 'string') lastWeeklyRecapViewedWeek.value = data.lastWeeklyRecapViewedWeek;
+                    if (Array.isArray(data.googleSelectedCalendarIds)) googleSelectedCalendarIds.value = data.googleSelectedCalendarIds;
+                    abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
+                };
+
                 const loadAppSettings = async (uid, existingSnap) => {
-                    const snap = existingSnap || await getDoc(doc(db, 'users', uid, 'settings', 'config'));
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        if (data.startYear) {
-                            startYear.value = data.startYear;
-                            tempStartYear.value = data.startYear;
+                    try {
+                        const snap = existingSnap || await getDoc(doc(db, 'users', uid, 'settings', 'config'));
+                        if (snap && snap.exists()) {
+                            const data = snap.data();
+                            applyConfigData(data);
+                            try { localStorage.setItem('sf_user_config_' + uid, JSON.stringify(data)); } catch (_) {}
+                            if (typeof data.googleCalendarConnected === 'boolean' && data.googleCalendarConnected) {
+                                // Zwischengespeicherte Termine sofort zeigen
+                                loadGoogleCalendarCache();
+                                googleCalendarConnected.value = true;
+                                maybeSilentlyReconnectGoogleCalendar();
+                            }
                         }
-                        if (data.displayName) {
-                            displayName.value = data.displayName;
-                        }
-                        if (data.currentClass) {
-                            currentClass.value = data.currentClass;
-                            tempCurrentClass.value = data.currentClass;
-                        }
-                        if (data.gradeSystem) {
-                            gradeSystem.value = data.gradeSystem;
-                            tempGradeSystem.value = data.gradeSystem;
-                        }
-                        if (data.userAvatar) {
-                            userAvatar.value = data.userAvatar;
-                            localStorage.setItem('sf_user_avatar', data.userAvatar);
-                        }
-                        if (data.theme) loadTheme(data.theme);
-                        if (data.timetable) timetable.value = { ...timetable.value, ...data.timetable };
-                        if (typeof data.examRemindersEnabled === 'boolean') examRemindersEnabled.value = data.examRemindersEnabled;
-                        if (typeof data.examReminderDays === 'number') examReminderDays.value = data.examReminderDays;
-                        if (typeof data.examReminderTime === 'string') examReminderTime.value = data.examReminderTime;
-                        if (typeof data.weeklyRecapWeekday === 'number') {
-                            weeklyRecapWeekday.value = data.weeklyRecapWeekday;
-                            tempWeeklyRecapWeekday.value = data.weeklyRecapWeekday;
-                        }
-                        if (typeof data.lastWeeklyRecapViewedWeek === 'string') lastWeeklyRecapViewedWeek.value = data.lastWeeklyRecapViewedWeek;
-                        if (Array.isArray(data.googleSelectedCalendarIds)) googleSelectedCalendarIds.value = data.googleSelectedCalendarIds;
-                        if (typeof data.googleCalendarConnected === 'boolean' && data.googleCalendarConnected) {
-                            // Zwischengespeicherte Termine sofort zeigen — kein Popup nötig dafür
-                            loadGoogleCalendarCache();
-                            googleCalendarConnected.value = true;
-                            // Nur alle paar Stunden versuchen, im Hintergrund einen frischen Token zu holen
-                            // (nicht bei jedem App-Start), damit kein Google-Auswahlfenster ständig aufpoppt.
-                            maybeSilentlyReconnectGoogleCalendar();
-                        }
-                        abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
+                    } catch (e) {
+                        console.warn('loadAppSettings error (offline/cached):', e);
                     }
                     autoSetCurrentHalfYear();
                 };
@@ -7578,6 +7622,7 @@
                     const q = collection(db, 'users', uid, collectionName);
                     unsubscribeSubjects = onSnapshot(q, (snapshot) => {
                         subjects.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
                         refreshIcons();
                         triggerCharts();
                     }, (err) => {
@@ -7598,6 +7643,7 @@
                             if (animatingDoneTasks.value.has(t.id)) return { ...t, done: true };
                             return t;
                         });
+                        try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
                         refreshIcons();
                     }, (err) => {
                         if (err.code !== 'permission-denied') console.warn('tasks listener:', err.code);
