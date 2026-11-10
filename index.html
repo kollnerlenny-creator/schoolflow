@@ -6272,9 +6272,18 @@
                     'scale', 'telescope'
                 ];
                 
-                const user = ref(null);
+                // Sofortige lokale Benutzer-Wiederherstellung für 0ms Offline-Start ohne Ladekreis:
+                let initialCachedUser = null;
+                try {
+                    const rawCachedUser = localStorage.getItem('sf_cached_user');
+                    if (rawCachedUser) {
+                        initialCachedUser = JSON.parse(rawCachedUser);
+                    }
+                } catch (_) {}
+
+                const user = ref(initialCachedUser);
                 const isOnline = ref(typeof navigator !== 'undefined' ? navigator.onLine : true);
-                const authLoading = ref(true);
+                const authLoading = ref(initialCachedUser ? false : true);
                 const isRegistering = ref(false);
                 const email = ref('');
                 const password = ref('');
@@ -6553,7 +6562,7 @@
                     gesellschaftReplacement: ''
                 });
                 // Sofort-Fallback aus lokalem Gerätespeicher für 0ms Ladezeit beim Öffnen:
-                const lastSavedUid = localStorage.getItem('sf_last_uid') || '';
+                const lastSavedUid = initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
                 let initialSubjects = [];
                 let initialTasks = [];
                 if (lastSavedUid) {
@@ -6562,6 +6571,16 @@
                         if (sRaw) initialSubjects = JSON.parse(sRaw);
                         const tRaw = localStorage.getItem('sf_tasks_' + lastSavedUid);
                         if (tRaw) initialTasks = JSON.parse(tRaw);
+                        const cRaw = localStorage.getItem('sf_user_config_' + lastSavedUid);
+                        if (cRaw) {
+                            const parsedConfig = JSON.parse(cRaw);
+                            if (parsedConfig.startYear) { startYear.value = parsedConfig.startYear; tempStartYear.value = parsedConfig.startYear; }
+                            if (parsedConfig.displayName) displayName.value = parsedConfig.displayName;
+                            if (parsedConfig.currentClass) { currentClass.value = parsedConfig.currentClass; tempCurrentClass.value = parsedConfig.currentClass; }
+                            if (parsedConfig.gradeSystem) { gradeSystem.value = parsedConfig.gradeSystem; tempGradeSystem.value = parsedConfig.gradeSystem; }
+                            if (parsedConfig.userAvatar) userAvatar.value = parsedConfig.userAvatar;
+                            abiturViewClass.value = (parsedConfig.currentClass || 11) >= 11 ? 'oberstufe' : parsedConfig.currentClass;
+                        }
                     } catch (_) {}
                 }
                 const subjects = ref(initialSubjects);
@@ -7263,8 +7282,24 @@
                             setTimeout(() => splash.remove(), 350);
                         }
                     };
-                    // Splash Screen nach maximal 200ms sanft ausblenden (nicht mehr 1.8 Sekunden warten!)
-                    setTimeout(hideSplash, 200);
+                    // Splash Screen nach maximal 150ms sanft ausblenden
+                    setTimeout(hideSplash, 150);
+
+                    // Failsafe: authLoading darf NIEMALS hängen bleiben!
+                    setTimeout(() => {
+                        if (authLoading.value) {
+                            authLoading.value = false;
+                            hideSplash();
+                            refreshIcons();
+                        }
+                    }, 400);
+
+                    // Falls gecachter Nutzer vorhanden ist, sofort lokale Firestore-Listener starten (0ms Offline-Start!)
+                    if (initialCachedUser?.uid) {
+                        listenToSubjects(initialCachedUser.uid);
+                        listenToTasks(initialCachedUser.uid);
+                        loadExamScores(initialCachedUser.uid);
+                    }
 
                     nextTick(updatePlannerIndicator);
                     window.addEventListener('resize', updatePlannerIndicator);
@@ -7298,13 +7333,20 @@
                     });
 
                     onAuthStateChanged(auth, async (currentUser) => {
-                        user.value = currentUser;
                         // Sofort Lade-Spinner beenden & Splash verstecken (0ms Feedback!)
                         authLoading.value = false;
                         hideSplash();
 
                         if (currentUser) {
-                            try { localStorage.setItem('sf_last_uid', currentUser.uid); } catch (_) {}
+                            user.value = currentUser;
+                            try {
+                                localStorage.setItem('sf_cached_user', JSON.stringify({
+                                    uid: currentUser.uid,
+                                    email: currentUser.email,
+                                    displayName: currentUser.displayName
+                                }));
+                                localStorage.setItem('sf_last_uid', currentUser.uid);
+                            } catch (_) {}
                             
                             // Lokale zwischengespeicherte Einstellungen sofort anwenden
                             try {
@@ -7312,7 +7354,7 @@
                                 if (cachedConfig) applyConfigData(JSON.parse(cachedConfig));
                             } catch (_) {}
 
-                            // Daten-Listener sofort starten (Firestore IndexedDB Cache antwortet sofort!)
+                            // Daten-Listener starten (Firestore IndexedDB Cache antwortet sofort!)
                             listenToSubjects(currentUser.uid);
                             listenToTasks(currentUser.uid);
                             loadExamScores(currentUser.uid);
@@ -7338,8 +7380,12 @@
                                 }
                             })();
                         } else {
-                            isOnboarding.value = false;
-                            unsubscribeAllListeners();
+                            // Wenn kein gecachter User existiert, abmelden
+                            if (!initialCachedUser) {
+                                user.value = null;
+                                isOnboarding.value = false;
+                                unsubscribeAllListeners();
+                            }
                         }
                         refreshIcons();
                     });
@@ -8088,6 +8134,10 @@
                     selectedSubject.value = null;
                     try { await signOut(auth); } catch (e) { console.warn('signOut:', e); }
                     user.value = null;
+                    try {
+                        localStorage.removeItem('sf_cached_user');
+                        localStorage.removeItem('sf_last_uid');
+                    } catch (_) {}
                 };
 
                                 const dismissInstallGuide = (e) => {
