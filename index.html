@@ -16,17 +16,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Tailwind CSS (Lokal für 100% Offline-Verfügbarkeit) -->
+    <script src="/tailwindcss.js"></script>
     <!-- Google Identity Services (für Google Kalender Anbindung) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- jsPDF (für PDF-Export von Notenspiegel/Statistiken, nicht blockierend) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
-    <!-- Vue.js 3 Production Build -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Vue.js 3 Production Build (Lokal für 100% Offline-Verfügbarkeit) -->
+    <script src="/vue.global.prod.js"></script>
+    <!-- Lucide Icons (Lokal für 100% Offline-Verfügbarkeit) -->
+    <script src="/lucide.min.js"></script>
     <!-- Chart.js (nicht blockierend geladen) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script>
@@ -1685,7 +1685,7 @@
             <div v-if="!selectedSubject && currentTab === 'home'" class="bg-[#ede4dc] border border-[#ded5c7] p-1.5 flex relative mb-6 z-10 max-w-xs mx-auto rounded-full shadow-xs">
                 <div class="absolute top-1.5 bottom-1.5 bg-white rounded-full shadow-xs transition-all duration-300"
                      :style="{ width: `calc((100% - 12px) / ${(halfYears?.length || 1)})`, left: `calc(6px + ${(halfYears || []).indexOf(selectedHalfYear)} * (100% - 12px) / ${(halfYears?.length || 1)})` }"></div>
-                <button v-for="s in halfYears" :key="s" @click="selectedHalfYear = s"
+                <button v-for="s in halfYears" :key="s" @click="setHalfYear(s)"
                         :class="selectedHalfYear === s ? 'text-[#1f1b16] font-extrabold' : 'text-[#6E665E] font-semibold hover:text-[#1f1b16]'"
                         class="flex-1 py-2 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors duration-300 cursor-pointer">
                     {{ s }}
@@ -1911,7 +1911,7 @@
                                          left: `calc(4px + ${(halfYears || []).indexOf(selectedHalfYear)} * (100% - 8px) / ${(halfYears?.length || 1)})` 
                                      }"></div>
                                 <button v-for="hy in halfYears" :key="hy"
-                                        @click="selectedHalfYear = hy"
+                                        @click="setHalfYear(hy)"
                                         type="button"
                                         class="relative z-10 px-3.5 py-1.5 rounded-full text-xs font-black transition-colors duration-200 cursor-pointer min-h-[36px]"
                                         :class="selectedHalfYear === hy ? 'text-white' : 'text-[#6E665E] hover:text-[#1f1b16]'">
@@ -2225,6 +2225,9 @@
                                         </button>
                                         <button v-else @click.stop="openEditGradeModal(g)" title="Note bearbeiten" class="w-9 h-9 rounded-full bg-[#f4ece4] hover:bg-[#ede3d8] flex items-center justify-center text-[#1f1b16] transition-colors cursor-pointer">
                                             <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                        </button>
+                                        <button @click.stop="handleDeleteGrade(g)" title="Note löschen" class="w-9 h-9 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 flex items-center justify-center transition-colors cursor-pointer active:scale-95">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -3567,6 +3570,23 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Regel G: Sport-Einbringung (§ 24 SOGYA) -->
+                                <div class="p-4 rounded-2xl border flex items-start gap-3.5 transition-all bg-[#f4ece4]/60 border-[#ede3d8]">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-[#2d694c] text-white">
+                                        <i data-lucide="dumbbell" class="w-4.5 h-4.5"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-black text-[#1f1b16]">Regel G: Sport-Einbringung (§ 24 SOGYA)</div>
+                                        <div class="text-xs text-[#6E665E] mt-1 space-y-1">
+                                            <p><strong class="text-[#1f1b16]">• Minimum (Muss):</strong> Mindestens 1 Kurshalbjahresergebnis im Fach Sport muss zwingend in die Block-I-Wertung deiner Gesamtqualifikation eingebracht werden.</p>
+                                            <p><strong class="text-[#1f1b16]">• Maximum (Kann):</strong> Maximal alle 4 Kurshalbjahresergebnisse dürfen eingebracht werden.</p>
+                                        </div>
+                                        <span class="text-xs font-bold mt-2 inline-block px-3 py-1 rounded-full bg-[#f2f8f4] text-[#2d694c] border border-[#cfe2d7]">
+                                            Aktuell: {{ (saxonAbiturResult.eingebrachte_kurse || []).filter(c => c.category === 'Sport' || c.fach.toLowerCase().includes('sport')).length }} von 4 Halbjahren eingebracht (Erfüllt ✓)
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -4349,7 +4369,7 @@
                                      left: `calc(4px + ${(halfYears || []).indexOf(selectedHalfYear)} * (100% - 8px) / ${(halfYears?.length || 1)})` 
                                  }"></div>
                             <button v-for="hy in halfYears" :key="hy"
-                                    @click="selectedHalfYear = hy"
+                                    @click="setHalfYear(hy)"
                                     type="button"
                                     class="relative z-10 px-3.5 py-1.5 rounded-full text-xs font-black transition-colors duration-200 cursor-pointer min-h-[36px]"
                                     :class="selectedHalfYear === hy ? 'text-white' : 'text-[#6E665E] hover:text-[#1f1b16]'">
@@ -4958,7 +4978,7 @@
                                 <i data-lucide="check" class="w-4.5 h-4.5"></i>
                                 <span>Speichern</span>
                             </button>
-                            <button v-if="gradeForm && (gradeForm.id || gradeForm.points !== null)" type="button" @click="handleDeleteGrade(gradeForm.id)" class="py-4 px-6 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 rounded-full font-black uppercase text-xs sm:text-sm cursor-pointer active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0">
+                            <button v-if="gradeForm && (gradeForm.id || gradeFormSourceTaskId)" type="button" @click="handleDeleteGrade(gradeForm)" class="py-4 px-6 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 rounded-full font-black uppercase text-xs sm:text-sm cursor-pointer active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0">
                                 <i data-lucide="trash-2" class="w-4.5 h-4.5"></i>
                                 <span>Note löschen</span>
                             </button>
@@ -6244,9 +6264,16 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
                     console.log('Schooly PWA Service-Worker erfolgreich registriert.', reg.scope);
+                    reg.update().catch(() => {});
                 }).catch(err => {
                     console.warn('PWA Service Worker konnte nicht registriert werden:', err);
                 });
+            });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!window.__swReloading) {
+                    window.__swReloading = true;
+                    window.location.reload();
+                }
             });
         }
 
@@ -6283,7 +6310,7 @@
 
                 const user = ref(initialCachedUser);
                 const isOnline = ref(typeof navigator !== 'undefined' ? navigator.onLine : true);
-                const authLoading = ref(initialCachedUser ? false : true);
+                const authLoading = ref(false);
                 const isRegistering = ref(false);
                 const email = ref('');
                 const password = ref('');
@@ -6451,19 +6478,48 @@
                     else plannerFilter.value = ['Test', 'Klausur'];
                 };
 
-                const computeCurrentHalfYear = (classNum) => {
+                const computeCurrentHalfYear = (classNum, sYear) => {
                     const now = new Date();
                     const m = now.getMonth() + 1; // 1-12
+                    const y = now.getFullYear();
+                    // In Sachsen / Deutschland:
+                    // 1. Halbjahr: August bis Januar (Monate 8, 9, 10, 11, 12, 1)
+                    // 2. Halbjahr: Februar bis Juli (Monate 2, 3, 4, 5, 6, 7)
                     const isFirstHalf = (m >= 8 || m === 1);
                     const halfNum = isFirstHalf ? 1 : 2;
+                    const currentSchoolYear = m >= 8 ? y : y - 1;
+
                     const cls = Number(classNum) || 11;
                     if (cls >= 11) {
-                        return `${cls === 12 ? 12 : 11}/${halfNum}`;
+                        // Oberstufe: Bestimme Klasse 11 oder 12 anhand von startYear
+                        const sy = Number(sYear) || 0;
+                        let gradeLevel = cls;
+                        if (sy > 0) {
+                            const diff = currentSchoolYear - sy;
+                            if (diff >= 1) {
+                                gradeLevel = 12;
+                            } else {
+                                gradeLevel = 11;
+                            }
+                        }
+                        return `${gradeLevel === 12 ? 12 : 11}/${halfNum}`;
                     }
                     return `${cls}/${halfNum}`;
                 };
 
-                const selectedHalfYear = ref(computeCurrentHalfYear(11));
+                const initialSavedHalfYear = (() => {
+                    try {
+                        return localStorage.getItem('sf_selected_half_year');
+                    } catch (_) {
+                        return null;
+                    }
+                })();
+
+                const selectedHalfYear = ref(initialSavedHalfYear || computeCurrentHalfYear(11));
+                const setHalfYear = (s) => {
+                    selectedHalfYear.value = s;
+                    try { localStorage.setItem('sf_selected_half_year', s); } catch (_) {}
+                };
                 const selectedSubject = ref(null);
                 const lkBonusActive = ref(true);
 
@@ -8232,26 +8288,23 @@
                         const currentSchoolYear = nowM >= 8 ? now.getFullYear() : now.getFullYear() - 1;
                         const dateSchoolYear = m >= 8 ? y : y - 1;
 
-                        if (Number(currentClass.value) === 12) {
-                            if (dateSchoolYear >= currentSchoolYear) {
-                                return `12/${halfNum}`;
-                            } else {
-                                return `11/${halfNum}`;
-                            }
-                        } else {
-                            if (dateSchoolYear <= currentSchoolYear) {
-                                return `11/${halfNum}`;
-                            } else {
-                                return `12/${halfNum}`;
-                            }
-                        }
+                        const sy = Number(startYear.value) || (Number(currentClass.value) === 12 ? currentSchoolYear - 1 : currentSchoolYear);
+                        const semGrade = (dateSchoolYear - sy) >= 1 ? 12 : 11;
+                        return `${semGrade}/${halfNum}`;
                     } else {
                         return `${currentClass.value}/${halfNum}`;
                     }
                 };
 
                 const autoSetCurrentHalfYear = () => {
-                    selectedHalfYear.value = computeCurrentHalfYear(currentClass.value);
+                    const saved = localStorage.getItem('sf_selected_half_year');
+                    if (saved && (halfYears.value || []).includes(saved)) {
+                        selectedHalfYear.value = saved;
+                        return;
+                    }
+                    const computed = computeCurrentHalfYear(currentClass.value, startYear.value);
+                    selectedHalfYear.value = computed;
+                    try { localStorage.setItem('sf_selected_half_year', computed); } catch (_) {}
                 };
 
                 // ── HEUTE-WIDGET ──
@@ -10004,7 +10057,8 @@
                             const subjectCourses = allCourses.filter(c => c.fach === fach && !fixedKeys.has(c.key));
                             if (subjectCourses.length > 0) {
                                 subjectCourses.sort((a, b) => b.punkte - a.punkte);
-                                fixCourse(fach, subjectCourses[0].halbjahr, 1, `Mindesteinbringung (1 Halbjahr für ${fach})`);
+                                const isSport = (getCat(fach) === 'Sport' || fach.toLowerCase().includes('sport'));
+                                fixCourse(fach, subjectCourses[0].halbjahr, 1, isSport ? 'Pflicht-GK Sport (Mindesteinbringung: min. 1 HJ zwingend)' : `Mindesteinbringung (1 Halbjahr für ${fach})`);
                             }
                         }
                     });
@@ -10028,7 +10082,8 @@
                     for (const candidate of restpool) {
                         if (currentGKCount >= 32) break;
                         // Sport: Mindestens 1 Halbjahr ist bereits durch Schritt 10 garantiert, maximal dürfen alle 4 eingebracht werden
-                        if (fixCourse(candidate.fach, candidate.halbjahr, 1, 'Wahl-GK (Bester Einbringer)')) {
+                        const isSport = (candidate.category === 'Sport' || candidate.fach.toLowerCase().includes('sport'));
+                        if (fixCourse(candidate.fach, candidate.halbjahr, 1, isSport ? 'Wahl-GK Sport (Max. 4 Halbjahre erlaubt)' : 'Wahl-GK (Bester Einbringer)')) {
                             currentGKCount = eingebrachte.filter(c => c.gewichtung === 1).length;
                         }
                     }
@@ -11050,6 +11105,9 @@
                         subjects.value[sIdx].grades = updatedGrades;
                         subjects.value = [...subjects.value];
                     }
+                    if (user.value) {
+                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
+                    }
 
                     closeModal('isGradeModalOpen');
                     await nextTick(refreshIcons);
@@ -11075,31 +11133,83 @@
                     }
                 };
 
-                const handleDeleteGrade = async (gradeId) => {
+                const handleDeleteGrade = async (gradeOrId) => {
                     if (!selectedSubject.value) return;
-                    const targetId = gradeId || gradeForm.value?.id;
+
+                    // Unterstütze Übergabe eines Note-Objekts ODER einer ID
+                    let targetId = null;
+                    let targetDate = null;
+                    let targetPoints = null;
+                    let targetLabel = null;
+                    let targetType = null;
+                    let sourceTaskId = null;
+
+                    if (gradeOrId && typeof gradeOrId === 'object') {
+                        targetId = gradeOrId.id;
+                        targetDate = gradeOrId.date;
+                        targetPoints = gradeOrId.points;
+                        targetLabel = gradeOrId.label;
+                        targetType = gradeOrId.type;
+                        sourceTaskId = gradeOrId.sourceTaskId || (gradeOrId.id && String(gradeOrId.id).startsWith('task-') ? String(gradeOrId.id).replace('task-', '') : null);
+                    } else {
+                        targetId = gradeOrId || gradeForm.value?.id;
+                        targetDate = gradeForm.value?.date;
+                        targetPoints = gradeForm.value?.points;
+                        targetLabel = gradeForm.value?.label;
+                        targetType = gradeForm.value?.type;
+                        sourceTaskId = gradeFormSourceTaskId.value || (targetId && String(targetId).startsWith('task-') ? String(targetId).replace('task-', '') : null);
+                    }
+
+                    // Falls es sich um eine Planer-Klausur handelt:
+                    if (sourceTaskId && user.value) {
+                        try {
+                            await deleteDoc(doc(db, 'users', user.value.uid, 'tasks', sourceTaskId));
+                            tasks.value = tasks.value.filter(t => t.id !== sourceTaskId);
+                            try { localStorage.setItem('sf_tasks_' + user.value.uid, JSON.stringify(tasks.value)); } catch (_) {}
+                        } catch (e) {
+                            console.warn('Fehler beim Löschen der Planer-Aufgabe:', e);
+                        }
+                    }
+
                     const subId = selectedSubject.value.id;
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
 
-                    // 1. Sofortiges lokales Update des reaktiven Status für 100% verzögerungsfreies Feedback & Offline-Sicherheit
+                    // 1. Sofort lokales reaktives Filtern
                     const existingGrades = selectedSubject.value.grades || [];
+                    let removed = false;
                     const filtered = existingGrades.filter(g => {
-                        if (targetId && g.id) return g.id !== targetId;
-                        if (gradeForm.value && g.date === gradeForm.value.date && g.points === gradeForm.value.points && g.label === gradeForm.value.label) return false;
+                        if (removed) return true; // Nur eine Note entfernen bei exakten Duplikaten
+                        if (targetId && g.id && g.id === targetId) {
+                            removed = true;
+                            return false;
+                        }
+                        // Fallback-Abgleich anhand von Datum, Punkten und Typ/Label
+                        const pointsMatch = Number(g.points) === Number(targetPoints);
+                        const dateMatch = !targetDate || g.date === targetDate;
+                        const typeMatch = !targetType || g.type === targetType;
+                        const labelMatch = (g.label || '').trim() === (targetLabel || '').trim();
+                        if (pointsMatch && dateMatch && (labelMatch || typeMatch)) {
+                            removed = true;
+                            return false;
+                        }
                         return true;
                     });
 
-                    selectedSubject.value.grades = filtered;
+                    selectedSubject.value = { ...selectedSubject.value, grades: filtered };
                     const sIdx = subjects.value.findIndex(s => s.id === subId);
                     if (sIdx !== -1) {
-                        subjects.value[sIdx].grades = filtered;
+                        subjects.value[sIdx] = { ...subjects.value[sIdx], grades: filtered };
                         subjects.value = [...subjects.value];
+                    }
+
+                    if (user.value) {
+                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
                     }
 
                     closeModal('isGradeModalOpen');
                     await nextTick(refreshIcons);
 
-                    // 2. An Firestore senden (wird lokal in IndexedDB gespeichert und automatisch gesynct)
+                    // 2. An Firestore senden
                     try {
                         if (user.value) {
                             const ref = doc(db, 'users', user.value.uid, collName, subId);
@@ -11108,8 +11218,10 @@
                     } catch (err) {
                         console.warn("Offline/Sync-Hinweis beim Löschen der Note:", err);
                         try {
-                            const ref = doc(db, 'users', user.value.uid, collName, subId);
-                            await setDoc(ref, { grades: filtered }, { merge: true });
+                            if (user.value) {
+                                const ref = doc(db, 'users', user.value.uid, collName, subId);
+                                await setDoc(ref, { grades: filtered }, { merge: true });
+                            }
                         } catch (e) {
                             console.error("Fehler beim Speichern der Notenänderung:", e);
                         }
@@ -11604,7 +11716,7 @@
 
                     halfYears, colorOptions, subjectIcons, user, isOnline, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
-                    currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, selectedSubject, lkBonusActive, subjectFilter, activeSubjectFilterIndex, activePlannerSubNavIndex, activeFriendsSubNavIndex, isLKSubject,
+                    currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, setHalfYear, selectedSubject, lkBonusActive, subjectFilter, activeSubjectFilterIndex, activePlannerSubNavIndex, activeFriendsSubNavIndex, isLKSubject,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData, goalTargetPoints, goalCategory, goalCalculation,
                     sortedSubjectsList, subjects, formatNumber, formatDate, progressColor, taskTypeBadge, taskDotClass, isToday, handleAuth, handleLogout, adjustColor, getSubjectIconSvg,
