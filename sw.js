@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden (0ms aus dem Cache) und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v16';
+const CACHE_NAME = 'schooly-cache-v17';
 
 const PRECACHE_URLS = [
   '/',
@@ -28,7 +28,6 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then(async (cache) => {
       for (const url of PRECACHE_URLS) {
         try {
-          // Standard-CORS-Fetch (KEIN no-cors!), damit ES-Module wie Firebase offline CORS-kompatibel gecacht werden
           const res = await fetch(url);
           if (res && res.status === 200) {
             await cache.put(url, res);
@@ -41,7 +40,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 2. Aktivierung: Sofort alle Clients übernehmen und alte Caches löschen
+// 2. Aktivierung: Sofort alle Clients übernehmen und alte Caches restlos löschen
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -59,7 +58,7 @@ self.addEventListener('activate', (event) => {
 
 // 3. Fetch-Strategie:
 // - Firebase & Google APIs: Direkt durchleiten (Firestore IndexedDB übernimmt Offline-Sync)
-// - Navigation: Network-First mit 1.2s Timeout, Fallback auf lokalen Cache
+// - Navigation: Network-First mit 5s Timeout, Fallback auf lokalen Cache
 // - Statische Ressourcen (JS, CSS, Schriften, Bilder, Icons): Cache-First für 0ms Antwortzeit
 self.addEventListener('fetch', (event) => {
   const req = event.request;
@@ -85,8 +84,9 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       (async () => {
         try {
+          // Großzügiger 5-Sekunden Timeout für Remote Cloud Run Verbindungen
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 1200);
+          const timer = setTimeout(() => controller.abort(), 5000);
           const networkRes = await fetch(req, { signal: controller.signal });
           clearTimeout(timer);
           if (networkRes && networkRes.status === 200) {
@@ -96,15 +96,20 @@ self.addEventListener('fetch', (event) => {
             return networkRes;
           }
         } catch (_) {
-          // Offline oder Timeout -> Sofort aus Cache
+          // Offline oder langsames Netz -> Sofort aus Cache
         }
         const cache = await caches.open(CACHE_NAME);
         const cached = await cache.match('/index.html') || await cache.match('/') || await cache.match(req);
         if (cached) return cached;
 
-        return new Response('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Schooly Offline</title></head><body>Schooly startet offline...</body></html>', {
-          headers: { 'Content-Type': 'text/html; charset=utf-8' }
-        });
+        try {
+          return await fetch(req);
+        } catch (_) {
+          return new Response(
+            '<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Schooly Offline</title><style>body{background:#f7f3eb;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#2d694c;text-align:center;padding:24px;box-sizing:border-box;}button{background:#2d694c;color:white;border:none;padding:12px 24px;border-radius:999px;font-weight:bold;cursor:pointer;margin-top:16px;box-shadow:0 4px 12px rgba(45,105,76,0.25);}</style></head><body><div><h2 style="font-size:22px;margin-bottom:8px;">Schooly Offline-Start</h2><p style="color:#524d44;font-size:14px;">Bitte kurz mit dem Internet verbinden, um die App vollständig zu synchronisieren.</p><button onclick="location.reload()">App neu laden</button></div></body></html>',
+            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+          );
+        }
       })()
     );
     return;
@@ -124,7 +129,8 @@ self.addEventListener('fetch', (event) => {
         }
         return netRes;
       } catch (err) {
-        return new Response('', { status: 200, statusText: 'Offline Cache Empty' });
+        // Wenn offline und Ressource nicht gecacht ist
+        return new Response('/* Not in offline cache */', { status: 503, statusText: 'Offline unavailable' });
       }
     })
   );

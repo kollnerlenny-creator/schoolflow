@@ -39,6 +39,38 @@
                 window.setDeferredPrompt(e);
             }
         });
+
+        // Globaler Failsafe: Bildschirm niemals weiß lassen!
+        window.addEventListener('error', (e) => {
+            console.warn('[Schooly Failsafe] Fehler abgefangen:', e.message);
+            document.getElementById('app')?.removeAttribute('v-cloak');
+        });
+        window.addEventListener('unhandledrejection', (e) => {
+            console.warn('[Schooly Failsafe] Promise Rejection abgefangen:', e.reason);
+            document.getElementById('app')?.removeAttribute('v-cloak');
+        });
+
+        // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
+        const CURRENT_BUILD = 'schooly-v17';
+        if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then((regs) => {
+                    for (const reg of regs) {
+                        reg.update().catch(() => {});
+                    }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then((keys) => {
+                    keys.forEach((k) => {
+                        if (k !== 'schooly-cache-v17') {
+                            caches.delete(k);
+                        }
+                    });
+                });
+            }
+            localStorage.setItem('sf_build_id', CURRENT_BUILD);
+        }
     </script>
     <style>
 
@@ -1290,9 +1322,9 @@
         }
 </style>
 </head>
-<body class="font-sans  overflow-x-hidden antialiased pb-44">
+<body class="font-sans overflow-x-hidden antialiased pb-44 bg-[#f7f3eb] text-[#1f1b16]">
     <!-- SCHOOLY FADE & WINK LAUNCH SCREEN -->
-    <div id="splash" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f7f3eb] transition-opacity duration-500">
+    <div id="splash" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#f7f3eb] transition-opacity duration-400">
         <div class="relative inline-flex items-center justify-center p-2">
             <img src="/assets/schooly_logo_transparent.png" 
                  alt="Schooly Logo" 
@@ -1315,17 +1347,56 @@
                  </g>
             </svg>
         </div>
+        <div class="mt-4 flex items-center gap-2 text-xs font-bold text-[#2d694c]/70">
+            <span class="w-2 h-2 rounded-full bg-[#2d694c] animate-ping"></span>
+            <span>Schooly startet...</span>
+        </div>
+        <div id="schooly-reload-helper" style="display: none;" class="mt-6 flex flex-col items-center gap-2 animate-fade-in">
+            <p class="text-xs text-[#524d44] font-medium">Lädt ungewöhnlich lange?</p>
+            <button onclick="window.clearSchoolyCacheAndReload()" class="px-5 py-2.5 bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-black rounded-full shadow-md cursor-pointer transition-transform active:scale-95">
+                Cache zurücksetzen &amp; neu laden 🔄
+            </button>
+        </div>
     </div>
     <script>
-        // Failsafe: Falls die Initialisierung länger als 600ms dauert, Splash sofort ausblenden
-        setTimeout(() => {
-            const sp = document.getElementById("splash");
-            if (sp) {
+        window.clearSchoolyCacheAndReload = function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    for (var i = 0; i < regs.length; i++) regs[i].unregister();
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(keys) {
+                    keys.forEach(function(k) { caches.delete(k); });
+                });
+            }
+            localStorage.removeItem('sf_build_id');
+            window.location.reload(true);
+        };
+
+        // Failsafe 1: v-cloak nach max 1.5s entfernen, damit die App-Shell nie unsichtbar bleibt
+        setTimeout(function() {
+            var appEl = document.getElementById("app");
+            if (appEl) appEl.removeAttribute("v-cloak");
+        }, 1500);
+
+        // Failsafe 2: Falls nach 3.5s noch immer nicht gemountet, Notfall-Button anbieten
+        setTimeout(function() {
+            if (!window.__schoolyMounted) {
+                var h = document.getElementById("schooly-reload-helper");
+                if (h) h.style.display = "flex";
+            }
+        }, 3500);
+
+        // Failsafe 3: Splash spätestens nach 4.5s ausblenden
+        setTimeout(function() {
+            var sp = document.getElementById("splash");
+            if (sp && (window.__schoolyMounted || !document.getElementById("app")?.hasAttribute("v-cloak"))) {
                 sp.style.opacity = "0";
                 sp.style.pointerEvents = "none";
-                setTimeout(() => sp.remove(), 350);
+                setTimeout(function() { sp.remove(); }, 400);
             }
-        }, 600);
+        }, 4500);
     </script>
 
     <div id="app" v-cloak>
@@ -6261,19 +6332,21 @@
 
         // PWA-Service-Worker-Registrierung für Offline App-Shell
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('Schooly PWA Service-Worker erfolgreich registriert.', reg.scope);
-                    reg.update().catch(() => {});
-                }).catch(err => {
-                    console.warn('PWA Service Worker konnte nicht registriert werden:', err);
-                });
-            });
+            const hadPriorController = !!navigator.serviceWorker.controller;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (!window.__swReloading) {
+                if (hadPriorController && !window.__swReloading) {
                     window.__swReloading = true;
+                    console.log('Schooly PWA aktualisiert — Seite lädt neu.');
                     window.location.reload();
                 }
+            });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
+                    console.log('Schooly PWA Service-Worker erfolgreich registriert.', reg.scope);
+                    reg.update().catch(() => {});
+                }).catch((err) => {
+                    console.warn('PWA Service Worker konnte nicht registriert werden:', err);
+                });
             });
         }
 
@@ -7347,6 +7420,7 @@
                 });
 
                 onMounted(() => {
+                    window.__schoolyMounted = true;
                     const hideSplash = () => {
                         const splash = document.getElementById("splash");
                         if (splash) {
