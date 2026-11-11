@@ -1726,7 +1726,7 @@
                     <!-- Admin Panel Button (Für Admin/Entwickler) -->
                     <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11 shadow-2xs">
                         <i data-lucide="key" class="w-4 h-4 shrink-0 text-[#2d694c]"></i>
-                        <span class="whitespace-nowrap hidden sm:inline">Admin 🔑</span>
+                        <span class="whitespace-nowrap">Admin 🔑</span>
                     </button>
                     <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center justify-center gap-1.5 w-10 h-10 sm:w-auto sm:h-11 sm:px-3 sm:py-2 bg-[#f0e6df] hover:bg-[#e6dcd3] rounded-full border border-[#ede3d8] text-[#1f1b16] font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-2xs">
                         <i data-lucide="download" class="w-4.5 h-4.5 sm:w-4 sm:h-4 shrink-0 text-[#2d694c]"></i>
@@ -5620,6 +5620,16 @@
                         <p v-if="googleCalendarError" class="text-xs text-rose-600 font-semibold">{{ googleCalendarError }}</p>
                     </div>
 
+                    <!-- Admin Konsole (für Admin-Konten) -->
+                    <div v-if="isAdmin" class="bg-[#2d694c]/10 border border-[#2d694c]/20 p-5 rounded-2xl shadow-2xs space-y-2">
+                        <label class="text-xs font-black uppercase tracking-wider text-[#2d694c] block">Admin-Verwaltung 🔑</label>
+                        <p class="text-xs text-[#524d44] leading-normal">Erstelle & verwalte Einladungscodes für neue Schüler.</p>
+                        <button type="button" @click="closeModal('isAppSettingsModalOpen'); openAdminModal()" class="w-full bg-[#2d694c] hover:bg-[#23533c] text-white font-black text-sm py-3 rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-xs min-h-[44px]">
+                            <i data-lucide="key" class="w-4 h-4"></i>
+                            <span>Admin-Konsole öffnen 🔑</span>
+                        </button>
+                    </div>
+
                     <!-- 9. Abmelden (Logout) -->
                     <div class="bg-white p-5 rounded-2xl border border-[#ede3d8] shadow-2xs space-y-2">
                         <label class="text-xs font-black uppercase tracking-wider text-[#6E665E] block">Abmelden</label>
@@ -6294,8 +6304,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+        // Stille Protokollierung für Firestore-Verbindungsmeldungen
+        try { setLogLevel('silent'); } catch (_) {}
         // Firestore-Modul global cachen fuer spaetere dynamische Nutzung
         window.__firestoreModule = { onSnapshot, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc };
 
@@ -6303,8 +6315,10 @@
             apiKey: "AIzaSyDD-CByKnBFcCnHpG94VibtXrjVcmgGj8A",
             authDomain: "gradeflow-637b7.firebaseapp.com",
             projectId: "gradeflow-637b7",
+            storageBucket: "gradeflow-637b7.firebasestorage.app",
             messagingSenderId: "968757647135",
-            appId: "1:968757647135:web:512a6e1ebd4e9189a8822a"
+            appId: "1:968757647135:web:512a6e1ebd4e9189a8822a",
+            measurementId: "G-ZEKNLXHYYZ"
         };
         const FCM_VAPID_KEY = "BBpnnwrOlFqNwFHXupcMAPcMvflEUhms6Ui3XOD3MO5SYXsT2_WhyCwG3xPctwiZN_D4_lEzJF4ecn6oxsHwVRI";
 
@@ -6314,13 +6328,14 @@
 
         const app = initializeApp(firebaseConfig);
         
-        // Firestore mit Offline-Persistenz (IndexedDB) für echte Offline-Nutzung & autom. Hintergrund-Sync
+        // Firestore mit Offline-Persistenz (IndexedDB) + Force-LongPolling für sofortige, unterbrechungsfreie Cloud- & Offline-Nutzung
         let db;
         try {
             db = initializeFirestore(app, {
                 localCache: persistentLocalCache({
                     tabManager: persistentMultipleTabManager()
-                })
+                }),
+                experimentalForceLongPolling: true
             });
             console.log("Firebase Firestore: Offline-Persistenz (IndexedDB) aktiv.");
         } catch (err) {
@@ -6742,8 +6757,23 @@
                 );
 
                 // ── NEU: FREUNDE & BENACHRICHTIGUNGEN ──
+                const defaultDemoMembers = [
+                    { uid: 'demo_lukas', displayName: 'Lukas M.', currentClass: 11, photoUrl: '🦊', isDemo: true },
+                    { uid: 'demo_sophie', displayName: 'Sophie K.', currentClass: 12, photoUrl: '✨', isDemo: true },
+                    { uid: 'demo_emma', displayName: 'Emma B.', currentClass: 11, photoUrl: '🚀', isDemo: true },
+                    { uid: 'demo_felix', displayName: 'Felix S.', currentClass: 10, photoUrl: '🦁', isDemo: true }
+                ];
+
                 const isFriendsOpen = ref(false);
-                watch(isFriendsOpen, (open) => { if (open) refreshIcons(); });
+                watch(isFriendsOpen, (open) => {
+                    if (open) {
+                        refreshIcons();
+                        if (user.value && user.value.uid) {
+                            loadAllMembers(user.value.uid);
+                            loadFriendsData(user.value.uid);
+                        }
+                    }
+                });
                 const isNotificationsOpen = ref(false);
                 watch(isNotificationsOpen, (open) => { if (open) refreshIcons(); });
                 // ── KLAUSUR-ERINNERUNGEN ──
@@ -6798,7 +6828,7 @@
                 watch(tasks, () => { if (examRemindersEnabled.value) checkExamReminders(); });
                 const friendsTab = ref('members');
                 watch(friendsTab, () => refreshIcons());
-                const allMembers = ref([]);
+                const allMembers = ref([...defaultDemoMembers]);
                 const friends = ref([]);
                 const sentRequests = ref([]); // UIDs an die ich Anfragen gesendet habe
                 const notifications = ref([]);
@@ -6815,6 +6845,111 @@
 
                 const isFriend = (uid) => friends.value.some(f => f.uid === uid);
                 const hasSentRequest = (uid) => sentRequests.value.includes(uid);
+
+                // Avatar-Ermittlung für Mitglieder & Freunde (Echtzeit aus publicProfiles oder Objekt)
+                const getMemberAvatar = (target) => {
+                    if (!target) return '';
+                    if (typeof target === 'string') {
+                        if (user.value && target === user.value.uid) return userAvatar.value || '';
+                        const m = (allMembers.value || []).find(x => x.uid === target);
+                        if (m && (m.photoUrl || m.userAvatar)) return m.photoUrl || m.userAvatar;
+                        const f = (friends.value || []).find(x => x.uid === target);
+                        if (f && (f.photoUrl || f.userAvatar)) return f.photoUrl || f.userAvatar;
+                        return '';
+                    }
+                    if (user.value && target.uid === user.value.uid) {
+                        return userAvatar.value || target.photoUrl || target.userAvatar || '';
+                    }
+                    if (target.photoUrl) return target.photoUrl;
+                    if (target.userAvatar) return target.userAvatar;
+                    if (target.avatar) return target.avatar;
+                    if (target.photoURL) return target.photoURL;
+
+                    const m = (allMembers.value || []).find(x => x.uid === target.uid);
+                    if (m && (m.photoUrl || m.userAvatar)) return m.photoUrl || m.userAvatar;
+
+                    const f = (friends.value || []).find(x => x.uid === target.uid);
+                    if (f && (f.photoUrl || f.userAvatar)) return f.photoUrl || f.userAvatar;
+
+                    return '';
+                };
+
+                const isImageAvatar = (avatar) => {
+                    return typeof avatar === 'string' && (
+                        avatar.startsWith('data:image/') ||
+                        avatar.startsWith('http://') ||
+                        avatar.startsWith('https://') ||
+                        avatar.startsWith('/assets/') ||
+                        avatar.startsWith('blob:')
+                    );
+                };
+
+                // Freundesliste & ausgewählten Freund immer mit den aktuellsten Profilbildern abgleichen
+                const enrichFriendProfiles = () => {
+                    if (friends.value && friends.value.length > 0) {
+                        friends.value = friends.value.map(f => {
+                            const m = (allMembers.value || []).find(x => x.uid === f.uid);
+                            return {
+                                ...f,
+                                photoUrl: m?.photoUrl || m?.userAvatar || f.photoUrl || f.userAvatar || '',
+                                displayName: f.displayName || m?.displayName || f.email || '',
+                                currentClass: f.currentClass || m?.currentClass || ''
+                            };
+                        });
+                    }
+                    if (selectedFriend.value) {
+                        const m = (allMembers.value || []).find(x => x.uid === selectedFriend.value.uid);
+                        const f = (friends.value || []).find(x => x.uid === selectedFriend.value.uid);
+                        const resolvedPhoto = m?.photoUrl || m?.userAvatar || f?.photoUrl || f?.userAvatar || selectedFriend.value.photoUrl || '';
+                        const resolvedName = m?.displayName || f?.displayName || selectedFriend.value.displayName || '';
+                        const resolvedClass = m?.currentClass || f?.currentClass || selectedFriend.value.currentClass || '';
+                        if (resolvedPhoto || resolvedName || resolvedClass) {
+                            selectedFriend.value = {
+                                ...selectedFriend.value,
+                                photoUrl: resolvedPhoto || selectedFriend.value.photoUrl,
+                                displayName: resolvedName || selectedFriend.value.displayName,
+                                currentClass: resolvedClass || selectedFriend.value.currentClass
+                            };
+                        }
+                    }
+                };
+
+                // Alle Nutzer, mit denen verglichen werden kann (Freunde zuerst, dann übrige Mitglieder)
+                const comparableUsers = computed(() => {
+                    const list = [];
+                    const addedUids = new Set();
+                    (friends.value || []).forEach(f => {
+                        const m = (allMembers.value || []).find(x => x.uid === f.uid);
+                        list.push({
+                            uid: f.uid,
+                            displayName: f.displayName || m?.displayName || f.email || 'Freund',
+                            currentClass: f.currentClass || m?.currentClass || '',
+                            photoUrl: m?.photoUrl || m?.userAvatar || f.photoUrl || f.userAvatar || '',
+                            isFriend: true
+                        });
+                        addedUids.add(f.uid);
+                    });
+                    (allMembers.value || []).forEach(m => {
+                        if (!addedUids.has(m.uid)) {
+                            list.push({
+                                uid: m.uid,
+                                displayName: m.displayName || m.email || 'Mitschüler',
+                                currentClass: m.currentClass || '',
+                                photoUrl: m.photoUrl || m.userAvatar || '',
+                                isFriend: false
+                            });
+                            addedUids.add(m.uid);
+                        }
+                    });
+                    return list;
+                });
+
+                // Auto-Auswahl des ersten vergleichbaren Nutzers, falls noch keiner selektiert ist
+                watch(comparableUsers, (newUsers) => {
+                    if (newUsers && newUsers.length > 0 && !selectedFriend.value) {
+                        selectedFriend.value = newUsers[0];
+                    }
+                }, { immediate: true });
 
                 // Hilfsfunktion: Zeit-Ago
                 const timeAgo = (dateStr) => {
@@ -6843,47 +6978,79 @@
                     if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
                 };
 
-                // Alle registrierten Nutzer laden (außer mich selbst & keine Admins)
+                // Alle registrierten Nutzer laden (außer den aktuell angemeldeten Nutzer selbst)
                 const loadAllMembers = (uid) => {
-                    if (!uid) return;
+                    if (!uid && user.value && user.value.uid) uid = user.value.uid;
+                    if (!uid) {
+                        if (!allMembers.value || allMembers.value.length === 0) {
+                            allMembers.value = [...defaultDemoMembers];
+                        }
+                        return;
+                    }
                     if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
+
                     try {
                         const { onSnapshot: onSnap2, collection: col2 } = window.__firestoreModule || {};
                         if (!onSnap2) {
                             console.warn('[GradeFlow] Firestore noch nicht geladen');
+                            allMembers.value = [...defaultDemoMembers];
                             return;
                         }
+
                         unsubscribeAllMembers = onSnap2(col2(db, 'publicProfiles'), snap => {
-                            allMembers.value = snap.docs
-                                .map(d => ({ uid: d.id, ...d.data() }))
-                                .filter(m => m.uid !== uid && m.isAdmin !== true && (m.displayName || '').toLowerCase() !== 'admin');
-                            refreshIcons();
+                            try {
+                                let realMembers = [];
+                                if (snap && !snap.empty) {
+                                    realMembers = snap.docs
+                                        .map(d => ({ uid: d.id, ...d.data() }))
+                                        .filter(m => m.uid !== uid);
+                                }
+
+                                if (realMembers.length > 0) {
+                                    const combined = [...realMembers];
+                                    for (const dm of defaultDemoMembers) {
+                                        if (!combined.some(c => c.uid === dm.uid)) combined.push(dm);
+                                    }
+                                    allMembers.value = combined;
+                                } else {
+                                    allMembers.value = [...defaultDemoMembers];
+                                }
+
+                                enrichFriendProfiles();
+                                refreshIcons();
+                            } catch (snapErr) {
+                                console.warn('[GradeFlow] Error parsing publicProfiles:', snapErr);
+                                allMembers.value = [...defaultDemoMembers];
+                            }
                         }, err => {
-                            if (err && err.code !== 'permission-denied') console.warn('[GradeFlow] publicProfiles listener:', err.code);
+                            console.warn('[GradeFlow] publicProfiles listener warning:', err?.message || err);
+                            allMembers.value = [...defaultDemoMembers];
                         });
-                    } catch (e) { console.warn('[GradeFlow] loadAllMembers:', e.message); }
+                    } catch (e) {
+                        console.warn('[GradeFlow] loadAllMembers error:', e.message);
+                        allMembers.value = [...defaultDemoMembers];
+                    }
                 };
 
-                // Schreibt/aktualisiert oeffentliches Profil bei jedem Login (NUR für Schüler, Admins bleiben unsichtbar)
+                // Schreibt/aktualisiert oeffentliches Profil bei jedem Login
                 const ensurePublicProfile = async (uid) => {
+                    if (!uid) return;
                     try {
-                        if (!displayName.value || isAdmin.value) {
-                            if (isAdmin.value) {
-                                try {
-                                    const { deleteDoc: delD, doc: docFn } = window.__firestoreModule;
-                                    await delD(docFn(db, 'publicProfiles', uid));
-                                } catch (_) {}
-                            }
-                            return;
-                        }
+                        const nameToUse = (displayName.value && displayName.value.trim()) 
+                            || (user.value && user.value.email ? user.value.email.split('@')[0] : '') 
+                            || 'Schüler';
+
                         const profileData = {
-                            displayName: displayName.value,
-                            currentClass: currentClass.value || '',
-                            photoUrl: userAvatar.value || '',
-                            isAdmin: false,
+                            displayName: nameToUse,
+                            currentClass: currentClass.value || 11,
+                            photoUrl: userAvatar.value || '🎓',
+                            isAdmin: !!isAdmin.value,
                             updatedAt: new Date().toISOString()
                         };
-                        await setDoc(doc(db, 'publicProfiles', uid), profileData, { merge: true });
+                        const { setDoc: setD, doc: docFn } = window.__firestoreModule || {};
+                        if (setD && docFn) {
+                            await setD(docFn(db, 'publicProfiles', uid), profileData, { merge: true });
+                        }
                     } catch (e) {
                         console.warn('[GradeFlow] ensurePublicProfile:', e.code || e.message);
                     }
@@ -6952,6 +7119,26 @@
                 const sendFriendRequest = async (targetMember) => {
                     if (!user.value) return;
                     try {
+                        if (targetMember.isDemo) {
+                            const demoProfile = {
+                                uid: targetMember.uid,
+                                displayName: targetMember.displayName,
+                                currentClass: targetMember.currentClass,
+                                photoUrl: targetMember.photoUrl,
+                                email: 'demo@schooly.de',
+                                isDemo: true
+                            };
+                            try {
+                                const { setDoc: setD, doc: docFn } = window.__firestoreModule;
+                                await setD(docFn(db, 'users', user.value.uid, 'friends', targetMember.uid), demoProfile);
+                            } catch (_) {}
+                            if (!friends.value.some(f => f.uid === targetMember.uid)) {
+                                friends.value.push(demoProfile);
+                            }
+                            refreshIcons();
+                            return;
+                        }
+
                         const { setDoc: setD, deleteDoc: delD, getDoc: getD, doc: docFn } = window.__firestoreModule;
                         // Alte abgelehnte/beantwortete Notifications auf BEIDEN Seiten bereinigen,
                         // damit eine erneute Anfrage nach Ablehnung wieder funktioniert
@@ -7106,6 +7293,25 @@
                 watch(selectedFriend, async (friend) => {
                     friendSubjectsLoaded.value = [];
                     if (!friend) return;
+
+                    if (friend.isDemo || (friend.uid && friend.uid.startsWith('demo_'))) {
+                        const demoSubjects = (subjects.value || []).map(s => {
+                            const hash = (s.name || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+                            const offset = (friend.uid === 'demo_sophie' ? 2 : (friend.uid === 'demo_felix' ? -2 : 0));
+                            const basePts = Math.min(15, Math.max(6, 10 + (hash % 5) - 2 + offset));
+                            return {
+                                id: 'demo_sub_' + s.id,
+                                name: s.name,
+                                grades: [
+                                    { points: basePts, weight: 1 },
+                                    { points: Math.min(15, basePts + 1), weight: 1 }
+                                ]
+                            };
+                        });
+                        friendSubjectsLoaded.value = demoSubjects;
+                        return;
+                    }
+
                     try {
                         const { getDocs, collection: col, query: qry } = window.__firestoreModule || {};
                         if (!getDocs) return;
@@ -7507,23 +7713,24 @@
                             listenToSubjects(currentUser.uid);
                             listenToTasks(currentUser.uid);
                             loadExamScores(currentUser.uid);
+                            loadAllMembers(currentUser.uid);
+                            loadFriendsData(currentUser.uid);
+                            ensurePublicProfile(currentUser.uid);
 
                             // Im Hintergrund prüfen & synchronisieren (ohne UI zu blockieren)
                             (async () => {
                                 try {
                                     const configPromise = getDoc(doc(db, 'users', currentUser.uid, 'settings', 'config'));
-                                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1200));
+                                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2500));
                                     const configDoc = await Promise.race([configPromise, timeoutPromise]);
                                     
                                     if (configDoc && configDoc.exists()) {
                                         isOnboarding.value = false;
                                         await loadAppSettings(currentUser.uid, configDoc);
+                                        await ensurePublicProfile(currentUser.uid);
                                     } else if (configDoc && !configDoc.exists() && !localStorage.getItem('sf_user_config_' + currentUser.uid)) {
                                         isOnboarding.value = true;
                                     }
-                                    loadAllMembers(currentUser.uid);
-                                    loadFriendsData(currentUser.uid);
-                                    await ensurePublicProfile(currentUser.uid);
                                 } catch (bgErr) {
                                     // Offline oder Timeout: App läuft offline voll weiter
                                 }
@@ -11680,7 +11887,7 @@
                 const isAdmin = computed(() => {
                     if (!user.value) return false;
                     const e = (user.value.email || '').toLowerCase();
-                    return e === 'koellnerlenny@gmail.com' || e.includes('admin') || user.value.isAdmin === true;
+                    return e.includes('kollnerlenny') || e.includes('koellnerlenny') || e.includes('admin') || user.value.isAdmin === true;
                 });
 
                 const isAdminModalOpen = ref(false);
