@@ -365,6 +365,25 @@
             pointer-events: none;
         }
 
+        .liquid-glass-glider-vertical {
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            border-radius: 9999px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(242, 250, 246, 0.84) 100%) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.98) !important;
+            box-shadow: 
+                0 8px 24px -2px rgba(45, 105, 76, 0.18),
+                0 2px 6px rgba(0, 0, 0, 0.04),
+                inset 0 2px 2.5px rgba(255, 255, 255, 1),
+                inset 0 -2px 3px rgba(45, 105, 76, 0.1) !important;
+            transition: top 0.45s cubic-bezier(0.25, 1, 0.35, 1), height 0.45s cubic-bezier(0.25, 1, 0.35, 1) !important;
+            z-index: 1;
+            pointer-events: none;
+        }
+
         .glider-specular-top {
             position: absolute;
             top: 2px;
@@ -1688,7 +1707,7 @@
         </div>
 
         <!-- HAUPT APP (Für reguläre Schüler: Notenapp Layout) -->
-        <div v-else class="w-full max-w-md md:max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1600px] mx-auto px-4 xs:px-5 pt-6 md:pt-10">
+        <div v-else class="w-full max-w-md md:max-w-none mx-auto px-4 xs:px-5 md:pl-28 md:pr-8 xl:pl-32 xl:pr-10 pt-6 md:pt-8">
             <!-- STITCH TOP HEADER (Auf Home-Dashboard aktiv) -->
             <header v-if="!selectedSubject && currentTab === 'home'" class="mb-5 sm:mb-7 flex justify-between items-center gap-2">
                 <!-- Left: Profile Avatar + Class Subtitle + Schooly Title -->
@@ -1721,33 +1740,24 @@
                     </div>
                 </div>
                 
-                <!-- Right Actions: Notification Bell + Sage Green Plus Button + Settings/Friends (Gleichgroß am Laptop) -->
-                <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                <!-- Right Actions: Auf Handy unverändert, am Laptop in einer sauberen Sammel-Leiste zusammengefasst -->
+                <div class="flex items-center gap-2 sm:gap-2.5 md:gap-1.5 shrink-0 md:bg-[#f6f0e8]/95 md:border md:border-[#ded5c7] md:rounded-full md:p-1.5 md:shadow-xs">
                     <!-- Admin Panel Button (Für Admin/Entwickler) -->
-                    <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11 shadow-2xs">
+                    <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11 md:h-9 md:px-3 md:py-0 shadow-2xs md:shadow-none">
                         <i data-lucide="key" class="w-4 h-4 shrink-0 text-[#2d694c]"></i>
                         <span class="whitespace-nowrap">Admin 🔑</span>
                     </button>
-                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center justify-center gap-1.5 w-10 h-10 sm:w-auto sm:h-11 sm:px-3 sm:py-2 bg-[#f0e6df] hover:bg-[#e6dcd3] rounded-full border border-[#ede3d8] text-[#1f1b16] font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-2xs">
-                        <i data-lucide="download" class="w-4.5 h-4.5 sm:w-4 sm:h-4 shrink-0 text-[#2d694c]"></i>
+                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center justify-center gap-1.5 w-10 h-10 sm:w-auto sm:h-11 sm:px-3 sm:py-2 md:h-9 md:px-3.5 md:py-0 bg-[#f0e6df] hover:bg-[#e6dcd3] md:bg-[#e5ecf8] md:hover:bg-[#d8e3f5] rounded-full border border-[#ede3d8] md:border-[#d3def2] text-[#1f1b16] md:text-[#244476] font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-2xs md:shadow-none">
+                        <i data-lucide="download" class="w-4.5 h-4.5 sm:w-4 sm:h-4 shrink-0 text-[#2d694c] md:text-[#244476]"></i>
                         <span class="whitespace-nowrap hidden sm:inline">Installieren</span>
                     </button>
-                    <!-- Glocken-Symbol (Benachrichtigungen) -->
-                    <button @click="isNotificationsOpen = true" title="Benachrichtigungen" class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
-                        <i data-lucide="bell" class="w-5 h-5"></i>
-                        <span v-if="unreadNotifications && unreadNotifications.length > 0" class="absolute top-1 right-1 w-3.5 h-3.5 bg-[#dc2626] rounded-full text-[9px] font-black text-white flex items-center justify-center leading-none">{{ unreadNotifications.length > 9 ? '9+' : unreadNotifications.length }}</span>
+                    <!-- Freunde Button -->
+                    <button @click="isFriendsOpen = true" title="Freunde" class="w-10 h-10 sm:w-11 sm:h-11 md:w-9 md:h-9 rounded-full bg-[#f0e6df] md:bg-[#ece3d8]/75 border border-[#ede3d8] md:border-transparent flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] md:hover:bg-[#e2d6c7] active:scale-95 transition-all cursor-pointer shadow-xs md:shadow-none">
+                        <i data-lucide="user-plus" class="w-5 h-5 md:w-4.5 md:h-4.5"></i>
                     </button>
-                    <!-- Grüner Plus Button (Neuer Termin / Aufgabe) -->
-                    <button @click="openTaskModal" title="Termin / Aufgabe hinzufügen" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white flex items-center justify-center shadow-sm active:scale-95 transition-all cursor-pointer">
-                        <i data-lucide="plus" class="w-5.5 h-5.5 stroke-[2.5]"></i>
-                    </button>
-                    <!-- Freunde Button (Gleiche Größe wie die anderen Buttons) -->
-                    <button @click="isFriendsOpen = true" title="Freunde" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
-                        <i data-lucide="user-plus" class="w-5 h-5"></i>
-                    </button>
-                    <!-- Einstellungen Button (Gleiche Größe wie die anderen Buttons) -->
-                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
-                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    <!-- Einstellungen Button (Schlicht & einheitlich ohne Silber-Optik) -->
+                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 md:w-9 md:h-9 rounded-full bg-[#f0e6df] md:bg-[#ece3d8]/75 border border-[#ede3d8] md:border-transparent flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] md:hover:bg-[#e2d6c7] active:scale-95 transition-all cursor-pointer shadow-xs md:shadow-none">
+                        <i data-lucide="settings" class="w-5 h-5 md:w-4.5 md:h-4.5"></i>
                     </button>
                 </div>
             </header>
@@ -1764,11 +1774,11 @@
             </div>
 
             <!-- MAIN INHALT -->
-            <main class="min-h-[60vh] pb-44">
+            <main class="min-h-[60vh] pb-44 md:pb-14">
                 
                 <!-- 1. DASHBOARD / HOME (Zweispaltig & Touch-optimiert - Expressive Shapes) -->
                 <!-- 1. DASHBOARD / HOME (Zweispaltig & Desktop-optimiert) -->
-                <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 animate-fade-in max-w-5xl mx-auto">
+                <div v-if="currentTab === 'home' && !selectedSubject" class="space-y-6 animate-fade-in max-w-5xl md:max-w-[1040px] mx-auto w-full">
                     
                     <!-- Große, prominente Begrüßung mit Notenschnitt im Überblick (Farblich hervorgehoben) -->
                     <div class="bg-gradient-to-br from-[#f5efe6] via-[#faf6ef] to-[#eef4f0] rounded-[2rem] p-6 sm:p-8 border border-[#dfd4c4] shadow-xs relative overflow-hidden transition-all">
@@ -1782,9 +1792,6 @@
                                 <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight">
                                     {{ welcomeMessage }}
                                 </h2>
-                                <p class="text-[#6E665E] text-xs sm:text-sm font-medium max-w-lg leading-relaxed">
-                                    Dein Schulalltag im perfekten Fluss – Lernphasen, Abgaben und Prüfungen im Überblick.
-                                </p>
                                 
                                 <div v-if="weeklyRecapWeekReady" class="pt-2">
                                     <button type="button" @click.stop="openWeeklyRecap" 
@@ -1796,28 +1803,30 @@
                             </div>
 
                             <!-- PROMINENTER NOTENSCHNITT-KASTEN (Mobile-optimiert & immer sichtbar) -->
-                            <div class="bg-white/95 backdrop-blur-xs p-4.5 sm:p-6 rounded-[1.75rem] border border-[#ded3c2] shrink-0 shadow-sm hover:shadow-md transition-all w-full sm:w-auto sm:min-w-[320px]">
-                                <!-- Top Row: Header Badge & Note Pill -->
-                                <div class="flex items-center justify-between gap-2 mb-2 flex-wrap sm:flex-nowrap">
+                            <div class="bg-white/95 backdrop-blur-xs p-4.5 sm:p-6 rounded-[1.75rem] border border-[#ded3c2] shrink-0 shadow-sm hover:shadow-md transition-all w-full sm:w-auto sm:min-w-[330px]">
+                                <!-- Top Row: Header Badge -->
+                                <div class="flex items-center justify-between gap-2 mb-2">
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4ece4] border border-[#e5ded2] text-[#2d694c] text-[10px] sm:text-xs font-black uppercase tracking-wider shrink-0">
                                         <i data-lucide="award" class="w-3.5 h-3.5 text-[#2d694c]"></i>
                                         <span>SCHNITT HJ {{ selectedHalfYear }}</span>
                                     </span>
-                                    
-                                    <!-- Umgerechnete Note - auf Desktop & Mobile in der Kopfzeile -->
-                                    <span v-if="gradeSystem !== '6'" 
-                                          class="inline-flex items-center px-3 py-1 rounded-full bg-[#2d694c] text-white shadow-2xs shrink-0">
-                                        <span class="font-black text-xs sm:text-sm">{{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}</span>
-                                    </span>
                                 </div>
 
-                                <!-- Center Hero Score Display -->
-                                <div class="my-1.5 flex items-baseline gap-2">
-                                    <span class="text-3.5xl sm:text-5xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight leading-none">
-                                        {{ processedData?.overallAvg ? formatNumber(processedData.overallAvg) : '0,0' }}
-                                    </span>
-                                    <span class="text-xs sm:text-sm font-extrabold text-[#6E665E] uppercase tracking-wider">
-                                        {{ gradeSystem === '6' ? 'Schnitt' : 'Pkt.' }}
+                                <!-- Center Hero Score Display + Umgerechnete Note (größer & mittig platziert) -->
+                                <div class="my-2.5 flex items-center justify-between gap-4">
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-5xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight leading-none tabular-nums">
+                                            {{ processedData?.overallAvg ? formatNumber(processedData.overallAvg) : '0,0' }}
+                                        </span>
+                                        <span class="text-xs sm:text-sm font-extrabold text-[#6E665E] uppercase tracking-wider">
+                                            {{ gradeSystem === '6' ? 'Schnitt' : 'Pkt.' }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Umgerechnete Note - größer & mittig platziert -->
+                                    <span v-if="gradeSystem !== '6'"
+                                          class="inline-flex items-center justify-center px-4.5 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[#2d694c] text-white shadow-xs shrink-0 mr-1 sm:mr-3">
+                                        <span class="font-black text-lg sm:text-xl leading-none tabular-nums">{{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}</span>
                                     </span>
                                 </div>
 
@@ -1836,80 +1845,74 @@
                         </div>
                     </div>
 
-                    <!-- Laptop / Desktop 2-Spalten-Layout (7 Spalten Links / 5 Spalten Rechts) -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Laptop / Desktop: 3er Bento-Reihe (Fokus heute | Nächste Klausur | Nächste Aufgaben) + Utility-Leiste darunter; Mobile bleibt einspaltig wie gewohnt -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
 
-                        <!-- Linke Spalte (lg:col-span-7): Heute im Fokus + Nächste Klausur -->
-                        <div class="lg:col-span-7 space-y-6">
-                            
-                            <!-- Heute-Widget im Soft Linen Design -->
-                            <div v-if="todayOverview && ((todayOverview.lessons && todayOverview.lessons.length > 0) || (todayOverview.tasksToday && todayOverview.tasksToday.length > 0))" class="card-enter card-enter-2 bg-[#f4ece4] rounded-[1.75rem] p-5 border border-[#ede3d8] shadow-xs">
+                        <!-- 1. Heute-Widget ("Fokus heute") -->
+                        <div class="card-enter card-enter-2 bg-[#f4ece4] lg:bg-white rounded-[1.75rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs flex-col justify-between"
+                             :class="(todayOverview && ((todayOverview.lessons && todayOverview.lessons.length > 0) || (todayOverview.tasksToday && todayOverview.tasksToday.length > 0))) ? 'flex' : 'hidden lg:flex'">
+                            <div>
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-full bg-[#fed8b1] text-[#825500] flex items-center justify-center">
+                                        <div class="w-8 h-8 rounded-full bg-[#fed8b1] text-[#825500] flex items-center justify-center shrink-0">
                                             <i data-lucide="sun" class="w-4.5 h-4.5"></i>
                                         </div>
-                                        <h3 class="font-extrabold text-sm sm:text-base text-[#1f1b16] font-['Epilogue']">Heute im Fokus</h3>
+                                        <h3 class="font-extrabold text-sm sm:text-base text-[#1f1b16] font-['Epilogue']">Fokus heute</h3>
                                     </div>
                                     <span class="text-xs font-bold text-[#6E665E]">{{ dateFocusRangeStr }}</span>
                                 </div>
                                 <div v-if="todayOverview && todayOverview.lessons && todayOverview.lessons.length > 0" class="flex flex-wrap gap-2 mb-3">
-                                    <span v-for="s in todayOverview.lessons" :key="s.id" class="text-xs font-bold px-3 py-1.5 rounded-full bg-white border border-[#ede3d8] shadow-2xs" :style="{ color: s.color }">{{ s.name }}</span>
+                                    <span v-for="s in todayOverview.lessons" :key="s.id" class="text-xs font-bold px-3 py-1.5 rounded-full bg-white lg:bg-[#f4ece4] border border-[#ede3d8] shadow-2xs lg:shadow-none" :style="{ color: s.color }">{{ s.name }}</span>
                                 </div>
                                 <div v-if="todayOverview && todayOverview.tasksToday && todayOverview.tasksToday.length > 0" class="space-y-2">
-                                    <div v-for="t in todayOverview.tasksToday.slice(0, 3)" :key="t.id" class="flex items-center gap-2.5 text-sm bg-white p-3 rounded-2xl border border-[#ede3d8]">
+                                    <div v-for="t in todayOverview.tasksToday.slice(0, 3)" :key="t.id" class="flex items-center gap-2.5 text-sm bg-white lg:bg-[#f4ece4] p-3 rounded-2xl border border-[#ede3d8]">
                                         <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
                                         <span class="font-bold text-[#1f1b16] truncate">{{ t.title }}</span>
                                         <span class="text-[10px] text-[#6E665E] uppercase font-bold shrink-0 ml-auto">{{ t.type }}</span>
                                     </div>
                                     <p v-if="todayOverview && todayOverview.tasksToday && todayOverview.tasksToday.length > 3" class="text-xs text-[#6E665E] pl-2">+ {{ todayOverview && todayOverview.tasksToday ? todayOverview.tasksToday.length - 3 : 0 }} weitere</p>
                                 </div>
-                                <p v-else class="text-xs text-[#6E665E]">Keine offenen Aufgaben für heute. 🎉</p>
+                                <p v-else class="text-xs sm:text-sm text-[#6E665E] font-medium mt-1">Keine offenen Aufgaben für heute. 🎉</p>
                             </div>
-
-                            <!-- Nächste-Klausur-Countdown Card -->
-                            <div v-if="nextExamCountdown" class="card-enter card-enter-2 bg-white rounded-[1.75rem] p-5 border border-[#ede3d8] flex items-center gap-4 cursor-pointer shadow-xs hover:shadow-md transition-shadow" @click="currentTab = 'planner'; plannerTab = 'upcoming'">
-                                <div class="w-13 h-13 rounded-2xl bg-[#fee2e2] text-[#b91c1c] flex items-center justify-center shrink-0 shadow-xs">
-                                    <i data-lucide="alarm-clock" class="w-6 h-6"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-[11px] font-black uppercase tracking-wider text-[#b91c1c]">Nächste {{ nextExamCountdown.type }} • {{ nextExamCountdown.subject.name }}</p>
-                                    <h3 class="text-base sm:text-lg font-bold text-[#1f1b16] font-['Epilogue'] truncate">{{ nextExamCountdown.title }}</h3>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <div class="text-3xl sm:text-4xl font-black text-[#2d694c] leading-none">{{ nextExamCountdown.daysUntil }}</div>
-                                    <div class="text-[10px] font-bold uppercase text-[#6E665E] tracking-wider mt-1">{{ nextExamCountdown.daysUntil === 1 ? 'Tag' : 'Tage' }}</div>
-                                </div>
-                            </div>
-
                         </div>
 
-                        <!-- Rechte Spalte (lg:col-span-5): LK-Faktor & Nächste Aufgaben & Schnellzugriff -->
-                        <div class="lg:col-span-5 space-y-6 card-enter card-enter-3">
-                            
-                            <!-- LK-Bonus Toggle Widget -->
-                            <div v-if="gradeSystem !== '6'" @click="lkBonusActive = !lkBonusActive" class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex justify-between items-center cursor-pointer shadow-xs hover:shadow-md transition-shadow">
-                                <div class="flex items-center gap-3.5 min-w-0">
-                                    <div class="w-11 h-11 rounded-2xl bg-[#fed8b1] text-[#825500] flex items-center justify-center shrink-0 shadow-xs">
-                                        <i data-lucide="award" class="w-5 h-5"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <h4 class="font-bold text-sm sm:text-base text-[#1f1b16] font-['Epilogue'] truncate">Leistungskurs-Faktor</h4>
-                                        <p class="text-xs text-[#6E665E] truncate">LKs doppelt werten</p>
-                                    </div>
+                        <!-- 2. Nächste-Klausur-Countdown Card (am Laptop mittig & zentriert) -->
+                        <div class="card-enter card-enter-2 bg-white rounded-[1.75rem] p-5 sm:p-6 border border-[#ede3d8] items-center gap-4 lg:flex-col lg:justify-center lg:text-center lg:gap-3 cursor-pointer shadow-xs hover:shadow-md transition-shadow"
+                             :class="nextExamCountdown ? 'flex' : 'hidden lg:flex'"
+                             @click="nextExamCountdown ? (currentTab = 'planner', plannerTab = 'upcoming') : openTaskModal()">
+                            <template v-if="nextExamCountdown">
+                                <div class="w-13 h-13 lg:w-14 lg:h-14 rounded-2xl bg-[#fee2e2] text-[#b91c1c] flex items-center justify-center shrink-0 shadow-xs">
+                                    <i data-lucide="alarm-clock" class="w-6 h-6 lg:w-7 lg:h-7"></i>
                                 </div>
-                                <div class="w-13 h-7.5 rounded-full relative shrink-0 transition-colors" :class="lkBonusActive ? 'bg-[#2d694c]' : 'bg-[#ded5c7]'">
-                                    <div class="w-5.5 h-5.5 bg-white rounded-full absolute top-1 shadow-sm transition-all" :class="lkBonusActive ? 'right-1' : 'left-1'"></div>
+                                <div class="flex-1 min-w-0 lg:flex-initial lg:w-full">
+                                    <p class="text-[11px] font-black uppercase tracking-wider text-[#b91c1c]">Nächste {{ nextExamCountdown.type }} • {{ nextExamCountdown.subject.name }}</p>
+                                    <h3 class="text-base sm:text-lg font-bold text-[#1f1b16] font-['Epilogue'] truncate mt-0.5">{{ nextExamCountdown.title }}</h3>
                                 </div>
-                            </div>
+                                <div class="text-right lg:text-center shrink-0 lg:mt-1 flex lg:items-baseline lg:justify-center lg:gap-1.5 flex-col lg:flex-row">
+                                    <div class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#2d694c] lg:text-[#b91c1c] leading-none tabular-nums">{{ nextExamCountdown.daysUntil }}</div>
+                                    <div class="text-[10px] lg:text-xs font-bold uppercase text-[#6E665E] tracking-wider mt-1 lg:mt-0">{{ nextExamCountdown.daysUntil === 1 ? 'Tag' : 'Tage' }}</div>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div class="w-14 h-14 rounded-2xl bg-[#f4ece4] text-[#2d694c] flex items-center justify-center shrink-0">
+                                    <i data-lucide="calendar-check" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-black uppercase tracking-wider text-[#2d694c]">Nächste Prüfung</p>
+                                    <h3 class="text-base font-bold text-[#1f1b16] font-['Epilogue'] mt-0.5">Aktuell nichts geplant</h3>
+                                    <p class="text-xs text-[#6E665E] mt-1">Klicken, um Termin hinzuzufügen</p>
+                                </div>
+                            </template>
+                        </div>
 
-                            <!-- Anstehende Aufgaben Vorschau -->
-                            <div class="bg-white rounded-[1.75rem] p-5 border border-[#ede3d8] shadow-xs">
+                        <!-- 3. Anstehende Aufgaben Vorschau -->
+                        <div class="bg-white rounded-[1.75rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs flex flex-col justify-between card-enter card-enter-3">
+                            <div>
                                 <div class="flex items-center justify-between mb-4">
                                     <h3 class="font-bold text-[#1f1b16] text-sm sm:text-base font-['Epilogue'] flex items-center gap-2">
                                         <i data-lucide="bell" class="w-4.5 h-4.5 text-[#2d694c]"></i> Nächste Aufgaben
                                     </h3>
-                                    <button @click="currentTab = 'planner'" class="text-xs font-bold text-[#2d694c] uppercase tracking-wider hover:underline cursor-pointer">Alle</button>
+                                    <button @click="currentTab = 'planner'" class="lg:hidden text-xs font-bold text-[#2d694c] uppercase tracking-wider hover:underline cursor-pointer">Alle</button>
                                 </div>
                                 <div v-if="!upcomingTasks || upcomingTasks.length === 0" class="text-xs sm:text-sm text-[#6E665E] font-medium text-center py-6 bg-[#f4ece4] rounded-2xl border border-[#ede3d8]">
                                     Aktuell keine Aufgaben! 🎉
@@ -1931,11 +1934,34 @@
                                     </div>
                                 </div>
                             </div>
+                            <button @click="currentTab = 'planner'" class="hidden lg:flex w-full mt-4 py-2.5 rounded-full border border-[#ded5c7] bg-[#fcfaf6] hover:bg-[#f4ece4] text-[#1f1b16] text-xs font-black uppercase tracking-wider items-center justify-center transition-colors cursor-pointer">
+                                Alle anzeigen
+                            </button>
+                        </div>
 
-                            <!-- Desktop Schnell-Aktionen Card -->
-                            <div class="bg-[#fcfaf6] rounded-[1.75rem] p-5 border border-[#ede3d8] shadow-2xs space-y-3">
+                        <!-- Untere kompakte Utility-Leiste (LK-Faktor + Schnellzugriff) -->
+                        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch card-enter card-enter-3">
+                            <!-- LK-Bonus Toggle Widget -->
+                            <div v-if="gradeSystem !== '6'" @click="lkBonusActive = !lkBonusActive" class="lg:col-span-5 bg-white rounded-[1.75rem] p-4.5 sm:p-5 border border-[#ede3d8] flex justify-between items-center cursor-pointer shadow-xs hover:shadow-md transition-shadow">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <div class="w-11 h-11 rounded-2xl bg-[#fed8b1] text-[#825500] flex items-center justify-center shrink-0 shadow-xs">
+                                        <i data-lucide="award" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-bold text-sm sm:text-base text-[#1f1b16] font-['Epilogue'] truncate">Leistungskurs-Faktor</h4>
+                                        <p class="text-xs text-[#6E665E] truncate">LKs doppelt werten</p>
+                                    </div>
+                                </div>
+                                <div class="w-13 h-7.5 rounded-full relative shrink-0 transition-colors" :class="lkBonusActive ? 'bg-[#2d694c]' : 'bg-[#ded5c7]'">
+                                    <div class="w-5.5 h-5.5 bg-white rounded-full absolute top-1 shadow-sm transition-all" :class="lkBonusActive ? 'right-1' : 'left-1'"></div>
+                                </div>
+                            </div>
+
+                            <!-- Schnell-Aktionen Card -->
+                            <div class="bg-[#fcfaf6] rounded-[1.75rem] p-5 border border-[#ede3d8] shadow-2xs space-y-3"
+                                 :class="gradeSystem !== '6' ? 'lg:col-span-7' : 'lg:col-span-12'">
                                 <h4 class="text-xs font-black uppercase tracking-wider text-[#6E665E]">Schnellzugriff</h4>
-                                <div class="grid grid-cols-2 gap-2.5">
+                                <div class="grid grid-cols-2 lg:grid-cols-3 gap-2.5">
                                     <button @click="currentTab = 'subjects'" class="p-3 bg-white hover:bg-[#f4ece4] border border-[#ede3d8] rounded-2xl text-left transition-all flex items-center gap-2.5 cursor-pointer shadow-2xs active:scale-95">
                                         <div class="w-8 h-8 rounded-xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center shrink-0">
                                             <i data-lucide="book-open" class="w-4 h-4"></i>
@@ -1954,15 +1980,24 @@
                                             <span class="text-[10px] text-[#6E665E]">Hinzufügen</span>
                                         </div>
                                     </button>
+                                    <button @click="currentTab = 'planner'" class="hidden lg:flex p-3 bg-white hover:bg-[#f4ece4] border border-[#ede3d8] rounded-2xl text-left transition-all items-center gap-2.5 cursor-pointer shadow-2xs active:scale-95">
+                                        <div class="w-8 h-8 rounded-xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center shrink-0">
+                                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-bold text-[#1f1b16] block leading-tight">Kalender</span>
+                                            <span class="text-[10px] text-[#6E665E]">Planer öffnen</span>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
-
                         </div>
+
                     </div>
                 </div>
 
                 <!-- 2. FÄCHER LISTE -->
-                <div v-if="currentTab === 'subjects' && !selectedSubject" class="space-y-5 max-w-4xl mx-auto animate-fade-in pb-12">
+                <div v-if="currentTab === 'subjects' && !selectedSubject" class="space-y-5 max-w-4xl md:max-w-[1040px] mx-auto w-full animate-fade-in pb-12">
                     <!-- Header -->
                     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 px-2 mb-8 sm:mb-10">
                         <div>
@@ -1973,9 +2008,9 @@
                             </div>
                             <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight">Fächer & Noten</h2>
                         </div>
-                        <div class="flex items-center gap-2.5 flex-wrap">
+                        <div class="flex items-center gap-2 sm:gap-2.5 flex-nowrap">
                             <!-- HALBJAHR WECHSLER (Interaktiv & Gleitender Indikator) -->
-                            <div class="relative inline-flex items-center p-1 bg-[#ede4dc] rounded-full border border-[#ded5c7] shadow-2xs select-none">
+                            <div class="relative inline-flex items-center p-1 bg-[#ede4dc] rounded-full border border-[#ded5c7] shadow-2xs select-none shrink-0">
                                 <div class="absolute top-1 bottom-1 bg-[#2d694c] rounded-full shadow-xs transition-all duration-300 ease-out pointer-events-none"
                                      :style="{ 
                                          width: `calc((100% - 8px) / ${(halfYears?.length || 1)})`, 
@@ -1984,14 +2019,13 @@
                                 <button v-for="hy in halfYears" :key="hy"
                                         @click="setHalfYear(hy)"
                                         type="button"
-                                        class="relative z-10 px-3.5 py-1.5 rounded-full text-xs font-black transition-colors duration-200 cursor-pointer min-h-[36px]"
+                                        class="relative z-10 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-black transition-colors duration-200 cursor-pointer min-h-[36px]"
                                         :class="selectedHalfYear === hy ? 'text-white' : 'text-[#6E665E] hover:text-[#1f1b16]'">
                                     {{ hy }}
                                 </button>
                             </div>
-                            <button @click="openAddSubjectModal" title="Neues Fach anlegen" class="h-10 sm:h-11 px-4 rounded-full bg-[#2d694c] hover:bg-[#23533c] !text-white flex items-center justify-center gap-2 shadow-xs active:scale-95 transition-all cursor-pointer shrink-0">
-                                <i data-lucide="plus" class="w-4 h-4 stroke-[2.5] !text-white"></i>
-                                <span class="text-xs sm:text-sm font-bold !text-white">Neues Fach</span>
+                            <button @click="openAddSubjectModal" title="Neues Fach anlegen" aria-label="Neues Fach anlegen" class="w-11 h-11 rounded-full bg-[#2d694c] hover:bg-[#23533c] !text-white flex items-center justify-center shadow-xs active:scale-95 transition-all cursor-pointer shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 !text-white"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
                             </button>
                         </div>
                     </div>
@@ -2038,7 +2072,7 @@
                     </div>
 
                     <!-- Fächer Grid (Kompakt, platzsparend & responsive mit eleganten Rundungen) -->
-                    <div v-else class="space-y-2.5 sm:space-y-3">
+                    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-2.5 sm:gap-3">
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s; scrollToTop()"
                              class="bg-white rounded-[1.65rem] sm:rounded-[1.85rem] px-4 py-3 sm:px-5 sm:py-3.5 border border-[#ede3d8] flex items-center justify-between gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-[#2d694c]/35 transition-all cursor-pointer active:scale-[0.99] relative overflow-hidden"
                              :style="{ animationDelay: (idx * 0.03) + 's' }">
@@ -2109,7 +2143,7 @@
                 </div>
 
                 <!-- 3. DETAILANSICHT EINES FACHS -->
-                <div v-if="selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-6xl mx-auto pb-16">
+                <div v-if="selectedSubject" class="space-y-6 sm:space-y-8 animate-fade-in max-w-6xl md:max-w-[1040px] mx-auto w-full pb-16">
                     <!-- Zurück Button -->
                     <div>
                         <button @click="selectedSubject = null" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-[#ede4dc] border border-[#ede3d8] text-xs sm:text-sm font-bold text-[#1f1b16] active:scale-95 transition-all shadow-2xs cursor-pointer">
@@ -2410,7 +2444,7 @@
                 <!-- 4. PLANER (Mit Touch-Swipe zum Wechseln der Tabs) -->
                 <div v-if="currentTab === 'planner' && !selectedSubject" 
                      class="space-y-6 animate-fade-in"
-                     :class="plannerTab === 'calendar' ? 'max-w-3xl lg:max-w-none mx-auto' : 'max-w-4xl mx-auto'"
+                     :class="plannerTab === 'calendar' ? 'max-w-3xl md:max-w-[1040px] mx-auto w-full' : 'max-w-4xl md:max-w-[1040px] mx-auto w-full'"
                      @touchstart="handlePlannerTouchStart"
                      @touchmove="handlePlannerTouchMove"
                      @touchend="handlePlannerTouchEnd">
@@ -2519,7 +2553,7 @@
                                         <button v-if="taskSelectionMode" @click.stop="toggleTaskSelection(t.id)"
                                                 class="shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors"
                                                 :class="selectedTaskIds.has(t.id) ? 'bg-[#2d694c] border-[#2d694c]' : 'border-[#ded5c7] bg-white'">
-                                            <i v-if="selectedTaskIds.has(t.id)" data-lucide="check" class="w-5 h-5 text-white"></i>
+                                            <svg v-if="selectedTaskIds.has(t.id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-white"><polyline points="20 6 9 17 4 12"/></svg>
                                         </button>
                                         <div v-else-if="t.isGoogleEvent" class="shrink-0 w-8.5 h-8.5 rounded-full flex items-center justify-center bg-[#4285F4]/15">
                                             <i data-lucide="calendar" class="w-4 h-4 text-[#4285F4]"></i>
@@ -2527,7 +2561,7 @@
                                         <button v-else @click.stop="toggleTaskDone(t, $event)" @mousedown.stop @touchstart.stop @touchend.stop
                                                 class="task-done-btn shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-[#2d694c] border-[#2d694c]' : 'border-[#ded5c7] hover:border-[#2d694c] bg-white'">
-                                            <i v-if="t.done" data-lucide="check" class="check-icon w-5 h-5 text-white"></i>
+                                            <svg v-if="t.done" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="check-icon w-5 h-5 text-white"><polyline points="20 6 9 17 4 12"/></svg>
                                         </button>
                                         <div class="overflow-hidden">
                                             <div class="flex items-center gap-2 overflow-hidden">
@@ -2609,7 +2643,7 @@
                         </div>
                     </div>
 
-                    <div v-if="plannerTab === 'calendar'" class="no-tab-swipe pb-8 max-w-7xl mx-auto w-full">
+                    <div v-if="plannerTab === 'calendar'" class="no-tab-swipe pb-8 md:max-w-[1040px] mx-auto w-full">
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-7 items-start">
                         <!-- LEFT COLUMN: Selected Day Focus ("AUFGABEN AM [DATUM]") & Workload Strip -->
                             <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 space-y-5 md:sticky md:top-20 order-2 md:order-1">
@@ -2676,7 +2710,7 @@
                                                 <button v-if="!t.isGoogleEvent" @click.stop="toggleTaskDone(t, $event)" 
                                                         class="w-8 h-8 rounded-full border border-[#ded5c7] flex items-center justify-center cursor-pointer shrink-0 transition-colors"
                                                         :class="t.done ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white text-[#524d44] hover:bg-[#eadecf]'">
-                                                    <i v-if="t.done" data-lucide="check" class="w-4 h-4"></i>
+                                                    <svg v-if="t.done" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg>
                                                 </button>
                                                 <div class="min-w-0 flex-1">
                                                     <div class="flex items-center gap-1.5">
@@ -2916,7 +2950,7 @@
 
                 <!-- 5. ZEUGNISANSICHT / ABITURRECHNER -->
                 <!-- 5. ABITUR-RECHNER & SOGYA OPTIMIERER (SACHSEN GYMNASIUM) -->
-                <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in max-w-6xl mx-auto pb-12">
+                <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in max-w-6xl md:max-w-[1040px] mx-auto w-full pb-12">
                     <!-- Title & Header -->
                     <div class="px-2 title-enter flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div>
@@ -4422,8 +4456,8 @@
                     </div>
                 </div>
 
-                <!-- 6. STATS -->
-                <div v-if="currentTab === 'stats' && !selectedSubject" class="space-y-6 max-w-4xl mx-auto animate-fade-in">
+                <!-- 6. STATS / INSIGHTS -->
+                <div v-if="currentTab === 'stats' && !selectedSubject" class="space-y-6 max-w-4xl md:max-w-[1040px] mx-auto w-full animate-fade-in">
                     <div class="px-2 title-enter flex flex-col sm:flex-row sm:items-end justify-between gap-3">
                         <div>
                             <div class="flex items-center gap-2 mb-1">
@@ -4449,264 +4483,301 @@
                         </div>
                     </div>
 
-                    <!-- Schnellübersicht: 4 KPI-Kacheln -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 stats-card-enter" style="animation-delay:0.05s">
-                        <!-- Beste Note -->
-                        <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
-                            <div class="flex items-center gap-1.5 mb-1">
-                                <span class="w-6 h-6 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
-                                    <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-700"></i>
-                                </span>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Beste Note</span>
+                    <!-- LIQUID SEGMENTED SUBMENU DOCK (Übersicht | Diagramme | Vergleich) - Laptop & Mobile -->
+                    <div class="max-w-md sm:max-w-lg mx-auto px-1">
+                        <nav class="liquid-dock relative p-1.5 flex justify-between items-center rounded-full select-none shadow-xs bg-[#ede4dc] border border-[#ded5c7]">
+                            <div class="liquid-glass-glider pointer-events-none"
+                                 :style="{
+                                     width: 'calc((100% - 12px) / 3)',
+                                     left: `calc(6px + ${activeInsightsSubNavIndex} * ((100% - 12px) / 3))`
+                                 }">
+                                <div class="glider-specular-top"></div>
+                                <div class="glider-dot-glow"></div>
                             </div>
-                            <div class="text-4xl font-black text-emerald-700 font-['Epilogue'] leading-none">
-                                {{ getBestGrade(processedData) }}
-                            </div>
-                            <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Niedrigste Zahl' : 'Höchste Punktzahl' }}</div>
-                        </div>
-                        <!-- Schlechteste Note -->
-                        <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
-                            <div class="flex items-center gap-1.5 mb-1">
-                                <span class="w-6 h-6 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
-                                    <i data-lucide="trending-down" class="w-3.5 h-3.5 text-rose-600"></i>
-                                </span>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Schwächste</span>
-                            </div>
-                            <div class="text-4xl font-black text-rose-600 font-['Epilogue'] leading-none">
-                                {{ getWorstGrade(processedData) }}
-                            </div>
-                            <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Höchste Zahl' : 'Niedrigste Punktzahl' }}</div>
-                        </div>
-                        <!-- Anzahl Noten -->
-                        <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
-                            <div class="flex items-center gap-1.5 mb-1">
-                                <span class="w-6 h-6 rounded-full bg-[#2d694c]/15 flex items-center justify-center shrink-0">
-                                    <i data-lucide="hash" class="w-3.5 h-3.5 text-[#2d694c]"></i>
-                                </span>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Noten gesamt</span>
-                            </div>
-                            <div class="text-4xl font-black text-[#2d694c] font-['Epilogue'] leading-none">
-                                {{ getTotalGradesCount(processedData) }}
-                            </div>
-                            <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">in {{ (processedData?.semesterSubjects || []).length }} Fächern</div>
-                        </div>
-                        <!-- Gesamtschnitt -->
-                        <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
-                            <div class="flex items-center gap-1.5 mb-1">
-                                <span class="w-6 h-6 rounded-full bg-[#fed8b1] flex items-center justify-center shrink-0">
-                                    <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-[#825500]"></i>
-                                </span>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Gesamtschnitt</span>
-                            </div>
-                            <div class="text-3xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] leading-none flex items-baseline gap-2 flex-wrap">
-                                <span>{{ formatNumber(processedData?.avgPoints) }}</span>
-                                <span v-if="gradeSystem !== '6'" class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-2.5 py-0.5 rounded-full border border-[#2d694c]/20">
-                                    {{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}
-                                </span>
-                            </div>
-                            <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Ø aller Fächer' : 'Ø Punkte gewichtet' }}</div>
-                        </div>
+                            <button type="button" @click="insightsSubTab = 'overview'"
+                                    class="relative z-10 flex-1 py-2 sm:py-2.5 px-2 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap active:scale-95"
+                                    :class="activeInsightsSubNavIndex === 0 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
+                                <span>Übersicht</span>
+                            </button>
+                            <button type="button" @click="insightsSubTab = 'charts'"
+                                    class="relative z-10 flex-1 py-2 sm:py-2.5 px-2 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap active:scale-95"
+                                    :class="activeInsightsSubNavIndex === 1 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
+                                <span>Diagramme</span>
+                            </button>
+                            <button type="button" @click="insightsSubTab = 'compare'"
+                                    class="relative z-10 flex-1 py-2 sm:py-2.5 px-2 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap active:scale-95"
+                                    :class="activeInsightsSubNavIndex === 2 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
+                                <span>Vergleich</span>
+                            </button>
+                        </nav>
                     </div>
 
-                    <!-- Punkteverteilung Balkendiagramm -->
-                    <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs relative stats-card-enter" style="animation-delay:0.1s">
-                        <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-5 flex items-center gap-2">
-                            <i data-lucide="bar-chart" class="w-4 h-4 text-[#2d694c]"></i>
-                            Notenverteilung ({{ selectedHalfYear }})
-                        </p>
-                        <div class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
-                            <canvas id="barChart" style="background: transparent; width: 100%; height: 100%;"></canvas>
+                    <!-- UNTERMENÜ 1: ÜBERSICHT (KPIs, Leistungsarten & Fächer-Ranking) -->
+                    <div v-if="insightsSubTab === 'overview'" class="space-y-6 animate-fade-in">
+                        <!-- Schnellübersicht: 4 KPI-Kacheln -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 stats-card-enter" style="animation-delay:0.05s">
+                            <!-- Beste Note -->
+                            <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
+                                <div class="flex items-center gap-1.5 mb-1">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                                        <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-700"></i>
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Beste Note</span>
+                                </div>
+                                <div class="text-4xl font-black text-emerald-700 font-['Epilogue'] leading-none">
+                                    {{ getBestGrade(processedData) }}
+                                </div>
+                                <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Niedrigste Zahl' : 'Höchste Punktzahl' }}</div>
+                            </div>
+                            <!-- Schlechteste Note -->
+                            <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
+                                <div class="flex items-center gap-1.5 mb-1">
+                                    <span class="w-6 h-6 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                                        <i data-lucide="trending-down" class="w-3.5 h-3.5 text-rose-600"></i>
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Schwächste</span>
+                                </div>
+                                <div class="text-4xl font-black text-rose-600 font-['Epilogue'] leading-none">
+                                    {{ getWorstGrade(processedData) }}
+                                </div>
+                                <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Höchste Zahl' : 'Niedrigste Punktzahl' }}</div>
+                            </div>
+                            <!-- Anzahl Noten -->
+                            <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
+                                <div class="flex items-center gap-1.5 mb-1">
+                                    <span class="w-6 h-6 rounded-full bg-[#2d694c]/15 flex items-center justify-center shrink-0">
+                                        <i data-lucide="hash" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Noten gesamt</span>
+                                </div>
+                                <div class="text-4xl font-black text-[#2d694c] font-['Epilogue'] leading-none">
+                                    {{ getTotalGradesCount(processedData) }}
+                                </div>
+                                <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">in {{ (processedData?.semesterSubjects || []).length }} Fächern</div>
+                            </div>
+                            <!-- Gesamtschnitt -->
+                            <div class="bg-white rounded-[1.75rem] p-4.5 border border-[#ede3d8] flex flex-col gap-1 overflow-hidden shadow-xs">
+                                <div class="flex items-center gap-1.5 mb-1">
+                                    <span class="w-6 h-6 rounded-full bg-[#fed8b1] flex items-center justify-center shrink-0">
+                                        <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-[#825500]"></i>
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#6E665E] leading-tight">Gesamtschnitt</span>
+                                </div>
+                                <div class="text-3xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] leading-none flex items-baseline gap-2 flex-wrap">
+                                    <span>{{ formatNumber(processedData?.avgPoints) }}</span>
+                                    <span v-if="gradeSystem !== '6'" class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-2.5 py-0.5 rounded-full border border-[#2d694c]/20">
+                                        {{ processedData?.avgGrade ? formatNumber(processedData.avgGrade) : '–' }}
+                                    </span>
+                                </div>
+                                <div class="text-[10px] text-[#6E665E] font-medium leading-tight mt-0.5">{{ gradeSystem === '6' ? 'Ø aller Fächer' : 'Ø Punkte gewichtet' }}</div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Durchschnittsverlauf im Halbjahr -->
-                    <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs relative stats-card-enter" style="animation-delay:0.14s">
-                        <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-1 flex items-center gap-2">
-                            <i data-lucide="line-chart" class="w-4 h-4 text-[#2d694c]"></i>
-                            Durchschnittsverlauf ({{ selectedHalfYear }})
-                        </p>
-                        <p class="text-xs text-[#6E665E] mb-5">Wie sich dein Gesamtdurchschnitt mit jeder eingetragenen Note in diesem Halbjahr entwickelt hat</p>
-                        <div v-if="!yearTrendData || yearTrendData.length < 2" class="h-44 flex items-center justify-center text-center px-6 bg-[#f4ece4] rounded-2xl border border-[#ede3d8]">
-                            <p class="text-[#6E665E] text-xs sm:text-sm font-medium">Noch nicht genug Noten für einen Verlauf — trag mindestens 2 Noten an unterschiedlichen Tagen in {{ selectedHalfYear }} ein.</p>
-                        </div>
-                        <div v-else class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
-                            <canvas id="yearTrendChart" style="background: transparent; width: 100%; height: 100%;"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Klausur vs. Sonstige Leistungen -->
-                    <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs stats-card-enter" style="animation-delay:0.18s">
-                        <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-4 flex items-center gap-2">
-                            <i data-lucide="pie-chart" class="w-4 h-4 text-[#2d694c]"></i>
-                            Klausuren vs. Sonstige Leistungen
-                        </p>
-                        <div class="space-y-4">
-                            <template v-for="typ in ['Klausur','Sonstige Leistung']" :key="typ">
-                                <div>
-                                    <div class="flex justify-between items-center mb-1.5">
-                                        <span class="text-xs font-bold text-[#1f1b16]">{{ typ }}</span>
-                                        <span class="text-xs font-semibold text-[#6E665E]">
-                                            {{ getTypeGradesCount(processedData, typ) }} Noten
-                                        </span>
-                                    </div>
-                                    <div class="w-full bg-[#ede4dc] rounded-full h-3 overflow-hidden">
-                                        <div class="h-3 rounded-full transition-all duration-700 bg-[#2d694c]"
-                                             :style="{ width: getTypePercentage(processedData, typ) }">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                            <!-- Klausur vs. Sonstige Leistungen -->
+                            <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs stats-card-enter" style="animation-delay:0.12s">
+                                <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-4 flex items-center gap-2">
+                                    <i data-lucide="pie-chart" class="w-4 h-4 text-[#2d694c]"></i>
+                                    Klausuren vs. Sonstige Leistungen
+                                </p>
+                                <div class="space-y-4">
+                                    <template v-for="typ in ['Klausur','Sonstige Leistung']" :key="typ">
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1.5">
+                                                <span class="text-xs font-bold text-[#1f1b16]">{{ typ }}</span>
+                                                <span class="text-xs font-semibold text-[#6E665E]">
+                                                    {{ getTypeGradesCount(processedData, typ) }} Noten
+                                                </span>
+                                            </div>
+                                            <div class="w-full bg-[#ede4dc] rounded-full h-3 overflow-hidden">
+                                                <div class="h-3 rounded-full transition-all duration-700 bg-[#2d694c]"
+                                                     :style="{ width: getTypePercentage(processedData, typ) }">
+                                                </div>
+                                            </div>
+                                            <div class="text-[11px] text-[#6E665E] mt-1 font-medium">
+                                                Ø {{ getTypeAverage(processedData, typ) }} Punkte im Schnitt
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="text-[11px] text-[#6E665E] mt-1 font-medium">
-                                        Ø {{ getTypeAverage(processedData, typ) }} Punkte im Schnitt
-                                    </div>
+                                    </template>
                                 </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <!-- Fächer-Ranking -->
-                    <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs stats-card-enter" style="animation-delay:0.26s">
-                        <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-4 flex items-center gap-2">
-                            <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
-                            Fächer-Ranking nach Schnitt
-                        </p>
-                        <div class="space-y-2.5">
-                            <div v-if="(processedData?.semesterSubjects || []).filter(s=>s.finalPoints!==null).length === 0" class="text-center py-6 text-[#6E665E] text-xs font-medium bg-[#f4ece4] rounded-2xl border border-[#ede3d8]">
-                                Noch keine Noten eingetragen.
                             </div>
-                            <div v-for="(s, idx) in [...(processedData?.semesterSubjects || [])].filter(s=>s.finalPoints!==null).sort((a,b)=> gradeSystem==='6' ? a.finalPoints-b.finalPoints : b.finalPoints-a.finalPoints)"
-                                 :key="s.id"
-                                 class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#f4ece4] border border-[#ede3d8]">
-                                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0"
-                                      :class="idx===0?'bg-[#fed8b1] text-[#825500]':idx===1?'bg-[#e2dacd] text-[#524d44]':idx===2?'bg-[#fcd34d]/30 text-[#b45309]':'bg-white text-[#6E665E]'">
-                                    {{ idx + 1 }}
-                                </span>
-                                <div class="w-2 h-6 rounded-full shrink-0" :style="{ backgroundColor: s.color }"></div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="font-bold text-[#1f1b16] text-sm truncate">{{ s.name }}</div>
-                                    <div class="text-[11px] text-[#6E665E] font-medium">{{ getSubjectGradesCount(s) }} Noten</div>
+
+                            <!-- Fächer-Ranking -->
+                            <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs stats-card-enter" style="animation-delay:0.18s">
+                                <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-4 flex items-center gap-2">
+                                    <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                                    Fächer-Ranking nach Schnitt
+                                </p>
+                                <div class="space-y-2.5">
+                                    <div v-if="(processedData?.semesterSubjects || []).filter(s=>s.finalPoints!==null).length === 0" class="text-center py-6 text-[#6E665E] text-xs font-medium bg-[#f4ece4] rounded-2xl border border-[#ede3d8]">
+                                        Noch keine Noten eingetragen.
+                                    </div>
+                                    <div v-for="(s, idx) in [...(processedData?.semesterSubjects || [])].filter(s=>s.finalPoints!==null).sort((a,b)=> gradeSystem==='6' ? a.finalPoints-b.finalPoints : b.finalPoints-a.finalPoints)"
+                                         :key="s.id"
+                                         class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#f4ece4] border border-[#ede3d8]">
+                                        <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0"
+                                              :class="idx===0?'bg-[#fed8b1] text-[#825500]':idx===1?'bg-[#e2dacd] text-[#524d44]':idx===2?'bg-[#fcd34d]/30 text-[#b45309]':'bg-white text-[#6E665E]'">
+                                            {{ idx + 1 }}
+                                        </span>
+                                        <div class="w-2 h-6 rounded-full shrink-0" :style="{ backgroundColor: s.color }"></div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="font-bold text-[#1f1b16] text-sm truncate">{{ s.name }}</div>
+                                            <div class="text-[11px] text-[#6E665E] font-medium">{{ getSubjectGradesCount(s) }} Noten</div>
+                                        </div>
+                                        <div class="text-xl font-black shrink-0 font-['Epilogue']" :style="{ color: s.color }">{{ formatNumber(s.finalPoints) }}</div>
+                                    </div>
                                 </div>
-                                <div class="text-xl font-black shrink-0 font-['Epilogue']" :style="{ color: s.color }">{{ formatNumber(s.finalPoints) }}</div>
                             </div>
                         </div>
                     </div>
 
-
-
-                    <!-- FREUNDES-VERGLEICH (Insights Feature) -->
-                    <div class="bg-white rounded-[2rem] p-5 sm:p-7 border border-[#ede3d8] shadow-xs stats-card-enter space-y-5" style="animation-delay:0.32s">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-10 h-10 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center shrink-0">
-                                    <i data-lucide="swords" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-black text-[#1f1b16] text-base sm:text-lg font-['Epilogue']">Notenvergleich mit Freunden</h3>
-                                    <p class="text-xs text-[#6E665E] font-medium">Vergleiche deinen Schnitt & Noten direkt im Halbjahr {{ selectedHalfYear }}</p>
-                                </div>
+                    <!-- UNTERMENÜ 2: DIAGRAMME (Notenverteilung & Durchschnittsverlauf) -->
+                    <div v-else-if="insightsSubTab === 'charts'" class="space-y-6 animate-fade-in">
+                        <!-- Punkteverteilung Balkendiagramm -->
+                        <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs relative stats-card-enter" style="animation-delay:0.05s">
+                            <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-5 flex items-center gap-2">
+                                <i data-lucide="bar-chart" class="w-4 h-4 text-[#2d694c]"></i>
+                                Notenverteilung ({{ selectedHalfYear }})
+                            </p>
+                            <div class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
+                                <canvas id="barChart" style="background: transparent; width: 100%; height: 100%;"></canvas>
                             </div>
-                            <button @click="isFriendsOpen = true; friendsTab = 'members'" class="text-xs font-bold text-[#2d694c] hover:underline flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
-                                <i data-lucide="user-plus" class="w-4 h-4"></i> Freunde verwalten
-                            </button>
                         </div>
 
-                        <!-- Freunde-Wahl Leiste -->
-                        <div v-if="!friends || friends.length === 0" class="text-center py-8 bg-[#f4ece4] rounded-2xl border border-[#ede3d8] space-y-2">
-                            <p class="text-sm font-bold text-[#1f1b16]">Noch keine Freunde verbunden</p>
-                            <p class="text-xs text-[#6E665E]">Verbinde dich mit Mitschülern über das Freunde-Symbol oben, um eure Schnitte zu vergleichen.</p>
-                            <button @click="isFriendsOpen = true; friendsTab = 'members'" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
-                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
-                            </button>
+                        <!-- Durchschnittsverlauf im Halbjahr -->
+                        <div class="bg-white rounded-[2rem] p-5 sm:p-6 border border-[#ede3d8] shadow-xs relative stats-card-enter" style="animation-delay:0.1s">
+                            <p class="text-xs font-bold uppercase tracking-wider text-[#6E665E] mb-1 flex items-center gap-2">
+                                <i data-lucide="line-chart" class="w-4 h-4 text-[#2d694c]"></i>
+                                Durchschnittsverlauf ({{ selectedHalfYear }})
+                            </p>
+                            <p class="text-xs text-[#6E665E] mb-5">Wie sich dein Gesamtdurchschnitt mit jeder eingetragenen Note in diesem Halbjahr entwickelt hat</p>
+                            <div v-if="!yearTrendData || yearTrendData.length < 2" class="h-44 flex items-center justify-center text-center px-6 bg-[#f4ece4] rounded-2xl border border-[#ede3d8]">
+                                <p class="text-[#6E665E] text-xs sm:text-sm font-medium">Noch nicht genug Noten für einen Verlauf — trag mindestens 2 Noten an unterschiedlichen Tagen in {{ selectedHalfYear }} ein.</p>
+                            </div>
+                            <div v-else class="h-64 sm:h-72 w-full relative z-10 rounded-2xl overflow-hidden" style="background: transparent;">
+                                <canvas id="yearTrendChart" style="background: transparent; width: 100%; height: 100%;"></canvas>
+                            </div>
                         </div>
+                    </div>
 
-                        <div v-else class="space-y-4">
-                            <!-- Freund-Auswahl Chips -->
-                            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                                <button v-for="f in friends" :key="f.uid"
-                                        @click="selectedFriend = f"
-                                        type="button"
-                                        class="flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95"
-                                        :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-[#2d694c] text-white border-[#23533c] shadow-xs' : 'bg-[#f4ece4] hover:bg-[#eae0d5] text-[#1f1b16] border-[#ede3d8]'">
-                                    <div class="w-5 h-5 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-[10px] shrink-0 font-black">
-                                        <img v-if="getMemberAvatar(f) && isImageAvatar(getMemberAvatar(f))" :src="getMemberAvatar(f)" class="w-full h-full object-cover" />
-                                        <span v-else-if="getMemberAvatar(f)">{{ getMemberAvatar(f) }}</span>
-                                        <span v-else>{{ f.displayName ? f.displayName[0].toUpperCase() : '?' }}</span>
+                    <!-- UNTERMENÜ 3: VERGLEICH (Freundes-Duell & Gemeinsame Fächer) -->
+                    <div v-else-if="insightsSubTab === 'compare'" class="space-y-6 animate-fade-in">
+                        <div class="bg-white rounded-[2rem] p-5 sm:p-7 border border-[#ede3d8] shadow-xs stats-card-enter space-y-5" style="animation-delay:0.05s">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-10 h-10 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center shrink-0">
+                                        <i data-lucide="swords" class="w-5 h-5"></i>
                                     </div>
-                                    <span>{{ f.displayName || f.email }}</span>
+                                    <div>
+                                        <h3 class="font-black text-[#1f1b16] text-base sm:text-lg font-['Epilogue']">Notenvergleich mit Freunden</h3>
+                                        <p class="text-xs text-[#6E665E] font-medium">Vergleiche deinen Schnitt & Noten direkt im Halbjahr {{ selectedHalfYear }}</p>
+                                    </div>
+                                </div>
+                                <button @click="isFriendsOpen = true; friendsTab = 'members'" class="text-xs font-bold text-[#2d694c] hover:underline flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
+                                    <i data-lucide="user-plus" class="w-4 h-4"></i> Freunde verwalten
                                 </button>
                             </div>
 
-                            <!-- Head-to-Head Duell Widget -->
-                            <div v-if="selectedFriend" class="bg-gradient-to-br from-[#faf6ef] to-[#f2ece2] rounded-3xl p-5 sm:p-6 border border-[#ded3c2] space-y-4 shadow-xs">
-                                <div class="grid grid-cols-7 gap-2 items-center">
-                                    <!-- Du / Ich -->
-                                    <div class="col-span-3 flex flex-col items-center text-center">
-                                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#2d694c]/20">
-                                            <img v-if="userAvatar && (userAvatar.startsWith('data:') || userAvatar.startsWith('http'))" :src="userAvatar" class="w-full h-full object-cover" />
-                                            <span v-else-if="userAvatar" class="text-2xl">{{ userAvatar }}</span>
-                                            <span v-else class="font-extrabold text-[#2d694c] text-sm">{{ displayName ? displayName.slice(0,2).toUpperCase() : 'ICH' }}</span>
+                            <!-- Freunde-Wahl Leiste -->
+                            <div v-if="!friends || friends.length === 0" class="text-center py-8 bg-[#f4ece4] rounded-2xl border border-[#ede3d8] space-y-2">
+                                <p class="text-sm font-bold text-[#1f1b16]">Noch keine Freunde verbunden</p>
+                                <p class="text-xs text-[#6E665E]">Verbinde dich mit Mitschülern über das Freunde-Symbol oben, um eure Schnitte zu vergleichen.</p>
+                                <button @click="isFriendsOpen = true; friendsTab = 'members'" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
+                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
+                                </button>
+                            </div>
+
+                            <div v-else class="space-y-4">
+                                <!-- Freund-Auswahl Chips -->
+                                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                                    <button v-for="f in friends" :key="f.uid"
+                                            @click="selectedFriend = f"
+                                            type="button"
+                                            class="flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95"
+                                            :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-[#2d694c] text-white border-[#23533c] shadow-xs' : 'bg-[#f4ece4] hover:bg-[#eae0d5] text-[#1f1b16] border-[#ede3d8]'">
+                                        <div class="w-5 h-5 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-[10px] shrink-0 font-black">
+                                            <img v-if="getMemberAvatar(f) && isImageAvatar(getMemberAvatar(f))" :src="getMemberAvatar(f)" class="w-full h-full object-cover" />
+                                            <span v-else-if="getMemberAvatar(f)">{{ getMemberAvatar(f) }}</span>
+                                            <span v-else>{{ f.displayName ? f.displayName[0].toUpperCase() : '?' }}</span>
                                         </div>
-                                        <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ displayName || 'Du' }}</h4>
-                                        <span class="text-[10px] text-[#6E665E]">Kl. {{ currentClass }}</span>
-                                        <div class="mt-2 text-2xl sm:text-3xl font-black text-[#2d694c] font-['Epilogue'] leading-none">
-                                            {{ comparisonSummary ? formatNumber(comparisonSummary.myOverall) : '-' }}
+                                        <span>{{ f.displayName || f.email }}</span>
+                                    </button>
+                                </div>
+
+                                <!-- Head-to-Head Duell Widget -->
+                                <div v-if="selectedFriend" class="bg-gradient-to-br from-[#faf6ef] to-[#f2ece2] rounded-3xl p-5 sm:p-6 border border-[#ded3c2] space-y-4 shadow-xs">
+                                    <div class="grid grid-cols-7 gap-2 items-center">
+                                        <!-- Du / Ich -->
+                                        <div class="col-span-3 flex flex-col items-center text-center">
+                                            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#2d694c]/20">
+                                                <img v-if="userAvatar && (userAvatar.startsWith('data:') || userAvatar.startsWith('http'))" :src="userAvatar" class="w-full h-full object-cover" />
+                                                <span v-else-if="userAvatar" class="text-2xl">{{ userAvatar }}</span>
+                                                <span v-else class="font-extrabold text-[#2d694c] text-sm">{{ displayName ? displayName.slice(0,2).toUpperCase() : 'ICH' }}</span>
+                                            </div>
+                                            <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ displayName || 'Du' }}</h4>
+                                            <span class="text-[10px] text-[#6E665E]">Kl. {{ currentClass }}</span>
+                                            <div class="mt-2 text-2xl sm:text-3xl font-black text-[#2d694c] font-['Epilogue'] leading-none">
+                                                {{ comparisonSummary ? formatNumber(comparisonSummary.myOverall) : '-' }}
+                                            </div>
+                                            <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Dein Ø</span>
                                         </div>
-                                        <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Dein Ø</span>
+
+                                        <!-- VS Mitte -->
+                                        <div class="col-span-1 flex flex-col items-center justify-center text-center">
+                                            <span class="w-8 h-8 rounded-full bg-white border border-[#ded5c7] text-[#1f1b16] flex items-center justify-center text-xs font-black shadow-xs">
+                                                VS
+                                            </span>
+                                            <div v-if="comparisonSummary" class="text-[10px] font-black mt-2 text-[#6E665E] whitespace-nowrap">
+                                                {{ comparisonSummary.myWins }}:{{ comparisonSummary.friendWins }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Freund -->
+                                        <div class="col-span-3 flex flex-col items-center text-center">
+                                            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#825500]/20">
+                                                <img v-if="getMemberAvatar(selectedFriend) && isImageAvatar(getMemberAvatar(selectedFriend))" :src="getMemberAvatar(selectedFriend)" class="w-full h-full object-cover" />
+                                                <span v-else-if="getMemberAvatar(selectedFriend)" class="text-2xl">{{ getMemberAvatar(selectedFriend) }}</span>
+                                                <span v-else class="font-extrabold text-[#825500] text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
+                                            </div>
+                                            <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
+                                            <span class="text-[10px] text-[#6E665E]">Kl. {{ selectedFriend.currentClass || '?' }}</span>
+                                            <div class="mt-2 text-2xl sm:text-3xl font-black text-[#825500] font-['Epilogue'] leading-none">
+                                                {{ comparisonSummary ? formatNumber(comparisonSummary.friendOverall) : '-' }}
+                                            </div>
+                                            <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Freund Ø</span>
+                                        </div>
                                     </div>
 
-                                    <!-- VS Mitte -->
-                                    <div class="col-span-1 flex flex-col items-center justify-center text-center">
-                                        <span class="w-8 h-8 rounded-full bg-white border border-[#ded5c7] text-[#1f1b16] flex items-center justify-center text-xs font-black shadow-xs">
-                                            VS
+                                    <!-- Lead Badge -->
+                                    <div v-if="comparisonSummary && comparisonSummary.myOverall !== null && comparisonSummary.friendOverall !== null" class="pt-3 border-t border-[#ded5c7] text-center">
+                                        <span v-if="comparisonSummary.diff > 0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            🏆 +{{ formatNumber(comparisonSummary.diff) }} Pkt Vorsprung für dich!
                                         </span>
-                                        <div v-if="comparisonSummary" class="text-[10px] font-black mt-2 text-[#6E665E] whitespace-nowrap">
-                                            {{ comparisonSummary.myWins }}:{{ comparisonSummary.friendWins }}
-                                        </div>
+                                        <span v-else-if="comparisonSummary.diff < -0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-200">
+                                            ⚡ {{ formatNumber(Math.abs(comparisonSummary.diff)) }} Pkt Rückstand — Aufholjagd gestartet!
+                                        </span>
+                                        <span v-else class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-white text-[#1f1b16] border border-[#ede3d8]">
+                                            🤝 Absoluter Gleichstand im Schnitt!
+                                        </span>
                                     </div>
 
-                                    <!-- Freund -->
-                                    <div class="col-span-3 flex flex-col items-center text-center">
-                                        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#825500]/20">
-                                            <img v-if="getMemberAvatar(selectedFriend) && isImageAvatar(getMemberAvatar(selectedFriend))" :src="getMemberAvatar(selectedFriend)" class="w-full h-full object-cover" />
-                                            <span v-else-if="getMemberAvatar(selectedFriend)" class="text-2xl">{{ getMemberAvatar(selectedFriend) }}</span>
-                                            <span v-else class="font-extrabold text-[#825500] text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
-                                        </div>
-                                        <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
-                                        <span class="text-[10px] text-[#6E665E]">Kl. {{ selectedFriend.currentClass || '?' }}</span>
-                                        <div class="mt-2 text-2xl sm:text-3xl font-black text-[#825500] font-['Epilogue'] leading-none">
-                                            {{ comparisonSummary ? formatNumber(comparisonSummary.friendOverall) : '-' }}
-                                        </div>
-                                        <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Freund Ø</span>
-                                    </div>
-                                </div>
-
-                                <!-- Lead Badge -->
-                                <div v-if="comparisonSummary && comparisonSummary.myOverall !== null && comparisonSummary.friendOverall !== null" class="pt-3 border-t border-[#ded5c7] text-center">
-                                    <span v-if="comparisonSummary.diff > 0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                        🏆 +{{ formatNumber(comparisonSummary.diff) }} Pkt Vorsprung für dich!
-                                    </span>
-                                    <span v-else-if="comparisonSummary.diff < -0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-200">
-                                        ⚡ {{ formatNumber(Math.abs(comparisonSummary.diff)) }} Pkt Rückstand — Aufholjagd gestartet!
-                                    </span>
-                                    <span v-else class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-white text-[#1f1b16] border border-[#ede3d8]">
-                                        🤝 Absoluter Gleichstand im Schnitt!
-                                    </span>
-                                </div>
-
-                                <!-- Gemeinsame Fächer Vergleichsliste -->
-                                <div v-if="comparisonData && comparisonData.length > 0" class="space-y-2 pt-2">
-                                    <h5 class="text-xs font-bold uppercase tracking-wider text-[#6E665E] flex items-center justify-between">
-                                        <span>Gemeinsame Fächer</span>
-                                        <span>{{ comparisonData.length }} Fächer</span>
-                                    </h5>
-                                    <div v-for="row in comparisonData" :key="row.subjectName"
-                                         class="grid grid-cols-3 gap-3 items-center bg-white border border-[#ede3d8] rounded-2xl px-4 py-2.5">
-                                        <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.myAvg >= row.friendAvg ? 'text-[#2d694c]' : 'text-rose-600') : 'text-[#1f1b16]'">
-                                            {{ row.myAvg !== null ? formatNumber(row.myAvg) : '–' }}
-                                        </div>
-                                        <div class="text-center">
-                                            <span class="text-xs font-bold text-[#1f1b16] block truncate">{{ row.subjectName }}</span>
-                                        </div>
-                                        <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.friendAvg >= row.myAvg ? 'text-[#825500]' : 'text-[#6E665E]') : 'text-[#1f1b16]'">
-                                            {{ row.friendAvg !== null ? formatNumber(row.friendAvg) : '–' }}
+                                    <!-- Gemeinsame Fächer Vergleichsliste -->
+                                    <div v-if="comparisonData && comparisonData.length > 0" class="space-y-2 pt-2">
+                                        <h5 class="text-xs font-bold uppercase tracking-wider text-[#6E665E] flex items-center justify-between">
+                                            <span>Gemeinsame Fächer</span>
+                                            <span>{{ comparisonData.length }} Fächer</span>
+                                        </h5>
+                                        <div v-for="row in comparisonData" :key="row.subjectName"
+                                             class="grid grid-cols-3 gap-3 items-center bg-white border border-[#ede3d8] rounded-2xl px-4 py-2.5">
+                                            <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.myAvg >= row.friendAvg ? 'text-[#2d694c]' : 'text-rose-600') : 'text-[#1f1b16]'">
+                                                {{ row.myAvg !== null ? formatNumber(row.myAvg) : '–' }}
+                                            </div>
+                                            <div class="text-center">
+                                                <span class="text-xs font-bold text-[#1f1b16] block truncate">{{ row.subjectName }}</span>
+                                            </div>
+                                            <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.friendAvg >= row.myAvg ? 'text-[#825500]' : 'text-[#6E665E]') : 'text-[#1f1b16]'">
+                                                {{ row.friendAvg !== null ? formatNumber(row.friendAvg) : '–' }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -4717,8 +4788,8 @@
 
             </main>
 
-            <!-- STITCH BOTTOM FLOATING NAVIGATION BAR (Dashboard, Fächer, Kalender, Insights, Noten) -->
-            <div class="fixed left-0 right-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none pb-[calc(1.25rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
+            <!-- STITCH BOTTOM FLOATING NAVIGATION BAR (Nur Handy / schmale Bildschirme) -->
+            <div class="md:hidden fixed left-0 right-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none pb-[calc(1.25rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
                 <div class="w-full max-w-lg mx-auto pointer-events-auto">
                     <nav class="liquid-dock relative p-1.5 flex justify-between items-center rounded-full select-none shadow-[0_20px_48px_-6px_rgba(31,27,22,0.16)]">
                         <!-- Smooth Sliding Liquid Glass Pill (Glider) -->
@@ -4773,6 +4844,55 @@
                     </nav>
                 </div>
             </div>
+
+            <!-- DESKTOP LEFT NAVIGATION RAIL (Nur Laptop / Desktop >= md, gleicher Liquid-Glass-Stil & konzentrische Pillen-Rundung wie Mobile) -->
+            <aside aria-label="Desktop Navigation" class="hidden md:flex fixed left-4 xl:left-6 top-1/2 -translate-y-1/2 z-40">
+                <nav class="liquid-dock relative p-1.5 flex flex-col justify-between items-center rounded-full select-none w-[84px] shadow-[0_20px_48px_-6px_rgba(31,27,22,0.16)]">
+                    <!-- Smooth Sliding Liquid Glass Pill (Glider, vertikal) -->
+                    <div class="liquid-glass-glider-vertical pointer-events-none"
+                         :style="{
+                             height: 'calc((100% - 12px) / 5)',
+                             top: `calc(6px + ${activeNavIndex} * ((100% - 12px) / 5))`
+                         }">
+                        <div class="glider-specular-top"></div>
+                    </div>
+
+                    <button type="button" @click="currentTab = 'home'; selectedSubject = null"
+                            class="relative z-10 w-full h-[72px] rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 cursor-pointer active:scale-95"
+                            :class="activeNavIndex === 0 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" :stroke-width="activeNavIndex === 0 ? 2.4 : 1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 0 ? 'scale-110' : ''"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                        <span class="text-[10px] tracking-tight whitespace-nowrap transition-all duration-200" :class="activeNavIndex === 0 ? 'font-black' : 'font-semibold'">Dashboard</span>
+                    </button>
+
+                    <button type="button" @click="currentTab = 'subjects'; selectedSubject = null"
+                            class="relative z-10 w-full h-[72px] rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 cursor-pointer active:scale-95"
+                            :class="activeNavIndex === 1 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" :stroke-width="activeNavIndex === 1 ? 2.4 : 1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 1 ? 'scale-110' : ''"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        <span class="text-[10px] tracking-tight whitespace-nowrap transition-all duration-200" :class="activeNavIndex === 1 ? 'font-black' : 'font-semibold'">Fächer</span>
+                    </button>
+
+                    <button type="button" @click="currentTab = 'planner'; selectedSubject = null"
+                            class="relative z-10 w-full h-[72px] rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 cursor-pointer active:scale-95"
+                            :class="activeNavIndex === 2 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" :stroke-width="activeNavIndex === 2 ? 2.4 : 1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 2 ? 'scale-110' : ''"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                        <span class="text-[10px] tracking-tight whitespace-nowrap transition-all duration-200" :class="activeNavIndex === 2 ? 'font-black' : 'font-semibold'">Kalender</span>
+                    </button>
+
+                    <button type="button" @click="currentTab = 'stats'; selectedSubject = null"
+                            class="relative z-10 w-full h-[72px] rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 cursor-pointer active:scale-95"
+                            :class="activeNavIndex === 3 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" :stroke-width="activeNavIndex === 3 ? 2.4 : 1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 3 ? 'scale-110' : ''"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                        <span class="text-[10px] tracking-tight whitespace-nowrap transition-all duration-200" :class="activeNavIndex === 3 ? 'font-black' : 'font-semibold'">Insights</span>
+                    </button>
+
+                    <button type="button" @click="currentTab = 'abitur'; selectedSubject = null"
+                            class="relative z-10 w-full h-[72px] rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 cursor-pointer active:scale-95"
+                            :class="activeNavIndex === 4 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" :stroke-width="activeNavIndex === 4 ? 2.4 : 1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 4 ? 'scale-110' : ''"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        <span class="text-[10px] tracking-tight whitespace-nowrap transition-all duration-200" :class="activeNavIndex === 4 ? 'font-black' : 'font-semibold'">ABI</span>
+                    </button>
+                </nav>
+            </aside>
         </div>
 
         <!-- MODALS (Designtechnisch optimierte Bottom-Sheets für ein erstklassiges Mobile-Gefühl) -->
@@ -5942,6 +6062,21 @@
                 <!-- Scrollbarer Inhalt -->
                 <div class="flex-1 overflow-y-auto no-scrollbar px-6 sm:px-8 pb-8" @touchstart="modalDragStart($event, 'isFriendsOpen')" @touchmove="modalDragMove($event)" @touchend="modalDragEnd($event)">
 
+                <!-- Suchleiste für Mitglieder & Freunde -->
+                <div v-if="(friendsTab === 'members' && allMembers && allMembers.length > 0) || (friendsTab === 'friends' && friends && friends.length > 0)" class="mb-3">
+                    <div class="relative flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 text-[#857e72] pointer-events-none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text"
+                               v-model="memberSearchQuery"
+                               placeholder="Name oder Klasse suchen..."
+                               class="w-full bg-[#efe8dc]/80 border border-[#ded5c7] rounded-2xl pl-9 pr-9 py-2 text-xs font-semibold text-[#1f1b16] placeholder-[#857e72] outline-none focus:border-[#2d694c]" />
+                        <button v-if="memberSearchQuery" type="button" @click="memberSearchQuery = ''" title="Suche leeren"
+                                class="absolute right-2.5 w-6 h-6 rounded-full bg-[#ded5c7]/70 hover:bg-[#ded5c7] text-[#524d44] flex items-center justify-center text-[11px] font-bold cursor-pointer">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+
                 <!-- MITGLIEDER-LISTE -->
                 <div v-if="friendsTab === 'members'" class="space-y-2.5">
                     <div v-if="!allMembers || allMembers.length === 0" class="text-center py-10 space-y-2">
@@ -5950,7 +6085,10 @@
                         </div>
                         <p class="text-slate-500 font-bold text-sm">Keine weiteren Nutzer gefunden</p>
                     </div>
-                    <div v-else v-for="member in allMembers" :key="member.uid"
+                    <div v-else-if="filteredAllMembers.length === 0" class="text-center py-8">
+                        <p class="text-slate-500 font-bold text-sm">Keine Treffer für „{{ memberSearchQuery }}“</p>
+                    </div>
+                    <div v-else v-for="member in filteredAllMembers" :key="member.uid"
                          class="bg-black/20 border border-white/5 rounded-3xl p-4 flex items-center gap-3 transition-all">
                         <!-- Avatar -->
                         <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-base shrink-0 overflow-hidden"
@@ -6014,7 +6152,10 @@
                         <p class="text-slate-500 font-bold text-sm">Noch keine Freunde</p>
                         <p class="text-xs text-slate-600">Füge Nutzer über die Mitgliederliste hinzu</p>
                     </div>
-                    <div v-else v-for="friend in friends" :key="friend.uid"
+                    <div v-else-if="filteredFriends.length === 0" class="text-center py-8">
+                        <p class="text-slate-500 font-bold text-sm">Keine Treffer für „{{ memberSearchQuery }}“</p>
+                    </div>
+                    <div v-else v-for="friend in filteredFriends" :key="friend.uid"
                          class="bg-black/20 border border-white/5 rounded-3xl p-4 flex items-center gap-3">
                         <div class="w-11 h-11 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-black text-base shrink-0 overflow-hidden">
                             <img v-if="getMemberAvatar(friend) && isImageAvatar(getMemberAvatar(friend))" :src="getMemberAvatar(friend)" class="w-full h-full object-cover" />
@@ -6223,6 +6364,7 @@
                             
                     </div>
                 </div>
+                </div>
 
                 </div><!-- end scroll -->
             </div>
@@ -6326,6 +6468,15 @@
             </div>
         </transition>
 
+        <!-- IN-APP TOAST & RÜCKGÄNGIG-BANNER -->
+        <div v-if="toastState.visible" class="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 z-[99995] pointer-events-none px-4 w-full max-w-sm flex justify-center">
+            <div class="pointer-events-auto bg-[#1f1b16] text-[#faf7f2] px-4 py-2.5 rounded-full shadow-xl border border-white/10 flex items-center gap-3 text-xs font-bold animate-fade-in">
+                <span class="truncate">{{ toastState.message }}</span>
+                <button v-if="toastState.actionLabel" type="button" @click="triggerToastAction"
+                        class="text-[#6ee7b7] hover:text-white font-black uppercase tracking-wider shrink-0 cursor-pointer px-1.5 py-0.5 rounded-full hover:bg-white/10 transition-colors">
+                    {{ toastState.actionLabel }}
+                </button>
+            </div>
         </div>
     </div><!-- /#app -->
     <script type="module">
@@ -6548,6 +6699,33 @@
                     return 0;
                 });
 
+                // IN-APP TOAST & RÜCKGÄNGIG HELPER
+                const toastState = ref({ visible: false, message: '', actionLabel: '', onAction: null });
+                let toastTimer = null;
+                const dismissToast = () => {
+                    if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+                    toastState.value = { visible: false, message: '', actionLabel: '', onAction: null };
+                };
+                const showToast = (message, options = {}) => {
+                    if (!message) return;
+                    if (toastTimer) clearTimeout(toastTimer);
+                    toastState.value = {
+                        visible: true,
+                        message,
+                        actionLabel: options.actionLabel || '',
+                        onAction: typeof options.onAction === 'function' ? options.onAction : null
+                    };
+                    toastTimer = setTimeout(() => {
+                        toastState.value = { visible: false, message: '', actionLabel: '', onAction: null };
+                        toastTimer = null;
+                    }, options.duration || 3200);
+                };
+                const triggerToastAction = () => {
+                    const fn = toastState.value.onAction;
+                    dismissToast();
+                    if (fn) fn();
+                };
+
                 // AVATAR & PROFILBILD CUSTOMIZATION
                 const userAvatar = ref(localStorage.getItem('sf_user_avatar') || '');
                 const isAvatarModalOpen = ref(false);
@@ -6555,65 +6733,106 @@
                 const avatarFileInput = ref(null);
                 const avatarPresets = ['🎓', '🦊', '🚀', '✨', '🦉', '🦁', '🔥', '🎨', '☕', '⭐', '🧠', '🌿'];
 
+                const syncAvatarLocalConfig = (uid, avatarVal) => {
+                    if (!uid) return;
+                    try {
+                        const raw = localStorage.getItem('sf_user_config_' + uid);
+                        const cfg = raw ? JSON.parse(raw) : {};
+                        cfg.userAvatar = avatarVal;
+                        localStorage.setItem('sf_user_config_' + uid, JSON.stringify(cfg));
+                    } catch (_) {}
+                };
+
+                const compressAvatarImage = (img) => {
+                    const sizes = [128, 96];
+                    const qualities = [0.80, 0.66, 0.52, 0.38];
+                    const sw = img.naturalWidth || img.width || 1;
+                    const sh = img.naturalHeight || img.height || 1;
+                    const side = Math.min(sw, sh);
+                    const sx = Math.max(0, Math.floor((sw - side) / 2));
+                    const sy = Math.max(0, Math.floor((sh - side) / 2));
+
+                    let fallback = '';
+                    for (const targetDim of sizes) {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = targetDim;
+                        canvas.height = targetDim;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#faf7f2';
+                        ctx.fillRect(0, 0, targetDim, targetDim);
+                        ctx.drawImage(img, sx, sy, side, side, 0, 0, targetDim, targetDim);
+                        for (const q of qualities) {
+                            const out = canvas.toDataURL('image/jpeg', q);
+                            fallback = out;
+                            if (out.length <= 18000) return out;
+                        }
+                    }
+                    return fallback;
+                };
+
                 const setAvatarPreset = async (preset) => {
                     userAvatar.value = preset;
+                    window.__lastPublicProfileSig = '';
                     try { localStorage.setItem('sf_user_avatar', preset); } catch (_) {}
+                    if (user.value) {
+                        syncAvatarLocalConfig(user.value.uid, preset);
+                    }
+                    showToast('Avatar aktualisiert');
                     if (user.value) {
                         try {
                             await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { userAvatar: preset }, { merge: true });
-                            await setDoc(doc(db, 'publicProfiles', user.value.uid), { photoUrl: preset }, { merge: true });
+                            await setDoc(doc(db, 'publicProfiles', user.value.uid), { photoUrl: preset, updatedAt: new Date().toISOString() }, { merge: true });
                         } catch (e) { console.warn('Avatar preset save error:', e); }
                     }
                 };
 
                 const removeAvatar = async () => {
                     userAvatar.value = '';
+                    window.__lastPublicProfileSig = '';
                     localStorage.removeItem('sf_user_avatar');
+                    if (user.value) {
+                        syncAvatarLocalConfig(user.value.uid, '');
+                    }
+                    showToast('Profilbild zurückgesetzt');
                     if (user.value) {
                         try {
                             await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { userAvatar: '' }, { merge: true });
-                            await setDoc(doc(db, 'publicProfiles', user.value.uid), { photoUrl: '' }, { merge: true });
+                            await setDoc(doc(db, 'publicProfiles', user.value.uid), { photoUrl: '', updatedAt: new Date().toISOString() }, { merge: true });
                         } catch (e) { console.warn('Avatar remove error:', e); }
                     }
                 };
 
                 const handleAvatarFileUpload = (e) => {
                     const file = e.target.files?.[0];
+                    if (e.target) e.target.value = '';
                     if (!file) return;
+                    if (!file.type || !file.type.startsWith('image/')) {
+                        showToast('Bitte wähle eine gültige Bilddatei aus');
+                        return;
+                    }
                     const reader = new FileReader();
                     reader.onload = (event) => {
                         const img = new Image();
                         img.onload = async () => {
-                            // Max 200x200 pixel JPEG for efficient storage & ultra-fast sync
-                            const canvas = document.createElement('canvas');
-                            const maxDim = 200;
-                            let w = img.width;
-                            let h = img.height;
-                            if (w > h) {
-                                if (w > maxDim) {
-                                    h = Math.round(h * (maxDim / w));
-                                    w = maxDim;
+                            try {
+                                const dataUrl = compressAvatarImage(img);
+                                userAvatar.value = dataUrl;
+                                window.__lastPublicProfileSig = '';
+                                try { localStorage.setItem('sf_user_avatar', dataUrl); } catch (_) {}
+                                if (user.value) {
+                                    syncAvatarLocalConfig(user.value.uid, dataUrl);
                                 }
-                            } else {
-                                if (h > maxDim) {
-                                    w = Math.round(w * (maxDim / h));
-                                    h = maxDim;
-                                }
-                            }
-                            canvas.width = w;
-                            canvas.height = h;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, w, h);
-                            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                            userAvatar.value = dataUrl;
-                            try { localStorage.setItem('sf_user_avatar', dataUrl); } catch (_) {}
-                            if (user.value) {
-                                try {
+                                showToast('Profilbild gespeichert');
+                                if (user.value) {
                                     await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { userAvatar: dataUrl }, { merge: true });
-                                    await setDoc(doc(db, 'publicProfiles', user.value.uid), { photoUrl: dataUrl }, { merge: true });
-                                } catch (err) { console.warn('Avatar upload save error:', err); }
+                                    await setDoc(doc(db, 'publicProfiles', user.value.uid), { photoUrl: dataUrl, updatedAt: new Date().toISOString() }, { merge: true });
+                                }
+                            } catch (err) {
+                                console.warn('Avatar upload save error:', err);
+                                showToast('Profilbild konnte nicht gespeichert werden');
                             }
                         };
+                        img.onerror = () => showToast('Bild konnte nicht geladen werden');
                         img.src = event.target.result;
                     };
                     reader.readAsDataURL(file);
@@ -6881,10 +7100,12 @@
                 // ── NEU: FREUNDE & BENACHRICHTIGUNGEN ──
                 const isFriendsOpen = ref(false);
                 const confirmingRemoveFriendUid = ref(null);
+                const memberSearchQuery = ref('');
                 const pendingRemovedFriendsMap = new Map();
                 watch(isFriendsOpen, (open) => {
                     if (!open) {
                         confirmingRemoveFriendUid.value = null;
+                        memberSearchQuery.value = '';
                     } else {
                         refreshIcons();
                         if (user.value && user.value.uid) {
@@ -6956,6 +7177,21 @@
                 const sentRequests = ref([]); // UIDs an die ich Anfragen gesendet habe
                 const notifications = ref([]);
                 const selectedFriend = ref(null);
+
+                const matchesMemberSearch = (person, q) => {
+                    if (!q) return true;
+                    const name = String(person.displayName || person.email || '').toLowerCase();
+                    const cls = String(person.currentClass || '').toLowerCase();
+                    return name.includes(q) || cls.includes(q);
+                };
+                const filteredAllMembers = computed(() => {
+                    const q = memberSearchQuery.value.trim().toLowerCase();
+                    return (allMembers.value || []).filter(m => matchesMemberSearch(m, q));
+                });
+                const filteredFriends = computed(() => {
+                    const q = memberSearchQuery.value.trim().toLowerCase();
+                    return (friends.value || []).filter(f => matchesMemberSearch(f, q));
+                });
 
                 const isDemoProfile = (item) => {
                     if (!item || typeof item !== 'object') return false;
@@ -7191,7 +7427,7 @@
                         }
 
                         if (photo || dName || cClass) {
-                            if (photo) {
+                            if (photo && photo.length <= 50000) {
                                 try { localStorage.setItem('sf_friend_avatar_' + friendUid, photo); } catch (_) {}
                             }
                             if (selectedFriend.value && selectedFriend.value.uid === friendUid) {
@@ -7298,7 +7534,7 @@
                         try {
                             const compactList = list.map(m => ({
                                 ...m,
-                                photoUrl: (typeof m.photoUrl === 'string' && m.photoUrl.startsWith('data:') && m.photoUrl.length > 35000) ? '' : (m.photoUrl || '')
+                                photoUrl: (typeof m.photoUrl === 'string' && m.photoUrl.startsWith('data:') && m.photoUrl.length > 45000) ? '' : (m.photoUrl || '')
                             }));
                             const serialized = JSON.stringify(compactList);
                             if (serialized.length < 400000) {
@@ -7564,6 +7800,7 @@
                                 message: `${displayName.value || user.value.email} und du seid jetzt befreundet!`,
                                 read: false, createdAt: new Date().toISOString()
                             });
+                            showToast('Ihr seid jetzt befreundet!');
                             return;
                         }
                         // Normale Anfrage – alle alten Rückstände bereinigen
@@ -7580,7 +7817,8 @@
                             read: false, responded: false, accepted: false, createdAt: new Date().toISOString()
                         });
                         if (!sentRequests.value.includes(targetMember.uid)) sentRequests.value.push(targetMember.uid);
-                    } catch (e) { console.warn('sendFriendRequest:', e); alert('Anfrage konnte nicht gesendet werden.'); }
+                        showToast('Freundschaftsanfrage gesendet');
+                    } catch (e) { console.warn('sendFriendRequest:', e); showToast('Anfrage konnte nicht gesendet werden'); }
                 };
 
                 // Anfrage annehmen
@@ -7651,6 +7889,7 @@
                         friendSubjectsLoaded.value = [];
                     }
                     refreshIcons();
+                    showToast('Freund entfernt');
 
                     try {
                         const { deleteDoc: delD, doc: docFn } = window.__firestoreModule || {};
@@ -10150,6 +10389,39 @@
                     setTimeout(() => btn.classList.remove('just-checked'), 600);
                 };
 
+                const undoTaskDone = (task) => {
+                    const uid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    if (!uid || !task || !task.id) return;
+                    const nextAnim = new Set(animatingDoneTasks.value);
+                    nextAnim.delete(task.id);
+                    animatingDoneTasks.value = nextAnim;
+                    const nextLeave = new Set(leavingTasks.value);
+                    nextLeave.delete(task.id);
+                    leavingTasks.value = nextLeave;
+                    const el = document.querySelector(`[data-task-id="${task.id}"]`);
+                    if (el) el.style.cssText = '';
+
+                    pendingTaskDoneMap.set(task.id, { done: false, expiresAt: Date.now() + 30000 });
+                    tasks.value = (tasks.value || []).map(t => t.id === task.id ? { ...t, done: false } : t);
+                    try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+
+                    const syncPayload = {
+                        title: task.title || '',
+                        type: task.type || 'Hausaufgabe',
+                        subjectId: task.subjectId || '',
+                        date: task.date || '',
+                        done: false,
+                        notes: task.notes || '',
+                        studyProgress: task.studyProgress || 0
+                    };
+                    setDoc(doc(db, 'users', uid, 'tasks', task.id), syncPayload, { merge: true }).then(() => {
+                        pendingTaskDoneSync.delete(task.id);
+                    }).catch(() => {
+                        pendingTaskDoneSync.set(task.id, syncPayload);
+                    });
+                    refreshIcons();
+                };
+
                 const toggleTaskDone = async (task, event) => {
                     const uid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
                     if (!uid || !task || !task.id || task.isGoogleEvent) return;
@@ -10189,12 +10461,23 @@
                     if (nextDone) {
                         const btn = event?.currentTarget || event?.target;
                         spawnConfetti(btn);
+                        showToast(`${existingTask.type || 'Aufgabe'} erledigt`, {
+                            actionLabel: 'Rückgängig',
+                            duration: 4500,
+                            onAction: () => undoTaskDone(existingTask)
+                        });
 
                         if (isUpcomingCard) {
                             animatingDoneTasks.value = new Set([...animatingDoneTasks.value, task.id]);
                             persistDoneState();
 
                             setTimeout(() => {
+                                if (!pendingTaskDoneMap.get(task.id)?.done) {
+                                    const cleanAnim = new Set(animatingDoneTasks.value);
+                                    cleanAnim.delete(task.id);
+                                    animatingDoneTasks.value = cleanAnim;
+                                    return;
+                                }
                                 leavingTasks.value = new Set([...leavingTasks.value, task.id]);
                                 const newAnimating = new Set(animatingDoneTasks.value);
                                 newAnimating.delete(task.id);
@@ -11375,6 +11658,13 @@
                 watch([saxonActiveSubTab, saxonMobileSection], () => { nextTick(refreshIcons); });
 
                 // STATS / INSIGHTS TAB STATE (Notentabelle & Streichungsanalyse)
+                const insightsSubTab = ref('overview'); // 'overview' | 'charts' | 'compare'
+                const activeInsightsSubNavIndex = computed(() => {
+                    if (insightsSubTab.value === 'overview') return 0;
+                    if (insightsSubTab.value === 'charts') return 1;
+                    if (insightsSubTab.value === 'compare') return 2;
+                    return 0;
+                });
                 const statsTab = ref('table'); // 'table' (Notenübersicht) | 'streichungen' (Streichungen & Prognosen) | 'charts' (Diagramme) | 'all' (Vollansicht)
                 const statsStreichungenFilter = ref('all'); // 'all' | 'eingebracht' | 'gestrichen' | 'prognose'
                 const statsMobileViewMode = ref('table'); // 'table' | 'cards'
@@ -12294,7 +12584,7 @@
                     if (tempReportCardPoints.value > maxVal) tempReportCardPoints.value = defaultVal;
                 });
 
-                watch([currentTab, plannerTab, plannerFilter, selectedHalfYear, selectedSubject, subjects, tasks, startYear, subjectFilter], () => { 
+                watch([currentTab, plannerTab, insightsSubTab, plannerFilter, selectedHalfYear, selectedSubject, subjects, tasks, startYear, subjectFilter], () => { 
                     refreshIcons(); 
                     triggerCharts(); 
                 }, { deep: true });
@@ -12318,13 +12608,22 @@
                     }
                 }, { immediate: true });
 
-                // Extra watch: re-trigger charts when stats tab becomes active and refresh icons
+                // Extra watch: re-trigger charts when stats tab or insightsSubTab becomes active and refresh icons
                 watch(currentTab, (tab) => {
                     selectedSubject.value = null;
                     nextTick(refreshIcons);
-                    if (tab === 'stats') {
+                    if (tab === 'stats' && insightsSubTab.value === 'charts') {
                         setTimeout(() => triggerCharts(), 50);
                     }
+                });
+                watch(insightsSubTab, (sub) => {
+                    nextTick(() => {
+                        refreshIcons();
+                        if (sub === 'charts' && currentTab.value === 'stats') {
+                            triggerCharts();
+                            setTimeout(() => triggerCharts(), 50);
+                        }
+                    });
                 });
                 watch(plannerTab, () => nextTick(refreshIcons));
                 watch(calendarViewMode, () => nextTick(refreshIcons));
@@ -12491,7 +12790,7 @@
                     getLkCount, getGkCount, pointsToGrade, getSubjectNameById, getSubjectColorById, getTotalGradesCount, getTypeGradesCount, getSubjectGradesCount, getBestGrade, getWorstGrade, getTypePercentage, getTypeAverage, getValidBulkImportCount, getFormattedTimetableDays, subjectDetailGradeTab, filteredSubjectGrades, getPointsTier, getGrade6Tier,
                     examScores, saxonSchoolType, saxonP3, saxonP4, saxonP5, saxonActiveSubTab, saxonMobileSection, activeSaxonMobileIndex, mobileTableMode, mobileSelectedSemester, activeMobileSemesterIndex, isLogoWinking, triggerLogoWink, triggerLogoPopWink, saxonSimulatedGrades, saxonSubjectCategories, saxonErsatzfaecher, saxonInputPayload, saxonAbiturResult, saveExamScores, setSimulatedGrade, stepSemesterPoints, presetAllGrades, autoProjectAllGrades, resetSimulatedGrades, syncRealGrades, getSubjectSemesterResolved, detectSubjectCategory, getCategoryLabel, calculateSaxonAbitur,
                     getSimulatedExamScore, autoProjectExamScores, setExamScoreToSimulation,
-                    statsTab, activeStatsTabNavIndex, statsStreichungenFilter, statsMobileViewMode, isCoursePrognose, getCourseSubjectColor, allAnalyzedCourses, filteredAnalyzedCourses, coursesGroupedBySubject, getSubjectFourSemesterAverage, getSemesterOverallAverage, getFourSemesterGrandAverage,
+                    statsTab, activeStatsTabNavIndex, insightsSubTab, activeInsightsSubNavIndex, statsStreichungenFilter, statsMobileViewMode, isCoursePrognose, getCourseSubjectColor, allAnalyzedCourses, filteredAnalyzedCourses, coursesGroupedBySubject, getSubjectFourSemesterAverage, getSemesterOverallAverage, getFourSemesterGrandAverage,
 
                     halfYears, colorOptions, subjectIcons, user, isOnline, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
@@ -12524,7 +12823,9 @@
                     handlePlannerTouchStart, handlePlannerTouchMove, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
-                    isFriendsOpen, confirmingRemoveFriendUid, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
+                    isFriendsOpen, confirmingRemoveFriendUid, memberSearchQuery, filteredAllMembers, filteredFriends,
+                    isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
+                    toastState, triggerToastAction, dismissToast,
                     examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
