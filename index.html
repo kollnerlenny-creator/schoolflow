@@ -1916,7 +1916,7 @@
                                 </div>
                                 <div v-else class="space-y-2.5">
                                     <div v-for="(t, tIdx) in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3 bg-[#f4ece4] p-3 rounded-2xl border border-[#ede3d8]">
-                                        <button @click="toggleTaskDone(t, $event)" 
+                                        <button @click.stop="toggleTaskDone(t, $event)" 
                                                 class="shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer"
                                                 :class="t.done ? 'bg-[#2d694c] border-[#2d694c] text-white' : 'border-[#ded5c7] bg-white text-transparent'">
                                             <i data-lucide="check" class="w-3.5 h-3.5"></i>
@@ -2524,7 +2524,7 @@
                                         <div v-else-if="t.isGoogleEvent" class="shrink-0 w-8.5 h-8.5 rounded-full flex items-center justify-center bg-[#4285F4]/15">
                                             <i data-lucide="calendar" class="w-4 h-4 text-[#4285F4]"></i>
                                         </div>
-                                        <button v-else @click.stop="toggleTaskDone(t, $event)" 
+                                        <button v-else @click.stop="toggleTaskDone(t, $event)" @mousedown.stop @touchstart.stop @touchend.stop
                                                 class="task-done-btn shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-[#2d694c] border-[#2d694c]' : 'border-[#ded5c7] hover:border-[#2d694c] bg-white'">
                                             <i v-if="t.done" data-lucide="check" class="check-icon w-5 h-5 text-white"></i>
@@ -2673,7 +2673,7 @@
                                              class="bg-[#faf6f0] hover:bg-white rounded-2xl p-3.5 border border-[#ede3d8] shadow-2xs flex items-center justify-between gap-3 transition-all hover:shadow-xs">
                                             
                                             <div class="flex items-center gap-3 min-w-0 flex-1">
-                                                <button v-if="!t.isGoogleEvent" @click="toggleTaskDone(t, $event)" 
+                                                <button v-if="!t.isGoogleEvent" @click.stop="toggleTaskDone(t, $event)" 
                                                         class="w-8 h-8 rounded-full border border-[#ded5c7] flex items-center justify-center cursor-pointer shrink-0 transition-colors"
                                                         :class="t.done ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white text-[#524d44] hover:bg-[#eadecf]'">
                                                     <i v-if="t.done" data-lucide="check" class="w-4 h-4"></i>
@@ -4626,8 +4626,8 @@
                                         class="flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95"
                                         :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-[#2d694c] text-white border-[#23533c] shadow-xs' : 'bg-[#f4ece4] hover:bg-[#eae0d5] text-[#1f1b16] border-[#ede3d8]'">
                                     <div class="w-5 h-5 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-[10px] shrink-0 font-black">
-                                        <img v-if="f.photoUrl && (f.photoUrl.startsWith('data:') || f.photoUrl.startsWith('http'))" :src="f.photoUrl" class="w-full h-full object-cover" />
-                                        <span v-else-if="f.photoUrl">{{ f.photoUrl }}</span>
+                                        <img v-if="getMemberAvatar(f) && isImageAvatar(getMemberAvatar(f))" :src="getMemberAvatar(f)" class="w-full h-full object-cover" />
+                                        <span v-else-if="getMemberAvatar(f)">{{ getMemberAvatar(f) }}</span>
                                         <span v-else>{{ f.displayName ? f.displayName[0].toUpperCase() : '?' }}</span>
                                     </div>
                                     <span>{{ f.displayName || f.email }}</span>
@@ -4665,8 +4665,8 @@
                                     <!-- Freund -->
                                     <div class="col-span-3 flex flex-col items-center text-center">
                                         <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#825500]/20">
-                                            <img v-if="selectedFriend.photoUrl && (selectedFriend.photoUrl.startsWith('data:') || selectedFriend.photoUrl.startsWith('http'))" :src="selectedFriend.photoUrl" class="w-full h-full object-cover" />
-                                            <span v-else-if="selectedFriend.photoUrl" class="text-2xl">{{ selectedFriend.photoUrl }}</span>
+                                            <img v-if="getMemberAvatar(selectedFriend) && isImageAvatar(getMemberAvatar(selectedFriend))" :src="getMemberAvatar(selectedFriend)" class="w-full h-full object-cover" />
+                                            <span v-else-if="getMemberAvatar(selectedFriend)" class="text-2xl">{{ getMemberAvatar(selectedFriend) }}</span>
                                             <span v-else class="font-extrabold text-[#825500] text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
                                         </div>
                                         <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
@@ -5955,8 +5955,8 @@
                         <!-- Avatar -->
                         <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-base shrink-0 overflow-hidden"
                              :class="isFriend(member.uid) ? 'bg-emerald-500/20 text-emerald-400' : 'bg-accent-dim2 text-accent'">
-                            <img v-if="member.photoUrl && (member.photoUrl.startsWith('data:') || member.photoUrl.startsWith('http'))" :src="member.photoUrl" class="w-full h-full object-cover" />
-                            <span v-else-if="member.photoUrl" class="text-xl">{{ member.photoUrl }}</span>
+                            <img v-if="getMemberAvatar(member) && isImageAvatar(getMemberAvatar(member))" :src="getMemberAvatar(member)" class="w-full h-full object-cover" />
+                            <span v-else-if="getMemberAvatar(member)" class="text-xl">{{ getMemberAvatar(member) }}</span>
                             <span v-else>{{ member.displayName ? member.displayName[0].toUpperCase() : '?' }}</span>
                         </div>
                         <div class="flex-1 min-w-0">
@@ -5981,14 +5981,27 @@
                                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                             </svg>
                         </button>
-                        <!-- Bereits befreundet: user-check inline SVG -->
-                        <div v-else-if="isFriend(member.uid)"
-                             title="Bereits befreundet"
-                             class="w-10 h-10 bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 rounded-full flex items-center justify-center shrink-0">
+                        <!-- Bereits befreundet: user-check inline SVG (Klick startet Entfernen-Bestätigung) -->
+                        <div v-else-if="isFriend(member.uid) && confirmingRemoveFriendUid === member.uid" class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" @click="removeFriend(member.uid)"
+                                    class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-bold cursor-pointer active:scale-95 transition-all shadow-xs">
+                                Entfernen
+                            </button>
+                            <button type="button" @click="confirmingRemoveFriendUid = null"
+                                    title="Abbrechen"
+                                    class="w-8 h-8 bg-[#ede4dc] hover:bg-[#ded5c7] text-[#524d44] rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-all text-xs font-bold">
+                                ✕
+                            </button>
+                        </div>
+                        <button v-else-if="isFriend(member.uid)"
+                                type="button"
+                                @click="confirmingRemoveFriendUid = member.uid"
+                                title="Freund entfernen"
+                                class="w-10 h-10 bg-emerald-500/15 border border-emerald-500/25 text-emerald-500 hover:bg-rose-500/15 hover:border-rose-500/30 hover:text-rose-500 rounded-full flex items-center justify-center shrink-0 cursor-pointer active:scale-90 transition-all">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/>
                             </svg>
-                        </div>
+                        </button>
                     </div>
                 </div>
 
@@ -6004,23 +6017,37 @@
                     <div v-else v-for="friend in friends" :key="friend.uid"
                          class="bg-black/20 border border-white/5 rounded-3xl p-4 flex items-center gap-3">
                         <div class="w-11 h-11 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-black text-base shrink-0 overflow-hidden">
-                            <img v-if="friend.photoUrl && (friend.photoUrl.startsWith('data:') || friend.photoUrl.startsWith('http'))" :src="friend.photoUrl" class="w-full h-full object-cover" />
-                            <span v-else-if="friend.photoUrl" class="text-xl">{{ friend.photoUrl }}</span>
+                            <img v-if="getMemberAvatar(friend) && isImageAvatar(getMemberAvatar(friend))" :src="getMemberAvatar(friend)" class="w-full h-full object-cover" />
+                            <span v-else-if="getMemberAvatar(friend)" class="text-xl">{{ getMemberAvatar(friend) }}</span>
                             <span v-else>{{ friend.displayName ? friend.displayName[0].toUpperCase() : '?' }}</span>
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="font-bold text-white text-sm truncate">{{ friend.displayName || friend.email }}</p>
                             <p class="text-xs text-slate-500">Klasse {{ friend.currentClass || '?' }}</p>
                         </div>
-                        <div class="flex gap-2 shrink-0">
-                            <button @click="friendsTab = 'compare'; selectedFriend = friend"
-                                    class="text-xs font-bold text-accent px-3 py-2 bg-accent-dim2 border border-accent-border rounded-full cursor-pointer active:scale-95 transition-transform hover:bg-accent-dim flex items-center gap-1.5">
-                                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> Vergleich
+                        <div v-if="confirmingRemoveFriendUid === friend.uid" class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" @click="removeFriend(friend.uid)"
+                                    class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-bold cursor-pointer active:scale-95 transition-all shadow-xs">
+                                Entfernen
                             </button>
-                            <button @click="removeFriend(friend.uid)"
+                            <button type="button" @click="confirmingRemoveFriendUid = null"
+                                    title="Abbrechen"
+                                    class="w-9 h-9 bg-[#ede4dc] hover:bg-[#ded5c7] text-[#524d44] rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-all text-xs font-bold">
+                                ✕
+                            </button>
+                        </div>
+                        <div v-else class="flex gap-2 shrink-0">
+                            <button type="button" @click="friendsTab = 'compare'; selectedFriend = friend"
+                                    class="text-xs font-bold text-accent px-3 py-2 bg-accent-dim2 border border-accent-border rounded-full cursor-pointer active:scale-95 transition-transform hover:bg-accent-dim flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                Vergleich
+                            </button>
+                            <button type="button" @click="confirmingRemoveFriendUid = friend.uid"
                                     title="Freundschaft beenden"
-                                    class="w-9 h-9 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-all hover:bg-rose-500/20">
-                                <i data-lucide="user-x" class="w-4 h-4"></i>
+                                    class="w-9 h-9 bg-rose-500/15 border border-rose-500/30 text-rose-500 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-all hover:bg-rose-500/25">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="22" y2="13"/><line x1="22" y1="8" x2="17" y2="13"/>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -6044,8 +6071,8 @@
                                     :class="selectedFriend && selectedFriend.uid === f.uid ? 'toggle-accent-on text-white border-accent shadow-lg shadow-black/30' : 'bg-black/20 text-slate-400 border-white/5'"
                                     class="px-3.5 py-1.5 rounded-full text-xs font-bold border cursor-pointer transition-all active:scale-95 flex items-center gap-2">
                                 <div class="w-5 h-5 rounded-full overflow-hidden bg-white/10 flex items-center justify-center text-[10px]">
-                                    <img v-if="f.photoUrl && (f.photoUrl.startsWith('data:') || f.photoUrl.startsWith('http'))" :src="f.photoUrl" class="w-full h-full object-cover" />
-                                    <span v-else-if="f.photoUrl">{{ f.photoUrl }}</span>
+                                    <img v-if="getMemberAvatar(f) && isImageAvatar(getMemberAvatar(f))" :src="getMemberAvatar(f)" class="w-full h-full object-cover" />
+                                    <span v-else-if="getMemberAvatar(f)">{{ getMemberAvatar(f) }}</span>
                                     <span v-else>{{ f.displayName ? f.displayName[0].toUpperCase() : '?' }}</span>
                                 </div>
                                 <span>{{ f.displayName || f.email }}</span>
@@ -6093,8 +6120,8 @@
                                     <!-- Freund (Right 3 cols) -->
                                     <div class="col-span-3 flex flex-col items-center text-center">
                                         <div class="relative w-14 h-14 rounded-full overflow-hidden border-2 border-accent/40 bg-white/5 flex items-center justify-center shadow-md mb-2">
-                                            <img v-if="selectedFriend.photoUrl && (selectedFriend.photoUrl.startsWith('data:') || selectedFriend.photoUrl.startsWith('http'))" :src="selectedFriend.photoUrl" class="w-full h-full object-cover" />
-                                            <span v-else-if="selectedFriend.photoUrl" class="text-2xl">{{ selectedFriend.photoUrl }}</span>
+                                            <img v-if="getMemberAvatar(selectedFriend) && isImageAvatar(getMemberAvatar(selectedFriend))" :src="getMemberAvatar(selectedFriend)" class="w-full h-full object-cover" />
+                                            <span v-else-if="getMemberAvatar(selectedFriend)" class="text-2xl">{{ getMemberAvatar(selectedFriend) }}</span>
                                             <span v-else class="font-extrabold text-accent text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
                                         </div>
                                         <h4 class="font-black text-accent-light text-sm truncate max-w-[100px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
@@ -6304,12 +6331,83 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
-        // Stille Protokollierung für Firestore-Verbindungsmeldungen
+        // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
+        const _origConsoleError = console.error;
+        console.error = function(...args) {
+            if (args[0] && typeof args[0] === 'string' && (
+                args[0].includes('Could not reach Cloud Firestore backend') ||
+                (args[0].includes('@firebase/firestore') && args[0].includes('10 seconds'))
+            )) {
+                console.info('[Schooly Offline-Sync]', ...args);
+                return;
+            }
+            _origConsoleError.apply(console, args);
+        };
         // Firestore-Modul global cachen fuer spaetere dynamische Nutzung
         window.__firestoreModule = { onSnapshot, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc };
+
+        // Globale Avatar-Hilfsfunktionen (immer global und fehlertolerant verfuegbar)
+        window.getMemberAvatar = function(target) {
+            try {
+                if (!target) return '';
+                const uid = typeof target === 'string' ? target : (target.uid || target.id);
+
+                // 1. Eigener Nutzer
+                if (window.__currentUser && uid === window.__currentUser.uid) {
+                    return window.__currentUserAvatar || (typeof target === 'object' ? (target.photoUrl || target.userAvatar || '') : '');
+                }
+
+                // 2. Direkt auf Objekt vorhanden
+                if (typeof target === 'object') {
+                    if (target.photoUrl) return target.photoUrl;
+                    if (target.userAvatar) return target.userAvatar;
+                    if (target.avatar) return target.avatar;
+                    if (target.photoURL) return target.photoURL;
+                }
+
+                if (uid) {
+                    // 3. Aus globalen allMembers
+                    const all = window.__allMembers || [];
+                    const m = all.find(x => x && x.uid === uid);
+                    if (m && (m.photoUrl || m.userAvatar)) return m.photoUrl || m.userAvatar;
+
+                    // 4. Aus globalen friends
+                    const fr = window.__friends || [];
+                    const f = fr.find(x => x && x.uid === uid);
+                    if (f && (f.photoUrl || f.userAvatar)) return f.photoUrl || f.userAvatar;
+
+                    // 5. Aus Benachrichtigungen
+                    const notifs = window.__notifications || [];
+                    const notif = notifs.find(n => n && n.fromUid === uid && n.fromPhotoUrl);
+                    if (notif && notif.fromPhotoUrl) return notif.fromPhotoUrl;
+
+                    // 6. Aus localStorage Cache
+                    try {
+                        const cached = localStorage.getItem('sf_friend_avatar_' + uid);
+                        if (cached) return cached;
+                    } catch (_) {}
+                }
+
+                return '';
+            } catch (_) {
+                return '';
+            }
+        };
+        window.resolveAvatar = window.getMemberAvatar;
+
+        window.isImageAvatar = function(avatar) {
+            if (!avatar || typeof avatar !== 'string') return false;
+            const str = avatar.trim();
+            return str.startsWith('data:') ||
+                   str.startsWith('http://') ||
+                   str.startsWith('https://') ||
+                   str.startsWith('/assets/') ||
+                   str.startsWith('blob:') ||
+                   str.startsWith('./');
+        };
 
         const firebaseConfig = {
             apiKey: "AIzaSyDD-CByKnBFcCnHpG94VibtXrjVcmgGj8A",
@@ -6326,21 +6424,40 @@
         const GOOGLE_CLIENT_ID = "968757647135-vbulfc2qhguc6b83kv5arkpun544fp18.apps.googleusercontent.com";
         const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
 
+        // Veraltete Firestore WebStorage-Keys aus localStorage bereinigen (verhindert QuotaExceededError & Internal Assertion Failures)
+        try {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && (k.startsWith('firestore_') || k.startsWith('firebase:previous_websocket_failure'))) {
+                    keysToRemove.push(k);
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+        } catch (_) {}
+
         const app = initializeApp(firebaseConfig);
         
-        // Firestore mit Offline-Persistenz (IndexedDB) + Force-LongPolling für sofortige, unterbrechungsfreie Cloud- & Offline-Nutzung
+        // Firestore mit Single-Tab IndexedDB-Persistenz (nutzt kein localStorage, verhindert QuotaExceededError) + AutoDetect
         let db;
         try {
             db = initializeFirestore(app, {
                 localCache: persistentLocalCache({
-                    tabManager: persistentMultipleTabManager()
+                    tabManager: persistentSingleTabManager({ forceOwnership: true })
                 }),
-                experimentalForceLongPolling: true
+                experimentalAutoDetectLongPolling: true
             });
-            console.log("Firebase Firestore: Offline-Persistenz (IndexedDB) aktiv.");
+            console.log("Firebase Firestore: IndexedDB-Cache & AutoDetect initialisiert.");
         } catch (err) {
-            console.warn("Fallback zu Standard-Firestore:", err);
-            db = getFirestore(app);
+            console.warn("Fallback zu Memory-Firestore:", err);
+            try {
+                db = initializeFirestore(app, {
+                    localCache: memoryLocalCache(),
+                    experimentalAutoDetectLongPolling: true
+                });
+            } catch (_) {
+                db = getFirestore(app);
+            }
         }
 
         const auth = getAuth(app);
@@ -6355,19 +6472,24 @@
                     window.location.reload();
                 }
             });
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then((reg) => {
+            const registerSW = () => {
+                navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
                     console.log('Schooly PWA Service-Worker erfolgreich registriert.', reg.scope);
                     reg.update().catch(() => {});
                 }).catch((err) => {
                     console.warn('PWA Service Worker konnte nicht registriert werden:', err);
                 });
-            });
+            };
+            if (document.readyState === 'complete') {
+                registerSW();
+            } else {
+                window.addEventListener('load', registerSW);
+            }
         }
 
         const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
 
-        createApp({
+        const vueApp = createApp({
             setup() {
                 const halfYearsUpper = ['11/1', '11/2', '12/1', '12/2'];
                 const halfYears = computed(() => {
@@ -6435,7 +6557,7 @@
 
                 const setAvatarPreset = async (preset) => {
                     userAvatar.value = preset;
-                    localStorage.setItem('sf_user_avatar', preset);
+                    try { localStorage.setItem('sf_user_avatar', preset); } catch (_) {}
                     if (user.value) {
                         try {
                             await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { userAvatar: preset }, { merge: true });
@@ -6484,7 +6606,7 @@
                             ctx.drawImage(img, 0, 0, w, h);
                             const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                             userAvatar.value = dataUrl;
-                            localStorage.setItem('sf_user_avatar', dataUrl);
+                            try { localStorage.setItem('sf_user_avatar', dataUrl); } catch (_) {}
                             if (user.value) {
                                 try {
                                     await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { userAvatar: dataUrl }, { merge: true });
@@ -6757,18 +6879,16 @@
                 );
 
                 // ── NEU: FREUNDE & BENACHRICHTIGUNGEN ──
-                const defaultDemoMembers = [
-                    { uid: 'demo_lukas', displayName: 'Lukas M.', currentClass: 11, photoUrl: '🦊', isDemo: true },
-                    { uid: 'demo_sophie', displayName: 'Sophie K.', currentClass: 12, photoUrl: '✨', isDemo: true },
-                    { uid: 'demo_emma', displayName: 'Emma B.', currentClass: 11, photoUrl: '🚀', isDemo: true },
-                    { uid: 'demo_felix', displayName: 'Felix S.', currentClass: 10, photoUrl: '🦁', isDemo: true }
-                ];
-
                 const isFriendsOpen = ref(false);
+                const confirmingRemoveFriendUid = ref(null);
+                const pendingRemovedFriendsMap = new Map();
                 watch(isFriendsOpen, (open) => {
-                    if (open) {
+                    if (!open) {
+                        confirmingRemoveFriendUid.value = null;
+                    } else {
                         refreshIcons();
                         if (user.value && user.value.uid) {
+                            ensurePublicProfile(user.value.uid);
                             loadAllMembers(user.value.uid);
                             loadFriendsData(user.value.uid);
                         }
@@ -6827,12 +6947,116 @@
                 };
                 watch(tasks, () => { if (examRemindersEnabled.value) checkExamReminders(); });
                 const friendsTab = ref('members');
-                watch(friendsTab, () => refreshIcons());
-                const allMembers = ref([...defaultDemoMembers]);
+                watch(friendsTab, () => {
+                    confirmingRemoveFriendUid.value = null;
+                    refreshIcons();
+                });
+                const allMembers = ref([]);
                 const friends = ref([]);
                 const sentRequests = ref([]); // UIDs an die ich Anfragen gesendet habe
                 const notifications = ref([]);
                 const selectedFriend = ref(null);
+
+                const isDemoProfile = (item) => {
+                    if (!item || typeof item !== 'object') return false;
+                    const uidStr = String(item.uid || item.id || '');
+                    const emailStr = String(item.email || '').toLowerCase();
+                    return Boolean(item.isDemo) || uidStr.startsWith('demo_') || emailStr === 'demo@schooly.de';
+                };
+
+                // Avatar-Ermittlung delegiert an globale, fehlertolerante Funktion
+                const getMemberAvatar = (target) => {
+                    try {
+                        return window.getMemberAvatar ? window.getMemberAvatar(target) : '';
+                    } catch (_) {
+                        return '';
+                    }
+                };
+
+                const resolveAvatar = getMemberAvatar;
+
+                const isImageAvatar = (avatar) => {
+                    try {
+                        return window.isImageAvatar ? window.isImageAvatar(avatar) : false;
+                    } catch (_) {
+                        return false;
+                    }
+                };
+
+                // Freundesliste & ausgewählten Freund nur aktualisieren, wenn sich Daten wirklich geändert haben
+                const enrichFriendProfiles = () => {
+                    if (friends.value && friends.value.length > 0) {
+                        const cleanFriends = friends.value.filter(f => !isDemoProfile(f));
+                        let friendsChanged = cleanFriends.length !== friends.value.length;
+                        const updatedFriends = cleanFriends.map(f => {
+                            const m = (allMembers.value || []).find(x => x.uid === f.uid);
+                            const notif = (notifications.value || []).find(n => n.fromUid === f.uid && n.fromPhotoUrl);
+                            let cached = '';
+                            try { cached = localStorage.getItem('sf_friend_avatar_' + f.uid) || ''; } catch (_) {}
+                            const photo = m?.photoUrl || m?.userAvatar || f.photoUrl || f.userAvatar || notif?.fromPhotoUrl || cached || '';
+                            const nextName = f.displayName || m?.displayName || f.email || '';
+                            const nextClass = f.currentClass || m?.currentClass || '';
+                            if (photo && photo !== cached) {
+                                try { localStorage.setItem('sf_friend_avatar_' + f.uid, photo); } catch (_) {}
+                            }
+                            if (photo !== (f.photoUrl || '') || nextName !== (f.displayName || '') || nextClass !== (f.currentClass || '')) {
+                                friendsChanged = true;
+                                return {
+                                    ...f,
+                                    photoUrl: photo,
+                                    displayName: nextName,
+                                    currentClass: nextClass
+                                };
+                            }
+                            return f;
+                        });
+                        if (friendsChanged) {
+                            friends.value = updatedFriends;
+                        }
+                    }
+                    if (selectedFriend.value) {
+                        if (isDemoProfile(selectedFriend.value)) {
+                            selectedFriend.value = null;
+                            return;
+                        }
+                        const sf = selectedFriend.value;
+                        const m = (allMembers.value || []).find(x => x.uid === sf.uid);
+                        const f = (friends.value || []).find(x => x.uid === sf.uid);
+                        const notif = (notifications.value || []).find(n => n.fromUid === sf.uid && n.fromPhotoUrl);
+                        let cached = '';
+                        try { cached = localStorage.getItem('sf_friend_avatar_' + sf.uid) || ''; } catch (_) {}
+                        const resolvedPhoto = m?.photoUrl || m?.userAvatar || f?.photoUrl || f?.userAvatar || notif?.fromPhotoUrl || cached || sf.photoUrl || '';
+                        const resolvedName = m?.displayName || f?.displayName || sf.displayName || '';
+                        const resolvedClass = m?.currentClass || f?.currentClass || sf.currentClass || '';
+                        if (resolvedPhoto !== (sf.photoUrl || '') || resolvedName !== (sf.displayName || '') || resolvedClass !== (sf.currentClass || '')) {
+                            selectedFriend.value = {
+                                ...sf,
+                                photoUrl: resolvedPhoto,
+                                displayName: resolvedName,
+                                currentClass: resolvedClass
+                            };
+                            if (resolvedPhoto && resolvedPhoto !== cached) {
+                                try { localStorage.setItem('sf_friend_avatar_' + sf.uid, resolvedPhoto); } catch (_) {}
+                            }
+                        }
+                    }
+                };
+
+                // Globale Fenster-Referenzen synchron halten für 100% verlässliche Avatar- und Namensauflösung
+                watch([user, userAvatar], () => {
+                    window.__currentUser = user.value;
+                    window.__currentUserAvatar = userAvatar.value;
+                }, { immediate: true });
+                watch(allMembers, (list) => {
+                    window.__allMembers = list || [];
+                }, { immediate: true });
+                watch(friends, (list) => {
+                    window.__friends = list || [];
+                }, { immediate: true });
+                watch(notifications, (list) => {
+                    window.__notifications = list || [];
+                    enrichFriendProfiles();
+                }, { immediate: true });
 
                 const pushNotificationSettings = ref([
                     { key: 'friendRequests', label: 'Freundschaftsanfragen', icon: 'user-plus', enabled: true },
@@ -6843,94 +7067,31 @@
 
                 const unreadNotifications = computed(() => notifications.value.filter(n => !n.read));
 
-                const isFriend = (uid) => friends.value.some(f => f.uid === uid);
+                const isFriend = (uid) => friends.value.some(f => f.uid === uid && !isDemoProfile(f));
                 const hasSentRequest = (uid) => sentRequests.value.includes(uid);
 
-                // Avatar-Ermittlung für Mitglieder & Freunde (Echtzeit aus publicProfiles oder Objekt)
-                const getMemberAvatar = (target) => {
-                    if (!target) return '';
-                    if (typeof target === 'string') {
-                        if (user.value && target === user.value.uid) return userAvatar.value || '';
-                        const m = (allMembers.value || []).find(x => x.uid === target);
-                        if (m && (m.photoUrl || m.userAvatar)) return m.photoUrl || m.userAvatar;
-                        const f = (friends.value || []).find(x => x.uid === target);
-                        if (f && (f.photoUrl || f.userAvatar)) return f.photoUrl || f.userAvatar;
-                        return '';
-                    }
-                    if (user.value && target.uid === user.value.uid) {
-                        return userAvatar.value || target.photoUrl || target.userAvatar || '';
-                    }
-                    if (target.photoUrl) return target.photoUrl;
-                    if (target.userAvatar) return target.userAvatar;
-                    if (target.avatar) return target.avatar;
-                    if (target.photoURL) return target.photoURL;
-
-                    const m = (allMembers.value || []).find(x => x.uid === target.uid);
-                    if (m && (m.photoUrl || m.userAvatar)) return m.photoUrl || m.userAvatar;
-
-                    const f = (friends.value || []).find(x => x.uid === target.uid);
-                    if (f && (f.photoUrl || f.userAvatar)) return f.photoUrl || f.userAvatar;
-
-                    return '';
-                };
-
-                const isImageAvatar = (avatar) => {
-                    return typeof avatar === 'string' && (
-                        avatar.startsWith('data:image/') ||
-                        avatar.startsWith('http://') ||
-                        avatar.startsWith('https://') ||
-                        avatar.startsWith('/assets/') ||
-                        avatar.startsWith('blob:')
-                    );
-                };
-
-                // Freundesliste & ausgewählten Freund immer mit den aktuellsten Profilbildern abgleichen
-                const enrichFriendProfiles = () => {
-                    if (friends.value && friends.value.length > 0) {
-                        friends.value = friends.value.map(f => {
-                            const m = (allMembers.value || []).find(x => x.uid === f.uid);
-                            return {
-                                ...f,
-                                photoUrl: m?.photoUrl || m?.userAvatar || f.photoUrl || f.userAvatar || '',
-                                displayName: f.displayName || m?.displayName || f.email || '',
-                                currentClass: f.currentClass || m?.currentClass || ''
-                            };
-                        });
-                    }
-                    if (selectedFriend.value) {
-                        const m = (allMembers.value || []).find(x => x.uid === selectedFriend.value.uid);
-                        const f = (friends.value || []).find(x => x.uid === selectedFriend.value.uid);
-                        const resolvedPhoto = m?.photoUrl || m?.userAvatar || f?.photoUrl || f?.userAvatar || selectedFriend.value.photoUrl || '';
-                        const resolvedName = m?.displayName || f?.displayName || selectedFriend.value.displayName || '';
-                        const resolvedClass = m?.currentClass || f?.currentClass || selectedFriend.value.currentClass || '';
-                        if (resolvedPhoto || resolvedName || resolvedClass) {
-                            selectedFriend.value = {
-                                ...selectedFriend.value,
-                                photoUrl: resolvedPhoto || selectedFriend.value.photoUrl,
-                                displayName: resolvedName || selectedFriend.value.displayName,
-                                currentClass: resolvedClass || selectedFriend.value.currentClass
-                            };
-                        }
-                    }
-                };
-
-                // Alle Nutzer, mit denen verglichen werden kann (Freunde zuerst, dann übrige Mitglieder)
+                // Alle Nutzer, mit denen verglichen werden kann (Freunde zuerst, dann übrige Mitglieder, ohne Demo-Profile)
                 const comparableUsers = computed(() => {
                     const list = [];
                     const addedUids = new Set();
                     (friends.value || []).forEach(f => {
+                        if (!f || !f.uid || isDemoProfile(f)) return;
                         const m = (allMembers.value || []).find(x => x.uid === f.uid);
+                        const notif = (notifications.value || []).find(n => n.fromUid === f.uid && n.fromPhotoUrl);
+                        let cached = '';
+                        try { cached = localStorage.getItem('sf_friend_avatar_' + f.uid) || ''; } catch (_) {}
+                        const resolvedPhoto = m?.photoUrl || m?.userAvatar || f.photoUrl || f.userAvatar || notif?.fromPhotoUrl || cached || '';
                         list.push({
                             uid: f.uid,
                             displayName: f.displayName || m?.displayName || f.email || 'Freund',
                             currentClass: f.currentClass || m?.currentClass || '',
-                            photoUrl: m?.photoUrl || m?.userAvatar || f.photoUrl || f.userAvatar || '',
+                            photoUrl: resolvedPhoto,
                             isFriend: true
                         });
                         addedUids.add(f.uid);
                     });
                     (allMembers.value || []).forEach(m => {
-                        if (!addedUids.has(m.uid)) {
+                        if (m && m.uid && !isDemoProfile(m) && !addedUids.has(m.uid)) {
                             list.push({
                                 uid: m.uid,
                                 displayName: m.displayName || m.email || 'Mitschüler',
@@ -6946,6 +7107,9 @@
 
                 // Auto-Auswahl des ersten vergleichbaren Nutzers, falls noch keiner selektiert ist
                 watch(comparableUsers, (newUsers) => {
+                    if (selectedFriend.value && isDemoProfile(selectedFriend.value)) {
+                        selectedFriend.value = null;
+                    }
                     if (newUsers && newUsers.length > 0 && !selectedFriend.value) {
                         selectedFriend.value = newUsers[0];
                     }
@@ -6971,6 +7135,9 @@
                 const unsubscribeAllListeners = () => {
                     if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
                     if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
+                    if (typeof activeTasksListenerUid !== 'undefined') activeTasksListenerUid = null;
+                    if (typeof pendingTaskDoneMap !== 'undefined') pendingTaskDoneMap.clear();
+                    if (typeof pendingTaskDoneSync !== 'undefined') pendingTaskDoneSync.clear();
                     if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
                     if (unsubscribeFriends) { unsubscribeFriends(); unsubscribeFriends = null; }
                     if (unsubscribeSentRequests) { unsubscribeSentRequests(); unsubscribeSentRequests = null; }
@@ -6978,57 +7145,229 @@
                     if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
                 };
 
-                // Alle registrierten Nutzer laden (außer den aktuell angemeldeten Nutzer selbst)
-                const loadAllMembers = (uid) => {
-                    if (!uid && user.value && user.value.uid) uid = user.value.uid;
-                    if (!uid) {
-                        if (!allMembers.value || allMembers.value.length === 0) {
-                            allMembers.value = [...defaultDemoMembers];
+                // Dedizierter Fetcher für das Detail-Profil (inkl. echtes Profilbild) eines Freundes
+                const fetchedProfileCache = new Set();
+                const fetchFriendProfileDetails = async (friendUid) => {
+                    if (!friendUid || friendUid.startsWith('demo_') || fetchedProfileCache.has(friendUid)) return;
+                    fetchedProfileCache.add(friendUid);
+                    try {
+                        const { getDoc: gDoc, doc: docFn } = window.__firestoreModule || {};
+                        if (!gDoc || !docFn) return;
+
+                        let photo = '';
+                        let dName = '';
+                        let cClass = '';
+
+                        // 1. Aus publicProfiles laden
+                        try {
+                            const pubSnap = await gDoc(docFn(db, 'publicProfiles', friendUid));
+                            if (pubSnap && pubSnap.exists()) {
+                                const data = pubSnap.data();
+                                photo = data.photoUrl || data.userAvatar || '';
+                                dName = data.displayName || '';
+                                cClass = data.currentClass || '';
+                            }
+                        } catch (_) {}
+
+                        // 2. Falls noch kein Foto: config abfragen
+                        if (!photo) {
+                            try {
+                                const cfgSnap = await gDoc(docFn(db, 'users', friendUid, 'settings', 'config'));
+                                if (cfgSnap && cfgSnap.exists()) {
+                                    photo = cfgSnap.data().userAvatar || '';
+                                }
+                            } catch (_) {}
                         }
-                        return;
+
+                        // 3. Falls noch kein Foto: aus Benachrichtigungen suchen
+                        if (!photo) {
+                            const notif = (notifications.value || []).find(n => n.fromUid === friendUid && n.fromPhotoUrl);
+                            if (notif) photo = notif.fromPhotoUrl;
+                        }
+
+                        // 4. Falls noch kein Foto: aus localStorage suchen
+                        if (!photo) {
+                            try { photo = localStorage.getItem('sf_friend_avatar_' + friendUid) || ''; } catch (_) {}
+                        }
+
+                        if (photo || dName || cClass) {
+                            if (photo) {
+                                try { localStorage.setItem('sf_friend_avatar_' + friendUid, photo); } catch (_) {}
+                            }
+                            if (selectedFriend.value && selectedFriend.value.uid === friendUid) {
+                                const sf = selectedFriend.value;
+                                const nextPhoto = photo || sf.photoUrl || '';
+                                const nextName = dName || sf.displayName || '';
+                                const nextClass = cClass || sf.currentClass || '';
+                                if (nextPhoto !== (sf.photoUrl || '') || nextName !== (sf.displayName || '') || nextClass !== (sf.currentClass || '')) {
+                                    selectedFriend.value = {
+                                        ...sf,
+                                        photoUrl: nextPhoto,
+                                        displayName: nextName,
+                                        currentClass: nextClass
+                                    };
+                                }
+                            }
+                            const fIdx = friends.value.findIndex(x => x.uid === friendUid);
+                            let savedPhotoBefore = '';
+                            if (fIdx !== -1) {
+                                const cur = friends.value[fIdx];
+                                savedPhotoBefore = cur.photoUrl || '';
+                                const nextPhoto = photo || cur.photoUrl || '';
+                                const nextName = dName || cur.displayName || '';
+                                const nextClass = cClass || cur.currentClass || '';
+                                if (nextPhoto !== (cur.photoUrl || '') || nextName !== (cur.displayName || '') || nextClass !== (cur.currentClass || '')) {
+                                    friends.value[fIdx] = {
+                                        ...cur,
+                                        photoUrl: nextPhoto,
+                                        displayName: nextName,
+                                        currentClass: nextClass
+                                    };
+                                }
+                            }
+                            const mIdx = allMembers.value.findIndex(x => x.uid === friendUid);
+                            if (mIdx !== -1) {
+                                const curM = allMembers.value[mIdx];
+                                const nextPhoto = photo || curM.photoUrl || '';
+                                const nextName = dName || curM.displayName || '';
+                                const nextClass = cClass || curM.currentClass || '';
+                                if (nextPhoto !== (curM.photoUrl || '') || nextName !== (curM.displayName || '') || nextClass !== (curM.currentClass || '')) {
+                                    allMembers.value[mIdx] = {
+                                        ...curM,
+                                        photoUrl: nextPhoto,
+                                        displayName: nextName,
+                                        currentClass: nextClass
+                                    };
+                                }
+                            }
+                            // Nur in Firestore sichern, wenn das gespeicherte Freund-Profil noch ein anderes/fehlendes Foto hat
+                            if (user.value && user.value.uid && photo && savedPhotoBefore !== photo && fIdx !== -1) {
+                                try {
+                                    const { setDoc: setD } = window.__firestoreModule || {};
+                                    if (setD) {
+                                        await setD(docFn(db, 'users', user.value.uid, 'friends', friendUid), { photoUrl: photo }, { merge: true });
+                                    }
+                                } catch (_) {}
+                            }
+                            refreshIcons();
+                        }
+                    } catch (e) {
+                        console.warn('[GradeFlow] fetchFriendProfileDetails error:', e);
                     }
+                };
+
+                // Alle registrierten Nutzer laden (außer den aktuell angemeldeten Nutzer selbst)
+                const loadAllMembers = async (uid) => {
+                    if (!uid && user.value && user.value.uid) uid = user.value.uid;
+                    if (!uid) return;
                     if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
 
+                    const updateMembersState = (profiles, fromCacheOnly = false) => {
+                        let list = (profiles || []).filter(m => m && m.uid && m.uid !== uid && !isDemoProfile(m));
+                        const existingReal = (allMembers.value || []).filter(m => m && m.uid && m.uid !== uid && !isDemoProfile(m));
+                        if (list.length === 0 && existingReal.length > 0 && fromCacheOnly) {
+                            allMembers.value = existingReal;
+                            return; // Niemals gecachte echte Mitglieder durch leeren Offline-Snapshot überschreiben
+                        }
+                        // Falls bereits echte Freunde existieren, sicherstellen, dass sie in list sind
+                        (friends.value || []).forEach(f => {
+                            if (f && f.uid && f.uid !== uid && !isDemoProfile(f)) {
+                                const idx = list.findIndex(m => m.uid === f.uid);
+                                if (idx === -1) {
+                                    list.push({
+                                        uid: f.uid,
+                                        displayName: f.displayName || f.email || 'Freund',
+                                        currentClass: f.currentClass || '',
+                                        photoUrl: f.photoUrl || f.userAvatar || ''
+                                    });
+                                } else {
+                                    list[idx] = {
+                                        ...list[idx],
+                                        photoUrl: f.photoUrl || f.userAvatar || list[idx].photoUrl || '',
+                                        displayName: list[idx].displayName || f.displayName || list[idx].displayName,
+                                        currentClass: list[idx].currentClass || f.currentClass || list[idx].currentClass
+                                    };
+                                }
+                            }
+                        });
+                        if (list.length === 0 && existingReal.length > 0) {
+                            allMembers.value = existingReal;
+                            return; // Vorhandene echte Mitglieder niemals komplett leeren
+                        }
+                        allMembers.value = list;
+                        try {
+                            const compactList = list.map(m => ({
+                                ...m,
+                                photoUrl: (typeof m.photoUrl === 'string' && m.photoUrl.startsWith('data:') && m.photoUrl.length > 35000) ? '' : (m.photoUrl || '')
+                            }));
+                            const serialized = JSON.stringify(compactList);
+                            if (serialized.length < 400000) {
+                                localStorage.setItem('sf_cached_members', serialized);
+                            }
+                        } catch (_) {}
+                        enrichFriendProfiles();
+                        refreshIcons();
+                    };
+
+                    // Sofort aus lokalem Cache initialisieren für 0ms Latenz (Demo-Profile dabei sofort entfernen)
                     try {
-                        const { onSnapshot: onSnap2, collection: col2 } = window.__firestoreModule || {};
+                        for (let i = localStorage.length - 1; i >= 0; i--) {
+                            const k = localStorage.key(i);
+                            if (k && k.startsWith('sf_friend_avatar_demo_')) {
+                                localStorage.removeItem(k);
+                            }
+                        }
+                        const cached = localStorage.getItem('sf_cached_members');
+                        if (cached) {
+                            const parsed = JSON.parse(cached);
+                            if (Array.isArray(parsed)) {
+                                const cleaned = parsed.filter(m => !isDemoProfile(m));
+                                if (cleaned.length !== parsed.length) {
+                                    localStorage.setItem('sf_cached_members', JSON.stringify(cleaned));
+                                }
+                                if (cleaned.length > 0) {
+                                    updateMembersState(cleaned, true);
+                                }
+                            }
+                        }
+                    } catch (_) {}
+
+                    try {
+                        const { onSnapshot: onSnap2, collection: col2, getDocs: getD2 } = window.__firestoreModule || {};
                         if (!onSnap2) {
                             console.warn('[GradeFlow] Firestore noch nicht geladen');
-                            allMembers.value = [...defaultDemoMembers];
                             return;
                         }
 
+                        // 1. Sofortiges One-Time getDocs für schnellste Anzeige ohne Wartezeit
+                        try {
+                            if (getD2) {
+                                getD2(col2(db, 'publicProfiles')).then(snap => {
+                                    if (snap && !snap.empty) {
+                                        const list = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
+                                        updateMembersState(list, !!snap.metadata?.fromCache);
+                                    }
+                                }).catch(e => console.warn('[GradeFlow] getDocs publicProfiles notice:', e?.message || e));
+                            }
+                        } catch (_) {}
+
+                        // 2. Real-Time Snapshot Listener für Live-Updates
                         unsubscribeAllMembers = onSnap2(col2(db, 'publicProfiles'), snap => {
                             try {
                                 let realMembers = [];
                                 if (snap && !snap.empty) {
-                                    realMembers = snap.docs
-                                        .map(d => ({ uid: d.id, ...d.data() }))
-                                        .filter(m => m.uid !== uid);
+                                    realMembers = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
                                 }
-
-                                if (realMembers.length > 0) {
-                                    const combined = [...realMembers];
-                                    for (const dm of defaultDemoMembers) {
-                                        if (!combined.some(c => c.uid === dm.uid)) combined.push(dm);
-                                    }
-                                    allMembers.value = combined;
-                                } else {
-                                    allMembers.value = [...defaultDemoMembers];
-                                }
-
-                                enrichFriendProfiles();
-                                refreshIcons();
+                                updateMembersState(realMembers, !!snap?.metadata?.fromCache);
                             } catch (snapErr) {
                                 console.warn('[GradeFlow] Error parsing publicProfiles:', snapErr);
-                                allMembers.value = [...defaultDemoMembers];
                             }
                         }, err => {
-                            console.warn('[GradeFlow] publicProfiles listener warning:', err?.message || err);
-                            allMembers.value = [...defaultDemoMembers];
+                            console.info('[GradeFlow] publicProfiles listener notice:', err?.message || err);
+                            // Vorhandene Mitglieder aus Cache/Freundesliste beibehalten
                         });
                     } catch (e) {
                         console.warn('[GradeFlow] loadAllMembers error:', e.message);
-                        allMembers.value = [...defaultDemoMembers];
                     }
                 };
 
@@ -7037,18 +7376,29 @@
                     if (!uid) return;
                     try {
                         const nameToUse = (displayName.value && displayName.value.trim()) 
+                            || (user.value && user.value.displayName ? user.value.displayName : '')
                             || (user.value && user.value.email ? user.value.email.split('@')[0] : '') 
                             || 'Schüler';
 
+                        const effectiveAvatar = userAvatar.value || localStorage.getItem('sf_user_avatar') || '';
+
                         const profileData = {
+                            uid: uid,
                             displayName: nameToUse,
+                            email: user.value && user.value.email ? user.value.email : '',
                             currentClass: currentClass.value || 11,
-                            photoUrl: userAvatar.value || '🎓',
                             isAdmin: !!isAdmin.value,
                             updatedAt: new Date().toISOString()
                         };
+                        if (effectiveAvatar) {
+                            profileData.photoUrl = effectiveAvatar;
+                        }
+
                         const { setDoc: setD, doc: docFn } = window.__firestoreModule || {};
                         if (setD && docFn) {
+                            const profileSig = `${uid}|${profileData.displayName}|${profileData.currentClass}|${(profileData.photoUrl || '').length}`;
+                            if (window.__lastPublicProfileSig === profileSig) return;
+                            window.__lastPublicProfileSig = profileSig;
                             await setD(docFn(db, 'publicProfiles', uid), profileData, { merge: true });
                         }
                     } catch (e) {
@@ -7064,15 +7414,76 @@
                     if (unsubscribeDeclinedRequests) { unsubscribeDeclinedRequests(); unsubscribeDeclinedRequests = null; }
                     if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
 
+                    // Sofort aus lokalem Cache für 0ms Latenz laden (Demo-Profile herausfiltern)
+                    try {
+                        const cachedF = localStorage.getItem('sf_cached_friends_' + uid);
+                        if (cachedF) {
+                            const parsedF = JSON.parse(cachedF);
+                            if (Array.isArray(parsedF)) {
+                                const cleanedF = parsedF.filter(f => !isDemoProfile(f));
+                                if (cleanedF.length !== parsedF.length) {
+                                    localStorage.setItem('sf_cached_friends_' + uid, JSON.stringify(cleanedF));
+                                }
+                                if (cleanedF.length > 0) {
+                                    friends.value = cleanedF;
+                                    enrichFriendProfiles();
+                                }
+                            }
+                        }
+                    } catch (_) {}
+
                     try {
                         const { onSnapshot: onSnap, collection: col } = window.__firestoreModule || {};
                         if (!onSnap) return;
 
-                        // Freunde – nach dem Laden sentRequests bereinigen
+                        // Freunde – Demo-Profile sowie frisch entfernte Freunde bereinigen und sentRequests bereinigen
                         unsubscribeFriends = onSnap(col(db, 'users', uid, 'friends'), async snap => {
-                            friends.value = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+                            const now = Date.now();
+                            const fromServerConfirmed = !snap.metadata?.fromCache && !snap.metadata?.hasPendingWrites;
+                            const rawFriends = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
+                            const demoFriends = rawFriends.filter(f => isDemoProfile(f));
+                            friends.value = rawFriends.filter(f => {
+                                if (isDemoProfile(f)) return false;
+                                const removedUntil = pendingRemovedFriendsMap.get(f.uid);
+                                if (removedUntil && now < removedUntil) return false;
+                                if (fromServerConfirmed) pendingRemovedFriendsMap.delete(f.uid);
+                                return true;
+                            });
+                            try { localStorage.setItem('sf_cached_friends_' + uid, JSON.stringify(friends.value)); } catch (_) {}
+                            if (selectedFriend.value && (isDemoProfile(selectedFriend.value) || pendingRemovedFriendsMap.has(selectedFriend.value.uid))) {
+                                selectedFriend.value = null;
+                            }
+                            // Eventuelle Demo-Profile aus allMembers entfernen und echte Freunde ergänzen
+                            const baseMembers = (allMembers.value || []).filter(m => !isDemoProfile(m));
+                            let membersChanged = baseMembers.length !== (allMembers.value || []).length;
+                            friends.value.forEach(f => {
+                                if (f && f.uid && f.uid !== uid && !baseMembers.some(m => m.uid === f.uid)) {
+                                    baseMembers.push({
+                                        uid: f.uid,
+                                        displayName: f.displayName || f.email || 'Freund',
+                                        currentClass: f.currentClass || '',
+                                        photoUrl: f.photoUrl || f.userAvatar || ''
+                                    });
+                                    membersChanged = true;
+                                }
+                            });
+                            if (membersChanged) {
+                                allMembers.value = baseMembers;
+                                try { localStorage.setItem('sf_cached_members', JSON.stringify(baseMembers)); } catch (_) {}
+                            }
+                            enrichFriendProfiles();
                             refreshIcons();
+                            // Für jeden Freund ohne Bild im Hintergrund Details nachladen
+                            friends.value.forEach(f => {
+                                if (!f.photoUrl) {
+                                    fetchFriendProfileDetails(f.uid);
+                                }
+                            });
                             const { deleteDoc: delD, doc: docFn2 } = window.__firestoreModule;
+                            for (const df of demoFriends) {
+                                try { localStorage.removeItem('sf_friend_avatar_' + df.uid); } catch (_) {}
+                                try { await delD(docFn2(db, 'users', uid, 'friends', df.uid)); } catch (_) {}
+                            }
                             for (const f of friends.value) {
                                 if (sentRequests.value.includes(f.uid)) {
                                     try { await delD(docFn2(db, 'users', uid, 'sentRequests', f.uid)); } catch (_) {}
@@ -7117,28 +7528,8 @@
 
                 // Freundschaftsanfrage senden
                 const sendFriendRequest = async (targetMember) => {
-                    if (!user.value) return;
+                    if (!user.value || !targetMember || isDemoProfile(targetMember)) return;
                     try {
-                        if (targetMember.isDemo) {
-                            const demoProfile = {
-                                uid: targetMember.uid,
-                                displayName: targetMember.displayName,
-                                currentClass: targetMember.currentClass,
-                                photoUrl: targetMember.photoUrl,
-                                email: 'demo@schooly.de',
-                                isDemo: true
-                            };
-                            try {
-                                const { setDoc: setD, doc: docFn } = window.__firestoreModule;
-                                await setD(docFn(db, 'users', user.value.uid, 'friends', targetMember.uid), demoProfile);
-                            } catch (_) {}
-                            if (!friends.value.some(f => f.uid === targetMember.uid)) {
-                                friends.value.push(demoProfile);
-                            }
-                            refreshIcons();
-                            return;
-                        }
-
                         const { setDoc: setD, deleteDoc: delD, getDoc: getD, doc: docFn } = window.__firestoreModule;
                         // Alte abgelehnte/beantwortete Notifications auf BEIDEN Seiten bereinigen,
                         // damit eine erneute Anfrage nach Ablehnung wieder funktioniert
@@ -7148,8 +7539,20 @@
                         let theirRequest = null;
                         try { theirRequest = await getD(docFn(db, 'users', user.value.uid, 'notifications', `fr_${targetMember.uid}`)); } catch (_) {}
                         if (theirRequest && theirRequest.exists && theirRequest.exists() && !theirRequest.data().responded) {
-                            const myProfile = { uid: user.value.uid, displayName: displayName.value || '', email: user.value.email, currentClass: currentClass.value };
-                            const theirProfile = { uid: targetMember.uid, displayName: targetMember.displayName || '', email: targetMember.email || '' };
+                            const myProfile = {
+                                uid: user.value.uid,
+                                displayName: displayName.value || '',
+                                email: user.value.email,
+                                currentClass: currentClass.value,
+                                photoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || ''
+                            };
+                            const theirProfile = {
+                                uid: targetMember.uid,
+                                displayName: targetMember.displayName || '',
+                                email: targetMember.email || '',
+                                currentClass: targetMember.currentClass || '',
+                                photoUrl: targetMember.photoUrl || targetMember.userAvatar || getMemberAvatar(targetMember) || ''
+                            };
                             await setD(docFn(db, 'users', user.value.uid, 'friends', targetMember.uid), theirProfile);
                             await setD(docFn(db, 'users', targetMember.uid, 'friends', user.value.uid), myProfile);
                             try { await setD(docFn(db, 'users', user.value.uid, 'notifications', `fr_${targetMember.uid}`), { ...theirRequest.data(), responded: true, accepted: true, read: true }); } catch (_) {}
@@ -7157,6 +7560,7 @@
                             try { await delD(docFn(db, 'users', targetMember.uid, 'sentRequests', user.value.uid)); } catch (_) {}
                             await setD(docFn(db, 'users', targetMember.uid, 'notifications', `fa_${user.value.uid}`), {
                                 type: 'friend_accepted', fromUid: user.value.uid, fromName: displayName.value || user.value.email,
+                                fromPhotoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || '',
                                 message: `${displayName.value || user.value.email} und du seid jetzt befreundet!`,
                                 read: false, createdAt: new Date().toISOString()
                             });
@@ -7171,6 +7575,7 @@
                         await setD(docFn(db, 'users', user.value.uid, 'sentRequests', targetMember.uid), { to: targetMember.uid, sentAt: new Date().toISOString() });
                         await setD(docFn(db, 'users', targetMember.uid, 'notifications', `fr_${user.value.uid}`), {
                             type: 'friend_request', fromUid: user.value.uid, fromName: displayName.value || user.value.email,
+                            fromPhotoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || '',
                             message: `${displayName.value || user.value.email} möchte dich als Freund hinzufügen.`,
                             read: false, responded: false, accepted: false, createdAt: new Date().toISOString()
                         });
@@ -7183,8 +7588,19 @@
                     if (!user.value) return;
                     try {
                         const { setDoc: setD, updateDoc: updD, deleteDoc: delD, doc: docFn } = window.__firestoreModule;
-                        const myProfile = { uid: user.value.uid, displayName: displayName.value || '', email: user.value.email, currentClass: currentClass.value };
-                        const theirProfile = { uid: notif.fromUid, displayName: notif.fromName || '', email: '' };
+                        const myProfile = {
+                            uid: user.value.uid,
+                            displayName: displayName.value || '',
+                            email: user.value.email,
+                            currentClass: currentClass.value,
+                            photoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || ''
+                        };
+                        const theirProfile = {
+                            uid: notif.fromUid,
+                            displayName: notif.fromName || '',
+                            email: '',
+                            photoUrl: notif.fromPhotoUrl || getMemberAvatar(notif.fromUid) || ''
+                        };
                         // Gegenseitig als Freund eintragen
                         await setD(docFn(db, 'users', user.value.uid, 'friends', notif.fromUid), theirProfile);
                         await setD(docFn(db, 'users', notif.fromUid, 'friends', user.value.uid), myProfile);
@@ -7197,6 +7613,7 @@
                             type: 'friend_accepted',
                             fromUid: user.value.uid,
                             fromName: displayName.value || user.value.email,
+                            fromPhotoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || '',
                             message: `${displayName.value || user.value.email} hat deine Freundschaftsanfrage angenommen.`,
                             read: false,
                             createdAt: new Date().toISOString()
@@ -7220,13 +7637,28 @@
                 };
 
                 const removeFriend = async (friendUid) => {
-                    if (!user.value) return;
-                    if (!confirm('Freundschaft wirklich beenden?')) return;
+                    const uid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    if (!uid || !friendUid) return;
+                    confirmingRemoveFriendUid.value = null;
+                    pendingRemovedFriendsMap.set(friendUid, Date.now() + 20000);
+
+                    // Sofort lokal & im Gerätespeicher entfernen
+                    friends.value = (friends.value || []).filter(f => f.uid !== friendUid);
+                    sentRequests.value = (sentRequests.value || []).filter(id => id !== friendUid);
+                    try { localStorage.setItem('sf_cached_friends_' + uid, JSON.stringify(friends.value)); } catch (_) {}
+                    if (selectedFriend.value && selectedFriend.value.uid === friendUid) {
+                        selectedFriend.value = null;
+                        friendSubjectsLoaded.value = [];
+                    }
+                    refreshIcons();
+
                     try {
-                        const { deleteDoc: delD, doc: docFn } = window.__firestoreModule;
-                        await delD(docFn(db, 'users', user.value.uid, 'friends', friendUid));
-                        await delD(docFn(db, 'users', friendUid, 'friends', user.value.uid));
-                        if (selectedFriend.value && selectedFriend.value.uid === friendUid) selectedFriend.value = null;
+                        const { deleteDoc: delD, doc: docFn } = window.__firestoreModule || {};
+                        if (!delD || !docFn) return;
+                        try { await delD(docFn(db, 'users', uid, 'friends', friendUid)); } catch (e) { console.warn('removeFriend own doc:', e?.code || e?.message || e); }
+                        try { await delD(docFn(db, 'users', friendUid, 'friends', uid)); } catch (_) {}
+                        try { await delD(docFn(db, 'users', uid, 'sentRequests', friendUid)); } catch (_) {}
+                        try { await delD(docFn(db, 'users', uid, 'notifications', `fr_${friendUid}`)); } catch (_) {}
                     } catch (e) { console.warn('removeFriend:', e); }
                 };
 
@@ -7289,40 +7721,37 @@
                 // Geladene Fächer des ausgewählten Freundes
                 const friendSubjectsLoaded = ref([]);
 
-                // Fächer des Freundes aus Firestore nachladen wenn Freund ausgewählt wird
-                watch(selectedFriend, async (friend) => {
-                    friendSubjectsLoaded.value = [];
-                    if (!friend) return;
-
-                    if (friend.isDemo || (friend.uid && friend.uid.startsWith('demo_'))) {
-                        const demoSubjects = (subjects.value || []).map(s => {
-                            const hash = (s.name || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-                            const offset = (friend.uid === 'demo_sophie' ? 2 : (friend.uid === 'demo_felix' ? -2 : 0));
-                            const basePts = Math.min(15, Math.max(6, 10 + (hash % 5) - 2 + offset));
-                            return {
-                                id: 'demo_sub_' + s.id,
-                                name: s.name,
-                                grades: [
-                                    { points: basePts, weight: 1 },
-                                    { points: Math.min(15, basePts + 1), weight: 1 }
-                                ]
-                            };
-                        });
-                        friendSubjectsLoaded.value = demoSubjects;
+                // Fächer des Freundes aus Firestore nachladen wenn ein anderer Freund ausgewählt wird (per UID, verhindert Flackern bei Profil-Updates)
+                watch(() => selectedFriend.value?.uid, async (friendUid, oldUid) => {
+                    if (!friendUid) {
+                        friendSubjectsLoaded.value = [];
                         return;
                     }
+                    const friend = selectedFriend.value;
+                    if (!friend || isDemoProfile(friend)) {
+                        selectedFriend.value = null;
+                        friendSubjectsLoaded.value = [];
+                        return;
+                    }
+                    if (friendUid === oldUid && friendSubjectsLoaded.value.length > 0) {
+                        return;
+                    }
+                    friendSubjectsLoaded.value = [];
+
+                    // Detail-Profil (inklusive echtes Profilbild) einmalig nachladen
+                    fetchFriendProfileDetails(friendUid);
 
                     try {
-                        const { getDocs, collection: col, query: qry } = window.__firestoreModule || {};
+                        const { getDocs, collection: col } = window.__firestoreModule || {};
                         if (!getDocs) return;
                         // Oberstufe-Fächer versuchen, dann Unterstufe
-                        let snap = await getDocs(col(db, 'users', friend.uid, 'subjects'));
-                        if (!snap || snap.empty) snap = await getDocs(col(db, 'users', friend.uid, 'subjects_lower'));
-                        if (snap && !snap.empty) {
+                        let snap = await getDocs(col(db, 'users', friendUid, 'subjects'));
+                        if (!snap || snap.empty) snap = await getDocs(col(db, 'users', friendUid, 'subjects_lower'));
+                        if (selectedFriend.value?.uid === friendUid && snap && !snap.empty) {
                             friendSubjectsLoaded.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                         }
                     } catch (e) { console.warn('loadFriendSubjects:', e); }
-                });
+                }, { immediate: true });
 
                 // Fächernamen-Matching: Aliase + Fuzzy
                 const subjectAliases = [
@@ -7652,6 +8081,8 @@
                         listenToSubjects(initialCachedUser.uid);
                         listenToTasks(initialCachedUser.uid);
                         loadExamScores(initialCachedUser.uid);
+                        loadAllMembers(initialCachedUser.uid);
+                        loadFriendsData(initialCachedUser.uid);
                     }
 
                     autoSetCurrentHalfYear();
@@ -7712,6 +8143,7 @@
                             // Daten-Listener starten (Firestore IndexedDB Cache antwortet sofort!)
                             listenToSubjects(currentUser.uid);
                             listenToTasks(currentUser.uid);
+                            flushPendingTaskDoneSync(currentUser.uid);
                             loadExamScores(currentUser.uid);
                             loadAllMembers(currentUser.uid);
                             loadFriendsData(currentUser.uid);
@@ -7793,10 +8225,14 @@
                         // Oeffentliches Profil speichern (fuer Mitgliederliste)
                         try {
                             await setDoc(doc(db, 'publicProfiles', uid), {
+                                uid: uid,
                                 displayName: onboardingName.value.trim(),
+                                email: user.value?.email || '',
                                 currentClass: onboardingCurrentClass.value,
-                                createdAt: new Date().toISOString()
-                            });
+                                photoUrl: userAvatar.value || '',
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            }, { merge: true });
                         } catch (profileErr) { console.warn('publicProfile:', profileErr); }
 
                         // Welcome-Mail mit Gmail SMTP
@@ -8035,15 +8471,50 @@
 
                 const animatingDoneTasks = ref(new Set()); 
                 const leavingTasks = ref(new Set()); 
+                const pendingTaskDoneMap = new Map();
+                const pendingTaskDoneSync = new Map();
+
+                const flushPendingTaskDoneSync = async (uid) => {
+                    if (!uid || pendingTaskDoneSync.size === 0) return;
+                    const entries = Array.from(pendingTaskDoneSync.entries());
+                    for (const [taskId, payload] of entries) {
+                        try {
+                            await setDoc(doc(db, 'users', uid, 'tasks', taskId), payload, { merge: true });
+                            pendingTaskDoneSync.delete(taskId);
+                        } catch (e) {
+                            console.warn('[GradeFlow] retry task sync notice:', e?.code || e?.message || e);
+                        }
+                    }
+                };
 
                 let unsubscribeTasks = null;
+                let activeTasksListenerUid = null;
                 const listenToTasks = (uid) => {
+                    if (!uid) return;
+                    if (unsubscribeTasks && activeTasksListenerUid === uid) return;
                     if (unsubscribeTasks) unsubscribeTasks();
+                    activeTasksListenerUid = uid;
                     const q = collection(db, 'users', uid, 'tasks');
                     unsubscribeTasks = onSnapshot(q, (snapshot) => {
-                        const incoming = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        const now = Date.now();
+                        const fromServerConfirmed = !snapshot.metadata?.fromCache && !snapshot.metadata?.hasPendingWrites;
+                        const incoming = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
+                        if (incoming.length === 0 && snapshot.metadata?.fromCache && (tasks.value || []).length > 0) {
+                            return;
+                        }
                         tasks.value = incoming.map(t => {
                             if (animatingDoneTasks.value.has(t.id)) return { ...t, done: true };
+                            const override = pendingTaskDoneMap.get(t.id);
+                            if (override) {
+                                if (fromServerConfirmed && Boolean(t.done) === override.done) {
+                                    pendingTaskDoneMap.delete(t.id);
+                                    return t;
+                                }
+                                if (now < override.expiresAt) {
+                                    return { ...t, done: override.done };
+                                }
+                                pendingTaskDoneMap.delete(t.id);
+                            }
                             return t;
                         });
                         try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
@@ -9029,9 +9500,10 @@
                     today.setHours(0,0,0,0);
                     return (enrichedTasks.value || []).filter(t => {
                         const isPast = parseLocalDate(t.date) < today;
-                        const isDone = t.done;
+                        const isDone = Boolean(t.done);
                         const isAnimating = animatingDoneTasks.value.has(t.id);
-                        return (isPast || isDone) && !isAnimating;
+                        const isLeaving = leavingTasks.value.has(t.id);
+                        return (isPast || isDone) && !isAnimating && !isLeaving;
                     }).sort((a, b) => parseDateNum(b.date) - parseDateNum(a.date));
                 });
 
@@ -9494,8 +9966,11 @@
                     const formSnapshot = { ...taskForm.value };
                     closeModal('isTaskModalOpen');
                     try {
-                        const taskData = { title: formSnapshot.title, type: formSnapshot.type, subjectId: formSnapshot.subjectId, date: formSnapshot.date, done: formSnapshot.done, notes: formSnapshot.notes || '', studyProgress: formSnapshot.studyProgress || 0 };
+                        const taskData = { title: formSnapshot.title, type: formSnapshot.type, subjectId: formSnapshot.subjectId, date: formSnapshot.date, done: Boolean(formSnapshot.done), notes: formSnapshot.notes || '', studyProgress: formSnapshot.studyProgress || 0 };
                         if (formSnapshot.id) {
+                            pendingTaskDoneMap.set(formSnapshot.id, { done: Boolean(taskData.done), expiresAt: Date.now() + 20000 });
+                            tasks.value = tasks.value.map(t => t.id === formSnapshot.id ? { ...t, ...taskData } : t);
+                            try { localStorage.setItem('sf_tasks_' + user.value.uid, JSON.stringify(tasks.value)); } catch (_) {}
                             if (formSnapshot.repeatGroupId && formSnapshot.applyToSeries) {
                                 // Auf diese & alle zukünftigen Wiederholungen anwenden (Datum bleibt je Instanz individuell)
                                 const seriesData = { title: taskData.title, type: taskData.type, subjectId: taskData.subjectId, notes: taskData.notes, studyProgress: taskData.studyProgress };
@@ -9503,10 +9978,10 @@
                                 const affected = tasks.value.filter(t => t.repeatGroupId === formSnapshot.repeatGroupId && t.date >= originalDate);
                                 await Promise.all(affected.map(t => {
                                     const isThisOne = t.id === formSnapshot.id;
-                                    return updateDoc(doc(db, 'users', user.value.uid, 'tasks', t.id), isThisOne ? { ...seriesData, date: formSnapshot.date, done: taskData.done } : seriesData);
+                                    return setDoc(doc(db, 'users', user.value.uid, 'tasks', t.id), isThisOne ? { ...seriesData, date: formSnapshot.date, done: taskData.done } : seriesData, { merge: true });
                                 }));
                             } else {
-                                await updateDoc(doc(db, 'users', user.value.uid, 'tasks', formSnapshot.id), taskData);
+                                await setDoc(doc(db, 'users', user.value.uid, 'tasks', formSnapshot.id), taskData, { merge: true });
                             }
                         } else if (formSnapshot.repeat && formSnapshot.repeat !== 'none') {
                             // Wiederholte Aufgaben: mehrere Instanzen anlegen, verknüpft über repeatGroupId
@@ -9676,71 +10151,94 @@
                 };
 
                 const toggleTaskDone = async (task, event) => {
-                    if (!user.value) return;
-                    if (!task.done) {
-                        animatingDoneTasks.value = new Set([...animatingDoneTasks.value, task.id]);
-                        const taskIndex = tasks.value.findIndex(t => t.id === task.id);
-                        if (taskIndex !== -1) tasks.value[taskIndex].done = true;
+                    const uid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    if (!uid || !task || !task.id || task.isGoogleEvent) return;
+                    if (animatingDoneTasks.value.has(task.id) || leavingTasks.value.has(task.id)) return;
 
+                    const nextDone = !Boolean(task.done);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const isUpcomingCard = parseLocalDate(task.date) >= today;
+
+                    pendingTaskDoneMap.set(task.id, { done: nextDone, expiresAt: Date.now() + 30000 });
+
+                    // Sofort lokal aktualisieren und im Gerätespeicher sichern
+                    tasks.value = (tasks.value || []).map(t => t.id === task.id ? { ...t, done: nextDone } : t);
+                    try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+
+                    const existingTask = (tasks.value || []).find(t => t.id === task.id) || task;
+                    const syncPayload = {
+                        title: existingTask.title || '',
+                        type: existingTask.type || 'Hausaufgabe',
+                        subjectId: existingTask.subjectId || '',
+                        date: existingTask.date || '',
+                        done: nextDone,
+                        notes: existingTask.notes || '',
+                        studyProgress: existingTask.studyProgress || 0
+                    };
+
+                    const persistDoneState = () => {
+                        setDoc(doc(db, 'users', uid, 'tasks', task.id), syncPayload, { merge: true }).then(() => {
+                            pendingTaskDoneSync.delete(task.id);
+                        }).catch(err => {
+                            console.warn('[GradeFlow] toggleTaskDone sync notice:', err?.code || err?.message || err);
+                            pendingTaskDoneSync.set(task.id, syncPayload);
+                        });
+                    };
+
+                    if (nextDone) {
                         const btn = event?.currentTarget || event?.target;
                         spawnConfetti(btn);
 
-                        updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: true }).catch(e => {
-                            animatingDoneTasks.value.delete(task.id);
-                            const idx = tasks.value.findIndex(t => t.id === task.id);
-                            if (idx !== -1) tasks.value[idx].done = false;
-                        });
+                        if (isUpcomingCard) {
+                            animatingDoneTasks.value = new Set([...animatingDoneTasks.value, task.id]);
+                            persistDoneState();
 
-                        setTimeout(() => {
-                            // leavingTasks hält die Karte im computed array während sie verblasst
-                            leavingTasks.value = new Set([...leavingTasks.value, task.id]);
-                            // animatingDoneTasks kann jetzt sicher entfernt werden
-                            const newAnimating = new Set(animatingDoneTasks.value);
-                            newAnimating.delete(task.id);
-                            animatingDoneTasks.value = newAnimating;
+                            setTimeout(() => {
+                                leavingTasks.value = new Set([...leavingTasks.value, task.id]);
+                                const newAnimating = new Set(animatingDoneTasks.value);
+                                newAnimating.delete(task.id);
+                                animatingDoneTasks.value = newAnimating;
 
-                            // DOM-Element direkt stylen — Vue rendert nicht neu weil leavingTasks es noch hält
-                            const el = document.querySelector(`[data-task-id="${task.id}"]`);
-                            if (el) {
-                                el.style.pointerEvents = 'none';
-                                el.style.transition = 'opacity 1.3s ease, transform 1.3s ease';
-                                requestAnimationFrame(() => {
-                                    el.style.opacity = '0';
-                                    el.style.transform = 'translateX(10px) scale(0.97)';
-                                });
-
-                                setTimeout(() => {
-                                    // Erst wenn opacity 0: Höhe wegklappen
-                                    el.style.transition = 'max-height 0.28s ease, margin-bottom 0.28s ease';
-                                    el.style.overflow = 'hidden';
-                                    el.style.maxHeight = el.offsetHeight + 'px';
+                                const el = document.querySelector(`[data-task-id="${task.id}"]`);
+                                if (el) {
+                                    el.style.pointerEvents = 'none';
+                                    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                                     requestAnimationFrame(() => {
-                                        el.style.maxHeight = '0';
-                                        el.style.marginBottom = '0';
+                                        el.style.opacity = '0';
+                                        el.style.transform = 'translateX(10px) scale(0.97)';
                                     });
+
                                     setTimeout(() => {
-                                        // Jetzt aus leavingTasks entfernen → Vue entfernt die Karte
+                                        el.style.transition = 'max-height 0.28s ease, margin-bottom 0.28s ease';
+                                        el.style.overflow = 'hidden';
+                                        el.style.maxHeight = el.offsetHeight + 'px';
+                                        requestAnimationFrame(() => {
+                                            el.style.maxHeight = '0';
+                                            el.style.marginBottom = '0';
+                                        });
+                                        setTimeout(() => {
+                                            el.style.cssText = '';
+                                            const newLeaving = new Set(leavingTasks.value);
+                                            newLeaving.delete(task.id);
+                                            leavingTasks.value = newLeaving;
+                                        }, 300);
+                                    }, 650);
+                                } else {
+                                    setTimeout(() => {
                                         const newLeaving = new Set(leavingTasks.value);
                                         newLeaving.delete(task.id);
                                         leavingTasks.value = newLeaving;
-                                    }, 300);
-                                }, 1350);
-                            } else {
-                                setTimeout(() => {
-                                    const newLeaving = new Set(leavingTasks.value);
-                                    newLeaving.delete(task.id);
-                                    leavingTasks.value = newLeaving;
-                                }, 400);
-                            }
-                        }, 600);
+                                    }, 350);
+                                }
+                            }, 500);
+                        } else {
+                            persistDoneState();
+                        }
                     } else {
-                        const taskIndex = tasks.value.findIndex(t => t.id === task.id);
-                        if (taskIndex !== -1) tasks.value[taskIndex].done = false;
-                        updateDoc(doc(db, 'users', user.value.uid, 'tasks', task.id), { done: false }).catch(() => {
-                            const idx = tasks.value.findIndex(t => t.id === task.id);
-                            if (idx !== -1) tasks.value[idx].done = true;
-                        });
+                        persistDoneState();
                     }
+                    refreshIcons();
                 };
 
                 const pointsToGrade = (p) => {
@@ -12026,15 +12524,20 @@
                     handlePlannerTouchStart, handlePlannerTouchMove, handlePlannerTouchEnd,
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
-                    isFriendsOpen, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
+                    isFriendsOpen, confirmingRemoveFriendUid, isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
                     examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
                     comparisonData, comparisonSummary, ensurePublicProfile, friendSubjectsLoaded,
+                    getMemberAvatar, resolveAvatar, isImageAvatar,
                     activeNavIndex, userAvatar, isAvatarModalOpen, avatarFileInput, avatarPresets, setAvatarPreset, removeAvatar, handleAvatarFileUpload, refreshIcons, scrollToTop
                 };
             }
-        }).mount('#app');
+        });
+        vueApp.config.globalProperties.getMemberAvatar = window.getMemberAvatar;
+        vueApp.config.globalProperties.resolveAvatar = window.resolveAvatar;
+        vueApp.config.globalProperties.isImageAvatar = window.isImageAvatar;
+        vueApp.mount('#app');
     </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
-// Garantiert sofortiges Laden (0ms aus dem Cache) und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v17';
+// Garantiert sofortiges Laden und vollständige Offline-Nutzung
+const CACHE_NAME = 'schooly-cache-v27';
 
 const PRECACHE_URLS = [
   '/',
@@ -21,14 +21,15 @@ const PRECACHE_URLS = [
   '/icon-512.png'
 ];
 
-// 1. Installation: Sofort aktivieren und wichtige Ressourcen vorab cachen
+// 1. Installation: Sofort aktivieren und aktuelle Ressourcen vorab cachen (ohne HTTP-Cache)
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       for (const url of PRECACHE_URLS) {
         try {
-          const res = await fetch(url);
+          const isSameOrigin = url.startsWith('/');
+          const res = await fetch(url, isSameOrigin ? { cache: 'no-store' } : undefined);
           if (res && res.status === 200) {
             await cache.put(url, res);
           }
@@ -58,7 +59,7 @@ self.addEventListener('activate', (event) => {
 
 // 3. Fetch-Strategie:
 // - Firebase & Google APIs: Direkt durchleiten (Firestore IndexedDB übernimmt Offline-Sync)
-// - Navigation: Network-First mit 5s Timeout, Fallback auf lokalen Cache
+// - Navigation: Network-First (no-store) mit 15s Timeout, Fallback auf lokalen Cache
 // - Statische Ressourcen (JS, CSS, Schriften, Bilder, Icons): Cache-First für 0ms Antwortzeit
 self.addEventListener('fetch', (event) => {
   const req = event.request;
@@ -84,10 +85,10 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       (async () => {
         try {
-          // Großzügiger 5-Sekunden Timeout für Remote Cloud Run Verbindungen
+          // 15-Sekunden Timeout für Remote Cloud Run Verbindungen, immer frisches HTML holen
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 5000);
-          const networkRes = await fetch(req, { signal: controller.signal });
+          const timer = setTimeout(() => controller.abort(), 15000);
+          const networkRes = await fetch(req, { cache: 'no-store', signal: controller.signal });
           clearTimeout(timer);
           if (networkRes && networkRes.status === 200) {
             const cache = await caches.open(CACHE_NAME);
@@ -96,7 +97,7 @@ self.addEventListener('fetch', (event) => {
             return networkRes;
           }
         } catch (_) {
-          // Offline oder langsames Netz -> Sofort aus Cache
+          // Offline oder Timeout -> Sofort aus Cache
         }
         const cache = await caches.open(CACHE_NAME);
         const cached = await cache.match('/index.html') || await cache.match('/') || await cache.match(req);
