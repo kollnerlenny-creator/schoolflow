@@ -2097,10 +2097,6 @@
                                         <span>{{ s.semesterGrades ? s.semesterGrades.length : 0 }} {{ (s.semesterGrades && s.semesterGrades.length === 1) ? 'Note' : 'Noten' }}</span>
                                         <span class="text-[#c7bfb4]">•</span>
                                         <span>{{ s.examWeight }}% Klausur</span>
-                                        <template v-if="s.finalPoints !== null && s.reportCardGrade === null && s.finalGrade">
-                                            <span class="text-[#c7bfb4]">•</span>
-                                            <span class="text-[#2d694c] font-bold">Ø {{ formatNumber(s.finalGrade) }}</span>
-                                        </template>
                                     </div>
                                 </div>
                             </div>
@@ -2952,8 +2948,8 @@
                 <!-- 5. ABITUR-RECHNER & SOGYA OPTIMIERER (SACHSEN GYMNASIUM) -->
                 <div v-if="currentTab === 'abitur' && !selectedSubject" class="space-y-6 animate-fade-in max-w-6xl md:max-w-[1040px] mx-auto w-full pb-12">
                     <!-- Title & Header -->
-                    <div class="px-2 title-enter flex flex-col md:flex-row md:items-end justify-between gap-4">
-                        <div>
+                    <div class="px-2 title-enter flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+                        <div class="min-w-0">
                             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2d694c]/10 text-[#2d694c] text-xs font-black mb-2">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                                 <span>Gymnasiale Oberstufe Sachsen</span>
@@ -2963,7 +2959,7 @@
                         </div>
 
                         <!-- Sub-Navigation Pills (Desktop / Laptop) -->
-                        <div class="hidden sm:flex items-center gap-1.5 bg-[#ede4dc] p-1.5 rounded-full border border-[#ded5c7] shadow-2xs self-start md:self-auto overflow-x-auto no-scrollbar max-w-full">
+                        <div class="hidden sm:flex items-center gap-1.5 bg-[#ede4dc] p-1.5 rounded-full border border-[#ded5c7] shadow-2xs self-start lg:self-auto shrink-0">
                             <button @click="saxonActiveSubTab = 'calculator'"
                                     :class="saxonActiveSubTab === 'calculator' ? 'bg-[#2d694c] text-white font-black shadow-xs' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'"
                                     class="px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap cursor-pointer active:scale-95 flex items-center gap-1.5">

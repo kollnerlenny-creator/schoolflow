@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v37';
+const CACHE_NAME = 'schooly-cache-v40';
 
 const PRECACHE_URLS = [
   '/',
@@ -80,6 +80,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Pitchdeck-Seite niemals durch SPA-App-Shell abfangen
+  if (url.pathname.startsWith('/pitchdeck')) {
+    return;
+  }
+
   // A. HTML-Navigation (App-Shell)
   if (req.mode === 'navigate' || req.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
@@ -92,15 +97,22 @@ self.addEventListener('fetch', (event) => {
           clearTimeout(timer);
           if (networkRes && networkRes.status === 200) {
             const cache = await caches.open(CACHE_NAME);
-            cache.put('/index.html', networkRes.clone());
-            cache.put('/', networkRes.clone());
+            if (url.pathname === '/' || url.pathname === '/index.html') {
+              cache.put('/index.html', networkRes.clone());
+              cache.put('/', networkRes.clone());
+            } else {
+              cache.put(req, networkRes.clone());
+            }
             return networkRes;
           }
         } catch (_) {
           // Offline oder Timeout -> Sofort aus Cache
         }
         const cache = await caches.open(CACHE_NAME);
-        const cached = await cache.match('/index.html') || await cache.match('/') || await cache.match(req);
+        const isRoot = url.pathname === '/' || url.pathname === '/index.html';
+        const cached = isRoot
+          ? (await cache.match('/index.html') || await cache.match('/'))
+          : (await cache.match(req) || await cache.match(url.pathname));
         if (cached) return cached;
 
         try {

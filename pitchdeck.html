@@ -6,809 +6,982 @@
     <title>schooly – Official Pitch Deck (All-in-One Schul-App)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- PPTXGenJS Library for native PowerPoint .pptx generation -->
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
     <style>
+        :root {
+            --bg-cream: #faf7f2;
+            --surface-warm: #f4ece4;
+            --border-hairline: #e5dcd0;
+            --text-primary: #1f1b16;
+            --text-muted: #6e665e;
+            --accent-sage: #2d694c;
+            --accent-sage-dark: #23533c;
+        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #faf7f2;
-            color: #1f1b16;
+            background-color: var(--bg-cream);
+            color: var(--text-primary);
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        h1, h2, h3, .font-epilogue {
+        h1, h2, h3, h4, .font-epilogue {
             font-family: 'Epilogue', sans-serif;
         }
         .font-handwriting {
             font-family: 'Caveat', cursive;
         }
-        .slide-card {
-            background: #ffffff;
-            border: 1px solid #ede3d8;
-            box-shadow: 0 20px 48px -12px rgba(31, 27, 22, 0.08);
-            border-radius: 2.25rem;
-            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            aspect-ratio: 16 / 9;
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
         }
-        
-        /* Straight, High-Quality Widescreen Device Frames */
-        .phone-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+
+        /* Editorial 16:9 Slide Card (warm Schooly app beige) */
+        .slide-slot {
             width: 100%;
-        }
-        .phone-frame {
-            border: 10px solid #2b2621;
-            border-radius: 2.75rem;
-            background: #faf7f2;
             position: relative;
-            overflow: hidden;
-            width: 280px;
-            box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.08);
         }
-        .phone-notch {
-            width: 96px;
-            height: 15px;
-            background: #2b2621;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
+        .slide-card {
+            background: #faf7f2;
+            border: 1px solid var(--border-hairline);
+            box-shadow: 0 24px 56px -18px rgba(31, 27, 22, 0.09);
+            border-radius: 2rem;
+            overflow: clip;
+            transition: box-shadow 0.25s ease;
+        }
+        @media (min-width: 768px) {
+            body:not(.presentation-mode) .slide-slot {
+                overflow: hidden;
+                border-radius: 2rem;
+                border: 1px solid var(--border-hairline);
+                box-shadow: 0 24px 56px -18px rgba(31, 27, 22, 0.09);
+            }
+            body:not(.presentation-mode) .slide-slot .slide-card {
+                border: none;
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+
+        /* Presentation Single-Slide Focus Mode (strictly fitted 16:9 without clipping) */
+        body.presentation-mode {
+            background-color: #161310;
+            overflow: hidden;
+            height: 100dvh;
+        }
+        body.presentation-mode #presentation-container {
+            max-width: none !important;
+            width: 100% !important;
+            height: calc(100dvh - 58px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin: 0 !important;
+            overflow: hidden;
+        }
+        body.presentation-mode .slide-slot {
+            display: none !important;
+            margin: 0 !important;
+            flex-shrink: 0;
+        }
+        body.presentation-mode .slide-slot.is-active {
+            display: block !important;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+            animation: slideFade 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body.presentation-mode .slide-slot.is-active .slide-card {
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        body.presentation-mode footer {
+            display: none !important;
+        }
+        @keyframes slideFade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* Sleek Realistic Smartphone Bezel (padding + inner screen prevents edge gaps/corner bleed) */
+        .phone-frame {
+            background: #24201b;
+            padding: 15px 7px 7px 7px;
+            border-radius: 2.15rem;
+            position: relative;
+            width: 202px;
+            box-shadow:
+                0 24px 48px -12px rgba(24, 20, 16, 0.24),
+                0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+        }
+        @media (min-width: 640px) {
+            .phone-frame {
+                width: 210px;
+            }
+        }
+        .phone-frame-compact {
+            width: 142px;
+            padding: 13px 6px 6px 6px;
+            border-radius: 1.7rem;
+        }
+        @media (min-width: 640px) {
+            .phone-frame-compact {
+                width: 174px;
+                padding: 14px 6.5px 6.5px 6.5px;
+                border-radius: 1.9rem;
+            }
+        }
+        .phone-island {
+            width: 48px;
+            height: 5px;
+            background: #3d3731;
+            border-radius: 999px;
             position: absolute;
-            top: 0;
+            top: 5px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 30;
+            z-index: 20;
         }
-        
+        .phone-screen {
+            width: 100%;
+            aspect-ratio: 780 / 1688;
+            border-radius: 1.55rem;
+            overflow: hidden;
+            background: #faf7f2;
+            position: relative;
+        }
+        .phone-frame-compact .phone-screen {
+            border-radius: 1.32rem;
+        }
+
+        /* Sleek Realistic Laptop Bezel */
         .laptop-wrapper {
             width: 100%;
         }
         .laptop-frame {
-            border: 11px solid #2b2621;
-            border-bottom: 15px solid #2b2621;
-            border-radius: 1.35rem 1.35rem 0 0;
-            box-shadow: 0 28px 56px -14px rgba(0, 0, 0, 0.25);
+            background: #24201b;
+            padding: 13px 9px 10px 9px;
+            border-radius: 1.1rem 1.1rem 0 0;
+            box-shadow: 0 26px 52px -16px rgba(24, 20, 16, 0.24);
+            position: relative;
+        }
+        .laptop-cam {
+            width: 5px;
+            height: 5px;
+            border-radius: 999px;
+            background: #474038;
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+        .laptop-screen {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            border-radius: 0.45rem;
+            overflow: hidden;
             background: #faf7f2;
             position: relative;
-            overflow: hidden;
         }
         .laptop-base {
-            height: 15px;
-            background: #403a33;
-            border-radius: 0 0 1.25rem 1.25rem;
-            width: 106%;
-            margin-left: -3%;
+            height: 12px;
+            background: linear-gradient(180deg, #4b443d 0%, #342f2a 100%);
+            border-radius: 0 0 0.9rem 0.9rem;
+            width: 104%;
+            margin-left: -2%;
             position: relative;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
         }
         .laptop-notch {
-            width: 64px;
-            height: 4px;
-            background: #1a1714;
+            width: 56px;
+            height: 3.5px;
+            background: #1f1b16;
             border-radius: 0 0 4px 4px;
             margin: 0 auto;
         }
         .screenshot-img {
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
-            object-fit: cover;
+            object-fit: fill;
         }
 
+        /* Paper grid for Smart Notebook preview */
+        .paper-grid {
+            background-color: #fdfbf7;
+            background-image:
+                linear-gradient(to right, rgba(45, 105, 76, 0.06) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(45, 105, 76, 0.06) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        @page {
+            size: 13.333in 7.5in;
+            margin: 0;
+        }
         @media print {
             .no-print { display: none !important; }
-            body { background: white !important; }
-            .slide-page { 
-                page-break-after: always !important; 
-                break-after: page !important;
-                margin-bottom: 0 !important;
+            html, body, body.presentation-mode {
+                width: 13.333in !important;
+                min-width: 13.333in !important;
+                background: #faf7f2 !important;
+                overflow: visible !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            main#presentation-container,
+            body.presentation-mode #presentation-container {
+                display: block !important;
+                max-width: none !important;
+                width: 13.333in !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            body.presentation-mode .slide-slot,
+            #presentation-container > .slide-slot {
+                display: block !important;
+                width: 13.333in !important;
+                height: 7.5in !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                border-radius: 0 !important;
                 box-shadow: none !important;
-                border: 1px solid #ede3d8 !important;
-                aspect-ratio: auto !important;
-                min-h-[640px] !important;
+                overflow: hidden !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            #presentation-container > .slide-slot:last-of-type {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+            .slide-slot > .slide-page {
+                display: flex !important;
+                position: static !important;
+                transform: none !important;
+                width: 13.333in !important;
+                height: 7.5in !important;
+                min-height: 7.5in !important;
+                max-height: 7.5in !important;
+                margin: 0 !important;
+                padding: 0.55in 0.72in !important;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
             }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-[#2d694c]/20">
 
-    <!-- TOP CONTROL BAR (Present & Download) -->
-    <header class="no-print sticky top-0 z-50 bg-[#faf7f2]/95 backdrop-blur-md border-b border-[#ede3d8] px-4 py-3 sm:px-8 flex items-center justify-between shadow-2xs">
-        <div class="flex items-center gap-3">
-            <img src="/assets/schooly_logo_transparent.png" alt="schooly logo" class="h-8 w-auto object-contain" />
-            <span class="text-xs font-black uppercase tracking-widest text-[#6E665E] hidden sm:inline-block">Official Pitch Deck</span>
+    <!-- TOP CONTROL BAR (3-Zone Editorial Contract) -->
+    <header class="no-print sticky top-0 z-50 bg-[#faf7f2]/95 backdrop-blur-md border-b border-[#e5dcd0] px-3 py-2.5 sm:px-8 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
+        <div class="flex items-center gap-3 shrink-0">
+            <img src="/assets/schooly_logo_transparent.png" alt="schooly" class="h-6 sm:h-8 w-auto object-contain" />
+            <span class="text-xs font-bold text-[#6e665e] hidden lg:inline-block whitespace-nowrap">Official Pitch Deck · 2026</span>
         </div>
-        
-        <!-- Navigation & PPTX Export Controls -->
-        <div class="flex items-center gap-2 sm:gap-3">
-            <div class="flex items-center gap-1 bg-[#ede4dc] px-3.5 py-1.5 rounded-full text-xs font-black text-[#1f1b16] border border-[#ded5c7]">
+
+        <!-- Slide Navigation & Focus Mode -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="prevSlide()" title="Vorherige Folie (Pfeil links)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-[#e5dcd0] text-[#1f1b16] hover:bg-[#f4ece4] transition-colors flex items-center justify-center cursor-pointer active:scale-95">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <div class="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#ede4dc] text-[11px] sm:text-xs font-extrabold text-[#1f1b16] border border-[#ded5c7] tabular-nums whitespace-nowrap">
                 <span id="currentSlideNum">1</span> / <span id="totalSlidesNum">11</span>
             </div>
-            
-            <button onclick="prevSlide()" title="Vorherige Folie (Pfeil links)" class="p-2.5 rounded-full bg-white border border-[#ede3d8] text-[#1f1b16] hover:bg-[#ede4dc] transition-all cursor-pointer shadow-2xs active:scale-95">
-                <i data-lucide="chevron-left" class="w-4.5 h-4.5"></i>
-            </button>
-            <button onclick="nextSlide()" title="Nächste Folie (Pfeil rechts / Leertaste)" class="p-2.5 rounded-full bg-white border border-[#ede3d8] text-[#1f1b16] hover:bg-[#ede4dc] transition-all cursor-pointer shadow-2xs active:scale-95">
-                <i data-lucide="chevron-right" class="w-4.5 h-4.5"></i>
+            <button onclick="nextSlide()" title="Nächste Folie (Pfeil rechts / Leertaste)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-[#e5dcd0] text-[#1f1b16] hover:bg-[#f4ece4] transition-colors flex items-center justify-center cursor-pointer active:scale-95">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
             </button>
 
-            <!-- PPTX PowerPoint Download Button -->
-            <button onclick="downloadPPTX()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-black shadow-sm cursor-pointer transition-all active:scale-95 ml-2">
-                <i data-lucide="presentation" class="w-4 h-4"></i>
-                <span>Als PPTX Herunterladen (.pptx)</span>
+            <button id="presentToggleBtn" onclick="togglePresentationMode()" title="Einzelfolien-Präsentation (Taste P)" class="hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-[#f4ece4] text-[#1f1b16] border border-[#e5dcd0] text-xs font-bold transition-colors cursor-pointer whitespace-nowrap ml-1">
+                <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                <span id="presentToggleLabel">Präsentieren</span>
             </button>
+        </div>
 
-            <!-- PDF Download Button -->
-            <button onclick="downloadPDF()" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-white hover:bg-[#ede4dc] text-[#1f1b16] border border-[#ede3d8] text-xs font-bold shadow-2xs cursor-pointer transition-all active:scale-95">
-                <i data-lucide="file-text" class="w-4 h-4 text-[#2d694c]"></i>
+        <!-- Export Actions -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button id="pdfExportBtn" onclick="downloadPDF(this)" title="Als exaktes 16:9 PDF herunterladen" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-full bg-white hover:bg-[#f4ece4] text-[#1f1b16] border border-[#e5dcd0] text-xs font-bold transition-colors cursor-pointer active:scale-95 whitespace-nowrap">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#2d694c]"></i>
                 <span class="hidden sm:inline">PDF</span>
+            </button>
+            <button id="pptxExportBtn" onclick="downloadPPTX(this)" title="Als 16:9 Widescreen PowerPoint (.pptx) exportieren" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold shadow-xs cursor-pointer transition-colors active:scale-95 whitespace-nowrap">
+                <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+                <span class="sm:hidden">PPTX</span>
+                <span class="hidden sm:inline">PPTX Export</span>
             </button>
         </div>
     </header>
 
-    <!-- MAIN SLIDES CONTAINER (Widescreen 16:9 Aspect Ratio) -->
-    <main id="presentation-container" class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 sm:py-8 space-y-12">
+    <!-- MAIN SLIDES CONTAINER -->
+    <main id="presentation-container" class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 sm:py-10 space-y-10">
 
         <!-- SLIDE 1: COVER & HERO -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative overflow-hidden">
-            <div class="absolute -right-20 -top-20 w-96 h-96 bg-[#2d694c]/10 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <div class="flex items-center justify-between">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2d694c]/10 text-[#2d694c] text-xs font-black">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>All-In-One Schul- & Studien-Assistent</span>
-                </div>
-                <span class="text-xs font-extrabold text-[#6E665E] bg-[#f4ece4] px-3.5 py-1 rounded-full border border-[#ede3d8]">PWA Web-App · Für alle Geräte</span>
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative overflow-hidden is-active">
+            <div class="absolute right-0 top-0 w-80 h-80 bg-[#2d694c]/8 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Quiet Editorial Top Line -->
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">01 · All-In-One Schulplattform</span>
+                <span>Web-App (PWA) · Smartphone, Tablet &amp; Laptop</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto py-4">
-                <!-- Left Column Text -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto py-3">
+                <!-- Left Copy -->
                 <div class="md:col-span-7 space-y-5 text-left">
-                    <img src="/assets/schooly_logo_transparent.png" alt="schooly logo" class="h-14 sm:h-18 w-auto object-contain" />
-                    <h1 class="text-3xl sm:text-5xl font-black text-[#1f1b16] font-epilogue leading-tight tracking-tight">
-                        Die <span class="text-[#2d694c]">All-In-One</span> Schul-App für deinen besten Schnitt.
+                    <img src="/assets/schooly_logo_transparent.png" alt="schooly Logo" class="h-12 sm:h-14 w-auto object-contain" />
+                    <h1 class="text-3xl sm:text-[2.75rem] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                        Die eine Schul-App für deinen <span class="text-[#2d694c]">besten Schnitt.</span>
                     </h1>
-                    <p class="text-sm sm:text-base font-semibold text-[#6E665E] leading-relaxed">
-                        <strong class="text-[#1f1b16]">schooly</strong> vereint Notenrechner, Stundenplan, Hausaufgabenheft, Prüfungskalender und Analyse-Tools in einer einzigen, wunderschönen Web-App. Keine 5 verschiedenen Apps mehr.
+                    <p class="text-sm sm:text-base font-medium text-[#6e665e] leading-relaxed max-w-xl">
+                        <strong class="text-[#1f1b16]">schooly</strong> bündelt Notenrechner, Stundenplan, Aufgabenplaner, Abitur-Optimierung und Leistungsanalysen in einer nahtlosen Oberfläche für Smartphone und Laptop.
                     </p>
-                    <div class="flex flex-wrap gap-2 text-xs font-extrabold text-[#2d694c]">
-                        <span class="bg-[#2d694c]/10 px-3.5 py-1.5 rounded-full border border-[#2d694c]/20">✓ Deutschlandweit</span>
-                        <span class="bg-[#2d694c]/10 px-3.5 py-1.5 rounded-full border border-[#2d694c]/20">✓ Punkte & Noten (1–6)</span>
-                        <span class="bg-[#2d694c]/10 px-3.5 py-1.5 rounded-full border border-[#2d694c]/20">✓ Smartphone, Tablet & Laptop</span>
-                    </div>
 
-                    <!-- Stat Highlights to fill Slide 1 -->
-                    <div class="grid grid-cols-3 gap-3 pt-2">
-                        <div class="bg-[#f4ece4] p-3 rounded-2xl border border-[#ede3d8]">
-                            <span class="text-[10px] font-bold text-[#6E665E] block uppercase">Live Notenschnitt</span>
-                            <span class="text-lg font-black text-[#2d694c] font-epilogue">13,2 Pkt.</span>
+                    <!-- Clean Unboxed Metric Strip -->
+                    <div class="grid grid-cols-3 gap-4 pt-3 border-t border-[#e5dcd0] max-w-lg">
+                        <div>
+                            <div class="text-[11px] font-bold text-[#6e665e]">Live-Berechnung</div>
+                            <div class="text-xl font-black text-[#2d694c] font-epilogue tabular-nums mt-0.5">13,10 Pkt.</div>
                         </div>
-                        <div class="bg-[#f4ece4] p-3 rounded-2xl border border-[#ede3d8]">
-                            <span class="text-[10px] font-bold text-[#6E665E] block uppercase">Fächer & Kurse</span>
-                            <span class="text-lg font-black text-[#1f1b16] font-epilogue">11 Fächer</span>
+                        <div>
+                            <div class="text-[11px] font-bold text-[#6e665e]">Notensysteme</div>
+                            <div class="text-xl font-black text-[#1f1b16] font-epilogue tabular-nums mt-0.5">0–15 &amp; 1–6</div>
                         </div>
-                        <div class="bg-[#f4ece4] p-3 rounded-2xl border border-[#ede3d8]">
-                            <span class="text-[10px] font-bold text-[#6E665E] block uppercase">Cloud Sync</span>
-                            <span class="text-lg font-black text-[#2d694c] font-epilogue">100% Echtzeit</span>
+                        <div>
+                            <div class="text-[11px] font-bold text-[#6e665e]">Cloud-Sync</div>
+                            <div class="text-xl font-black text-[#2d694c] font-epilogue mt-0.5">Echtzeit</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column Straight Smartphone Frame Screenshot -->
+                <!-- Right Straight Mobile Frame -->
                 <div class="md:col-span-5 flex justify-center">
-                    <div class="phone-wrapper">
-                        <div class="phone-frame bg-[#faf7f2]">
-                            <div class="phone-notch"></div>
-                            <img src="/assets/screenshot_dashboard_mobile.png" alt="schooly mobile dashboard screenshot" class="screenshot-img pt-3" />
+                    <div class="phone-frame">
+                        <div class="phone-island"></div>
+                        <div class="phone-screen">
+                            <img src="/assets/screenshot_dashboard_mobile.png" alt="schooly Mobile Dashboard" class="screenshot-img" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-4 border-t border-[#ede3d8] flex flex-wrap items-center justify-between gap-4 text-xs font-extrabold text-[#6E665E] text-left">
-                <span>schooly · Die neue Generation digitaler Schulorganisation</span>
-                <span>Auf allen Geräten ohne App-Store Zwang sofort einsatzbereit</span>
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>schooly · Digitale Schulorganisation ohne App-Store-Hürde</span>
+                <span class="tabular-nums">Folie 01</span>
             </div>
         </section>
 
-        <!-- SLIDE 2: DAS PROBLEM & DIE VISION -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Problem & Lösung</span>
-                    <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-5">
-                        Schul-Chaos adé: Warum Schüler schooly lieben
+        <!-- SLIDE 2: PROBLEM & LÖSUNG -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">02 · Problem &amp; Lösung</span>
+                <span>Warum bestehende Tools nicht reichen</span>
+            </div>
+
+            <div class="my-auto py-3 space-y-6 text-left">
+                <div>
+                    <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue tracking-tight" style="text-wrap: balance;">
+                        Schul-Chaos adé: Fünf Tools werden zu einer App
                     </h2>
+                    <p class="text-sm text-[#6e665e] font-medium mt-1.5 max-w-2xl">
+                        Schüler nutzen heute oft getrennte Apps für Noten, Hausaufgaben, Kalender und Abiturpunkte — ohne gemeinsame Datenbasis.
+                    </p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 text-left">
-                    <!-- Das Problem -->
-                    <div class="bg-rose-50/70 border border-rose-200 rounded-3xl p-6 space-y-4 shadow-2xs">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-rose-500/15 text-rose-700 flex items-center justify-center font-black shrink-0">
-                                <i data-lucide="x-circle" class="w-5 h-5"></i>
-                            </div>
-                            <h3 class="text-lg font-black text-rose-950 font-epilogue">Das Problem bisher</h3>
+                <!-- Clean Two-Column Hairline Comparison (No nested card boxes) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+                    <div class="bg-[#fdf8f6] border border-[#eed8d3] rounded-3xl p-6 space-y-4">
+                        <div class="flex items-center gap-2.5 pb-3 border-b border-[#eed8d3]">
+                            <i data-lucide="x-circle" class="w-5 h-5 text-rose-700 shrink-0"></i>
+                            <h3 class="text-lg font-black text-rose-950 font-epilogue">Bisheriger Alltag</h3>
                         </div>
-
-                        <div class="space-y-3">
-                            <div class="flex items-start gap-3 bg-white/80 p-3.5 rounded-2xl border border-rose-200/80 shadow-2xs">
-                                <span class="text-rose-600 font-black text-sm shrink-0">❌</span>
-                                <div>
-                                    <span class="font-black text-rose-950 block text-xs sm:text-sm">Verstreute Apps</span>
-                                    <span class="text-xs text-rose-900/80 font-medium">Eine App für Noten, eine fürs Hausaufgabenheft, eine für den Stundenplan.</span>
-                                </div>
+                        <div class="space-y-4 text-sm">
+                            <div class="pb-3 border-b border-[#f2e2de]">
+                                <div class="font-extrabold text-[#1f1b16]">Verstreute Einzel-Apps</div>
+                                <p class="text-xs text-[#6e665e] mt-0.5 leading-relaxed">Eine App für Noten, eine für Hausaufgaben, eine für den Stundenplan — nichts greift ineinander.</p>
                             </div>
-                            <div class="flex items-start gap-3 bg-white/80 p-3.5 rounded-2xl border border-rose-200/80 shadow-2xs">
-                                <span class="text-rose-600 font-black text-sm shrink-0">❌</span>
-                                <div>
-                                    <span class="font-black text-rose-950 block text-xs sm:text-sm">Keine Transparenz</span>
-                                    <span class="text-xs text-rose-900/80 font-medium">Rechnet eine Wunschnote nicht automatisch im Gesamtkontext hoch.</span>
-                                </div>
+                            <div class="pb-3 border-b border-[#f2e2de]">
+                                <div class="font-extrabold text-[#1f1b16]">Fehlende Transparenz</div>
+                                <p class="text-xs text-[#6e665e] mt-0.5 leading-relaxed">Unklar, wie stark eine einzelne Klausur oder Wunschnote den Halbjahresschnitt beeinflusst.</p>
                             </div>
-                            <div class="flex items-start gap-3 bg-white/80 p-3.5 rounded-2xl border border-rose-200/80 shadow-2xs">
-                                <span class="text-rose-600 font-black text-sm shrink-0">❌</span>
-                                <div>
-                                    <span class="font-black text-rose-950 block text-xs sm:text-sm">Veraltete Oberstufen-Rechner</span>
-                                    <span class="text-xs text-rose-900/80 font-medium">Komplizierte Regeln (KHE, LK-Doppelwertung) verunsichern Schüler.</span>
-                                </div>
+                            <div>
+                                <div class="font-extrabold text-[#1f1b16]">Intransparente Oberstufen-Regeln</div>
+                                <p class="text-xs text-[#6e665e] mt-0.5 leading-relaxed">Kurseinbringung, Streichungen, KHE-Skalierung und LK-Doppelwertung führen zu Unsicherheit.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Die Vision -->
-                    <div class="bg-[#f2f8f4] border border-[#cfe2d7] rounded-3xl p-6 space-y-4 shadow-2xs">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-[#2d694c]/15 text-[#2d694c] flex items-center justify-center font-black shrink-0">
-                                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                            </div>
-                            <h3 class="text-lg font-black text-[#1f1b16] font-epilogue">Die schooly-Vision</h3>
+                    <div class="bg-[#f4f9f6] border border-[#cfe2d7] rounded-3xl p-6 space-y-4">
+                        <div class="flex items-center gap-2.5 pb-3 border-b border-[#cfe2d7]">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-[#2d694c] shrink-0"></i>
+                            <h3 class="text-lg font-black text-[#1f1b16] font-epilogue">Mit schooly</h3>
                         </div>
-
-                        <div class="space-y-3">
-                            <div class="flex items-start gap-3 bg-white/90 p-3.5 rounded-2xl border border-[#cfe2d7]/80 shadow-2xs">
-                                <span class="text-[#2d694c] font-black text-sm shrink-0">✓</span>
-                                <div>
-                                    <span class="font-black text-[#1f1b16] block text-xs sm:text-sm">Eine einzige App</span>
-                                    <span class="text-xs text-[#2d694c] font-medium">Alles an einem Ort – immer synchronisiert auf Handy & Laptop.</span>
-                                </div>
+                        <div class="space-y-4 text-sm">
+                            <div class="pb-3 border-b border-[#dcebe2]">
+                                <div class="font-extrabold text-[#1f1b16]">Ein durchgängiges System</div>
+                                <p class="text-xs text-[#2d694c] font-medium mt-0.5 leading-relaxed">Noten, Aufgaben, Kalender und Stundenplan synchronisieren sich automatisch auf Handy und Laptop.</p>
                             </div>
-                            <div class="flex items-start gap-3 bg-white/90 p-3.5 rounded-2xl border border-[#cfe2d7]/80 shadow-2xs">
-                                <span class="text-[#2d694c] font-black text-sm shrink-0">✓</span>
-                                <div>
-                                    <span class="font-black text-[#1f1b16] block text-xs sm:text-sm">Echtzeit-Analyse</span>
-                                    <span class="text-xs text-[#2d694c] font-medium">Sieh sofort, wie jede Note deinen Gesamtschnitt in Echtzeit verändert.</span>
-                                </div>
+                            <div class="pb-3 border-b border-[#dcebe2]">
+                                <div class="font-extrabold text-[#1f1b16]">Echtzeit-Schnitt &amp; Wunschnote</div>
+                                <p class="text-xs text-[#2d694c] font-medium mt-0.5 leading-relaxed">Jede eingetragene Note aktualisiert sofort Halbjahresschnitt, Kurve und Zielprognose.</p>
                             </div>
-                            <div class="flex items-start gap-3 bg-white/90 p-3.5 rounded-2xl border border-[#cfe2d7]/80 shadow-2xs">
-                                <span class="text-[#2d694c] font-black text-sm shrink-0">✓</span>
-                                <div>
-                                    <span class="font-black text-[#1f1b16] block text-xs sm:text-sm">Intelligenter Schulplaner</span>
-                                    <span class="text-xs text-[#2d694c] font-medium">Automatische Kalender-Verknüpfung & Notenprognosen.</span>
-                                </div>
+                            <div>
+                                <div class="font-extrabold text-[#1f1b16]">Geprüfte Abitur-Logik</div>
+                                <p class="text-xs text-[#2d694c] font-medium mt-0.5 leading-relaxed">Automatische Block-I-Optimierung und KO-Kriterien-Prüfung auf Knopfdruck.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-4 bg-[#f4ece4] border border-[#ede3d8] rounded-2xl text-xs font-black text-[#6E665E] flex items-center justify-between text-left">
-                <span>💡 <strong>Ergebnis:</strong> Mehr Übersicht, weniger Schulstress und spürbar bessere Noten.</span>
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Mehr Klarheit im Schulalltag, weniger Organisationsaufwand</span>
+                <span class="tabular-nums">Folie 02</span>
             </div>
         </section>
 
-        <!-- SLIDE 3: SCREENSHOT 1 – DASHBOARD (ECHTE POPULATED APP UI) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="flex items-center justify-between text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Modul 1 · Dashboard</span>
-                    <span class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-3 py-1 rounded-full">Echter App-Screenshot</span>
-                </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-4 text-left">
-                    Das Dashboard: Dein persönliches Kontrollzentrum
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-3 text-left">
-                    <!-- Real Screenshot Laptop Frame -->
-                    <div class="md:col-span-8">
-                        <div class="laptop-wrapper">
-                            <div class="laptop-frame">
-                                <img src="/assets/screenshot_dashboard.png" alt="schooly dashboard real screenshot" class="screenshot-img" />
-                            </div>
-                            <div class="laptop-base"><div class="laptop-notch"></div></div>
-                        </div>
-                    </div>
-
-                    <!-- Description bullets -->
-                    <div class="md:col-span-4 space-y-3">
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="gauge" class="w-4 h-4 text-[#2d694c]"></i>
-                                Echtzeit-Schnitt
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Aktualisiert sich nach jeder neu eingetragenen Note sofort automatisch.</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="clock" class="w-4 h-4 text-[#2d694c]"></i>
-                                Prüfungscountdown
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Erinnert dich rechtzeitig an anstehende Klausuren & Tests.</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="activity" class="w-4 h-4 text-[#2d694c]"></i>
-                                Workload-Radar
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Zeigt dir die Lernintensität der aktuellen Woche auf einen Blick.</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- SLIDE 3: MODUL 1 – DASHBOARD (LAPTOP UI) -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">03 · Modul Dashboard</span>
+                <span>Laptop-Ansicht mit Liquid-Glass-Seitenleiste &amp; Bento-Raster</span>
             </div>
 
-            <div class="text-xs font-bold text-[#6E665E] text-left">
-                Optimal angepasst für schnelle Orientierung direkt beim Öffnen der App.
-            </div>
-        </section>
-
-        <!-- SLIDE 4: SCREENSHOT 2 – FÄCHER & NOTEN -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="flex items-center justify-between text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Modul 2 · Fächer & Noten</span>
-                    <span class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-3 py-1 rounded-full">Echter Mobile-Screenshot</span>
-                </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-4 text-left">
-                    Präzise Notenberechnung & Wunschnoten-Rechner
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-3 text-left">
-                    <!-- Description bullets Left -->
-                    <div class="md:col-span-6 space-y-3">
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1.5">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="sliders" class="w-4 h-4 text-[#2d694c]"></i>
-                                Individuelle Notengewichtung
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Stelle pro Fach genau ein, wie Klausuren vs. Sonstige Leistungen gewichtet werden (50/50, 60/40, 40/60).</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1.5">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-2">
-                                <i data-lucide="target" class="w-4 h-4 text-[#2d694c]"></i>
-                                Wunschnoten-Kalkulator
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Gib dein Wunschergebnis ein – schooly rechnet dir exakt aus, welche Punkte du in der nächsten Arbeit brauchst.</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1.5">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-2">
-                                <i data-lucide="award" class="w-4 h-4 text-[#2d694c]"></i>
-                                Leistungskurs (LK) Doppelwertung
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Berücksichtigt LK-Boni & doppelte Gewichtung in der Oberstufe automatisch.</p>
-                        </div>
-                    </div>
-
-                    <!-- Real Smartphone Screenshot Preview Right -->
-                    <div class="md:col-span-6 flex justify-center">
-                        <div class="phone-wrapper">
-                            <div class="phone-frame bg-[#faf7f2]">
-                                <div class="phone-notch"></div>
-                                <img src="/assets/screenshot_faecher_mobile.png" alt="schooly faecher real screenshot" class="screenshot-img pt-3" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-xs font-bold text-[#6E665E] text-left">
-                Funktioniert nahtlos im Punkte-System (0–15) und Noten-System (1–6).
-            </div>
-        </section>
-
-        <!-- SLIDE 5: SCREENSHOT 3 – KALENDER & STUNDENPLAN (REAL POPULATED LAPTOP UI) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="flex items-center justify-between text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Modul 3 · Kalender & Stundenplan</span>
-                    <span class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-3 py-1 rounded-full">Echter Kalender-Screenshot</span>
-                </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-4 text-left">
-                    Stundenplan, Hausaufgaben & Google Sync
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-3 text-left">
-                    <!-- Real Screenshot Laptop Frame Left -->
-                    <div class="md:col-span-8">
-                        <div class="laptop-wrapper">
-                            <div class="laptop-frame">
-                                <img src="/assets/screenshot_kalender_laptop.png" alt="schooly kalender real screenshot" class="screenshot-img" />
-                            </div>
-                            <div class="laptop-base"><div class="laptop-notch"></div></div>
-                        </div>
-                    </div>
-
-                    <!-- Feature Highlights Right -->
-                    <div class="md:col-span-4 space-y-3">
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="calendar-range" class="w-4 h-4 text-[#2d694c]"></i>
-                                Monats- & Wochenkalender
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Übersichtliche Ansicht aller Klausuren, Abgabefristen und Ferientermine.</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="check-square" class="w-4 h-4 text-[#2d694c]"></i>
-                                Hausaufgaben-Tracker
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Erledige Aufgaben mit Haken und verfolge den wöchentlichen Fortschritt.</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="refresh-cw" class="w-4 h-4 text-[#2d694c]"></i>
-                                Google Kalender Sync
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Synchronisiert Schultermine automatisch mit deinem persönlichen Google Kalender.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-xs font-bold text-[#6E665E] text-left">
-                Verpasse nie wieder Hausaufgaben oder Abgabetermine dank automatischer Erinnerungen.
-            </div>
-        </section>
-
-        <!-- SLIDE 6: SCREENSHOT 4 – INSIGHTS & DUELL (VERGLEICHSFEATURE ECHT POPULATED) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="flex items-center justify-between text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Modul 4 · Insights & Mitschüler-Vergleich</span>
-                    <span class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-3 py-1 rounded-full">Vergleichsfeature Screenshot</span>
-                </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-4 text-left">
-                    Statistiken & Mitschüler Head-to-Head Duell
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-3 text-left">
-                    <!-- Real Smartphone Screenshot Preview Left (Head-to-Head Duell) -->
-                    <div class="md:col-span-6 flex justify-center">
-                        <div class="phone-wrapper">
-                            <div class="phone-frame bg-[#faf7f2]">
-                                <div class="phone-notch"></div>
-                                <img src="/assets/screenshot_insights_mobile.png" alt="schooly insights real screenshot mit Vergleichsfeature" class="screenshot-img pt-3" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bullet points Right -->
-                    <div class="md:col-span-6 space-y-3">
-                        <div class="bg-gradient-to-br from-[#faf6ef] to-[#f4ece4] p-4 rounded-2xl border border-[#2d694c]/30 space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="swords" class="w-4 h-4 text-[#2d694c]"></i>
-                                Head-to-Head Duelle
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Vergleiche deine Punkte & Notenschnitte direkt mit deinen besten Mitschülern & Freunden.</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="bar-chart-2" class="w-4 h-4 text-[#2d694c]"></i>
-                                Notenpunkte-Balkendiagramm
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Analyse deiner Punkteverteilung über alle Fächer hinweg.</p>
-                        </div>
-                        <div class="bg-[#f4ece4] p-4 rounded-2xl border border-[#ede3d8] space-y-1">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="line-chart" class="w-4 h-4 text-[#2d694c]"></i>
-                                Chronologischer Trend
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Verfolge deinen Notenschnitt-Verlauf mit jedem eingetragenen Testergebnis.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-xs font-bold text-[#6E665E] text-left">
-                Gamifizierte Motivation für bessere Lernergebnisse im Freundeskreis.
-            </div>
-        </section>
-
-        <!-- SLIDE 7: SCREENSHOT 5 – ABI-RECHNER (LAPTOP UI) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="flex items-center justify-between text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Modul 5 · Oberstufen- & ABI-Rechner</span>
-                    <span class="text-xs font-black text-[#2d694c] bg-[#2d694c]/10 px-3 py-1 rounded-full">Echter Laptop-Screenshot</span>
-                </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-4 text-left">
-                    Kurseinbringung, Prüfungssimulation & 5 KO-Kriterien
-                </h2>
-
-                <div class="my-3 text-left">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto py-3 text-left">
+                <div class="md:col-span-8">
                     <div class="laptop-wrapper">
                         <div class="laptop-frame">
-                            <img src="/assets/screenshot_abi_laptop.png" alt="schooly abi real screenshot" class="screenshot-img" />
+                            <div class="laptop-cam"></div>
+                            <div class="laptop-screen">
+                                <img src="/assets/screenshot_dashboard.png" alt="schooly Laptop Dashboard" class="screenshot-img" />
+                            </div>
                         </div>
                         <div class="laptop-base"><div class="laptop-notch"></div></div>
                     </div>
                 </div>
+
+                <div class="md:col-span-4 space-y-5">
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#1f1b16] font-epilogue leading-tight" style="text-wrap: balance;">
+                        Dein persönliches Kontrollzentrum
+                    </h2>
+
+                    <div class="space-y-4 divide-y divide-[#ede3d8]">
+                        <div class="pt-1">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Prominenter Live-Schnitt</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Punkte-Durchschnitt und umgerechnete Note (z. B. 13,10 Pkt. · 1,30) sofort beim Öffnen sichtbar.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">3-Spalten Bento-Übersicht</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Heutiger Stundenplan-Fokus, Klausuren-Countdown und anstehende Aufgaben direkt nebeneinander.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Optimiert für jeden Screen</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Links schwebende Navigationsleiste am Laptop, ergonomische Daumen-Leiste am Smartphone.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="text-xs font-bold text-[#6E665E] text-left">
-                Inklusive gesetzlicher Bestimmungen (SOGYA / §24 KHE Skalierung, Prüfungshürde min. 3 Prüfungen).
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Echter App-Screenshot · Desktop 1440×900</span>
+                <span class="tabular-nums">Folie 03</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: MODUL 2 – FÄCHER & NOTEN (MOBILE UI) -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">04 · Modul Fächer &amp; Noten</span>
+                <span>Mobile-First Fachübersicht &amp; Zielrechner</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto py-3 text-left">
+                <div class="md:col-span-7 space-y-5">
+                    <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue leading-tight" style="text-wrap: balance;">
+                        Präzise Notenberechnung &amp; Wunschnoten-Kalkulator
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                        <div class="p-4 rounded-2xl bg-white border border-[#e5dcd0] shadow-xs">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Flexible Gewichtung</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Klausuren vs. sonstige Leistungen pro Fach exakt anpassbar (50/50, 60/40, 40/60).</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white border border-[#e5dcd0] shadow-xs">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Wunschnoten-Rechner</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Zeigt sofort, welche Punktzahl in der nächsten Prüfung für das Wunschziel nötig ist.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white border border-[#e5dcd0] shadow-xs">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">LK / GK Filter &amp; Bonus</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Ein-Klick-Wechsel zwischen allen Kursen, Leistungskursen und Grundkursen inklusive Doppelwertung.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white border border-[#e5dcd0] shadow-xs">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Halbjahres-Historie</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Nahtloses Umschalten zwischen 11/1, 11/2, 12/1 und 12/2 plus kompaktes `+`-Anlegen.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-5 flex justify-center">
+                    <div class="phone-frame">
+                        <div class="phone-island"></div>
+                        <div class="phone-screen">
+                            <img src="/assets/screenshot_faecher_mobile.png" alt="schooly Mobile Fächerliste" class="screenshot-img" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Echter App-Screenshot · Unterstützt Punkte (0–15) &amp; Noten (1–6)</span>
+                <span class="tabular-nums">Folie 04</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: MODUL 3 – KALENDER & STUNDENPLAN (LAPTOP UI) -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">05 · Modul Planer &amp; Kalender</span>
+                <span>Tagesfokus, Prüfungsdruck &amp; Google Kalender Sync</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto py-3 text-left">
+                <div class="md:col-span-8">
+                    <div class="laptop-wrapper">
+                        <div class="laptop-frame">
+                            <div class="laptop-cam"></div>
+                            <div class="laptop-screen">
+                                <img src="/assets/screenshot_kalender_laptop.png" alt="schooly Laptop Kalender" class="screenshot-img" />
+                            </div>
+                        </div>
+                        <div class="laptop-base"><div class="laptop-notch"></div></div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-4 space-y-5">
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#1f1b16] font-epilogue leading-tight" style="text-wrap: balance;">
+                        Stundenplan, Aufgaben &amp; Kalender in einem
+                    </h2>
+
+                    <div class="space-y-4 divide-y divide-[#ede3d8]">
+                        <div class="pt-1">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Monat, Woche &amp; Stundenplan</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Alle Klausuren, Tests und Hausaufgaben direkt im Zusammenhang mit den Fächern des Tages.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Wochen-Arbeitslast</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Visueller Prüfungsdruck-Indikator erkennt intensive Lernwochen frühzeitig.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Google Kalender Integration</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Importiert persönliche Kalender direkt in den Schulplaner und erinnert automatisch.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Echter App-Screenshot · Mit Schnell-Abhaken &amp; Rückgängig-Toast</span>
+                <span class="tabular-nums">Folie 05</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: MODUL 4 – INSIGHTS, DIAGRAMME & FREUNDES-DUELL (DUAL DEVICE) -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">06 · Modul Insights &amp; Vergleich</span>
+                <span>Drei Untermenüs: Übersicht · Diagramme · Freundes-Duell</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-auto py-3 text-left">
+                <!-- Left Copy -->
+                <div class="md:col-span-4 space-y-4">
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#1f1b16] font-epilogue leading-tight" style="text-wrap: balance;">
+                        Noten-Trends &amp; Freundes-Duell
+                    </h2>
+                    <div class="space-y-3 divide-y divide-[#ede3d8]">
+                        <div class="pt-1">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Diagramme &amp; Verlauf</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Punkteverteilung und chronologische Schnittentwicklung klar gegliedert.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Head-to-Head Duell</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Direkter Fach-für-Fach-Vergleich mit verbundenen Freunden inklusive Vorsprungs-Anzeige.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Übersicht &amp; Ranking</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Beste/schwächste Note, Klausur-vs.-Sonstiges-Ratio und Fächer-Ranking.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Dual Device Showcase (Laptop Charts + Phone Duell) -->
+                <div class="md:col-span-8 flex items-center justify-end relative pr-1 sm:pr-6">
+                    <div class="w-[78%] sm:w-[84%] mr-auto">
+                        <div class="laptop-frame">
+                            <div class="laptop-cam"></div>
+                            <div class="laptop-screen">
+                                <img src="/assets/screenshot_insights_charts_laptop.png" alt="schooly Insights Diagramme Laptop" class="screenshot-img" />
+                            </div>
+                        </div>
+                        <div class="laptop-base"><div class="laptop-notch"></div></div>
+                    </div>
+                    <div class="phone-frame phone-frame-compact shrink-0 -ml-20 sm:-ml-24 z-10 translate-y-2 sm:translate-y-3">
+                        <div class="phone-island"></div>
+                        <div class="phone-screen">
+                            <img src="/assets/screenshot_insights_mobile.png" alt="schooly Head-to-Head Vergleich Mobile" class="screenshot-img" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Echte App-Screenshots · Gamifizierte Lernmotivation auf Laptop &amp; Handy</span>
+                <span class="tabular-nums">Folie 06</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: MODUL 5 – ABI-RECHNER (LAPTOP UI) -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">07 · Modul Oberstufen- &amp; ABI-Rechner</span>
+                <span>SOGYA-konforme Abitursimulation in Echtzeit</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto py-3 text-left">
+                <div class="md:col-span-8">
+                    <div class="laptop-wrapper">
+                        <div class="laptop-frame">
+                            <div class="laptop-cam"></div>
+                            <div class="laptop-screen">
+                                <img src="/assets/screenshot_abi_laptop.png" alt="schooly ABI-Rechner Laptop" class="screenshot-img" />
+                            </div>
+                        </div>
+                        <div class="laptop-base"><div class="laptop-notch"></div></div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-4 space-y-5">
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#1f1b16] font-epilogue leading-tight" style="text-wrap: balance;">
+                        Kurseinbringung &amp; 5 KO-Kriterien
+                    </h2>
+
+                    <div class="space-y-4 divide-y divide-[#ede3d8]">
+                        <div class="pt-1">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Block I &amp; Block II live</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Optimiert automatisch 40 Kurse (inkl. LK-Doppelwertung &amp; KHE-Skalierung) plus P1–P5 Prüfungen.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Unterkurs- &amp; Pflichtcheck</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Überwacht maximal erlaubte Unterkurse, Aufgabenfelder sowie Ersatzfächer automatisch.</p>
+                        </div>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Was-wäre-wenn-Simulation</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Halbjahres- und Prüfungsnoten vorab simulieren und Abiturnote sofort ablesen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Echter App-Screenshot · Gesetzliche Abiturregeln verständlich abgebildet</span>
+                <span class="tabular-nums">Folie 07</span>
             </div>
         </section>
 
         <!-- SLIDE 8: FUTURE FEATURE – DIGITALER HEFTER (SMART NOTEBOOK) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#faf7f2] via-[#ffffff] to-[#f4efe6]">
-            <div class="absolute -right-16 -bottom-16 w-72 h-72 bg-[#fed8b1]/50 rounded-full blur-3xl pointer-events-none"></div>
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#825500] font-extrabold">08 · Produkt-Roadmap · Nächstes Upgrade</span>
+                <span>Smart Notebook direkt im Schulsystem</span>
+            </div>
 
-            <div>
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#825500]/15 text-[#825500] text-xs font-black mb-2 text-left">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>In Entwicklung / Nächstes Major Upgrade</span>
-                </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue tracking-tight text-left">
-                    Future Feature: Der Digitale Hefter <span class="text-[#2d694c]">(Smart Notebook)</span>
-                </h2>
-                <p class="text-xs sm:text-sm text-[#6E665E] font-semibold mt-1 text-left">
-                    GoodNotes & Notability direkt in schooly integriert – verknüpft mit Stundenplan & Fächern!
-                </p>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center my-auto py-3 text-left">
+                <!-- Realistic Tablet Paper Mockup -->
+                <div class="md:col-span-7">
+                    <div class="bg-[#24201b] p-3 rounded-[1.75rem] shadow-2xl">
+                        <div class="paper-grid rounded-[1.25rem] overflow-hidden border border-[#d8cfc2]">
+                            <!-- Realistic Minimal Tablet Note Toolbar -->
+                            <div class="bg-[#f4ece4] border-b border-[#e5dcd0] px-4 py-2.5 flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-xs font-extrabold text-[#1f1b16]">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-[#4f46e5]"></span>
+                                    <span>Physik LK · Induktionsgesetz</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-[#6e665e]">
+                                    <span class="w-7 h-7 rounded-lg bg-[#2d694c] text-white flex items-center justify-center"><i data-lucide="pen-tool" class="w-3.5 h-3.5"></i></span>
+                                    <span class="w-7 h-7 rounded-lg bg-white border border-[#e5dcd0] flex items-center justify-center"><i data-lucide="highlighter" class="w-3.5 h-3.5"></i></span>
+                                    <span class="w-7 h-7 rounded-lg bg-white border border-[#e5dcd0] flex items-center justify-center"><i data-lucide="type" class="w-3.5 h-3.5"></i></span>
+                                    <span class="w-7 h-7 rounded-lg bg-white border border-[#e5dcd0] flex items-center justify-center"><i data-lucide="eraser" class="w-3.5 h-3.5"></i></span>
+                                </div>
+                            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-4 text-left">
-                    <!-- Tablet Mockup Preview -->
-                    <div class="md:col-span-7 bg-[#1e1b16] text-white rounded-3xl p-5 shadow-xl space-y-3 border border-[#38332a]">
-                        <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                <span class="text-xs font-bold text-slate-300 ml-2">schooly_hefter_physik.note</span>
-                            </div>
-                            <span class="text-[10px] font-black uppercase bg-[#2d694c] text-white px-2.5 py-0.5 rounded-full">Smart Tablet UI</span>
-                        </div>
+                            <!-- Canvas Area -->
+                            <div class="p-5 space-y-3 min-h-[250px] flex flex-col justify-between">
+                                <div class="space-y-2.5">
+                                    <div class="text-xs font-bold text-[#6e665e]">14. November · 3. Stunde (Stundenplan-verknüpft)</div>
+                                    <div class="text-base font-black text-[#1f1b16] font-epilogue">
+                                        Elektromagnetische Induktion (Faraday)
+                                    </div>
+                                    <div class="flex items-center gap-4 pt-1">
+                                        <div class="font-handwriting text-3xl text-[#2d694c] font-bold leading-none">
+                                            U<sub class="text-lg">ind</sub> = −N · (dΦ / dt)
+                                        </div>
+                                        <!-- Simple clean vector coil diagram -->
+                                        <svg width="96" height="44" viewBox="0 0 96 44" fill="none" class="shrink-0 opacity-85">
+                                            <path d="M8 22 C14 6, 22 6, 28 22 C34 38, 42 38, 48 22 C54 6, 62 6, 68 22 C74 38, 82 38, 88 22" stroke="#4f46e5" stroke-width="2.2" stroke-linecap="round"/>
+                                            <line x1="4" y1="22" x2="92" y2="22" stroke="#2d694c" stroke-width="1.5" stroke-dasharray="4 3"/>
+                                        </svg>
+                                    </div>
+                                    <p class="font-handwriting text-xl text-[#1f1b16]/85 leading-snug">
+                                        → Je schneller sich der magnetische Fluss Φ ändert, desto größer ist die induzierte Spannung.
+                                    </p>
+                                </div>
 
-                        <!-- Canvas Mockup Area -->
-                        <div class="bg-[#faf7f2] text-[#1f1b16] rounded-2xl p-5 min-h-[190px] space-y-3 font-mono relative overflow-hidden">
-                            <div class="flex items-center justify-between border-b border-[#ded5c7] pb-2 text-xs font-bold text-[#6E665E]">
-                                <span>✏️ Stylus Pen: Aktiv (Apple Pencil / S-Pen)</span>
-                                <span>⌨️ Tastatur: Verbunden</span>
+                                <div class="pt-2.5 border-t border-[#e5dcd0] flex items-center justify-between text-[11px] font-bold text-[#2d694c]">
+                                    <span class="flex items-center gap-1.5">
+                                        <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                                        Automatisch verknüpft mit: Physik Klausur (17. Nov)
+                                    </span>
+                                    <span class="text-[#6e665e]">Stylus &amp; Tastatur</span>
+                                </div>
                             </div>
-                            <!-- Typed Text -->
-                            <p class="text-xs font-sans text-[#1f1b16] font-extrabold leading-snug">
-                                <strong class="text-[#2d694c]">Physik LK:</strong> Induktionsgesetz & Magnetisches Feld B(t)
-                            </p>
-                            <!-- Simulated Handwriting Preview -->
-                            <div class="font-handwriting text-2xl text-[#2d694c] font-black leading-tight pt-1">
-                                U_ind = -N * (dPhi / dt)  [Formel & Schwingungs-Skizze]
-                            </div>
-                            <div class="p-2.5 bg-[#ede4dc] rounded-xl text-[11px] font-sans font-bold text-[#2d694c] flex items-center justify-between">
-                                <span>💡 Automatisch der Physik-Klausur am 14. Dez zugewiesen</span>
-                                <i data-lucide="link" class="w-3.5 h-3.5"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bullet Highlights -->
-                    <div class="md:col-span-5 space-y-3">
-                        <div class="bg-white border border-[#ede3d8] p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="pen-tool" class="w-4 h-4 text-[#2d694c]"></i>
-                                Handschriftlich per Stylus
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Schreibe mit Apple Pencil oder Touch-Pen direkt auf deinem Tablet in linierte oder karierte Blätter.</p>
-                        </div>
-                        <div class="bg-white border border-[#ede3d8] p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="keyboard" class="w-4 h-4 text-[#2d694c]"></i>
-                                Tastatur-Tippen am Laptop
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Auf dem Laptop tippst du Mitschriften blitzschnell mit der Tastatur, fügst Bilder & Formeln ein.</p>
-                        </div>
-                        <div class="bg-white border border-[#ede3d8] p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <h4 class="font-black text-xs text-[#1f1b16] flex items-center gap-1.5">
-                                <i data-lucide="folder-check" class="w-4 h-4 text-[#2d694c]"></i>
-                                Auto-Fachzuordnung
-                            </h4>
-                            <p class="text-[11px] text-[#6E665E]">Mitschriften ordnen sich automatisch dem Fach & der Stundenplan-Stunde zu.</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="p-3.5 bg-[#fed8b1]/40 border border-[#fed8b1] rounded-2xl text-xs font-bold text-[#825500] flex items-center justify-between text-left">
-                <span>🚀 Die erste All-In-One Schul-App mit voll integriertem digitalen Notizbuch.</span>
-            </div>
-        </section>
-
-        <!-- SLIDE 9: GESCHÄFTSMODELL & PREISE (MONETARISIERUNG) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="flex items-center justify-between text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Geschäftsmodell & Monetarisierung</span>
-                    <span class="text-xs font-black text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full">Klares Preismodell</span>
-                </div>
-                <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-5 text-left">
-                    Monetarisierungs-Strategie: Kostenlos starten, smart erweitern
-                </h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-4 text-left">
-                    <!-- Pricing Card 1: Basis-Version -->
-                    <div class="bg-white border-2 border-[#ede3d8] p-6 rounded-3xl flex flex-col justify-between space-y-4 shadow-sm relative overflow-hidden">
-                        <div class="space-y-3">
-                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d694c]/10 text-[#2d694c] text-xs font-black">
-                                <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
-                                <span>Wachstumsmotor</span>
-                            </div>
-                            <h3 class="text-xl font-black font-epilogue text-[#1f1b16]">Basis-Version</h3>
-                            <div class="text-3xl font-black text-[#2d694c] font-epilogue">0 € <span class="text-xs font-bold text-[#6E665E]">/ dauerhaft kostenlos</span></div>
-                            <ul class="space-y-2 text-xs font-bold text-[#6E665E]">
-                                <li class="flex items-center gap-2">✓ Notenrechner & Live-Schnitt</li>
-                                <li class="flex items-center gap-2">✓ Stundenplan & Hausaufgaben</li>
-                                <li class="flex items-center gap-2">✓ Kalender & Prüfungserinnerungen</li>
-                            </ul>
-                        </div>
-                        <div class="pt-3 border-t border-[#ede3d8] text-[11px] font-bold text-[#2d694c] bg-[#f2f8f4] p-3 rounded-2xl">
-                            🌱 <strong>Virales Wachstum:</strong> Verbreitet sich organisch von Schüler zu Schüler auf dem Schulhof.
-                        </div>
-                    </div>
-
-                    <!-- Pricing Card 2: Premium-Upgrade -->
-                    <div class="bg-gradient-to-br from-[#faf6ef] to-[#f4ece4] border-2 border-[#2d694c] p-6 rounded-3xl flex flex-col justify-between space-y-4 shadow-md relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-[#2d694c] text-white text-[10px] font-black uppercase px-3 py-1 rounded-bl-xl">Empfohlen</div>
-                        <div class="space-y-3">
-                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fed8b1] text-[#825500] text-xs font-black">
-                                <i data-lucide="crown" class="w-3.5 h-3.5"></i>
-                                <span>Digitaler Hefter</span>
-                            </div>
-                            <h3 class="text-xl font-black font-epilogue text-[#1f1b16]">Premium-Upgrade</h3>
-                            <div class="text-3xl font-black text-[#1f1b16] font-epilogue">29,99 € <span class="text-xs font-bold text-[#6E665E]">einmalig</span></div>
-                            <ul class="space-y-2 text-xs font-bold text-[#1f1b16]">
-                                <li class="flex items-center gap-2">✓ <strong>Digitaler Hefter</strong> (GoodNotes für schooly)</li>
-                                <li class="flex items-center gap-2">✓ Handschrift per Stylus & Keyboard-Tippen</li>
-                                <li class="flex items-center gap-2">✓ Einmal zahlen für die <strong>gesamte Schulzeit</strong></li>
-                            </ul>
-                        </div>
-                        <div class="pt-3 border-t border-[#ded5c7] text-[11px] font-bold text-[#825500] bg-[#fed8b1]/50 p-3 rounded-2xl">
-                            👨‍👩‍👧 <strong>Eltern-Budget:</strong> Hohe Kaufbereitschaft bei Eltern durch günstige Einmalzahlung statt Abo-Falle.
-                        </div>
-                    </div>
-
-                    <!-- Pricing Card 3: Server-Sicherung -->
-                    <div class="bg-white border-2 border-[#ede3d8] p-6 rounded-3xl flex flex-col justify-between space-y-4 shadow-sm relative overflow-hidden">
-                        <div class="space-y-3">
-                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-700 text-xs font-black">
-                                <i data-lucide="cloud" class="w-3.5 h-3.5"></i>
-                                <span>Power-User Cloud</span>
-                            </div>
-                            <h3 class="text-xl font-black font-epilogue text-[#1f1b16]">Server-Sicherung</h3>
-                            <div class="text-3xl font-black text-[#1f1b16] font-epilogue">0,99 € <span class="text-xs font-bold text-[#6E665E]">/ Monat (ab 5 GB)</span></div>
-                            <ul class="space-y-2 text-xs font-bold text-[#6E665E]">
-                                <li class="flex items-center gap-2">✓ Unbegrenzter Cloud-Speicher</li>
-                                <li class="flex items-center gap-2">✓ Automatische PDF & Medien-Backups</li>
-                                <li class="flex items-center gap-2">✓ Für Power-User mit großen Heftern</li>
-                            </ul>
-                        </div>
-                        <div class="pt-3 border-t border-[#ede3d8] text-[11px] font-bold text-blue-800 bg-blue-50 p-3 rounded-2xl">
-                            🛡️ <strong>Infrastruktur:</strong> Deckt alle laufenden Server- & Speicherkosten nachhaltig und gewinnbringend ab.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-xs font-bold text-[#6E665E] text-left">
-                Faires Geschäftsmodell: Viral durch Kostenlos-Basis, rentabel durch Premium & Cloud.
-            </div>
-        </section>
-
-        <!-- SLIDE 10: PLATTFORM & TECHNOLOGY (PWA WEB APP) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative">
-            <div>
-                <div class="text-left">
-                    <span class="text-xs font-black uppercase tracking-widest text-[#2d694c]">Technologie & Verfügbarkeit</span>
-                    <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue mt-1 mb-5">
-                        Eine Web-App für alle Geräte. Keine Grenzen.
+                <!-- Right Feature Narrative -->
+                <div class="md:col-span-5 space-y-5">
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#1f1b16] font-epilogue leading-tight" style="text-wrap: balance;">
+                        Der Digitale Hefter direkt in <span class="text-[#2d694c]">schooly</span>
                     </h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-4 text-left">
-                    <!-- Device 1 -->
-                    <div class="bg-[#faf7f2] border border-[#ede3d8] p-6 rounded-3xl text-center space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center mx-auto">
-                            <i data-lucide="smartphone" class="w-6 h-6"></i>
+                    <div class="space-y-4 divide-y divide-[#ede3d8]">
+                        <div class="pt-1">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Handschrift &amp; Tastatur vereint</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Auf dem iPad/Tablet flüssig per Stylus schreiben und am Laptop direkt per Tastatur weiterarbeiten.</p>
                         </div>
-                        <h3 class="font-black text-lg text-[#1f1b16] font-epilogue">Smartphone</h3>
-                        <p class="text-xs text-[#6E665E]">Unterwegs Noten eintragen, Hausaufgaben checken & Push-Erinnerungen erhalten.</p>
-                    </div>
-
-                    <!-- Device 2 -->
-                    <div class="bg-[#faf7f2] border border-[#ede3d8] p-6 rounded-3xl text-center space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center mx-auto">
-                            <i data-lucide="tablet" class="w-6 h-6"></i>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Automatische Fach-Sortierung</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Neue Notizen ordnen sich anhand des Stundenplans automatisch dem richtigen Fach und der nächsten Klausur zu.</p>
                         </div>
-                        <h3 class="font-black text-lg text-[#1f1b16] font-epilogue">Tablet & iPad</h3>
-                        <p class="text-xs text-[#6E665E]">Perfekt für den Unterricht: Stundenplan, Abiturechner & den digitalen Hefter.</p>
-                    </div>
-
-                    <!-- Device 3 -->
-                    <div class="bg-[#faf7f2] border border-[#ede3d8] p-6 rounded-3xl text-center space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center mx-auto">
-                            <i data-lucide="laptop" class="w-6 h-6"></i>
+                        <div class="pt-3">
+                            <h4 class="font-extrabold text-sm text-[#1f1b16]">Kein Medienbruch mehr</h4>
+                            <p class="text-xs text-[#6e665e] mt-1 leading-relaxed">Ersetzt GoodNotes &amp; Notability für den Schulalltag direkt dort, wo auch Noten und Termine liegen.</p>
                         </div>
-                        <h3 class="font-black text-lg text-[#1f1b16] font-epilogue">Laptop & PC</h3>
-                        <p class="text-xs text-[#6E665E]">Maximale Übersicht: Tastatur-Eingaben, Wochen-Recaps & detaillierte PDF-Exporte.</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="bg-[#f2f8f4] border border-[#cfe2d7] p-5 rounded-3xl space-y-2 text-left">
-                    <h4 class="font-black text-sm text-[#2d694c] flex items-center gap-2">
-                        <i data-lucide="globe" class="w-4 h-4"></i>
-                        Warum eine Progressive Web App (PWA)?
-                    </h4>
-                    <p class="text-xs text-[#1f1b16] font-medium leading-relaxed">
-                        Keine Installation aus dem App-Store nötig! Schüler öffnen einfach den Link in Safari, Chrome oder Firefox und fügen schooly direkt zum Startbildschirm hinzu. Lädt blitzschnell, funktioniert offline und synchronisiert sich nahtlos über die Cloud.
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Erste All-In-One Schulplattform mit nativ verknüpftem Notizhefter</span>
+                <span class="tabular-nums">Folie 08</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: GESCHÄFTSMODELL & PREISE -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">09 · Geschäftsmodell &amp; Monetarisierung</span>
+                <span>Kostenlos verbreiten, durch Einmalkauf &amp; Cloud skalieren</span>
+            </div>
+
+            <div class="my-auto py-3 space-y-6 text-left">
+                <div>
+                    <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue tracking-tight" style="text-wrap: balance;">
+                        Kostenlos starten, fair erweitern
+                    </h2>
+                    <p class="text-sm text-[#6e665e] font-medium mt-1">
+                        Klares Freemium-Modell ohne Abo-Hürde für die Kernfunktionen — ideal für virales Schulhof-Wachstum.
                     </p>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Tier 1 -->
+                    <div class="bg-white border border-[#e5dcd0] p-6 rounded-3xl flex flex-col justify-between space-y-5 shadow-xs">
+                        <div class="space-y-3">
+                            <div class="text-xs font-extrabold text-[#2d694c]">Wachstumsmotor</div>
+                            <h3 class="text-xl font-black font-epilogue text-[#1f1b16]">Basis-Version</h3>
+                            <div class="text-3xl font-black text-[#2d694c] font-epilogue tabular-nums">
+                                0 € <span class="text-xs font-bold text-[#6e665e]">dauerhaft</span>
+                            </div>
+                            <ul class="space-y-2 text-xs font-semibold text-[#6e665e] pt-2 border-t border-[#e5dcd0]">
+                                <li>· Notenrechner &amp; Live-Schnitt</li>
+                                <li>· Stundenplan &amp; Aufgabenplaner</li>
+                                <li>· Kalender, Insights &amp; ABI-Rechner</li>
+                            </ul>
+                        </div>
+                        <p class="text-xs font-semibold text-[#1f1b16] pt-3 border-t border-[#e5dcd0]">
+                            Organische Verbreitung über Freundes-Vergleich und geteilte Termine.
+                        </p>
+                    </div>
+
+                    <!-- Tier 2 (Primary Highlight) -->
+                    <div class="bg-[#2d694c] text-white p-6 rounded-3xl flex flex-col justify-between space-y-5 shadow-xl relative">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-xs font-extrabold text-[#fed8b1]">
+                                <span>Digitaler Hefter</span>
+                                <span>Hauptprodukt</span>
+                            </div>
+                            <h3 class="text-xl font-black font-epilogue text-white">Premium-Upgrade</h3>
+                            <div class="text-3xl font-black text-white font-epilogue tabular-nums">
+                                29,99 € <span class="text-xs font-bold text-white/75">einmalig</span>
+                            </div>
+                            <ul class="space-y-2 text-xs font-semibold text-white/90 pt-2 border-t border-white/15">
+                                <li>· Vollständiger Digitaler Hefter</li>
+                                <li>· Handschrift (Stylus) &amp; Tastatur</li>
+                                <li>· Einmalzahlung für die gesamte Schulzeit</li>
+                            </ul>
+                        </div>
+                        <p class="text-xs font-semibold text-[#fed8b1] pt-3 border-t border-white/15">
+                            Hohe Kaufbereitschaft bei Eltern durch faire Einmalzahlung statt monatlicher Abo-Falle.
+                        </p>
+                    </div>
+
+                    <!-- Tier 3 -->
+                    <div class="bg-white border border-[#e5dcd0] p-6 rounded-3xl flex flex-col justify-between space-y-5 shadow-xs">
+                        <div class="space-y-3">
+                            <div class="text-xs font-extrabold text-[#6e665e]">Power-User Cloud</div>
+                            <h3 class="text-xl font-black font-epilogue text-[#1f1b16]">Cloud-Backup</h3>
+                            <div class="text-3xl font-black text-[#1f1b16] font-epilogue tabular-nums">
+                                0,99 € <span class="text-xs font-bold text-[#6e665e]">/ Monat ab 5 GB</span>
+                            </div>
+                            <ul class="space-y-2 text-xs font-semibold text-[#6e665e] pt-2 border-t border-[#e5dcd0]">
+                                <li>· Erweiterter Speicherplatz für Medien</li>
+                                <li>· Automatische PDF- &amp; Hefter-Backups</li>
+                                <li>· Gerätesynchronisation ohne Limit</li>
+                            </ul>
+                        </div>
+                        <p class="text-xs font-semibold text-[#1f1b16] pt-3 border-t border-[#e5dcd0]">
+                            Wiederkehrender Umsatz deckt Speicher- und Serverkosten nachhaltig ab.
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <div class="text-xs font-bold text-[#6E665E] flex items-center gap-2 text-left">
-                <i data-lucide="shield-check" class="w-4 h-4 text-[#2d694c]"></i>
-                <span>Datenschutzkonform & verschlüsselte Cloud-Synchronisation für alle Nutzer.</span>
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Klare Unit Economics: Kostenlose Akquise, profitables Upgrade</span>
+                <span class="tabular-nums">Folie 09</span>
             </div>
         </section>
 
-        <!-- SLIDE 11: SUMMARY & CALL TO ACTION (WARM CREAM DESIGN) -->
-        <section class="slide-page slide-card p-6 sm:p-12 flex flex-col justify-between relative bg-[#faf7f2]">
-            <div class="flex items-center justify-between">
-                <img src="/assets/schooly_logo_transparent.png" alt="schooly logo" class="h-12 w-auto object-contain" />
-                <span class="text-xs font-black uppercase tracking-widest text-[#2d694c] bg-[#2d694c]/10 px-3.5 py-1 rounded-full">Fazit & Ausblick</span>
+        <!-- SLIDE 10: TECHNOLOGIE & PLATTFORM -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#f0e8dc] pb-3">
+                <span class="text-[#2d694c] font-extrabold">10 · Technologie &amp; Plattform</span>
+                <span>Progressive Web App (PWA) · Sofort einsatzbereit</span>
             </div>
 
-            <div class="my-auto py-6 space-y-5 max-w-3xl text-left">
-                <h2 class="text-3xl sm:text-5xl font-black text-[#1f1b16] font-epilogue leading-tight">
-                    Bereit für das beste Schuljahr deines Lebens?
+            <div class="my-auto py-3 space-y-7 text-left">
+                <div>
+                    <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-epilogue tracking-tight" style="text-wrap: balance;">
+                        Eine Plattform für alle Geräte. Ohne Umwege.
+                    </h2>
+                    <p class="text-sm text-[#6e665e] font-medium mt-1.5 max-w-2xl">
+                        Statt getrennter Codebases für iOS, Android, Windows und macOS läuft schooly als moderne PWA direkt im Browser und lässt sich wie eine native App installieren.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-3xl bg-white border border-[#e5dcd0] shadow-xs space-y-2.5">
+                        <div class="w-10 h-10 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center">
+                            <i data-lucide="smartphone" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-black text-lg text-[#1f1b16] font-epilogue">Smartphone</h3>
+                        <p class="text-xs text-[#6e665e] leading-relaxed">Unterwegs direkt nach der Stunde Noten eintragen, Aufgaben abhaken und Erinnerungen erhalten.</p>
+                    </div>
+
+                    <div class="p-6 rounded-3xl bg-white border border-[#e5dcd0] shadow-xs space-y-2.5">
+                        <div class="w-10 h-10 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center">
+                            <i data-lucide="tablet" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-black text-lg text-[#1f1b16] font-epilogue">Tablet &amp; iPad</h3>
+                        <p class="text-xs text-[#6e665e] leading-relaxed">Optimale Arbeitsfläche für den Unterricht: Stundenplan, Abitur-Simulation und bald der Digitale Hefter.</p>
+                    </div>
+
+                    <div class="p-6 rounded-3xl bg-white border border-[#e5dcd0] shadow-xs space-y-2.5">
+                        <div class="w-10 h-10 rounded-2xl bg-[#2d694c]/10 text-[#2d694c] flex items-center justify-center">
+                            <i data-lucide="laptop" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-black text-lg text-[#1f1b16] font-epilogue">Laptop &amp; PC</h3>
+                        <p class="text-xs text-[#6e665e] leading-relaxed">Dediziertes Desktop-Layout mit seitlicher Liquid-Glass-Leiste, Kalender-Split und PDF-Export.</p>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-[#f4f9f6] border border-[#cfe2d7] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="space-y-0.5">
+                        <div class="text-sm font-black text-[#1f1b16]">Offline-fähig &amp; Echtzeit-Cloud</div>
+                        <p class="text-xs text-[#2d694c] font-medium">Service-Worker-Caching sorgt für 0 ms Startzeit im Schulgebäude — Synchronisation automatisch bei Netz.</p>
+                    </div>
+                    <span class="text-xs font-extrabold text-[#2d694c] shrink-0">Firebase · Auth · Push</span>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-[#f0e8dc] flex items-center justify-between text-xs font-semibold text-[#6e665e]">
+                <span>Keine App-Store-Provisionen, sofortige Updates für alle Nutzer</span>
+                <span class="tabular-nums">Folie 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: FAZIT & CALL TO ACTION -->
+        <section class="slide-page slide-card p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-[#ffffff] via-[#faf7f2] to-[#f1f6f3]">
+            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e] border-b border-[#e5dcd0] pb-3">
+                <img src="/assets/schooly_logo_transparent.png" alt="schooly" class="h-7 w-auto object-contain" />
+                <span class="text-[#2d694c] font-extrabold">11 · Fazit &amp; Ausblick</span>
+            </div>
+
+            <div class="my-auto py-4 space-y-7 max-w-4xl text-left">
+                <h2 class="text-3xl sm:text-5xl font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                    Bereit für das bestorganisierte Schuljahr?
                 </h2>
-                <p class="text-base sm:text-lg text-[#6E665E] font-semibold leading-relaxed">
-                    <strong class="text-[#2d694c]">schooly</strong> verwandelt Schul-Stress in Übersicht, Motivation und Top-Noten. Mit Notenrechner, Stundenplan, Kalender, Abi-Optimierer und dem kommenden Digitalen Hefter ist schooly die unangefochtene All-In-One Plattform für Schüler in ganz Deutschland.
+                <p class="text-base sm:text-lg text-[#6e665e] font-medium leading-relaxed max-w-3xl">
+                    <strong class="text-[#2d694c]">schooly</strong> macht aus verstreuten Zetteln und fünf Einzel-Apps ein ruhiges, intelligentes System für bessere Noten, klare Termine und entspannte Abiturplanung.
                 </p>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center pt-2">
-                    <div class="bg-white p-4 rounded-2xl border border-[#ede3d8] shadow-2xs">
-                        <span class="block text-2xl font-black text-[#2d694c] font-epilogue">100%</span>
-                        <span class="text-[11px] font-bold text-[#6E665E]">All-In-One</span>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-[#e5dcd0]">
+                    <div class="pt-3">
+                        <span class="block text-3xl font-black text-[#2d694c] font-epilogue tabular-nums">100 %</span>
+                        <span class="text-xs font-bold text-[#6e665e]">All-In-One System</span>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border border-[#ede3d8] shadow-2xs">
-                        <span class="block text-2xl font-black text-[#2d694c] font-epilogue">0 €</span>
-                        <span class="text-[11px] font-bold text-[#6E665E]">Kostenlos</span>
+                    <div class="pt-3">
+                        <span class="block text-3xl font-black text-[#1f1b16] font-epilogue tabular-nums">0 €</span>
+                        <span class="text-xs font-bold text-[#6e665e]">Kostenloser Start</span>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border border-[#ede3d8] shadow-2xs">
-                        <span class="block text-2xl font-black text-[#2d694c] font-epilogue">16</span>
-                        <span class="text-[11px] font-bold text-[#6E665E]">Bundesländer</span>
+                    <div class="pt-3">
+                        <span class="block text-3xl font-black text-[#2d694c] font-epilogue tabular-nums">16</span>
+                        <span class="text-xs font-bold text-[#6e665e]">Bundesländer</span>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border border-[#ede3d8] shadow-2xs">
-                        <span class="block text-2xl font-black text-[#2d694c] font-epilogue">PWA</span>
-                        <span class="text-[11px] font-bold text-[#6E665E]">Cross-Platform</span>
+                    <div class="pt-3">
+                        <span class="block text-3xl font-black text-[#1f1b16] font-epilogue">PWA</span>
+                        <span class="text-xs font-bold text-[#6e665e]">Jedes Endgerät</span>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-4 border-t border-[#ede3d8] flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-[#6E665E] text-left">
-                <div class="flex items-center gap-2">
-                    <img src="/assets/schooly_logo_transparent.png" alt="schooly logo" class="h-6 w-auto object-contain" />
-                    <span>schooly · Die intelligente Schul-App</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="downloadPPTX()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#2d694c] text-white text-xs font-black hover:bg-[#23533c] transition-all shadow-xs cursor-pointer">
-                        <i data-lucide="presentation" class="w-4 h-4"></i>
-                        <span>Als PPTX (.pptx) herunterladen</span>
+            <div class="pt-4 border-t border-[#e5dcd0] flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-[#6e665e]">
+                <span>schooly · Die All-In-One Schul-App</span>
+                <div class="flex items-center gap-2.5 no-print">
+                    <button onclick="downloadPDF(this)" title="Als exaktes 16:9 PDF herunterladen" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-[#1f1b16] border border-[#e5dcd0] text-xs font-bold hover:bg-[#f4ece4] transition-colors cursor-pointer">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                        <span>Als 16:9 PDF</span>
                     </button>
-                    <button onclick="downloadPDF()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white text-[#1f1b16] border border-[#ede3d8] text-xs font-bold hover:bg-[#ede4dc] transition-all cursor-pointer">
-                        <i data-lucide="file-text" class="w-4 h-4 text-[#2d694c]"></i>
-                        <span>PDF</span>
+                    <button onclick="downloadPPTX(this)" title="Als 16:9 Widescreen PowerPoint (.pptx) exportieren" class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#2d694c] text-white text-xs font-extrabold hover:bg-[#23533c] transition-colors shadow-xs cursor-pointer">
+                        <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+                        <span>Als 16:9 PPTX exportieren</span>
                     </button>
                 </div>
             </div>
@@ -816,146 +989,933 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="no-print bg-[#faf7f2] border-t border-[#ede3d8] py-4 text-center text-xs font-bold text-[#6E665E]">
-        schooly Pitch Deck & Presentation · Erstellt im offiziellen schooly-Design
+    <!-- QUIET FOOTER -->
+    <footer class="no-print bg-[#faf7f2] border-t border-[#e5dcd0] py-4 text-center text-xs font-semibold text-[#6e665e]">
+        schooly Pitch Deck · Navigation mit Pfeiltasten oder Taste P für Vollbild-Präsentation
     </footer>
 
     <script>
         lucide.createIcons();
 
         let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-page');
+        let isPresentationMode = false;
+        const slides = Array.from(document.querySelectorAll('.slide-page'));
         const totalSlides = slides.length;
         document.getElementById('totalSlidesNum').textContent = totalSlides;
 
+        // Wrap each 1280x720 slide inside a .slide-slot so desktop, split-screen, and Presentation Mode stay strictly 16:9 without side/height clipping
+        const slideSlots = slides.map((s) => {
+            const slot = document.createElement('div');
+            slot.className = 'slide-slot';
+            if (s.classList.contains('is-active')) slot.classList.add('is-active');
+            s.parentNode.insertBefore(slot, s);
+            slot.appendChild(s);
+            return slot;
+        });
+
+        function fitSlidesToStage() {
+            const container = document.getElementById('presentation-container');
+            const header = document.querySelector('header');
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            if (isPresentationMode) {
+                const headerH = header ? header.offsetHeight : 58;
+                container.style.height = Math.max(240, vh - headerH) + 'px';
+                const availW = Math.max(320, vw - 32);
+                const availH = Math.max(200, vh - headerH - 32);
+                const scale = Math.min(availW / 1280, availH / 720);
+                const boxW = Math.floor(1280 * scale);
+                const boxH = Math.floor(720 * scale);
+
+                slideSlots.forEach((slot, i) => {
+                    const slide = slides[i];
+                    slot.style.width = boxW + 'px';
+                    slot.style.height = boxH + 'px';
+                    slide.style.width = '1280px';
+                    slide.style.height = '720px';
+                    slide.style.minHeight = '720px';
+                    slide.style.maxHeight = '720px';
+                    slide.style.position = 'absolute';
+                    slide.style.top = '0';
+                    slide.style.left = '0';
+                    slide.style.transformOrigin = 'top left';
+                    slide.style.transform = `scale(${scale})`;
+                });
+                return;
+            }
+
+            container.style.height = '';
+
+            if (vw < 768) {
+                slideSlots.forEach((slot, i) => {
+                    const slide = slides[i];
+                    slot.style.width = '';
+                    slot.style.height = '';
+                    slot.style.marginLeft = '';
+                    slot.style.marginRight = '';
+                    slide.style.width = '';
+                    slide.style.height = '';
+                    slide.style.minHeight = '';
+                    slide.style.maxHeight = '';
+                    slide.style.position = '';
+                    slide.style.top = '';
+                    slide.style.left = '';
+                    slide.style.transformOrigin = '';
+                    slide.style.transform = '';
+                });
+                return;
+            }
+
+            // Tablet & Desktop (>= 768px): proportionally scale fixed 1280x720 16:9 stage to fit container width
+            const cs = getComputedStyle(container);
+            const innerW = container.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+            const scale = Math.min(1, innerW / 1280);
+            const boxW = Math.floor(1280 * scale);
+            const boxH = Math.floor(720 * scale);
+
+            slideSlots.forEach((slot, i) => {
+                const slide = slides[i];
+                slot.style.width = boxW + 'px';
+                slot.style.height = boxH + 'px';
+                slot.style.marginLeft = 'auto';
+                slot.style.marginRight = 'auto';
+                slide.style.width = '1280px';
+                slide.style.height = '720px';
+                slide.style.minHeight = '720px';
+                slide.style.maxHeight = '720px';
+                slide.style.position = 'absolute';
+                slide.style.top = '0';
+                slide.style.left = '0';
+                slide.style.transformOrigin = 'top left';
+                slide.style.transform = `scale(${scale})`;
+            });
+        }
+
+        window.addEventListener('resize', fitSlidesToStage);
+
         function updateSlideDisplay() {
             document.getElementById('currentSlideNum').textContent = currentSlide + 1;
+            slides.forEach((s, i) => s.classList.toggle('is-active', i === currentSlide));
+            slideSlots.forEach((slot, i) => slot.classList.toggle('is-active', i === currentSlide));
+            fitSlidesToStage();
         }
 
         function scrollToSlide(index) {
             if (index >= 0 && index < totalSlides) {
                 currentSlide = index;
-                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
                 updateSlideDisplay();
+                if (!isPresentationMode) {
+                    slideSlots[currentSlide].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
         }
 
         function nextSlide() {
-            if (currentSlide < totalSlides - 1) {
-                scrollToSlide(currentSlide + 1);
-            }
+            if (currentSlide < totalSlides - 1) scrollToSlide(currentSlide + 1);
         }
 
         function prevSlide() {
-            if (currentSlide > 0) {
-                scrollToSlide(currentSlide - 1);
+            if (currentSlide > 0) scrollToSlide(currentSlide - 1);
+        }
+
+        function togglePresentationMode() {
+            if (!isPresentationMode && window.innerWidth < 768) {
+                // Keep readable 16:9 scaling even on smaller panes when explicitly triggered
             }
+            isPresentationMode = !isPresentationMode;
+            document.body.classList.toggle('presentation-mode', isPresentationMode);
+            const labelEl = document.getElementById('presentToggleLabel');
+            if (labelEl) labelEl.textContent = isPresentationMode ? 'Alle Folien' : 'Präsentieren';
+            updateSlideDisplay();
         }
 
-        function downloadPDF() {
-            window.print();
+        fitSlidesToStage();
+
+        async function loadImageAsDataUrl(path) {
+            const url = path.startsWith('http') ? path : window.location.origin + path;
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error('Image load failed: ' + path);
+            const blob = await res.blob();
+            return await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
         }
 
-        // Native PowerPoint PPTX File Generation
-        function downloadPPTX() {
-            if (typeof PptxGenJS === 'undefined') {
-                alert('PowerPoint Bibliothek lädt noch, bitte versuche es in einer Sekunde erneut.');
+        function drawRoundedRectPath(ctx, x, y, w, h, r) {
+            const rad = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + rad, y);
+            ctx.arcTo(x + w, y, x + w, y + h, rad);
+            ctx.arcTo(x + w, y + h, x, y + h, rad);
+            ctx.arcTo(x, y + h, x, y, rad);
+            ctx.arcTo(x, y, x + w, y, rad);
+            ctx.closePath();
+        }
+
+        // Creates a full-native-resolution rounded-corner PNG for a screenshot element (punches out overlapping phone bezel if needed)
+        function renderNativeScreenPng(screenEl, cloneRect, overlappingPhoneRects) {
+            const imgEl = screenEl.querySelector('img');
+            if (!imgEl || !imgEl.complete || !imgEl.naturalWidth) return null;
+
+            const sr = screenEl.getBoundingClientRect();
+            const natW = imgEl.naturalWidth;
+            const natH = imgEl.naturalHeight;
+            const radiusPx = parseFloat(getComputedStyle(screenEl).borderTopLeftRadius) || 0;
+            const scaleX = natW / sr.width;
+            const scaleY = natH / sr.height;
+
+            const off = document.createElement('canvas');
+            off.width = natW;
+            off.height = natH;
+            const ctx = off.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            drawRoundedRectPath(ctx, 0, 0, natW, natH, radiusPx * Math.min(scaleX, scaleY));
+            ctx.clip();
+            ctx.drawImage(imgEl, 0, 0, natW, natH);
+
+            if (overlappingPhoneRects && overlappingPhoneRects.length > 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = '#000';
+                for (const p of overlappingPhoneRects) {
+                    const ix = (p.rect.left - sr.left - 1) * scaleX;
+                    const iy = (p.rect.top - sr.top - 1) * scaleY;
+                    const iw = (p.rect.width + 2) * scaleX;
+                    const ih = (p.rect.height + 2) * scaleY;
+                    drawRoundedRectPath(ctx, ix, iy, iw, ih, (p.radius + 1) * Math.min(scaleX, scaleY));
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            const ptPerPxX = 720 / cloneRect.width;
+            const ptPerPxY = 405 / cloneRect.height;
+            return {
+                dataUrl: off.toDataURL('image/png'),
+                x: (sr.left - cloneRect.left) * ptPerPxX,
+                y: (sr.top - cloneRect.top) * ptPerPxY,
+                w: sr.width * ptPerPxX,
+                h: sr.height * ptPerPxY
+            };
+        }
+
+        // Direct 4K Pixel-Accurate 16:9 PDF Export via html2canvas (scale: 3 PNG) + Native-Resolution Screenshot Overlays
+        async function downloadPDF(triggerBtn) {
+            const btn = triggerBtn || document.getElementById('pdfExportBtn');
+            const origHtml = btn ? btn.innerHTML : '';
+            const hasLibs = (typeof html2canvas !== 'undefined') && (window.jspdf && window.jspdf.jsPDF);
+
+            if (!hasLibs) {
+                window.print();
                 return;
             }
 
-            let pptx = new PptxGenJS();
-            pptx.layout = 'LAYOUT_16x9';
-            pptx.title = 'schooly – Official Pitch Deck';
-            pptx.author = 'schooly';
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.75';
+                btn.innerHTML = '<span>Erstelle 4K PDF...</span>';
+            }
 
-            const origin = window.location.origin;
+            let stage = null;
+            try {
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
+                }
 
-            // Slide 1: Cover & Hero
-            let slide1 = pptx.addSlide();
-            slide1.background = { color: 'FAF7F2' };
-            slide1.addText("schooly", { x: 0.8, y: 0.8, fontSize: 36, bold: true, color: '2D694C', fontFace: 'Epilogue' });
-            slide1.addText("Die All-In-One Schul-App für deinen besten Schnitt.", { x: 0.8, y: 1.8, w: 5.5, fontSize: 26, bold: true, color: '1F1B16' });
-            slide1.addText("schooly vereint Notenrechner, Stundenplan, Hausaufgabenheft, Prüfungskalender und Analyse-Tools in einer einzigen Web-App. Keine 5 verschiedenen Apps mehr.", { x: 0.8, y: 3.2, w: 5.5, fontSize: 13, color: '6E665E' });
-            slide1.addText("✓ Deutschlandweit   ✓ Punkte & Noten (1–6)   ✓ Cross-Platform PWA", { x: 0.8, y: 4.6, w: 5.5, fontSize: 11, bold: true, color: '2D694C' });
-            slide1.addImage({ path: origin + '/assets/screenshot_dashboard_mobile.png', x: 6.8, y: 0.8, w: 2.5, h: 5.4 });
+                // Pre-cache all img data URLs once so cloned nodes render reliably across browsers
+                const imgCache = {};
+                for (const img of document.querySelectorAll('.slide-page img')) {
+                    const src = img.getAttribute('src');
+                    if (src && !src.startsWith('data:') && !imgCache[src]) {
+                        imgCache[src] = await loadImageAsDataUrl(src);
+                    }
+                }
 
-            // Slide 2: Problem & Vision
-            let slide2 = pptx.addSlide();
-            slide2.background = { color: 'FAF7F2' };
-            slide2.addText("Problem & Lösung", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide2.addText("Schul-Chaos adé: Warum Schüler schooly lieben", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide2.addText("Das Problem bisher:\n❌ Verstreute Apps für Noten, Stundenplan & Hausaufgaben\n❌ Keine automatische Wunschnoten-Hochrechnung\n❌ Veraltete Oberstufen-Rechner mit verwirrenden Regeln", { x: 0.8, y: 1.8, w: 4.1, h: 4.2, fontSize: 13, color: '991B1B', fill: { color: 'FFF1F2' } });
-            slide2.addText("Die schooly-Vision:\n✓ Eine einzige App für Handy & Laptop\n✓ Echtzeit-Analyse deines Gesamtschnitts\n✓ Intelligenter Schulplaner mit Notenprognosen", { x: 5.2, y: 1.8, w: 4.1, h: 4.2, fontSize: 13, color: '166534', fill: { color: 'F0FDF4' } });
+                // Dedicated offscreen 1280x720 (exact 16:9) capture stage with explicit windowWidth/windowHeight
+                stage = document.createElement('div');
+                stage.style.cssText = 'position:fixed;left:-20000px;top:0;width:1280px;height:720px;overflow:hidden;pointer-events:none;z-index:-1;background:#faf7f2;';
+                document.body.appendChild(stage);
 
-            // Slide 3: Dashboard
-            let slide3 = pptx.addSlide();
-            slide3.background = { color: 'FAF7F2' };
-            slide3.addText("Modul 1 · Dashboard", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide3.addText("Das Dashboard: Dein persönliches Kontrollzentrum", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide3.addImage({ path: origin + '/assets/screenshot_dashboard.png', x: 0.8, y: 1.8, w: 5.8, h: 3.6 });
-            slide3.addText("Echtzeit-Schnitt:\nAktualisiert sich nach jeder Note sofort.\n\nPrüfungscountdown:\nErinnert rechtzeitig an Klausuren.\n\nWorkload-Radar:\nLernintensität der Schulwoche auf einen Blick.", { x: 6.9, y: 1.8, w: 2.5, fontSize: 12, color: '1F1B16' });
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'pt',
+                    format: [720, 405],
+                    compress: true
+                });
+                pdf.setDisplayMode('fullpage', 'single');
 
-            // Slide 4: Fächer & Noten
-            let slide4 = pptx.addSlide();
-            slide4.background = { color: 'FAF7F2' };
-            slide4.addText("Modul 2 · Fächer & Noten", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide4.addText("Präzise Notenberechnung & Wunschnoten-Rechner", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide4.addText("Individuelle Notengewichtung:\nKlausuren vs. Sonstige Leistungen (50/50, 60/40, 40/60).\n\nWunschnoten-Kalkulator:\nSagt dir exakt, welche Punkte du in der nächsten Arbeit brauchst.\n\nLK-Doppelwertung:\nBerücksichtigt LK-Boni automatisch.", { x: 0.8, y: 1.8, w: 5.4, fontSize: 13, color: '1F1B16' });
-            slide4.addImage({ path: origin + '/assets/screenshot_faecher_mobile.png', x: 6.6, y: 1.0, w: 2.5, h: 5.4 });
+                const slideNodes = Array.from(document.querySelectorAll('.slide-page'));
+                for (let i = 0; i < slideNodes.length; i++) {
+                    if (btn) {
+                        btn.innerHTML = `<span>PDF (${i + 1}/${slideNodes.length})...</span>`;
+                    }
 
-            // Slide 5: Kalender & Stundenplan
-            let slide5 = pptx.addSlide();
-            slide5.background = { color: 'FAF7F2' };
-            slide5.addText("Modul 3 · Kalender & Stundenplan", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide5.addText("Stundenplan, Hausaufgaben & Google Sync", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide5.addImage({ path: origin + '/assets/screenshot_kalender_laptop.png', x: 0.8, y: 1.8, w: 5.8, h: 3.6 });
-            slide5.addText("Monats- & Wochenkalender:\nÜbersicht aller Klausuren & Ferientermine.\n\nHausaufgaben-Tracker:\nErledige Aufgaben mit Haken.\n\nGoogle Kalender Sync:\nSynchronisiert Schultermine automatisch.", { x: 6.9, y: 1.8, w: 2.5, fontSize: 12, color: '1F1B16' });
+                    const clone = slideNodes[i].cloneNode(true);
+                    clone.style.position = 'static';
+                    clone.style.top = 'auto';
+                    clone.style.left = 'auto';
+                    clone.style.transform = 'none';
+                    clone.style.width = '1280px';
+                    clone.style.minWidth = '1280px';
+                    clone.style.maxWidth = '1280px';
+                    clone.style.height = '720px';
+                    clone.style.minHeight = '720px';
+                    clone.style.maxHeight = '720px';
+                    clone.style.margin = '0';
+                    clone.style.borderRadius = '0';
+                    clone.style.border = 'none';
+                    clone.style.boxShadow = 'none';
+                    clone.style.display = 'flex';
+                    clone.style.boxSizing = 'border-box';
+                    clone.querySelectorAll('.no-print').forEach(el => el.remove());
 
-            // Slide 6: Insights & Head-to-Head Duell
-            let slide6 = pptx.addSlide();
-            slide6.background = { color: 'FAF7F2' };
-            slide6.addText("Modul 4 · Insights & Mitschüler-Vergleich", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide6.addText("Statistiken & Mitschüler Head-to-Head Duell", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide6.addImage({ path: origin + '/assets/screenshot_insights_mobile.png', x: 0.8, y: 1.0, w: 2.5, h: 5.4 });
-            slide6.addText("Head-to-Head Duelle:\nVergleiche deine Punkte & Notenschnitte direkt mit deinen besten Mitschülern & Freunden.\n\nNotenpunkte-Balkendiagramm:\nAnalyse deiner Punkteverteilung über alle Fächer hinweg.\n\nChronologischer Trend:\nVerfolge deinen Notenschnitt-Verlauf mit jedem Testergebnis.", { x: 3.7, y: 1.8, w: 5.5, fontSize: 13, color: '1F1B16' });
+                    clone.querySelectorAll('img').forEach(img => {
+                        const src = img.getAttribute('src');
+                        if (src && imgCache[src]) {
+                            img.setAttribute('src', imgCache[src]);
+                        }
+                    });
 
-            // Slide 7: ABI-Rechner
-            let slide7 = pptx.addSlide();
-            slide7.background = { color: 'FAF7F2' };
-            slide7.addText("Modul 5 · Oberstufen- & ABI-Rechner", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide7.addText("Kurseinbringung, Prüfungssimulation & 5 KO-Kriterien", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide7.addImage({ path: origin + '/assets/screenshot_abi_laptop.png', x: 0.8, y: 1.8, w: 8.4, h: 4.2 });
+                    stage.innerHTML = '';
+                    stage.appendChild(clone);
 
-            // Slide 8: Future Feature - Digitaler Hefter
-            let slide8 = pptx.addSlide();
-            slide8.background = { color: 'FAF7F2' };
-            slide8.addText("Future Feature · Der Digitale Hefter (Smart Notebook)", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '825500' });
-            slide8.addText("GoodNotes & Notability direkt in schooly integriert!", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide8.addText("Handschriftlich per Stylus:\nSchreibe mit Apple Pencil oder Touch-Pen direkt auf deinem Tablet.\n\nTastatur-Tippen am Laptop:\nTippe Mitschriften blitzschnell mit der Tastatur.\n\nAuto-Fachzuordnung:\nMitschriften ordnen sich automatisch dem Fach & der Stundenplan-Stunde zu.", { x: 0.8, y: 2.0, w: 8.4, fontSize: 14, color: '1F1B16' });
+                    await Promise.all(
+                        Array.from(clone.querySelectorAll('img')).map(im =>
+                            im.decode ? im.decode().catch(() => {}) : Promise.resolve()
+                        )
+                    );
+                    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-            // Slide 9: Geschäftsmodell & Preise
-            let slide9 = pptx.addSlide();
-            slide9.background = { color: 'FAF7F2' };
-            slide9.addText("Geschäftsmodell & Monetarisierung", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide9.addText("Kostenlos starten, smart erweitern", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide9.addText("Basis-Version (0 €):\nVirales Wachstum durch Notenrechner, Stundenplan & Hausaufgaben.\n\nPremium-Upgrade (29,99 € einmalig):\nDigitaler Hefter (Tippen & Handschrift) – einmal zahlen für die gesamte Schulzeit.\n\nServer-Sicherung (0,99 €/Monat ab 5 GB):\nCloud-Speicher-Abo für Power-User zur Deckung aller Infrastrukturkosten.", { x: 0.8, y: 2.0, w: 8.4, fontSize: 13, color: '1F1B16' });
+                    const cloneRect = clone.getBoundingClientRect();
+                    const phoneFrames = Array.from(clone.querySelectorAll('.phone-frame')).map(pf => ({
+                        rect: pf.getBoundingClientRect(),
+                        radius: parseFloat(getComputedStyle(pf).borderTopLeftRadius) || 24
+                    }));
 
-            // Slide 10: Technologie & PWA
-            let slide10 = pptx.addSlide();
-            slide10.background = { color: 'FAF7F2' };
-            slide10.addText("Technologie & Verfügbarkeit", { x: 0.8, y: 0.6, fontSize: 14, bold: true, color: '2D694C' });
-            slide10.addText("Eine Web-App für alle Geräte. Keine Grenzen.", { x: 0.8, y: 1.0, fontSize: 24, bold: true, color: '1F1B16' });
-            slide10.addText("Smartphone · Tablet · Laptop & PC\n\nProgressive Web App (PWA):\nKeine App-Store Hürde. Öffnen in Safari/Chrome, zum Startbildschirm hinzufügen, blitzschnell laden und offline nutzen.", { x: 0.8, y: 2.0, w: 8.4, fontSize: 14, color: '1F1B16' });
+                    const hiResScreens = [];
+                    clone.querySelectorAll('.laptop-screen, .phone-screen').forEach(scr => {
+                        const isLaptop = scr.classList.contains('laptop-screen');
+                        const overlay = renderNativeScreenPng(scr, cloneRect, isLaptop ? phoneFrames : null);
+                        if (overlay) hiResScreens.push(overlay);
+                    });
 
-            // Slide 11: Fazit
-            let slide11 = pptx.addSlide();
-            slide11.background = { color: 'FAF7F2' };
-            slide11.addText("schooly", { x: 0.8, y: 0.8, fontSize: 36, bold: true, color: '2D694C' });
-            slide11.addText("Bereit für das beste Schuljahr deines Lebens?", { x: 0.8, y: 1.8, w: 8.4, fontSize: 28, bold: true, color: '1F1B16' });
-            slide11.addText("schooly verwandelt Schul-Stress in Übersicht, Motivation und Top-Noten.", { x: 0.8, y: 3.2, w: 8.4, fontSize: 16, color: '6E665E' });
+                    const canvas = await html2canvas(clone, {
+                        width: 1280,
+                        height: 720,
+                        windowWidth: 1280,
+                        windowHeight: 720,
+                        x: 0,
+                        y: 0,
+                        scrollX: 0,
+                        scrollY: 0,
+                        scale: 3,
+                        backgroundColor: '#faf7f2',
+                        useCORS: true,
+                        logging: false
+                    });
+                    const slidePng = canvas.toDataURL('image/png');
 
-            pptx.writeFile({ fileName: 'schooly_pitch_deck.pptx' });
+                    if (i > 0) {
+                        pdf.addPage([720, 405], 'landscape');
+                    }
+                    pdf.addImage(slidePng, 'PNG', 0, 0, 720, 405, undefined, 'FAST');
+
+                    for (const scr of hiResScreens) {
+                        pdf.addImage(scr.dataUrl, 'PNG', scr.x, scr.y, scr.w, scr.h, undefined, 'FAST');
+                    }
+                }
+
+                pdf.save('schooly_pitch_deck_16x9.pdf');
+            } catch (err) {
+                console.error('Direkter PDF-Export Fehler, nutze Druckdialog-Fallback:', err);
+                window.print();
+            } finally {
+                if (stage && stage.parentNode) stage.parentNode.removeChild(stage);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.innerHTML = origHtml;
+                }
+            }
+        }
+
+        // Native 16:9 Widescreen PowerPoint PPTX Export (13.333" x 7.5" — matches 1280x720 web slides)
+        async function downloadPPTX(triggerBtn) {
+            if (typeof PptxGenJS === 'undefined') {
+                alert('PowerPoint-Export lädt noch – bitte versuche es gleich erneut.');
+                return;
+            }
+
+            const btn = triggerBtn || document.getElementById('pptxExportBtn');
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.75';
+                btn.innerHTML = '<span>Exportiere 16:9...</span>';
+            }
+
+            try {
+                const assetPaths = [
+                    '/assets/schooly_logo_transparent.png',
+                    '/assets/screenshot_dashboard_mobile.png',
+                    '/assets/screenshot_dashboard.png',
+                    '/assets/screenshot_faecher_mobile.png',
+                    '/assets/screenshot_kalender_laptop.png',
+                    '/assets/screenshot_insights_charts_laptop.png',
+                    '/assets/screenshot_insights_mobile.png',
+                    '/assets/screenshot_abi_laptop.png'
+                ];
+                const loaded = await Promise.all(assetPaths.map(loadImageAsDataUrl));
+                const [
+                    imgLogo,
+                    imgDashMobile,
+                    imgDashLaptop,
+                    imgFaecherMobile,
+                    imgKalenderLaptop,
+                    imgInsightsChartsLaptop,
+                    imgInsightsMobile,
+                    imgAbiLaptop
+                ] = loaded;
+
+                const pptx = new PptxGenJS();
+                pptx.defineLayout({ name: 'SCHOOLY_16_9', width: 13.333, height: 7.5 });
+                pptx.layout = 'SCHOOLY_16_9';
+                pptx.title = 'schooly – Official Pitch Deck';
+                pptx.author = 'schooly';
+
+                const C = {
+                    cream: 'FAF7F2',
+                    warm: 'F4ECE4',
+                    white: 'FFFFFF',
+                    hairline: 'E5DCD0',
+                    subtleLine: 'F0E8DC',
+                    charcoal: '1F1B16',
+                    muted: '6E665E',
+                    sage: '2D694C',
+                    sageTint: 'F4F9F6',
+                    sageBorder: 'CFE2D7',
+                    roseTint: 'FDF8F6',
+                    roseBorder: 'EED8D3',
+                    roseDark: '881337',
+                    amber: '825500',
+                    peach: 'FED8B1',
+                    bezel: '24201B',
+                    laptopBase: '3D3731'
+                };
+
+                function addSlideFrame(kickerLeft, kickerRight, footerLeft, slideNum, kickerColor = C.sage, bgColor = C.cream) {
+                    const s = pptx.addSlide();
+                    s.background = { color: bgColor };
+                    // Top header text & hairline
+                    s.addText(kickerLeft, {
+                        x: 0.72, y: 0.36, w: 5.8, h: 0.28,
+                        fontSize: 10.5, bold: true, color: kickerColor, fontFace: 'Plus Jakarta Sans'
+                    });
+                    s.addText(kickerRight, {
+                        x: 6.6, y: 0.36, w: 6.01, h: 0.28,
+                        fontSize: 10, bold: true, color: C.muted, fontFace: 'Plus Jakarta Sans', align: 'right'
+                    });
+                    s.addShape(pptx.ShapeType.line, {
+                        x: 0.72, y: 0.72, w: 11.89, h: 0,
+                        line: { color: C.subtleLine, width: 1 }
+                    });
+                    // Bottom footer hairline & text
+                    s.addShape(pptx.ShapeType.line, {
+                        x: 0.72, y: 6.84, w: 11.89, h: 0,
+                        line: { color: C.subtleLine, width: 1 }
+                    });
+                    s.addText(footerLeft, {
+                        x: 0.72, y: 6.94, w: 9.8, h: 0.28,
+                        fontSize: 10, bold: true, color: C.muted, fontFace: 'Plus Jakarta Sans'
+                    });
+                    s.addText('Folie ' + String(slideNum).padStart(2, '0'), {
+                        x: 10.8, y: 6.94, w: 1.81, h: 0.28,
+                        fontSize: 10, bold: true, color: C.muted, fontFace: 'Plus Jakarta Sans', align: 'right'
+                    });
+                    return s;
+                }
+
+                function addPhoneBezel(slide, imgData, x, y, width) {
+                    const pad = 0.09;
+                    const screenW = width - pad * 2;
+                    const screenH = screenW / 0.4621;
+                    const totalH = screenH + pad * 2;
+                    slide.addShape(pptx.ShapeType.roundRect, {
+                        x, y, w: width, h: totalH,
+                        fill: { color: C.bezel },
+                        line: { color: C.bezel, width: 0.5 },
+                        rectRadius: 0.14
+                    });
+                    slide.addImage({
+                        data: imgData,
+                        x: x + pad, y: y + pad, w: screenW, h: screenH
+                    });
+                    // Dynamic island
+                    slide.addShape(pptx.ShapeType.roundRect, {
+                        x: x + width / 2 - 0.36, y: y + pad + 0.05, w: 0.72, h: 0.12,
+                        fill: { color: C.bezel }, line: { color: C.bezel, width: 0 }, rectRadius: 0.5
+                    });
+                    return { w: width, h: totalH };
+                }
+
+                function addLaptopBezel(slide, imgData, x, y, width) {
+                    const padX = 0.11;
+                    const padTop = 0.12;
+                    const padBottom = 0.14;
+                    const screenW = width - padX * 2;
+                    const screenH = screenW / 1.6;
+                    const lidH = screenH + padTop + padBottom;
+                    slide.addShape(pptx.ShapeType.roundRect, {
+                        x, y, w: width, h: lidH,
+                        fill: { color: C.bezel },
+                        line: { color: C.bezel, width: 0.5 },
+                        rectRadius: 0.06
+                    });
+                    slide.addImage({
+                        data: imgData,
+                        x: x + padX, y: y + padTop, w: screenW, h: screenH
+                    });
+                    const baseW = width * 1.04;
+                    const baseX = x - width * 0.02;
+                    slide.addShape(pptx.ShapeType.roundRect, {
+                        x: baseX, y: y + lidH - 0.01, w: baseW, h: 0.14,
+                        fill: { color: C.laptopBase },
+                        line: { color: C.laptopBase, width: 0 },
+                        rectRadius: 0.25
+                    });
+                    slide.addShape(pptx.ShapeType.rect, {
+                        x: x + width / 2 - 0.35, y: y + lidH - 0.01, w: 0.7, h: 0.05,
+                        fill: { color: C.charcoal }, line: { color: C.charcoal, width: 0 }
+                    });
+                    return { w: width, h: lidH + 0.13 };
+                }
+
+                function addRightBullets(slide, x, startY, width, items) {
+                    let curY = startY;
+                    items.forEach((item, idx) => {
+                        if (idx > 0) {
+                            slide.addShape(pptx.ShapeType.line, {
+                                x, y: curY - 0.1, w: width, h: 0,
+                                line: { color: C.hairline, width: 0.75 }
+                            });
+                        }
+                        slide.addText(item.title, {
+                            x, y: curY, w: width, h: 0.3,
+                            fontSize: 13.5, bold: true, color: C.charcoal, fontFace: 'Plus Jakarta Sans'
+                        });
+                        slide.addText(item.body, {
+                            x, y: curY + 0.3, w: width, h: 0.68,
+                            fontSize: 11, color: C.muted, fontFace: 'Plus Jakarta Sans', valign: 'top'
+                        });
+                        curY += 1.15;
+                    });
+                }
+
+                // SLIDE 1: COVER & HERO
+                const s1 = addSlideFrame(
+                    '01 · All-In-One Schulplattform',
+                    'Web-App (PWA) · Smartphone, Tablet & Laptop',
+                    'schooly · Digitale Schulorganisation ohne App-Store-Hürde',
+                    1
+                );
+                s1.addImage({ data: imgLogo, x: 0.72, y: 1.25, w: 2.02, h: 0.72 });
+                s1.addText([
+                    { text: 'Die eine Schul-App für deinen ', options: { color: C.charcoal } },
+                    { text: 'besten Schnitt.', options: { color: C.sage } }
+                ], {
+                    x: 0.72, y: 2.15, w: 7.4, h: 1.35,
+                    fontSize: 34, bold: true, fontFace: 'Epilogue', valign: 'top'
+                });
+                s1.addText('schooly bündelt Notenrechner, Stundenplan, Aufgabenplaner, Abitur-Optimierung und Leistungsanalysen in einer nahtlosen Oberfläche für Smartphone und Laptop.', {
+                    x: 0.72, y: 3.6, w: 7.1, h: 0.95,
+                    fontSize: 13.5, color: C.muted, fontFace: 'Plus Jakarta Sans', valign: 'top'
+                });
+                s1.addShape(pptx.ShapeType.line, {
+                    x: 0.72, y: 4.82, w: 6.7, h: 0,
+                    line: { color: C.hairline, width: 1 }
+                });
+                const s1Metrics = [
+                    { label: 'Live-Berechnung', val: '13,10 Pkt.', col: C.sage },
+                    { label: 'Notensysteme', val: '0–15 & 1–6', col: C.charcoal },
+                    { label: 'Cloud-Sync', val: 'Echtzeit', col: C.sage }
+                ];
+                s1Metrics.forEach((m, i) => {
+                    const mx = 0.72 + i * 2.3;
+                    s1.addText(m.label, { x: mx, y: 5.0, w: 2.1, h: 0.25, fontSize: 10, bold: true, color: C.muted, fontFace: 'Plus Jakarta Sans' });
+                    s1.addText(m.val, { x: mx, y: 5.26, w: 2.1, h: 0.42, fontSize: 18, bold: true, color: m.col, fontFace: 'Epilogue' });
+                });
+                addPhoneBezel(s1, imgDashMobile, 9.25, 1.05, 2.52);
+
+                // SLIDE 2: PROBLEM & LÖSUNG
+                const s2 = addSlideFrame(
+                    '02 · Problem & Lösung',
+                    'Warum bestehende Tools nicht reichen',
+                    'Mehr Klarheit im Schulalltag, weniger Organisationsaufwand',
+                    2
+                );
+                s2.addText('Schul-Chaos adé: Fünf Tools werden zu einer App', {
+                    x: 0.72, y: 0.98, w: 11.8, h: 0.55,
+                    fontSize: 27, bold: true, color: C.charcoal, fontFace: 'Epilogue'
+                });
+                s2.addText('Schüler nutzen heute oft getrennte Apps für Noten, Hausaufgaben, Kalender und Abiturpunkte — ohne gemeinsame Datenbasis.', {
+                    x: 0.72, y: 1.56, w: 10.5, h: 0.45,
+                    fontSize: 12.5, color: C.muted, fontFace: 'Plus Jakarta Sans'
+                });
+                // Left Card (Problem)
+                s2.addShape(pptx.ShapeType.roundRect, {
+                    x: 0.72, y: 2.2, w: 5.72, h: 4.3,
+                    fill: { color: C.roseTint }, line: { color: C.roseBorder, width: 1.2 }, rectRadius: 0.08
+                });
+                s2.addText('Bisheriger Alltag', {
+                    x: 1.05, y: 2.42, w: 5.0, h: 0.38,
+                    fontSize: 16.5, bold: true, color: '4C0519', fontFace: 'Epilogue'
+                });
+                s2.addShape(pptx.ShapeType.line, { x: 1.05, y: 2.88, w: 5.05, h: 0, line: { color: C.roseBorder, width: 1 } });
+                addRightBullets(s2, 1.05, 3.05, 5.05, [
+                    { title: 'Verstreute Einzel-Apps', body: 'Eine App für Noten, eine für Hausaufgaben, eine für den Stundenplan — nichts greift ineinander.' },
+                    { title: 'Fehlende Transparenz', body: 'Unklar, wie stark eine einzelne Klausur oder Wunschnote den Halbjahresschnitt beeinflusst.' },
+                    { title: 'Intransparente Oberstufen-Regeln', body: 'Kurseinbringung, Streichungen, KHE-Skalierung und LK-Doppelwertung führen zu Unsicherheit.' }
+                ]);
+                // Right Card (Solution)
+                s2.addShape(pptx.ShapeType.roundRect, {
+                    x: 6.89, y: 2.2, w: 5.72, h: 4.3,
+                    fill: { color: C.sageTint }, line: { color: C.sageBorder, width: 1.2 }, rectRadius: 0.08
+                });
+                s2.addText('Mit schooly', {
+                    x: 7.22, y: 2.42, w: 5.0, h: 0.38,
+                    fontSize: 16.5, bold: true, color: C.charcoal, fontFace: 'Epilogue'
+                });
+                s2.addShape(pptx.ShapeType.line, { x: 7.22, y: 2.88, w: 5.05, h: 0, line: { color: C.sageBorder, width: 1 } });
+                addRightBullets(s2, 7.22, 3.05, 5.05, [
+                    { title: 'Ein durchgängiges System', body: 'Noten, Aufgaben, Kalender und Stundenplan synchronisieren sich automatisch auf Handy und Laptop.' },
+                    { title: 'Echtzeit-Schnitt & Wunschnote', body: 'Jede eingetragene Note aktualisiert sofort Halbjahresschnitt, Kurve und Zielprognose.' },
+                    { title: 'Geprüfte Abitur-Logik', body: 'Automatische Block-I-Optimierung und KO-Kriterien-Prüfung auf Knopfdruck.' }
+                ]);
+
+                // SLIDE 3: DASHBOARD
+                const s3 = addSlideFrame(
+                    '03 · Modul Dashboard',
+                    'Laptop-Ansicht mit Liquid-Glass-Seitenleiste & Bento-Raster',
+                    'Echter App-Screenshot · Desktop 1440×900',
+                    3
+                );
+                addLaptopBezel(s3, imgDashLaptop, 0.72, 1.32, 7.65);
+                s3.addText('Dein persönliches Kontrollzentrum', {
+                    x: 8.78, y: 1.32, w: 3.85, h: 0.9,
+                    fontSize: 23, bold: true, color: C.charcoal, fontFace: 'Epilogue', valign: 'top'
+                });
+                addRightBullets(s3, 8.78, 2.45, 3.85, [
+                    { title: 'Prominenter Live-Schnitt', body: 'Punkte-Durchschnitt und umgerechnete Note (z. B. 13,10 Pkt. · 1,30) sofort beim Öffnen sichtbar.' },
+                    { title: '3-Spalten Bento-Übersicht', body: 'Heutiger Stundenplan-Fokus, Klausuren-Countdown und anstehende Aufgaben direkt nebeneinander.' },
+                    { title: 'Optimiert für jeden Screen', body: 'Links schwebende Navigationsleiste am Laptop, ergonomische Daumen-Leiste am Smartphone.' }
+                ]);
+
+                // SLIDE 4: FÄCHER & NOTEN
+                const s4 = addSlideFrame(
+                    '04 · Modul Fächer & Noten',
+                    'Mobile-First Fachübersicht & Zielrechner',
+                    'Echter App-Screenshot · Unterstützt Punkte (0–15) & Noten (1–6)',
+                    4
+                );
+                s4.addText('Präzise Notenberechnung & Wunschnoten-Kalkulator', {
+                    x: 0.72, y: 1.22, w: 7.4, h: 0.95,
+                    fontSize: 26, bold: true, color: C.charcoal, fontFace: 'Epilogue', valign: 'top'
+                });
+                const s4Cards = [
+                    { title: 'Flexible Gewichtung', body: 'Klausuren vs. sonstige Leistungen pro Fach exakt anpassbar (50/50, 60/40, 40/60).' },
+                    { title: 'Wunschnoten-Rechner', body: 'Zeigt sofort, welche Punktzahl in der nächsten Prüfung für das Wunschziel nötig ist.' },
+                    { title: 'LK / GK Filter & Bonus', body: 'Ein-Klick-Wechsel zwischen allen Kursen, Leistungskursen und Grundkursen inklusive Doppelwertung.' },
+                    { title: 'Halbjahres-Historie', body: 'Nahtloses Umschalten zwischen 11/1, 11/2, 12/1 und 12/2 plus kompaktes +-Anlegen.' }
+                ];
+                s4Cards.forEach((c, idx) => {
+                    const col = idx % 2;
+                    const row = Math.floor(idx / 2);
+                    const cx = 0.72 + col * 3.8;
+                    const cy = 2.45 + row * 1.85;
+                    s4.addShape(pptx.ShapeType.roundRect, {
+                        x: cx, y: cy, w: 3.58, h: 1.62,
+                        fill: { color: C.warm }, line: { color: C.hairline, width: 1 }, rectRadius: 0.08
+                    });
+                    s4.addText(c.title, { x: cx + 0.22, y: cy + 0.2, w: 3.14, h: 0.32, fontSize: 13, bold: true, color: C.charcoal, fontFace: 'Plus Jakarta Sans' });
+                    s4.addText(c.body, { x: cx + 0.22, y: cy + 0.56, w: 3.14, h: 0.9, fontSize: 10.5, color: C.muted, fontFace: 'Plus Jakarta Sans', valign: 'top' });
+                });
+                addPhoneBezel(s4, imgFaecherMobile, 9.25, 1.05, 2.52);
+
+                // SLIDE 5: KALENDER & STUNDENPLAN
+                const s5 = addSlideFrame(
+                    '05 · Modul Planer & Kalender',
+                    'Tagesfokus, Prüfungsdruck & Google Kalender Sync',
+                    'Echter App-Screenshot · Mit Schnell-Abhaken & Rückgängig-Toast',
+                    5
+                );
+                addLaptopBezel(s5, imgKalenderLaptop, 0.72, 1.32, 7.65);
+                s5.addText('Stundenplan, Aufgaben & Kalender in einem', {
+                    x: 8.78, y: 1.32, w: 3.85, h: 0.9,
+                    fontSize: 23, bold: true, color: C.charcoal, fontFace: 'Epilogue', valign: 'top'
+                });
+                addRightBullets(s5, 8.78, 2.45, 3.85, [
+                    { title: 'Monat, Woche & Stundenplan', body: 'Alle Klausuren, Tests und Hausaufgaben direkt im Zusammenhang mit den Fächern des Tages.' },
+                    { title: 'Wochen-Arbeitslast', body: 'Visueller Prüfungsdruck-Indikator erkennt intensive Lernwochen frühzeitig.' },
+                    { title: 'Google Kalender Integration', body: 'Importiert persönliche Kalender direkt in den Schulplaner und erinnert automatisch.' }
+                ]);
+
+                // SLIDE 6: INSIGHTS & FREUNDES-DUELL (DUAL DEVICE)
+                const s6 = addSlideFrame(
+                    '06 · Modul Insights & Vergleich',
+                    'Drei Untermenüs: Übersicht · Diagramme · Freundes-Duell',
+                    'Echte App-Screenshots · Gamifizierte Lernmotivation auf Laptop & Handy',
+                    6
+                );
+                s6.addText('Noten-Trends & Freundes-Duell', {
+                    x: 0.72, y: 1.32, w: 3.85, h: 0.9,
+                    fontSize: 23, bold: true, color: C.charcoal, fontFace: 'Epilogue', valign: 'top'
+                });
+                addRightBullets(s6, 0.72, 2.45, 3.85, [
+                    { title: 'Diagramme & Verlauf', body: 'Punkteverteilung und chronologische Schnittentwicklung klar gegliedert.' },
+                    { title: 'Head-to-Head Duell', body: 'Direkter Fach-für-Fach-Vergleich mit verbundenen Freunden inklusive Vorsprungs-Anzeige.' },
+                    { title: 'Übersicht & Ranking', body: 'Beste/schwächste Note, Klausur-vs.-Sonstiges-Ratio und Fächer-Ranking.' }
+                ]);
+                addLaptopBezel(s6, imgInsightsChartsLaptop, 4.95, 1.45, 6.45);
+                addPhoneBezel(s6, imgInsightsMobile, 10.65, 2.15, 1.96);
+
+                // SLIDE 7: ABI-RECHNER
+                const s7 = addSlideFrame(
+                    '07 · Modul Oberstufen- & ABI-Rechner',
+                    'SOGYA-konforme Abitursimulation in Echtzeit',
+                    'Echter App-Screenshot · Gesetzliche Abiturregeln verständlich abgebildet',
+                    7
+                );
+                addLaptopBezel(s7, imgAbiLaptop, 0.72, 1.32, 7.65);
+                s7.addText('Kurseinbringung & 5 KO-Kriterien', {
+                    x: 8.78, y: 1.32, w: 3.85, h: 0.9,
+                    fontSize: 23, bold: true, color: C.charcoal, fontFace: 'Epilogue', valign: 'top'
+                });
+                addRightBullets(s7, 8.78, 2.45, 3.85, [
+                    { title: 'Block I & Block II live', body: 'Optimiert automatisch 40 Kurse (inkl. LK-Doppelwertung & KHE-Skalierung) plus P1–P5 Prüfungen.' },
+                    { title: 'Unterkurs- & Pflichtcheck', body: 'Überwacht maximal erlaubte Unterkurse, Aufgabenfelder sowie Ersatzfächer automatisch.' },
+                    { title: 'Was-wäre-wenn-Simulation', body: 'Halbjahres- und Prüfungsnoten vorab simulieren und Abiturnote sofort ablesen.' }
+                ]);
+
+                // SLIDE 8: SMART NOTEBOOK
+                const s8 = addSlideFrame(
+                    '08 · Produkt-Roadmap · Nächstes Upgrade',
+                    'Smart Notebook direkt im Schulsystem',
+                    'Erste All-In-One Schulplattform mit nativ verknüpftem Notizhefter',
+                    8,
+                    C.amber
+                );
+                // Tablet Mockup on left
+                s8.addShape(pptx.ShapeType.roundRect, {
+                    x: 0.72, y: 1.38, w: 6.75, h: 4.82,
+                    fill: { color: C.bezel }, line: { color: C.bezel, width: 1 }, rectRadius: 0.1
+                });
+                s8.addShape(pptx.ShapeType.roundRect, {
+                    x: 0.9, y: 1.56, w: 6.39, h: 4.46,
+                    fill: { color: 'FDFBF7' }, line: { color: 'D8CFC2', width: 1 }, rectRadius: 0.06
+                });
+                s8.addShape(pptx.ShapeType.rect, {
+                    x: 0.9, y: 1.56, w: 6.39, h: 0.56,
+                    fill: { color: C.warm }, line: { color: C.hairline, width: 0.75 }
+                });
+                s8.addText('●  Physik LK · Induktionsgesetz', {
+                    x: 1.12, y: 1.68, w: 4.5, h: 0.32,
+                    fontSize: 11.5, bold: true, color: C.charcoal, fontFace: 'Plus Jakarta Sans'
+                });
+                s8.addText('14. November · 3. Stunde (Stundenplan-verknüpft)', {
+                    x: 1.2, y: 2.38, w: 5.8, h: 0.28,
+                    fontSize: 10.5, bold: true, color: C.muted, fontFace: 'Plus Jakarta Sans'
+                });
+                s8.addText('Elektromagnetische Induktion (Faraday)', {
+                    x: 1.2, y: 2.75, w: 5.8, h: 0.42,
+                    fontSize: 17, bold: true, color: C.charcoal, fontFace: 'Epilogue'
+                });
+                s8.addText('U_ind = −N · (dΦ / dt)', {
+                    x: 1.2, y: 3.35, w: 5.6, h: 0.65,
+                    fontSize: 26, bold: true, italic: true, color: C.sage, fontFace: 'Georgia'
+                });
+                s8.addText('→ Je schneller sich der magnetische Fluss Φ ändert, desto größer ist die induzierte Spannung.', {
+                    x: 1.2, y: 4.18, w: 5.6, h: 0.9,
+                    fontSize: 15, italic: true, color: C.charcoal, fontFace: 'Georgia', valign: 'top'
+                });
+                s8.addShape(pptx.ShapeType.line, { x: 1.2, y: 5.38, w: 5.79, h: 0, line: { color: C.hairline, width: 0.75 } });
+                s8.addText('Automatisch verknüpft mit: Physik Klausur (17. Nov)', {
+                    x: 1.2, y: 5.5, w: 4.2, h: 0.3, fontSize: 10, bold: true, color: C.sage, fontFace: 'Plus Jakarta Sans'
+                });
+                s8.addText('Stylus & Tastatur', {
+                    x: 5.4, y: 5.5, w: 1.59, h: 0.3, fontSize: 10, bold: true, color: C.muted, fontFace: 'Plus Jakarta Sans', align: 'right'
+                });
+
+                s8.addText([
+                    { text: 'Der Digitale Hefter direkt in ', options: { color: C.charcoal } },
+                    { text: 'schooly', options: { color: C.sage } }
+                ], {
+                    x: 7.9, y: 1.38, w: 4.7, h: 0.95,
+                    fontSize: 24, bold: true, fontFace: 'Epilogue', valign: 'top'
+                });
+                addRightBullets(s8, 7.9, 2.55, 4.7, [
+                    { title: 'Handschrift & Tastatur vereint', body: 'Auf dem iPad/Tablet flüssig per Stylus schreiben und am Laptop direkt per Tastatur weiterarbeiten.' },
+                    { title: 'Automatische Fach-Sortierung', body: 'Neue Notizen ordnen sich anhand des Stundenplans automatisch dem richtigen Fach und der nächsten Klausur zu.' },
+                    { title: 'Kein Medienbruch mehr', body: 'Ersetzt GoodNotes & Notability für den Schulalltag direkt dort, wo auch Noten und Termine liegen.' }
+                ]);
+
+                // SLIDE 9: GESCHÄFTSMODELL & PREISE
+                const s9 = addSlideFrame(
+                    '09 · Geschäftsmodell & Monetarisierung',
+                    'Kostenlos verbreiten, durch Einmalkauf & Cloud skalieren',
+                    'Klare Unit Economics: Kostenlose Akquise, profitables Upgrade',
+                    9
+                );
+                s9.addText('Kostenlos starten, fair erweitern', {
+                    x: 0.72, y: 0.98, w: 11.8, h: 0.55,
+                    fontSize: 27, bold: true, color: C.charcoal, fontFace: 'Epilogue'
+                });
+                s9.addText('Klares Freemium-Modell ohne Abo-Hürde für die Kernfunktionen — ideal für virales Schulhof-Wachstum.', {
+                    x: 0.72, y: 1.56, w: 11.2, h: 0.4,
+                    fontSize: 12.5, color: C.muted, fontFace: 'Plus Jakarta Sans'
+                });
+                const s9Tiers = [
+                    {
+                        bg: C.white, border: C.hairline, kicker: 'Wachstumsmotor', kickerCol: C.sage,
+                        name: 'Basis-Version', nameCol: C.charcoal,
+                        price: '0 €', sub: 'dauerhaft', priceCol: C.sage, subCol: C.muted,
+                        bullets: ['· Notenrechner & Live-Schnitt', '· Stundenplan & Aufgabenplaner', '· Kalender, Insights & ABI-Rechner'],
+                        bulletCol: C.muted, foot: 'Organische Verbreitung über Freundes-Vergleich und geteilte Termine.', footCol: C.charcoal, lineCol: C.hairline
+                    },
+                    {
+                        bg: C.sage, border: C.sage, kicker: 'Digitaler Hefter · Hauptprodukt', kickerCol: C.peach,
+                        name: 'Premium-Upgrade', nameCol: C.white,
+                        price: '29,99 €', sub: 'einmalig', priceCol: C.white, subCol: 'DCEBE2',
+                        bullets: ['· Vollständiger Digitaler Hefter', '· Handschrift (Stylus) & Tastatur', '· Einmalzahlung für die gesamte Schulzeit'],
+                        bulletCol: C.white, foot: 'Hohe Kaufbereitschaft bei Eltern durch faire Einmalzahlung statt monatlicher Abo-Falle.', footCol: C.peach, lineCol: '478265'
+                    },
+                    {
+                        bg: C.white, border: C.hairline, kicker: 'Power-User Cloud', kickerCol: C.muted,
+                        name: 'Cloud-Backup', nameCol: C.charcoal,
+                        price: '0,99 €', sub: '/ Monat ab 5 GB', priceCol: C.charcoal, subCol: C.muted,
+                        bullets: ['· Erweiterter Speicherplatz für Medien', '· Automatische PDF- & Hefter-Backups', '· Gerätesynchronisation ohne Limit'],
+                        bulletCol: C.muted, foot: 'Wiederkehrender Umsatz deckt Speicher- und Serverkosten nachhaltig ab.', footCol: C.charcoal, lineCol: C.hairline
+                    }
+                ];
+                s9Tiers.forEach((t, i) => {
+                    const tx = 0.72 + i * 4.05;
+                    s9.addShape(pptx.ShapeType.roundRect, {
+                        x: tx, y: 2.18, w: 3.78, h: 4.35,
+                        fill: { color: t.bg }, line: { color: t.border, width: 1.2 }, rectRadius: 0.08
+                    });
+                    s9.addText(t.kicker, { x: tx + 0.28, y: 2.38, w: 3.22, h: 0.25, fontSize: 10.5, bold: true, color: t.kickerCol, fontFace: 'Plus Jakarta Sans' });
+                    s9.addText(t.name, { x: tx + 0.28, y: 2.68, w: 3.22, h: 0.4, fontSize: 18, bold: true, color: t.nameCol, fontFace: 'Epilogue' });
+                    s9.addText([
+                        { text: t.price + ' ', options: { fontSize: 25, bold: true, color: t.priceCol, fontFace: 'Epilogue' } },
+                        { text: t.sub, options: { fontSize: 10.5, bold: true, color: t.subCol, fontFace: 'Plus Jakarta Sans' } }
+                    ], { x: tx + 0.28, y: 3.16, w: 3.22, h: 0.55 });
+                    s9.addShape(pptx.ShapeType.line, { x: tx + 0.28, y: 3.8, w: 3.22, h: 0, line: { color: t.lineCol, width: 0.75 } });
+                    s9.addText(t.bullets.join('\n'), {
+                        x: tx + 0.28, y: 3.94, w: 3.22, h: 1.25,
+                        fontSize: 11, bold: true, color: t.bulletCol, fontFace: 'Plus Jakarta Sans', paraSpaceAfter: 6, valign: 'top'
+                    });
+                    s9.addShape(pptx.ShapeType.line, { x: tx + 0.28, y: 5.38, w: 3.22, h: 0, line: { color: t.lineCol, width: 0.75 } });
+                    s9.addText(t.foot, {
+                        x: tx + 0.28, y: 5.52, w: 3.22, h: 0.85,
+                        fontSize: 10.5, bold: true, color: t.footCol, fontFace: 'Plus Jakarta Sans', valign: 'top'
+                    });
+                });
+
+                // SLIDE 10: TECHNOLOGIE & PLATTFORM
+                const s10 = addSlideFrame(
+                    '10 · Technologie & Plattform',
+                    'Progressive Web App (PWA) · Sofort einsatzbereit',
+                    'Keine App-Store-Provisionen, sofortige Updates für alle Nutzer',
+                    10
+                );
+                s10.addText('Eine Plattform für alle Geräte. Ohne Umwege.', {
+                    x: 0.72, y: 0.98, w: 11.8, h: 0.55,
+                    fontSize: 27, bold: true, color: C.charcoal, fontFace: 'Epilogue'
+                });
+                s10.addText('Statt getrennter Codebases für iOS, Android, Windows und macOS läuft schooly als moderne PWA direkt im Browser und lässt sich wie eine native App installieren.', {
+                    x: 0.72, y: 1.56, w: 10.8, h: 0.52,
+                    fontSize: 12.5, color: C.muted, fontFace: 'Plus Jakarta Sans'
+                });
+                const s10Cards = [
+                    { title: 'Smartphone', body: 'Unterwegs direkt nach der Stunde Noten eintragen, Aufgaben abhaken und Erinnerungen erhalten.' },
+                    { title: 'Tablet & iPad', body: 'Optimale Arbeitsfläche für den Unterricht: Stundenplan, Abitur-Simulation und bald der Digitale Hefter.' },
+                    { title: 'Laptop & PC', body: 'Dediziertes Desktop-Layout mit seitlicher Liquid-Glass-Leiste, Kalender-Split und PDF-Export.' }
+                ];
+                s10Cards.forEach((c, i) => {
+                    const cx = 0.72 + i * 4.05;
+                    s10.addShape(pptx.ShapeType.roundRect, {
+                        x: cx, y: 2.38, w: 3.78, h: 2.45,
+                        fill: { color: C.white }, line: { color: C.hairline, width: 1 }, rectRadius: 0.08
+                    });
+                    s10.addShape(pptx.ShapeType.roundRect, {
+                        x: cx + 0.28, y: 2.66, w: 0.56, h: 0.56,
+                        fill: { color: 'E7EFEA' }, line: { color: 'E7EFEA', width: 0 }, rectRadius: 0.16
+                    });
+                    s10.addText(c.title, { x: cx + 0.28, y: 3.38, w: 3.22, h: 0.36, fontSize: 16, bold: true, color: C.charcoal, fontFace: 'Epilogue' });
+                    s10.addText(c.body, { x: cx + 0.28, y: 3.8, w: 3.22, h: 0.85, fontSize: 11, color: C.muted, fontFace: 'Plus Jakarta Sans', valign: 'top' });
+                });
+                s10.addShape(pptx.ShapeType.roundRect, {
+                    x: 0.72, y: 5.2, w: 11.89, h: 1.15,
+                    fill: { color: C.sageTint }, line: { color: C.sageBorder, width: 1 }, rectRadius: 0.08
+                });
+                s10.addText('Offline-fähig & Echtzeit-Cloud', {
+                    x: 1.04, y: 5.38, w: 8.2, h: 0.34, fontSize: 13.5, bold: true, color: C.charcoal, fontFace: 'Plus Jakarta Sans'
+                });
+                s10.addText('Service-Worker-Caching sorgt für 0 ms Startzeit im Schulgebäude — Synchronisation automatisch bei Netz.', {
+                    x: 1.04, y: 5.76, w: 8.8, h: 0.36, fontSize: 11.5, bold: true, color: C.sage, fontFace: 'Plus Jakarta Sans'
+                });
+                s10.addText('Firebase · Auth · Push', {
+                    x: 9.8, y: 5.56, w: 2.5, h: 0.36, fontSize: 11.5, bold: true, color: C.sage, fontFace: 'Plus Jakarta Sans', align: 'right'
+                });
+
+                // SLIDE 11: FAZIT & CALL TO ACTION
+                const s11 = addSlideFrame(
+                    'schooly',
+                    '11 · Fazit & Ausblick',
+                    'schooly · Die All-In-One Schul-App',
+                    11,
+                    C.sage,
+                    C.cream
+                );
+                s11.addImage({ data: imgLogo, x: 0.72, y: 1.18, w: 1.75, h: 0.62 });
+                s11.addText('Bereit für das bestorganisierte Schuljahr?', {
+                    x: 0.72, y: 2.02, w: 10.6, h: 1.35,
+                    fontSize: 36, bold: true, color: C.charcoal, fontFace: 'Epilogue', valign: 'top'
+                });
+                s11.addText('schooly macht aus verstreuten Zetteln und fünf Einzel-Apps ein ruhiges, intelligentes System für bessere Noten, klare Termine und entspannte Abiturplanung.', {
+                    x: 0.72, y: 3.45, w: 10.2, h: 0.85,
+                    fontSize: 15, color: C.muted, fontFace: 'Plus Jakarta Sans', valign: 'top'
+                });
+                s11.addShape(pptx.ShapeType.line, { x: 0.72, y: 4.55, w: 11.89, h: 0, line: { color: C.hairline, width: 1 } });
+                const s11Stats = [
+                    { val: '100 %', label: 'All-In-One System', col: C.sage },
+                    { val: '0 €', label: 'Kostenloser Start', col: C.charcoal },
+                    { val: '16', label: 'Bundesländer', col: C.sage },
+                    { val: 'PWA', label: 'Jedes Endgerät', col: C.charcoal }
+                ];
+                s11Stats.forEach((st, i) => {
+                    const sx = 0.72 + i * 3.05;
+                    s11.addText(st.val, { x: sx, y: 4.82, w: 2.6, h: 0.56, fontSize: 26, bold: true, color: st.col, fontFace: 'Epilogue' });
+                    s11.addText(st.label, { x: sx, y: 5.42, w: 2.6, h: 0.32, fontSize: 11.5, bold: true, color: C.muted, fontFace: 'Plus Jakarta Sans' });
+                });
+
+                await pptx.writeFile({ fileName: 'schooly_pitch_deck_16x9.pptx' });
+            } catch (err) {
+                console.error('PPTX Export Fehler:', err);
+                alert('PowerPoint-Export fehlgeschlagen: ' + (err && err.message ? err.message : 'Unbekannter Fehler'));
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.innerHTML = origHtml;
+                }
+            }
         }
 
         document.addEventListener('keydown', (e) => {
@@ -965,22 +1925,28 @@
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 prevSlide();
+            } else if (e.key.toLowerCase() === 'p') {
+                togglePresentationMode();
+            } else if (e.key === 'Escape' && isPresentationMode) {
+                togglePresentationMode();
             }
         });
 
         const observer = new IntersectionObserver((entries) => {
+            if (isPresentationMode) return;
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const index = Array.from(slides).indexOf(entry.target);
                     if (index !== -1) {
                         currentSlide = index;
-                        updateSlideDisplay();
+                        document.getElementById('currentSlideNum').textContent = currentSlide + 1;
                     }
                 }
             });
         }, { threshold: 0.5 });
 
         slides.forEach(slide => observer.observe(slide));
+        fitSlidesToStage();
     </script>
 </body>
 </html>
