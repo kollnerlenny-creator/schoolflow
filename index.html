@@ -7182,18 +7182,33 @@
                 };
                 const filteredAllMembers = computed(() => {
                     const q = memberSearchQuery.value.trim().toLowerCase();
-                    return (allMembers.value || []).filter(m => matchesMemberSearch(m, q));
+                    return (allMembers.value || []).filter(m =>
+                        !isDemoProfile(m) && !isAdminProfile(m) && !knownAdminUids.has(m?.uid) && matchesMemberSearch(m, q)
+                    );
                 });
                 const filteredFriends = computed(() => {
                     const q = memberSearchQuery.value.trim().toLowerCase();
                     return (friends.value || []).filter(f => matchesMemberSearch(f, q));
                 });
 
+                const knownAdminUids = new Set();
+
                 const isDemoProfile = (item) => {
                     if (!item || typeof item !== 'object') return false;
                     const uidStr = String(item.uid || item.id || '');
                     const emailStr = String(item.email || '').toLowerCase();
                     return Boolean(item.isDemo) || uidStr.startsWith('demo_') || emailStr === 'demo@schooly.de';
+                };
+
+                const isAdminProfile = (item) => {
+                    if (!item || typeof item !== 'object') return false;
+                    const uidStr = String(item.uid || item.id || '');
+                    const emailStr = String(item.email || '').toLowerCase();
+                    return Boolean(item.isAdmin)
+                        || (uidStr && knownAdminUids.has(uidStr))
+                        || emailStr.includes('kollnerlenny')
+                        || emailStr.includes('koellnerlenny')
+                        || emailStr.includes('admin');
                 };
 
                 // Avatar-Ermittlung delegiert an globale, fehlertolerante Funktion
@@ -7323,7 +7338,7 @@
                         addedUids.add(f.uid);
                     });
                     (allMembers.value || []).forEach(m => {
-                        if (m && m.uid && !isDemoProfile(m) && !addedUids.has(m.uid)) {
+                        if (m && m.uid && !isDemoProfile(m) && !isAdminProfile(m) && !addedUids.has(m.uid)) {
                             list.push({
                                 uid: m.uid,
                                 displayName: m.displayName || m.email || 'Mitschüler',
@@ -7495,15 +7510,18 @@
                     if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
 
                     const updateMembersState = (profiles, fromCacheOnly = false) => {
-                        let list = (profiles || []).filter(m => m && m.uid && m.uid !== uid && !isDemoProfile(m));
-                        const existingReal = (allMembers.value || []).filter(m => m && m.uid && m.uid !== uid && !isDemoProfile(m));
+                        (profiles || []).forEach(p => {
+                            if (p && p.uid && isAdminProfile(p)) knownAdminUids.add(p.uid);
+                        });
+                        let list = (profiles || []).filter(m => m && m.uid && m.uid !== uid && !isDemoProfile(m) && !isAdminProfile(m));
+                        const existingReal = (allMembers.value || []).filter(m => m && m.uid && m.uid !== uid && !isDemoProfile(m) && !isAdminProfile(m));
                         if (list.length === 0 && existingReal.length > 0 && fromCacheOnly) {
                             allMembers.value = existingReal;
                             return; // Niemals gecachte echte Mitglieder durch leeren Offline-Snapshot überschreiben
                         }
-                        // Falls bereits echte Freunde existieren, sicherstellen, dass sie in list sind
+                        // Falls bereits echte Freunde existieren, sicherstellen, dass sie in list sind (außer Admins)
                         (friends.value || []).forEach(f => {
-                            if (f && f.uid && f.uid !== uid && !isDemoProfile(f)) {
+                            if (f && f.uid && f.uid !== uid && !isDemoProfile(f) && !isAdminProfile(f)) {
                                 const idx = list.findIndex(m => m.uid === f.uid);
                                 if (idx === -1) {
                                     list.push({
@@ -7522,7 +7540,7 @@
                                 }
                             }
                         });
-                        if (list.length === 0 && existingReal.length > 0) {
+                        if (list.length === 0 && existingReal.length > 0 && (fromCacheOnly || !profiles || profiles.length === 0)) {
                             allMembers.value = existingReal;
                             return; // Vorhandene echte Mitglieder niemals komplett leeren
                         }
@@ -7541,7 +7559,7 @@
                         refreshIcons();
                     };
 
-                    // Sofort aus lokalem Cache initialisieren für 0ms Latenz (Demo-Profile dabei sofort entfernen)
+                    // Sofort aus lokalem Cache initialisieren für 0ms Latenz (Demo- & Admin-Profile dabei sofort entfernen)
                     try {
                         for (let i = localStorage.length - 1; i >= 0; i--) {
                             const k = localStorage.key(i);
@@ -7553,7 +7571,7 @@
                         if (cached) {
                             const parsed = JSON.parse(cached);
                             if (Array.isArray(parsed)) {
-                                const cleaned = parsed.filter(m => !isDemoProfile(m));
+                                const cleaned = parsed.filter(m => !isDemoProfile(m) && !isAdminProfile(m));
                                 if (cleaned.length !== parsed.length) {
                                     localStorage.setItem('sf_cached_members', JSON.stringify(cleaned));
                                 }
@@ -7628,7 +7646,7 @@
 
                         const { setDoc: setD, doc: docFn } = window.__firestoreModule || {};
                         if (setD && docFn) {
-                            const profileSig = `${uid}|${profileData.displayName}|${profileData.currentClass}|${(profileData.photoUrl || '').length}`;
+                            const profileSig = `${uid}|${profileData.displayName}|${profileData.currentClass}|${profileData.isAdmin}|${(profileData.photoUrl || '').length}`;
                             if (window.__lastPublicProfileSig === profileSig) return;
                             window.__lastPublicProfileSig = profileSig;
                             await setD(docFn(db, 'publicProfiles', uid), profileData, { merge: true });
@@ -7685,11 +7703,11 @@
                             if (selectedFriend.value && (isDemoProfile(selectedFriend.value) || pendingRemovedFriendsMap.has(selectedFriend.value.uid))) {
                                 selectedFriend.value = null;
                             }
-                            // Eventuelle Demo-Profile aus allMembers entfernen und echte Freunde ergänzen
-                            const baseMembers = (allMembers.value || []).filter(m => !isDemoProfile(m));
+                            // Eventuelle Demo- & Admin-Profile aus allMembers entfernen und echte Nicht-Admin-Freunde ergänzen
+                            const baseMembers = (allMembers.value || []).filter(m => !isDemoProfile(m) && !isAdminProfile(m));
                             let membersChanged = baseMembers.length !== (allMembers.value || []).length;
                             friends.value.forEach(f => {
-                                if (f && f.uid && f.uid !== uid && !baseMembers.some(m => m.uid === f.uid)) {
+                                if (f && f.uid && f.uid !== uid && !isAdminProfile(f) && !baseMembers.some(m => m.uid === f.uid)) {
                                     baseMembers.push({
                                         uid: f.uid,
                                         displayName: f.displayName || f.email || 'Freund',
@@ -8464,6 +8482,7 @@
                                 displayName: onboardingName.value.trim(),
                                 email: user.value?.email || '',
                                 currentClass: onboardingCurrentClass.value,
+                                isAdmin: !!isAdmin.value,
                                 photoUrl: userAvatar.value || '',
                                 createdAt: new Date().toISOString(),
                                 updatedAt: new Date().toISOString()

@@ -362,12 +362,27 @@
                         <div class="grid grid-cols-3 gap-1.5">
                             <a href="#beitrag-7" class="aspect-[4/5] rounded-xl paper-grid border border-[#ded3c4] p-2.5 flex flex-col justify-between text-[#1f1b16] hover:opacity-95 transition-opacity">
                                 <span class="text-[9px] font-extrabold text-[#825500]">Beitrag 7</span>
-                                <div class="font-handwriting text-[15px] font-bold text-[#2d694c] leading-none">U = -N·dΦ/dt</div>
+                                <div class="bg-white/95 border border-[#e5dcd0] rounded-lg p-1.5 space-y-1">
+                                    <div class="flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#2d694c]"></span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#4f46e5]"></span>
+                                        <span class="h-1 flex-1 rounded bg-[#f4ece4]"></span>
+                                    </div>
+                                    <div class="font-handwriting text-[13px] font-bold text-[#2d694c] leading-none">U = -N·dΦ/dt</div>
+                                </div>
                                 <div class="text-[9.5px] font-black leading-tight font-epilogue">Digitaler Hefter</div>
                             </a>
                             <a href="#beitrag-5" class="aspect-[4/5] rounded-xl bg-[#f4ece4] border border-[#e5dcd0] p-2.5 flex flex-col justify-between text-[#1f1b16] hover:opacity-95 transition-opacity">
                                 <span class="text-[9px] font-extrabold text-[#2d694c]">Beitrag 5</span>
-                                <div class="bg-white rounded-lg px-1.5 py-1 border border-[#e5dcd0] text-[8.5px] font-extrabold text-[#b91c1c]">Prüfungsdruck</div>
+                                <div class="bg-white rounded-lg p-1.5 border border-[#e5dcd0] grid grid-cols-7 gap-0.5 items-end h-8">
+                                    <span class="bg-[#d97706] rounded-sm h-2.5"></span>
+                                    <span class="bg-[#2d694c] rounded-sm h-1.5"></span>
+                                    <span class="bg-[#dc2626] rounded-sm h-5"></span>
+                                    <span class="bg-[#2d694c] rounded-sm h-1.5"></span>
+                                    <span class="bg-[#4f46e5] rounded-sm h-3.5"></span>
+                                    <span class="bg-[#d97706] rounded-sm h-2"></span>
+                                    <span class="bg-[#2d694c] rounded-sm h-1.5"></span>
+                                </div>
                                 <div class="text-[9.5px] font-black leading-tight font-epilogue">Kalender &amp; Sync</div>
                             </a>
                             <a href="#beitrag-3" class="aspect-[4/5] rounded-xl bg-[#1f1b16] p-2.5 flex flex-col justify-between text-white hover:opacity-95 transition-opacity">
@@ -1032,7 +1047,7 @@ Mit dem Freundes-Duell in schooly vergleichst du deinen Gesamtschnitt und einzel
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <!-- SLIDE 5.1: COVER (WARM SAND + PRÜFUNGSDRUCK-CARD, KEIN HANDY) -->
+                <!-- SLIDE 5.1: COVER (WARM SAND + ECHTE WOCHEN-ARBEITSLAST & PRÜFUNGSDRUCK UI AUS DER APP) -->
                 <div class="space-y-2.5 flex flex-col items-center">
                     <div class="ig-slide-viewport">
                         <div class="ig-canvas ig-canvas-warm p-8" data-post="5" data-filename="schooly_beitrag5_slide1_cover.png">
@@ -1041,39 +1056,119 @@ Mit dem Freundes-Duell in schooly vergleichst du deinen Gesamtschnitt und einzel
                                 <span>01 / 04</span>
                             </div>
 
-                            <div class="mt-2 space-y-2">
+                            <div class="mt-1 space-y-2">
                                 <h3 class="text-[31px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
-                                    Nie wieder von <span class="text-[#2d694c]">drei Klausuren</span> überrascht.
+                                    Nie wieder von <span class="text-[#2d694c]">vollen Wochen</span> überrascht.
                                 </h3>
                                 <p class="text-[13.5px] font-semibold text-[#6e665e]">
-                                    Stundenplan, Aufgaben &amp; Google Kalender vereint.
+                                    Stundenplan, Klausuren &amp; Wochen-Arbeitslast im Blick.
                                 </p>
                             </div>
 
-                            <!-- Floating Workload & Exams Card -->
-                            <div class="my-auto bg-white border border-[#e5dcd0] rounded-[1.75rem] p-5 space-y-4 shadow-xl">
-                                <div class="flex items-center justify-between border-b border-[#f0e8dc] pb-3">
-                                    <div>
-                                        <div class="text-[11px] font-bold text-[#6e665e]">Wochen-Arbeitslast · KW 46</div>
-                                        <div class="text-[18px] font-black text-[#1f1b16] font-epilogue mt-0.5">Prüfungsdruck</div>
+                            <!-- Authentic Real-App Cards matching screenshot_kalender_laptop.png -->
+                            <div class="my-auto space-y-3">
+                                <!-- Real App Card 1: Wochen-Arbeitslast & Prüfungsdruck -->
+                                <div class="bg-white border border-[#e5dcd0] rounded-[1.5rem] p-5 space-y-4 shadow-xl">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex items-center gap-2.5">
+                                            <i data-lucide="bar-chart-2" class="w-4 h-4 text-[#1f1b16] shrink-0"></i>
+                                            <div class="text-[15px] font-black text-[#1f1b16] font-epilogue leading-tight">
+                                                Wochen-Arbeitslast &amp;<br>Prüfungsdruck
+                                            </div>
+                                        </div>
+                                        <div class="bg-[#f4ece4] border border-[#e5dcd0] rounded-xl px-3 pt-[6px] pb-[8px] text-[10.5px] font-bold text-[#6e665e] leading-tight text-right shrink-0">
+                                            KW 47 • Hohe<br><span class="text-[#b91c1c] font-extrabold">Intensität</span>
+                                        </div>
                                     </div>
-                                    <span class="inline-block px-3 pt-[5px] pb-[8px] leading-tight rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-extrabold">Hoch · 2 Klausuren</span>
+
+                                    <!-- 7 Vertical Day Pills matching real app -->
+                                    <div class="grid grid-cols-7 gap-2 pt-1">
+                                        <!-- Mo 16 (De Hausaufgabe) -->
+                                        <div class="flex flex-col items-center gap-1.5">
+                                            <div class="w-full h-[64px] rounded-2xl bg-[#faf7f2] border border-[#ede3d8] p-1.5 flex items-end">
+                                                <div class="w-full h-3 rounded-full bg-[#d97706]"></div>
+                                            </div>
+                                            <div class="text-center leading-tight">
+                                                <div class="text-[10px] font-bold text-[#6e665e]">Mo</div>
+                                                <div class="text-[11px] font-black text-[#1f1b16] tabular-nums">16</div>
+                                            </div>
+                                        </div>
+                                        <!-- Di 17 -->
+                                        <div class="flex flex-col items-center gap-1.5">
+                                            <div class="w-full h-[64px] rounded-2xl bg-[#faf7f2] border border-[#ede3d8] p-1.5 flex items-end">
+                                                <div class="w-full h-2 rounded-full bg-[#2d694c]/60"></div>
+                                            </div>
+                                            <div class="text-center leading-tight">
+                                                <div class="text-[10px] font-bold text-[#6e665e]">Di</div>
+                                                <div class="text-[11px] font-black text-[#1f1b16] tabular-nums">17</div>
+                                            </div>
+                                        </div>
+                                        <!-- Mi 18 (Physik Klausur - High Peak) -->
+                                        <div class="flex flex-col items-center gap-1.5">
+                                            <div class="w-full h-[64px] rounded-2xl bg-rose-50/70 border-2 border-[#dc2626] p-1.5 flex items-end">
+                                                <div class="w-full h-10 rounded-xl bg-[#dc2626]"></div>
+                                            </div>
+                                            <div class="text-center leading-tight">
+                                                <div class="text-[10px] font-extrabold text-[#dc2626]">Mi</div>
+                                                <div class="text-[11px] font-black text-[#dc2626] tabular-nums">18</div>
+                                            </div>
+                                        </div>
+                                        <!-- Do 19 -->
+                                        <div class="flex flex-col items-center gap-1.5">
+                                            <div class="w-full h-[64px] rounded-2xl bg-[#faf7f2] border border-[#ede3d8] p-1.5 flex items-end">
+                                                <div class="w-full h-2.5 rounded-full bg-[#2d694c]"></div>
+                                            </div>
+                                            <div class="text-center leading-tight">
+                                                <div class="text-[10px] font-bold text-[#6e665e]">Do</div>
+                                                <div class="text-[11px] font-black text-[#1f1b16] tabular-nums">19</div>
+                                            </div>
+                                        </div>
+                                        <!-- Fr 20 (Englisch Test) -->
+                                        <div class="flex flex-col items-center gap-1.5">
+                                            <div class="w-full h-[64px] rounded-2xl bg-[#faf7f2] border border-[#ede3d8] p-1.5 flex items-end">
+                                                <div class="w-full h-6 rounded-xl bg-[#2563eb]"></div>
+                                            </div>
+                                            <div class="text-center leading-tight">
+                                                <div class="text-[10px] font-bold text-[#6e665e]">Fr</div>
+                                                <div class="text-[11px] font-black text-[#1f1b16] tabular-nums">20</div>
+                                            </div>
+                                        </div>
+                                        <!-- Sa 21 (Chemie HA) -->
+                                        <div class="flex flex-col items-center gap-1.5">
+                                            <div class="w-full h-[64px] rounded-2xl bg-[#faf7f2] border border-[#ede3d8] p-1.5 flex items-end">
+                                                <div class="w-full h-3 rounded-full bg-[#d97706]"></div>
+                                            </div>
+                                            <div class="text-center leading-tight">
+                                                <div class="text-[10px] font-bold text-[#d97706]">Sa</div>
+                                                <div class="text-[11px] font-black text-[#d97706] tabular-nums">21</div>
+                                            </div>
+                                        </div>
+                                        <!-- So 22 -->
+                                        <div class="flex flex-col items-center gap-1.5">
+                                            <div class="w-full h-[64px] rounded-2xl bg-[#faf7f2] border border-[#ede3d8] p-1.5 flex items-end">
+                                                <div class="w-full h-2 rounded-full bg-[#10b981]"></div>
+                                            </div>
+                                            <div class="text-center leading-tight">
+                                                <div class="text-[10px] font-bold text-[#d97706]">So</div>
+                                                <div class="text-[11px] font-black text-[#d97706] tabular-nums">22</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="space-y-2 text-[12px] font-bold">
-                                    <div class="flex items-center justify-between bg-[#faf7f2] rounded-xl px-3 py-2 border border-[#ede3d8]">
-                                        <span class="text-[#1f1b16]">Di · Physik LK Klausur</span>
-                                        <span class="text-rose-700 font-extrabold">100 Min</span>
+                                <!-- Real App Card 2: Selected Day Entry matching Tages-Aufgaben card -->
+                                <div class="bg-white border border-[#e5dcd0] rounded-[1.25rem] px-4 py-3 flex items-center justify-between shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-5 h-5 rounded-full border-2 border-[#e5dcd0] shrink-0"></div>
+                                        <div>
+                                            <div class="flex items-center gap-1.5 text-[10px] font-extrabold text-[#6e665e]">
+                                                <span class="w-2 h-2 rounded-full bg-[#dc2626]"></span>
+                                                <span>PHYSIK · MI., 18. NOV.</span>
+                                            </div>
+                                            <div class="text-[13px] font-black text-[#1f1b16] mt-0.5">Elektromagnetische Induktion</div>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center justify-between bg-[#faf7f2] rounded-xl px-3 py-2 border border-[#ede3d8]">
-                                        <span class="text-[#1f1b16]">Do · Geschichte Klausur</span>
-                                        <span class="text-[#2d694c] font-extrabold">Quellen</span>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between text-[11.5px] font-extrabold text-[#2d694c] pt-1">
-                                    <span>Google Kalender Synchronisation aktiv</span>
-                                    <span>✓</span>
+                                    <span class="inline-block px-2.5 pt-[2px] pb-[7px] leading-tight rounded-full bg-rose-50 border border-rose-200 text-[#dc2626] text-[10px] font-extrabold shrink-0">KLAUSUR</span>
                                 </div>
                             </div>
 
@@ -1226,7 +1321,7 @@ In schooly greifen Stundenplan, Klausuren-Termine und Google Kalender nahtlos in
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <!-- SLIDE 7.1: COVER (KARO-PAPIER + HANDSCHRIFT + HYPE HOOK, KEIN HANDY) -->
+                <!-- SLIDE 7.1: COVER (KARO-PAPIER + REALISTISCHES NOTEBOOK UI PREVIEW, KEIN HANDY) -->
                 <div class="space-y-2.5 flex flex-col items-center">
                     <div class="ig-slide-viewport">
                         <div class="ig-canvas paper-grid p-8" data-post="7" data-filename="schooly_beitrag7_slide1_cover.png">
@@ -1235,34 +1330,79 @@ In schooly greifen Stundenplan, Klausuren-Termine und Google Kalender nahtlos in
                                 <span>01 / 04</span>
                             </div>
 
-                            <div class="mt-2 space-y-2">
-                                <h3 class="text-[32px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                            <div class="mt-1 space-y-1.5">
+                                <h3 class="text-[31px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
                                     Digitaler Hefter direkt in <span class="text-[#2d694c]">schooly.</span>
                                 </h3>
                                 <p class="text-[13.5px] font-semibold text-[#6e665e]">
-                                    Stylus &amp; Tastatur verknüpft mit Stundenplan und Klausuren.
+                                    Stylus &amp; Tastatur — automatisch pro Fach sortiert.
                                 </p>
                             </div>
 
-                            <!-- Crisp Handwriting + Coil Vector Preview -->
-                            <div class="my-auto bg-white/95 border border-[#d8cfc2] rounded-[1.75rem] p-6 space-y-4 shadow-xl">
-                                <div class="flex items-center justify-between text-[11px] font-extrabold text-[#6e665e] border-b border-[#ede3d8] pb-2.5">
-                                    <span class="text-[#4f46e5]">● Physik LK · Induktion</span>
-                                    <span>3. Stunde</span>
-                                </div>
-
-                                <div class="flex items-center justify-between gap-3 py-1">
-                                    <div class="font-handwriting text-[34px] text-[#2d694c] font-bold leading-none">
-                                        U<span class="text-[20px]">ind</span> = −N · (dΦ/dt)
+                            <!-- Realistic Pro Notebook Concept Card -->
+                            <div class="my-auto bg-white border border-[#d8cfc2] rounded-[1.5rem] overflow-hidden shadow-xl">
+                                <!-- Realistic App Note Top Toolbar -->
+                                <div class="bg-[#faf7f2] border-b border-[#e5dcd0] px-4 py-2.5 flex items-center justify-between">
+                                    <div class="flex items-center gap-2 text-[11px] font-extrabold text-[#1f1b16]">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-[#4f46e5]"></span>
+                                        <span>Physik LK · Q1</span>
                                     </div>
-                                    <svg width="78" height="38" viewBox="0 0 96 44" fill="none" class="shrink-0">
-                                        <path d="M8 22 C14 6, 22 6, 28 22 C34 38, 42 38, 48 22 C54 6, 62 6, 68 22 C74 38, 82 38, 88 22" stroke="#4f46e5" stroke-width="2.6" stroke-linecap="round"/>
-                                        <line x1="4" y1="22" x2="92" y2="22" stroke="#2d694c" stroke-width="1.6" stroke-dasharray="4 3"/>
-                                    </svg>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-6 h-6 rounded-lg bg-[#2d694c] text-white flex items-center justify-center"><i data-lucide="pen-tool" class="w-3 h-3"></i></span>
+                                        <span class="w-6 h-6 rounded-lg bg-white border border-[#e5dcd0] text-[#6e665e] flex items-center justify-center"><i data-lucide="highlighter" class="w-3 h-3"></i></span>
+                                        <span class="w-6 h-6 rounded-lg bg-white border border-[#e5dcd0] text-[#6e665e] flex items-center justify-center"><i data-lucide="type" class="w-3 h-3"></i></span>
+                                        <span class="w-px h-4 bg-[#e5dcd0] mx-0.5"></span>
+                                        <span class="w-3 h-3 rounded-full bg-[#1f1b16]"></span>
+                                        <span class="w-3 h-3 rounded-full bg-[#2d694c] ring-2 ring-[#2d694c]/25"></span>
+                                        <span class="w-3 h-3 rounded-full bg-[#4f46e5]"></span>
+                                    </div>
                                 </div>
 
-                                <div class="bg-[#f4f9f6] border border-[#cfe2d7] rounded-xl px-3.5 pt-[7px] pb-[10px] leading-tight text-[11.5px] font-extrabold text-[#2d694c]">
-                                    Verknüpft mit: Physik Klausur (17. Nov)
+                                <!-- Ruled/Grid Page Inside Card -->
+                                <div class="paper-grid p-4 space-y-3">
+                                    <div class="flex items-center justify-between text-[10px] font-bold text-[#6e665e]">
+                                        <span>14. Nov 2026 · 3. Stunde</span>
+                                        <span class="text-[#2d694c] font-extrabold">Auto-Ordner: Physik LK</span>
+                                    </div>
+
+                                    <div class="text-[15px] font-black text-[#1f1b16] font-epilogue leading-tight">
+                                        Elektromagnetische <span style="background: linear-gradient(180deg, transparent 42%, rgba(250, 204, 21, 0.5) 42%, rgba(250, 204, 21, 0.5) 95%, transparent 95%); padding: 0 3px;">Induktion</span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-3">
+                                        <!-- Boxed Handwritten Equation -->
+                                        <div class="border border-[#2d694c]/30 rounded-xl px-3.5 py-2 flex-1" style="background: rgba(45, 105, 76, 0.06);">
+                                            <div class="font-handwriting text-[26px] text-[#2d694c] font-bold leading-none">
+                                                U<span class="text-[16px]">ind</span> = −N · (dΦ/dt)
+                                            </div>
+                                            <div class="text-[9.5px] font-semibold text-[#6e665e] mt-1">N: Windungen · Φ: mag. Fluss</div>
+                                        </div>
+
+                                        <!-- Realistic Magnet + Coil Physics Sketch -->
+                                        <svg width="112" height="58" viewBox="0 0 112 58" fill="none" class="shrink-0">
+                                            <!-- Bar Magnet N|S -->
+                                            <rect x="4" y="19" width="18" height="16" rx="2" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4"/>
+                                            <rect x="22" y="19" width="16" height="16" rx="2" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.4"/>
+                                            <text x="10" y="30" font-family="Plus Jakarta Sans,sans-serif" font-size="9" font-weight="800" fill="#dc2626">S</text>
+                                            <text x="26" y="30" font-family="Plus Jakarta Sans,sans-serif" font-size="9" font-weight="800" fill="#4f46e5">N</text>
+                                            <!-- Motion Arrow v -->
+                                            <line x1="41" y1="27" x2="54" y2="27" stroke="#1f1b16" stroke-width="1.5" stroke-linecap="round"/>
+                                            <path d="M51 24 L55 27 L51 30" stroke="#1f1b16" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <!-- Copper/Indigo Coil Loops -->
+                                            <ellipse cx="68" cy="27" rx="5" ry="12" stroke="#2d694c" stroke-width="1.8"/>
+                                            <ellipse cx="76" cy="27" rx="5" ry="12" stroke="#2d694c" stroke-width="1.8"/>
+                                            <ellipse cx="84" cy="27" rx="5" ry="12" stroke="#2d694c" stroke-width="1.8"/>
+                                            <!-- Circuit + Voltmeter V -->
+                                            <path d="M68 39 L68 50 L101 50 L101 39 L84 39" stroke="#6e665e" stroke-width="1.2"/>
+                                            <circle cx="88" cy="50" r="6" fill="#faf7f2" stroke="#1f1b16" stroke-width="1.2"/>
+                                            <text x="85" y="53" font-family="Plus Jakarta Sans,sans-serif" font-size="8" font-weight="800" fill="#1f1b16">V</text>
+                                        </svg>
+                                    </div>
+
+                                    <div class="bg-[#f4f9f6] border border-[#cfe2d7] rounded-xl px-3.5 pt-[7px] pb-[9px] leading-tight text-[11px] font-extrabold text-[#2d694c] flex items-center justify-between">
+                                        <span>Verknüpft: Physik Klausur (18. Nov)</span>
+                                        <span>✓</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1275,60 +1415,148 @@ In schooly greifen Stundenplan, Klausuren-Termine und Google Kalender nahtlos in
                     <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 1 als PNG laden</button>
                 </div>
 
-                <!-- SLIDE 7.2: FOLIE 08 TABLET PAPER MOCKUP SHOWCASE -->
+                <!-- SLIDE 7.2: REALISTISCHES SCHOOLY IPAD HEFTER-WORKSPACE MOCKUP -->
                 <div class="space-y-2.5 flex flex-col items-center">
                     <div class="ig-slide-viewport">
                         <div class="ig-canvas p-8" data-post="7" data-filename="schooly_beitrag7_slide2_tablet.png">
                             <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
-                                <span class="text-[#825500] font-extrabold">Smart Notebook</span>
+                                <span class="text-[#825500] font-extrabold">Concept Preview</span>
                                 <span>02 / 04</span>
                             </div>
 
-                            <div class="space-y-1.5">
-                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
-                                    Handschrift &amp; <span class="text-[#2d694c]">Tastatur</span> an einem Ort.
+                            <div class="space-y-1">
+                                <h3 class="text-[26px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    So sieht der Hefter <span class="text-[#2d694c]">in schooly aus.</span>
                                 </h3>
-                                <p class="text-[13px] font-medium text-[#6e665e]">
-                                    Mitschriften vom Tablet nahtlos auf dem Laptop weiterbearbeiten.
+                                <p class="text-[12.5px] font-medium text-[#6e665e]">
+                                    Fächer-Sidebar links, Tool-Dock oben, Notizblatt &amp; Klausuren vereint.
                                 </p>
                             </div>
 
-                            <!-- Sleek Tablet Mockup adapted from Pitch Deck Folie 08 -->
-                            <div class="my-auto bg-[#1f1b16] p-2.5 rounded-[1.5rem] shadow-2xl">
-                                <div class="paper-grid rounded-[1.05rem] overflow-hidden border border-[#d8cfc2]">
-                                    <!-- Toolbar -->
-                                    <div class="bg-[#f4ece4] border-b border-[#e5dcd0] px-3.5 py-2 flex items-center justify-between">
-                                        <div class="flex items-center gap-1.5 text-[11px] font-extrabold text-[#1f1b16]">
-                                            <span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span>
-                                            <span>Physik LK · Induktionsgesetz</span>
+                            <!-- Sleek Titanium iPad Landscape Mockup with Full Authentic schooly App UI -->
+                            <div class="my-auto bg-gradient-to-br from-[#4b453e] via-[#1f1b16] to-[#342f2a] p-[5px] rounded-[1.4rem] shadow-2xl">
+                                <div class="bg-[#faf7f2] rounded-[1.1rem] overflow-hidden border border-[#12100e]">
+                                    <!-- Top iPadOS / schooly Hefter Chrome + Floating Tool Dock -->
+                                    <div class="bg-[#faf7f2] border-b border-[#e5dcd0] px-2.5 py-2 flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-1.5 text-[9.5px] font-extrabold text-[#1f1b16]">
+                                            <img src="/assets/aistudio/schooly_app_icon_7d45ac62.svg" alt="schooly" data-crisp-img="true" style="width: 15px; height: 15px; display: block;" />
+                                            <span>Hefter</span>
+                                            <span class="text-[#6e665e]">/</span>
+                                            <span class="text-[#2d694c]">Physik LK</span>
                                         </div>
-                                        <div class="flex items-center gap-1 text-[#6e665e]">
-                                            <span class="w-6 h-6 rounded-md bg-[#2d694c] text-white flex items-center justify-center"><i data-lucide="pen-tool" class="w-3 h-3"></i></span>
-                                            <span class="w-6 h-6 rounded-md bg-white border border-[#e5dcd0] flex items-center justify-center"><i data-lucide="highlighter" class="w-3 h-3"></i></span>
-                                            <span class="w-6 h-6 rounded-md bg-white border border-[#e5dcd0] flex items-center justify-center"><i data-lucide="type" class="w-3 h-3"></i></span>
+
+                                        <!-- Realistic GoodNotes-style Pro Tool Dock -->
+                                        <div class="bg-white border border-[#e5dcd0] rounded-lg px-1.5 py-1 flex items-center gap-1 shadow-xs">
+                                            <span class="w-5 h-5 rounded bg-[#2d694c] text-white flex items-center justify-center"><i data-lucide="pen-tool" class="w-2.5 h-2.5"></i></span>
+                                            <span class="w-5 h-5 rounded bg-[#faf7f2] text-[#6e665e] flex items-center justify-center"><i data-lucide="highlighter" class="w-2.5 h-2.5"></i></span>
+                                            <span class="w-5 h-5 rounded bg-[#faf7f2] text-[#6e665e] flex items-center justify-center"><i data-lucide="eraser" class="w-2.5 h-2.5"></i></span>
+                                            <span class="w-5 h-5 rounded bg-[#faf7f2] text-[#6e665e] flex items-center justify-center"><i data-lucide="type" class="w-2.5 h-2.5"></i></span>
+                                            <span class="w-5 h-5 rounded bg-[#faf7f2] text-[#6e665e] flex items-center justify-center"><i data-lucide="shapes" class="w-2.5 h-2.5"></i></span>
+                                            <span class="w-px h-3.5 bg-[#e5dcd0] mx-0.5"></span>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-[#1f1b16]"></span>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-[#2d694c] ring-2 ring-[#2d694c]/30"></span>
+                                            <span class="w-2.5 h-2.5 rounded-full bg-[#4f46e5]"></span>
                                         </div>
+
+                                        <div class="text-[8.5px] font-extrabold text-[#2d694c]">Sync ✓</div>
                                     </div>
-                                    <!-- Paper Area -->
-                                    <div class="p-4 space-y-2.5">
-                                        <div class="text-[10px] font-bold text-[#6e665e]">14. November · 3. Stunde (Stundenplan-verknüpft)</div>
-                                        <div class="text-[14px] font-black text-[#1f1b16] font-epilogue leading-tight">
-                                            Elektromagnetische Induktion (Faraday)
-                                        </div>
-                                        <div class="flex items-center gap-3 pt-1">
-                                            <div class="font-handwriting text-[26px] text-[#2d694c] font-bold leading-none">
-                                                U<span class="text-[15px]">ind</span> = −N · (dΦ / dt)
+
+                                    <!-- 2-Column Split App Workspace -->
+                                    <div class="flex" style="height: 292px;">
+                                        <!-- Left schooly Subject Folders Sidebar -->
+                                        <div class="w-[114px] shrink-0 bg-[#faf7f2] border-r border-[#e5dcd0] p-2.5 flex flex-col justify-between">
+                                            <div class="space-y-1.5">
+                                                <div class="text-[8.5px] font-extrabold text-[#6e665e] px-1.5">FÄCHER · Q1</div>
+
+                                                <div class="bg-[#2d694c] text-white rounded-xl px-2 py-2 shadow-sm">
+                                                    <div class="flex items-center gap-1.5 text-[9.5px] font-extrabold">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#fed8b1]"></span>
+                                                        <span>Physik LK</span>
+                                                    </div>
+                                                    <div class="text-[8px] text-[#dcebe2] mt-0.5 pl-3">Induktion · S. 14</div>
+                                                </div>
+
+                                                <div class="bg-white border border-[#e5dcd0] rounded-xl px-2 py-1.5">
+                                                    <div class="flex items-center gap-1.5 text-[9px] font-bold text-[#1f1b16]">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb]"></span>
+                                                        <span>Mathematik</span>
+                                                    </div>
+                                                    <div class="text-[7.5px] text-[#6e665e] mt-0.5 pl-3">Vektoren · 22 S.</div>
+                                                </div>
+
+                                                <div class="bg-white border border-[#e5dcd0] rounded-xl px-2 py-1.5">
+                                                    <div class="flex items-center gap-1.5 text-[9px] font-bold text-[#1f1b16]">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#dc2626]"></span>
+                                                        <span>Geschichte</span>
+                                                    </div>
+                                                    <div class="text-[7.5px] text-[#6e665e] mt-0.5 pl-3">Weimar · 9 S.</div>
+                                                </div>
+
+                                                <div class="bg-white border border-[#e5dcd0] rounded-xl px-2 py-1.5">
+                                                    <div class="flex items-center gap-1.5 text-[9px] font-bold text-[#1f1b16]">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#d97706]"></span>
+                                                        <span>Deutsch</span>
+                                                    </div>
+                                                    <div class="text-[7.5px] text-[#6e665e] mt-0.5 pl-3">Epik · 11 S.</div>
+                                                </div>
                                             </div>
-                                            <svg width="74" height="34" viewBox="0 0 96 44" fill="none" class="shrink-0 opacity-85">
-                                                <path d="M8 22 C14 6, 22 6, 28 22 C34 38, 42 38, 48 22 C54 6, 62 6, 68 22 C74 38, 82 38, 88 22" stroke="#4f46e5" stroke-width="2.4" stroke-linecap="round"/>
-                                                <line x1="4" y1="22" x2="92" y2="22" stroke="#2d694c" stroke-width="1.5" stroke-dasharray="4 3"/>
-                                            </svg>
+
+                                            <div class="bg-rose-50 border border-rose-200 rounded-xl p-2">
+                                                <div class="text-[8px] font-extrabold text-[#dc2626]">Klausur 18. Nov</div>
+                                                <div class="text-[7.5px] font-semibold text-[#6e665e] mt-0.5">3 Lernzettel verknüpft</div>
+                                            </div>
                                         </div>
-                                        <p class="font-handwriting text-[18px] text-[#1f1b16] leading-snug">
-                                            → Je schneller sich Φ ändert, desto größer U.
-                                        </p>
-                                        <div class="pt-2 border-t border-[#e5dcd0] flex items-center justify-between text-[10px] font-bold text-[#2d694c]">
-                                            <span>Klausur-Link: 17. Nov</span>
-                                            <span class="text-[#6e665e]">Stylus &amp; Tastatur</span>
+
+                                        <!-- Main Karo-Papier Notebook Sheet -->
+                                        <div class="flex-1 paper-grid p-3.5 flex flex-col justify-between">
+                                            <div class="space-y-2.5">
+                                                <div class="flex items-center justify-between text-[8.5px] font-bold text-[#6e665e] border-b border-[#e5dcd0]/80 pb-1.5">
+                                                    <span>14. Nov 2026 · 3.–4. Std.</span>
+                                                    <span class="text-[#2d694c] font-extrabold">Seite 14 / 14</span>
+                                                </div>
+
+                                                <div>
+                                                    <div class="text-[13px] font-black text-[#1f1b16] font-epilogue leading-tight">
+                                                        Elektromagnetische <span style="background: linear-gradient(180deg, transparent 42%, rgba(250, 204, 21, 0.5) 42%, rgba(250, 204, 21, 0.5) 95%, transparent 95%); padding: 0 3px;">Induktion</span>
+                                                    </div>
+                                                    <p class="text-[9.5px] text-[#6e665e] mt-1 leading-snug font-medium">
+                                                        Ändert sich der magnetische Fluss Φ in einer Spule, wird eine elektrische Spannung induziert:
+                                                    </p>
+                                                </div>
+
+                                                <!-- Boxed Formula + Physics Diagram Side-by-Side -->
+                                                <div class="flex items-center gap-2 pt-0.5">
+                                                    <div class="border border-[#2d694c]/30 rounded-xl px-2.5 py-2 flex-1" style="background: rgba(45, 105, 76, 0.06);">
+                                                        <div class="text-[8px] font-extrabold text-[#2d694c]">FARADAY-GESETZ</div>
+                                                        <div class="font-handwriting text-[20px] text-[#2d694c] font-bold leading-none mt-0.5">
+                                                            U<span class="text-[12px]">ind</span> = −N · (dΦ/dt)
+                                                        </div>
+                                                    </div>
+                                                    <svg width="86" height="46" viewBox="0 0 112 58" fill="none" class="shrink-0">
+                                                        <rect x="4" y="19" width="18" height="16" rx="2" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4"/>
+                                                        <rect x="22" y="19" width="16" height="16" rx="2" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.4"/>
+                                                        <text x="10" y="30" font-family="Plus Jakarta Sans,sans-serif" font-size="9" font-weight="800" fill="#dc2626">S</text>
+                                                        <text x="26" y="30" font-family="Plus Jakarta Sans,sans-serif" font-size="9" font-weight="800" fill="#4f46e5">N</text>
+                                                        <line x1="41" y1="27" x2="54" y2="27" stroke="#1f1b16" stroke-width="1.5" stroke-linecap="round"/>
+                                                        <path d="M51 24 L55 27 L51 30" stroke="#1f1b16" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <ellipse cx="68" cy="27" rx="5" ry="12" stroke="#2d694c" stroke-width="1.8"/>
+                                                        <ellipse cx="76" cy="27" rx="5" ry="12" stroke="#2d694c" stroke-width="1.8"/>
+                                                        <ellipse cx="84" cy="27" rx="5" ry="12" stroke="#2d694c" stroke-width="1.8"/>
+                                                        <path d="M68 39 L68 50 L101 50 L101 39 L84 39" stroke="#6e665e" stroke-width="1.2"/>
+                                                        <circle cx="88" cy="50" r="6" fill="#faf7f2" stroke="#1f1b16" stroke-width="1.2"/>
+                                                        <text x="85" y="53" font-family="Plus Jakarta Sans,sans-serif" font-size="8" font-weight="800" fill="#1f1b16">V</text>
+                                                    </svg>
+                                                </div>
+
+                                                <div class="font-handwriting text-[15.5px] text-[#1f1b16] leading-snug pt-0.5">
+                                                    → Lenzsche Regel: Strom wirkt Ursache entgegen.
+                                                </div>
+                                            </div>
+
+                                            <div class="pt-2 border-t border-[#e5dcd0] flex items-center justify-between text-[8.5px] font-bold text-[#6e665e]">
+                                                <span class="text-[#2d694c] font-extrabold">Stundenplan-Sync: Aktiv</span>
+                                                <span>Stylus &amp; Tastatur</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
