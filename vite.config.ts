@@ -4,6 +4,12 @@ export default defineConfig({
   plugins: [
     {
       name: 'disable-vite-hmr-client',
+      transformIndexHtml: {
+        order: 'post',
+        handler(html) {
+          return html.replace(/<script\s+type="module"\s+src="\/@vite\/client"><\/script>\s*/gi, '');
+        },
+      },
       configureServer(server) {
         server.middlewares.use('/@vite/client', (_req, res) => {
           res.setHeader('Content-Type', 'application/javascript');

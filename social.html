@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>schooly – Instagram Studio (@schooly.app)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Epilogue:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        :root {
+            --bg-cream: #faf7f2;
+            --surface-warm: #f4ece4;
+            --border-hairline: #e5dcd0;
+            --text-primary: #1f1b16;
+            --text-muted: #6e665e;
+            --accent-sage: #2d694c;
+            --accent-sage-dark: #23533c;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4, .font-epilogue {
+            font-family: 'Epilogue', sans-serif;
+        }
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 4:5 Instagram Canvas (540x675 DOM -> exports at 2x scale = exact 1080x1350 px) */
+        .ig-slide-viewport {
+            width: 100%;
+            max-width: 340px;
+            aspect-ratio: 4 / 5;
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border-hairline);
+            box-shadow: 0 22px 48px -16px rgba(31, 27, 22, 0.14);
+            background: #faf7f2;
+        }
+        .ig-canvas {
+            width: 540px;
+            height: 675px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+            background: #faf7f2;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+        .ig-canvas-sage {
+            background: linear-gradient(155deg, #2d694c 0%, #204d37 100%);
+            color: #ffffff;
+        }
+        .ig-canvas-espresso {
+            background: linear-gradient(155deg, #27221d 0%, #171411 100%);
+            color: #ffffff;
+        }
+        .ig-canvas-warm {
+            background: #f4ece4;
+            color: #1f1b16;
+        }
+        .paper-grid {
+            background-color: #fdfbf7;
+            background-image:
+                linear-gradient(to right, rgba(45, 105, 76, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(45, 105, 76, 0.08) 1px, transparent 1px);
+            background-size: 22px 22px;
+        }
+
+        /* Ultra-Slim Titanium / Obsidian iPhone 16 Pro Mockup */
+        .iphone-stage {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .iphone-chassis {
+            position: relative;
+            background: linear-gradient(145deg, #575049 0%, #24201c 35%, #171411 72%, #3d3731 100%);
+            padding: 2px;
+            border-radius: 2.2rem;
+            box-shadow:
+                0 34px 68px -14px rgba(24, 20, 16, 0.38),
+                0 14px 26px -10px rgba(24, 20, 16, 0.22),
+                0 0 0 0.75px rgba(255, 255, 255, 0.22) inset;
+        }
+        .iphone-btn-left-1,
+        .iphone-btn-left-2,
+        .iphone-btn-left-3,
+        .iphone-btn-right {
+            position: absolute;
+            background: linear-gradient(180deg, #575049 0%, #2b2621 50%, #48423b 100%);
+            z-index: 0;
+        }
+        .iphone-btn-left-1 { left: -2px; top: 56px; width: 2px; height: 14px; border-radius: 2px 0 0 2px; }
+        .iphone-btn-left-2 { left: -2px; top: 80px; width: 2px; height: 24px; border-radius: 2px 0 0 2px; }
+        .iphone-btn-left-3 { left: -2px; top: 112px; width: 2px; height: 24px; border-radius: 2px 0 0 2px; }
+        .iphone-btn-right  { right: -2px; top: 90px; width: 2px; height: 36px; border-radius: 0 2px 2px 0; }
+
+        .iphone-bezel {
+            position: relative;
+            background: #12100e;
+            padding: 9px 3px 3px 3px;
+            border-radius: 2.08rem;
+            box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.7) inset;
+            z-index: 2;
+        }
+        .iphone-island {
+            position: absolute;
+            top: 2.5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 42px;
+            height: 4.5px;
+            border-radius: 999px;
+            background: #060504;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 3px;
+            box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+            z-index: 20;
+        }
+        .iphone-lens {
+            width: 2.5px;
+            height: 2.5px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 35% 35%, #3d6b8a 0%, #101d28 65%, #05080b 100%);
+        }
+        .iphone-screen {
+            width: 100%;
+            aspect-ratio: 780 / 1688;
+            border-radius: 1.9rem;
+            overflow: hidden;
+            background: #faf7f2;
+            position: relative;
+        }
+        .iphone-glass {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 34%, transparent 52%);
+            pointer-events: none;
+            z-index: 10;
+        }
+        .screenshot-img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: fill;
+        }
+
+        /* Realistic Ultra-Slim MacBook / Laptop Mockup for Carousel 1 & 3 */
+        .mac-frame {
+            background: linear-gradient(145deg, #4b453e 0%, #1c1916 100%);
+            padding: 7px 5px 5px 5px;
+            border-radius: 0.75rem 0.75rem 0 0;
+            position: relative;
+            box-shadow: 0 22px 44px -14px rgba(24, 20, 16, 0.32);
+        }
+        .mac-cam {
+            width: 3px;
+            height: 3px;
+            border-radius: 999px;
+            background: #3d3731;
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .mac-screen {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            border-radius: 0.3rem;
+            overflow: hidden;
+            background: #faf7f2;
+            position: relative;
+        }
+        .mac-base {
+            height: 9px;
+            background: linear-gradient(180deg, #564f47 0%, #312c27 100%);
+            border-radius: 0 0 0.7rem 0.7rem;
+            width: 106%;
+            margin-left: -3%;
+            position: relative;
+        }
+        .mac-notch {
+            width: 42px;
+            height: 2.5px;
+            background: #1a1714;
+            border-radius: 0 0 3px 3px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 3-ZONE TOP BAR -->
+    <header class="sticky top-0 z-50 bg-[#faf7f2]/95 backdrop-blur-md border-b border-[#e5dcd0] px-4 sm:px-8 py-3 flex items-center justify-between gap-8">
+        <a href="/pitchdeck.html" class="flex items-center gap-2.5 whitespace-nowrap shrink-0">
+            <img src="/assets/schooly_logo_transparent.png" alt="schooly" class="h-7 w-auto object-contain" />
+        </a>
+
+        <nav class="hidden md:flex items-center gap-5 text-sm font-bold text-[#6e665e]">
+            <a href="#profil" class="hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Profil</a>
+            <a href="#beitrag-1" class="hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Beitrag 1</a>
+            <a href="#beitrag-2" class="hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Beitrag 2</a>
+            <a href="#beitrag-3" class="hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Beitrag 3</a>
+            <a href="#beitrag-5" class="hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Beitrag 5</a>
+            <a href="#beitrag-7" class="hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Beitrag 7</a>
+        </nav>
+
+        <div class="flex items-center gap-3 shrink-0">
+            <button id="exportAllBtn" onclick="downloadAllPosts(this)" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap shrink-0">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Alle 19 Slides exportieren</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-16">
+
+        <!-- HERO INTRO -->
+        <section class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#e5dcd0] pb-8">
+            <div class="space-y-2 max-w-2xl">
+                <div class="text-xs font-extrabold text-[#2d694c]">Instagram Launch Kit · @schooly.app</div>
+                <h1 class="text-3xl sm:text-4xl font-black text-[#1f1b16] font-epilogue tracking-tight" style="text-wrap: balance;">
+                    Profil, Highlights &amp; deine 5 Instagram-Beiträge
+                </h1>
+                <p class="text-sm text-[#6e665e] font-medium leading-relaxed">
+                    Alle Slides sind im nativen Instagram 4:5 Hochformat in <span class="tabular-nums font-bold text-[#1f1b16]">4K-Qualität (2160 × 2700 px)</span> angelegt — inklusive Kalender &amp; Prüfungsdruck (Beitrag 5) und Roadmap-Teaser Digitaler Hefter (Beitrag 7).
+                </p>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-bold text-[#6e665e] shrink-0">
+                <span>Format: 4:5 (4K · 2160×2700)</span>
+                <span aria-hidden="true">·</span>
+                <span>5 Karussells (19 Slides)</span>
+            </div>
+        </section>
+
+        <!-- SECTION 1: INSTAGRAM PROFIL SETUP (@schooly.app) -->
+        <section id="profil" class="space-y-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <div class="text-xs font-extrabold text-[#2d694c]">01. Komplettes Instagram-Profil</div>
+                    <h2 class="text-2xl font-black text-[#1f1b16] font-epilogue mt-0.5">@schooly.app · Profilvorschau &amp; Assets</h2>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <button onclick="downloadAvatarPng(this)" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap">
+                        <i data-lucide="image" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                        <span>Profilbild (4K)</span>
+                    </button>
+                    <button onclick="downloadAllHighlights(this)" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                        <span>5 Highlight-Covers (4K)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <!-- Authentic Instagram Profile Preview Card -->
+                <div class="lg:col-span-6 bg-white border border-[#e5dcd0] rounded-[2rem] p-6 sm:p-8 flex flex-col justify-between gap-6">
+                    <div class="space-y-5">
+                        <div class="flex items-center justify-between text-xs font-extrabold text-[#1f1b16] pb-3 border-b border-[#f0e8dc]">
+                            <span>@schooly.app</span>
+                            <span class="text-[#6e665e] font-semibold">Live-Vorschau</span>
+                        </div>
+
+                        <div class="flex items-center gap-5">
+                            <!-- Profile Avatar Preview -->
+                            <div class="w-20 h-20 rounded-full p-[2.5px] bg-gradient-to-tr from-[#f59e0b] via-[#2d694c] to-[#10b981] shrink-0">
+                                <div class="w-full h-full rounded-full bg-[#faf7f2] border-2 border-white flex items-center justify-center p-3">
+                                    <img src="/assets/aistudio/schooly_app_icon_7d45ac62.svg" alt="schooly Avatar" class="w-full h-full object-contain" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4 flex-1 text-center">
+                                <div>
+                                    <div class="text-base font-black text-[#1f1b16] tabular-nums">5</div>
+                                    <div class="text-[11px] font-medium text-[#6e665e]">Beiträge</div>
+                                </div>
+                                <div>
+                                    <div class="text-base font-black text-[#1f1b16] tabular-nums">–</div>
+                                    <div class="text-[11px] font-medium text-[#6e665e]">Follower</div>
+                                </div>
+                                <div>
+                                    <div class="text-base font-black text-[#1f1b16] tabular-nums">–</div>
+                                    <div class="text-[11px] font-medium text-[#6e665e]">Gefolgt</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1 text-sm">
+                            <div class="font-extrabold text-[#1f1b16]">schooly · Schul- &amp; Noten-App</div>
+                            <div class="text-xs font-semibold text-[#6e665e]">Bildung · App</div>
+                            <p class="text-[13px] text-[#1f1b16] leading-relaxed whitespace-pre-line pt-1">Dein Schuljahr. Eine App. 🎒
+📊 Live-Schnitt, Wunschnote &amp; ABI-Rechner
+📅 Stundenplan, Kalender &amp; Freundes-Duell
+✨ Bald kostenlos für Handy, Tablet &amp; Laptop</p>
+                        </div>
+                    </div>
+
+                    <!-- Story Highlights Row -->
+                    <div class="pt-4 border-t border-[#f0e8dc]">
+                        <div class="text-[11px] font-bold text-[#6e665e] mb-3">Story Highlights (einzeln anklickbar zum Download)</div>
+                        <div class="grid grid-cols-5 gap-2 text-center">
+                            <button onclick="downloadSingleHighlight('Start', 'rocket')" class="group flex flex-col items-center gap-1.5 cursor-pointer">
+                                <div class="w-12 h-12 rounded-full bg-[#faf7f2] border border-[#e5dcd0] group-hover:border-[#2d694c] flex items-center justify-center text-[#2d694c] transition-colors">
+                                    <i data-lucide="rocket" class="w-5 h-5"></i>
+                                </div>
+                                <span class="text-[11px] font-semibold text-[#1f1b16]">Start</span>
+                            </button>
+                            <button onclick="downloadSingleHighlight('Noten', 'calculator')" class="group flex flex-col items-center gap-1.5 cursor-pointer">
+                                <div class="w-12 h-12 rounded-full bg-[#faf7f2] border border-[#e5dcd0] group-hover:border-[#2d694c] flex items-center justify-center text-[#2d694c] transition-colors">
+                                    <i data-lucide="calculator" class="w-5 h-5"></i>
+                                </div>
+                                <span class="text-[11px] font-semibold text-[#1f1b16]">Noten</span>
+                            </button>
+                            <button onclick="downloadSingleHighlight('ABI-Check', 'graduation-cap')" class="group flex flex-col items-center gap-1.5 cursor-pointer">
+                                <div class="w-12 h-12 rounded-full bg-[#faf7f2] border border-[#e5dcd0] group-hover:border-[#2d694c] flex items-center justify-center text-[#2d694c] transition-colors">
+                                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                                </div>
+                                <span class="text-[11px] font-semibold text-[#1f1b16]">ABI-Check</span>
+                            </button>
+                            <button onclick="downloadSingleHighlight('Duell', 'swords')" class="group flex flex-col items-center gap-1.5 cursor-pointer">
+                                <div class="w-12 h-12 rounded-full bg-[#faf7f2] border border-[#e5dcd0] group-hover:border-[#2d694c] flex items-center justify-center text-[#2d694c] transition-colors">
+                                    <i data-lucide="swords" class="w-5 h-5"></i>
+                                </div>
+                                <span class="text-[11px] font-semibold text-[#1f1b16]">Duell</span>
+                            </button>
+                            <button onclick="downloadSingleHighlight('Roadmap', 'pen-tool')" class="group flex flex-col items-center gap-1.5 cursor-pointer">
+                                <div class="w-12 h-12 rounded-full bg-[#faf7f2] border border-[#e5dcd0] group-hover:border-[#2d694c] flex items-center justify-center text-[#2d694c] transition-colors">
+                                    <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                                </div>
+                                <span class="text-[11px] font-semibold text-[#1f1b16]">Roadmap</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3-Column Instagram Feed Grid Preview (5 Beiträge) -->
+                    <div class="pt-4 border-t border-[#f0e8dc]">
+                        <div class="flex items-center justify-between text-[11px] font-bold text-[#6e665e] mb-2.5">
+                            <span>Feed-Vorschau im 3er-Grid (5 Beiträge)</span>
+                            <span>Jedes Cover einzigartig</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <a href="#beitrag-7" class="aspect-[4/5] rounded-xl paper-grid border border-[#ded3c4] p-2.5 flex flex-col justify-between text-[#1f1b16] hover:opacity-95 transition-opacity">
+                                <span class="text-[9px] font-extrabold text-[#825500]">Beitrag 7</span>
+                                <div class="font-handwriting text-[15px] font-bold text-[#2d694c] leading-none">U = -N·dΦ/dt</div>
+                                <div class="text-[9.5px] font-black leading-tight font-epilogue">Digitaler Hefter</div>
+                            </a>
+                            <a href="#beitrag-5" class="aspect-[4/5] rounded-xl bg-[#f4ece4] border border-[#e5dcd0] p-2.5 flex flex-col justify-between text-[#1f1b16] hover:opacity-95 transition-opacity">
+                                <span class="text-[9px] font-extrabold text-[#2d694c]">Beitrag 5</span>
+                                <div class="bg-white rounded-lg px-1.5 py-1 border border-[#e5dcd0] text-[8.5px] font-extrabold text-[#b91c1c]">Prüfungsdruck</div>
+                                <div class="text-[9.5px] font-black leading-tight font-epilogue">Kalender &amp; Sync</div>
+                            </a>
+                            <a href="#beitrag-3" class="aspect-[4/5] rounded-xl bg-[#1f1b16] p-2.5 flex flex-col justify-between text-white hover:opacity-95 transition-opacity">
+                                <span class="text-[9px] font-extrabold text-[#fed8b1]">Beitrag 3</span>
+                                <div class="bg-[#faf7f2] text-[#1f1b16] rounded-lg px-1.5 py-1 text-[9px] font-black flex items-center justify-between">
+                                    <span>13,00</span>
+                                    <span class="text-[#6e665e] font-bold text-[8px]">vs</span>
+                                    <span class="text-[#b45309]">11,83</span>
+                                </div>
+                                <div class="text-[9.5px] font-black leading-tight font-epilogue">Besserer Schnitt?</div>
+                            </a>
+                            <a href="#beitrag-2" class="aspect-[4/5] rounded-xl bg-[#2d694c] p-2.5 flex flex-col justify-between text-white hover:opacity-95 transition-opacity">
+                                <span class="text-[9px] font-extrabold text-[#cfe2d7]">Beitrag 2</span>
+                                <div class="bg-[#faf7f2] text-[#1f1b16] rounded-lg px-1.5 py-1 text-[9px] font-black">Ziel: 1,0 → 14 Pkt</div>
+                                <div class="text-[9.5px] font-black leading-tight font-epilogue">Wunschnote</div>
+                            </a>
+                            <a href="#beitrag-1" class="aspect-[4/5] rounded-xl bg-[#faf7f2] border border-[#e5dcd0] p-2.5 flex flex-col justify-between text-[#1f1b16] hover:opacity-95 transition-opacity">
+                                <span class="text-[9px] font-extrabold text-[#2d694c]">Beitrag 1</span>
+                                <div class="w-9 h-14 mx-auto rounded-lg border-2 border-[#1f1b16] bg-white overflow-hidden">
+                                    <img src="/assets/screenshot_dashboard_mobile.png" alt="Beitrag 1 Preview" class="w-full h-full object-cover object-top" />
+                                </div>
+                                <div class="text-[9.5px] font-black leading-tight font-epilogue">5 Apps? Eine reicht.</div>
+                            </a>
+                            <div class="aspect-[4/5] rounded-xl border border-dashed border-[#ded3c4] p-2.5 flex flex-col items-center justify-center text-center text-[9.5px] font-bold text-[#6e665e]">
+                                Nächster Post geplant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Copyable Profile Fields -->
+                <div class="lg:col-span-6 bg-white border border-[#e5dcd0] rounded-[2rem] p-6 sm:p-8 flex flex-col justify-between gap-5">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-[#f0e8dc] pb-3">
+                            <span class="text-xs font-extrabold text-[#1f1b16]">Direkt ins Instagram-Profil kopieren</span>
+                            <button onclick="copyText(document.getElementById('bioCopyBlock').innerText, this)" class="text-xs font-extrabold text-[#2d694c] hover:underline cursor-pointer">
+                                Bio kopieren
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                            <div class="pb-3 border-b border-[#f0e8dc]">
+                                <div class="text-[#6e665e] font-semibold">Account-Name</div>
+                                <div class="font-extrabold text-[#1f1b16] mt-1">schooly · Schul- &amp; Noten-App</div>
+                            </div>
+                            <div class="pb-3 border-b border-[#f0e8dc]">
+                                <div class="text-[#6e665e] font-semibold">Benutzername (@Handle)</div>
+                                <div class="font-extrabold text-[#2d694c] mt-1">@schooly.app</div>
+                            </div>
+                            <div class="pb-3 border-b border-[#f0e8dc]">
+                                <div class="text-[#6e665e] font-semibold">Kategorie</div>
+                                <div class="font-bold text-[#1f1b16] mt-1">Bildung / App-Seite</div>
+                            </div>
+                            <div class="pb-3 border-b border-[#f0e8dc]">
+                                <div class="text-[#6e665e] font-semibold">Launch-Hinweis</div>
+                                <div class="font-bold text-[#1f1b16] mt-1">Web-App (PWA) · Link folgt zum Start</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-semibold text-[#6e665e] mb-1.5">Bio-Text (Option 1)</div>
+                            <pre id="bioCopyBlock" class="bg-[#faf7f2] border border-[#e5dcd0] rounded-2xl p-4 text-xs font-sans text-[#1f1b16] leading-relaxed whitespace-pre-wrap">Dein Schuljahr. Eine App. 🎒
+📊 Live-Schnitt, Wunschnote &amp; ABI-Rechner
+📅 Stundenplan, Kalender &amp; Freundes-Duell
+✨ Bald kostenlos für Handy, Tablet &amp; Laptop</pre>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-[#f0e8dc] text-xs text-[#6e665e] font-medium">
+                        Tipp: Lade oben das 4K-Profilbild (2160×2160) und die 5 Highlight-Covers (2160×3840) herunter und lade sie direkt in deiner Instagram-App hoch.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             BEITRAG 1: LAUNCH & VORSTELLUNG (4 SLIDES)
+             ===================================================================== -->
+        <section id="beitrag-1" class="space-y-6 pt-4 border-t border-[#e5dcd0]">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <div class="text-xs font-extrabold text-[#2d694c]">Beitrag 01 · Karussell (4 Slides)</div>
+                    <h2 class="text-2xl font-black text-[#1f1b16] font-epilogue mt-0.5">Launch: „5 Schul-Apps? Ab heute reicht eine.“</h2>
+                </div>
+                <button onclick="downloadPostSlides(1, this)" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Beitrag 1 (4 PNGs)</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- SLIDE 1.1: COVER -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="1" data-filename="schooly_beitrag1_slide1_cover.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <img src="/assets/schooly_logo_transparent.png" alt="schooly" class="h-6 w-auto object-contain" />
+                                <span>01 / 04 · Launch</span>
+                            </div>
+
+                            <div class="mt-3 text-left space-y-2">
+                                <h3 class="text-[32px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    5 Schul-Apps? Ab heute <span class="text-[#2d694c]">reicht eine.</span>
+                                </h3>
+                                <p class="text-[13.5px] font-semibold text-[#6e665e]">
+                                    Noten, Stundenplan, Kalender &amp; Abitur in einer App.
+                                </p>
+                            </div>
+
+                            <div class="flex-1 flex items-center justify-center relative pt-3">
+                                <div class="iphone-stage" style="transform: rotate(-2.5deg);">
+                                    <div class="iphone-chassis" style="width: 190px;">
+                                        <div class="iphone-btn-left-1"></div>
+                                        <div class="iphone-btn-left-2"></div>
+                                        <div class="iphone-btn-left-3"></div>
+                                        <div class="iphone-btn-right"></div>
+                                        <div class="iphone-bezel">
+                                            <div class="iphone-island"><div class="iphone-lens"></div></div>
+                                            <div class="iphone-screen">
+                                                <img src="/assets/screenshot_dashboard_mobile.png" alt="schooly Dashboard" class="screenshot-img" />
+                                                <div class="iphone-glass"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#2d694c]">
+                                <span>@schooly.app</span>
+                                <span class="text-[#6e665e]">Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 1 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 1.2: PROBLEM VS LÖSUNG -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="1" data-filename="schooly_beitrag1_slide2_problem.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Schul-Chaos adé</span>
+                                <span>02 / 04</span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Vorher verstreut. Jetzt verbunden.
+                                </h3>
+                            </div>
+
+                            <div class="space-y-4 my-auto">
+                                <div class="bg-[#fdf8f6] border border-[#eed8d3] rounded-3xl p-5 space-y-2.5">
+                                    <div class="text-[14px] font-black text-rose-900 font-epilogue">Vorher im Alltag</div>
+                                    <div class="text-[12.5px] font-semibold text-[#6e665e] leading-snug space-y-1.5">
+                                        <div>✕ Noten in einer separaten App</div>
+                                        <div>✕ Klausuren in Notizen versteckt</div>
+                                        <div>✕ Schnitte mühsam selbst ausrechnen</div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-[#f4f9f6] border border-[#cfe2d7] rounded-3xl p-5 space-y-2.5">
+                                    <div class="text-[14px] font-black text-[#2d694c] font-epilogue">Ab heute mit schooly</div>
+                                    <div class="text-[12.5px] font-semibold text-[#1f1b16] leading-snug space-y-1.5">
+                                        <div>✓ Alles greift automatisch ineinander</div>
+                                        <div>✓ Live-Schnitt bei jeder neuen Note</div>
+                                        <div>✓ Echtzeit-Sync auf Handy &amp; Laptop</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#6e665e]">
+                                <span>@schooly.app</span>
+                                <span>Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 2 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 1.3: HANDY + LAPTOP SYNC -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="1" data-filename="schooly_beitrag1_slide3_sync.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Alle Geräte</span>
+                                <span>03 / 04</span>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Unterwegs am Handy. <span class="text-[#2d694c]">Zuhause am Laptop.</span>
+                                </h3>
+                                <p class="text-[13px] font-medium text-[#6e665e]">
+                                    Tagesfokus, Stundenplan &amp; Live-Schnitt synchronisiert.
+                                </p>
+                            </div>
+
+                            <div class="flex-1 flex items-center justify-center relative my-auto">
+                                <div class="w-[82%] mr-auto">
+                                    <div class="mac-frame">
+                                        <div class="mac-cam"></div>
+                                        <div class="mac-screen">
+                                            <img src="/assets/screenshot_dashboard.png" alt="schooly Laptop" class="screenshot-img" />
+                                        </div>
+                                    </div>
+                                    <div class="mac-base"><div class="mac-notch"></div></div>
+                                </div>
+
+                                <div class="iphone-stage shrink-0 -ml-24 z-10 translate-y-6">
+                                    <div class="iphone-chassis" style="width: 144px; border-radius: 1.75rem; padding: 1.5px;">
+                                        <div class="iphone-btn-right" style="top: 66px; height: 26px; width: 1.5px; right: -1.5px;"></div>
+                                        <div class="iphone-bezel" style="padding: 7px 2.5px 2.5px 2.5px; border-radius: 1.65rem;">
+                                            <div class="iphone-island" style="width: 34px; height: 3.8px; top: 2px;"><div class="iphone-lens" style="width: 2px; height: 2px;"></div></div>
+                                            <div class="iphone-screen" style="border-radius: 1.48rem;">
+                                                <img src="/assets/screenshot_dashboard_mobile.png" alt="schooly Mobile" class="screenshot-img" />
+                                                <div class="iphone-glass"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#6e665e]">
+                                <span>Web-App (PWA) · Offline-fähig</span>
+                                <span>Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 3 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 1.4: CTA -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-sage p-8" data-post="1" data-filename="schooly_beitrag1_slide4_cta.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#cfe2d7]">
+                                <span>Jetzt starten</span>
+                                <span>04 / 04</span>
+                            </div>
+
+                            <div class="my-auto space-y-6">
+                                <div class="inline-flex items-center bg-[#faf7f2] px-4 py-2.5 rounded-2xl shadow-sm">
+                                    <img src="/assets/schooly_logo_transparent.png" alt="schooly" data-crisp-img="true" style="width: 102px; height: 34px; display: block;" />
+                                </div>
+                                <h3 class="text-[34px] font-black text-white font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    Bereit für deinen besten Schnitt?
+                                </h3>
+                                <p class="text-[14px] text-[#dcebe2] font-medium leading-relaxed">
+                                    Direkt im Browser starten oder auf dem Home-Bildschirm installieren — ohne App-Store-Umweg.
+                                </p>
+
+                                <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/20 text-left">
+                                    <div>
+                                        <div class="text-[20px] font-black font-epilogue tabular-nums">0 €</div>
+                                        <div class="text-[11px] text-[#dcebe2] font-semibold">Kostenloser Start</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-[20px] font-black font-epilogue tabular-nums">0–15</div>
+                                        <div class="text-[11px] text-[#dcebe2] font-semibold">&amp; 1–6 Noten</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-[20px] font-black font-epilogue">16</div>
+                                        <div class="text-[11px] text-[#dcebe2] font-semibold">Bundesländer</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-white/20 flex items-center justify-between text-[13px] font-extrabold text-white">
+                                <span>@schooly.app</span>
+                                <span class="text-[#fed8b1]">Speichern 📌</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 4 als PNG laden</button>
+                </div>
+            </div>
+
+            <!-- Caption Box Post 1 -->
+            <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="text-xs text-[#1f1b16] leading-relaxed whitespace-pre-line flex-1" id="caption-post-1">Schluss mit 5 verschiedenen Apps für Noten, Hausaufgaben und Stundenplan. 😮‍💨
+Mit schooly hast du deinen aktuellen Schnitt (0–15 Pkt. &amp; 1–6), deinen Tagesfokus, alle Klausuren und deine Abitur-Prognose an einem Ort — synchronisiert auf Handy und Laptop.
+
+👉 Folge @schooly.app für den Launch und alle Updates!
+#schule #oberstufe #abitur #lernapp #notenrechner #schulorganisation #schooly</div>
+                <button onclick="copyText(document.getElementById('caption-post-1').innerText, this)" class="px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                    Caption kopieren
+                </button>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             BEITRAG 2: WUNSCHNOTE & FÄCHERRECHNER (3 SLIDES)
+             ===================================================================== -->
+        <section id="beitrag-2" class="space-y-6 pt-4 border-t border-[#e5dcd0]">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <div class="text-xs font-extrabold text-[#2d694c]">Beitrag 02 · Karussell (3 Slides)</div>
+                    <h2 class="text-2xl font-black text-[#1f1b16] font-epilogue mt-0.5">Notenrechner: „Welche Note brauchst du in der nächsten Klausur?“</h2>
+                </div>
+                <button onclick="downloadPostSlides(2, this)" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Beitrag 2 (3 PNGs)</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl">
+                <!-- SLIDE 2.1: COVER (SALBEIGRÜN + ZOOMED WUNSCHNOTEN-UI-CARD, KEIN HANDY) -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-sage p-8" data-post="2" data-filename="schooly_beitrag2_slide1_cover.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#cfe2d7]">
+                                <span>Fächer &amp; Noten</span>
+                                <span>01 / 03</span>
+                            </div>
+
+                            <div class="mt-2 space-y-2">
+                                <h3 class="text-[32px] font-black text-white font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    Welche Note brauchst du für dein <span class="text-[#fed8b1]">Wunschziel?</span>
+                                </h3>
+                                <p class="text-[13.5px] font-medium text-[#dcebe2]">
+                                    Rechne nie wieder vor der Klausur im Kopf.
+                                </p>
+                            </div>
+
+                            <!-- Floating Zoomed App UI Card -->
+                            <div class="my-auto bg-[#faf7f2] text-[#1f1b16] rounded-[1.75rem] p-6 space-y-4 shadow-xl">
+                                <div class="flex items-center justify-between border-b border-[#e5dcd0] pb-3.5">
+                                    <div>
+                                        <div class="text-[11px] font-bold text-[#6e665e]">Leistungskurs · 50% Klausur</div>
+                                        <div class="text-[20px] font-black font-epilogue mt-0.5">Mathematik</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-[26px] font-black font-epilogue tabular-nums leading-none">13,50</div>
+                                        <div class="text-[11px] font-extrabold text-[#2d694c] mt-1 tabular-nums">Note 1,2</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between text-[12.5px] font-bold">
+                                    <span class="text-[#6e665e]">Dein Halbjahres-Ziel</span>
+                                    <span class="font-extrabold text-[#1f1b16] tabular-nums">14,00 Pkt. (1,0)</span>
+                                </div>
+
+                                <div class="bg-[#2d694c]/10 border border-[#2d694c]/25 rounded-2xl px-4 py-3 flex items-center justify-between">
+                                    <span class="text-[12.5px] font-bold text-[#2d694c]">Nächste Klausur</span>
+                                    <span class="text-[15px] font-black text-[#2d694c] font-epilogue tabular-nums">mind. 14 Pkt.</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-white/20 flex items-center justify-between text-[12px] font-extrabold text-white">
+                                <span>@schooly.app</span>
+                                <span class="text-[#cfe2d7]">Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 1 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 2.2: APP SHOWCASE IM ULTRA-SLIM IPHONE -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="2" data-filename="schooly_beitrag2_slide2_app.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Präzise Berechnung</span>
+                                <span>02 / 03</span>
+                            </div>
+
+                            <div class="mt-2 space-y-1.5">
+                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    Jedes Fach exakt nach <span class="text-[#2d694c]">deinen Regeln.</span>
+                                </h3>
+                                <p class="text-[13px] font-semibold text-[#6e665e]">
+                                    Gewichtung, LK-Bonus &amp; 0–15 / 1–6 Umrechnung.
+                                </p>
+                            </div>
+
+                            <div class="flex-1 flex items-center justify-center relative pt-2">
+                                <div class="iphone-stage" style="transform: rotate(2deg);">
+                                    <div class="iphone-chassis" style="width: 186px;">
+                                        <div class="iphone-btn-left-1"></div>
+                                        <div class="iphone-btn-left-2"></div>
+                                        <div class="iphone-btn-left-3"></div>
+                                        <div class="iphone-btn-right"></div>
+                                        <div class="iphone-bezel">
+                                            <div class="iphone-island"><div class="iphone-lens"></div></div>
+                                            <div class="iphone-screen">
+                                                <img src="/assets/screenshot_faecher_mobile.png" alt="schooly Fächerliste" class="screenshot-img" />
+                                                <div class="iphone-glass"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#2d694c]">
+                                <span>@schooly.app</span>
+                                <span class="text-[#6e665e]">Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 2 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 2.3: SAVEABLE WARM CTA -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-warm p-8" data-post="2" data-filename="schooly_beitrag2_slide3_cta.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Klausurenphase</span>
+                                <span>03 / 03</span>
+                            </div>
+
+                            <div class="my-auto space-y-6">
+                                <div class="text-[52px] font-black font-epilogue text-[#2d694c] leading-none tabular-nums">15,00 → 1,00</div>
+                                <h3 class="text-[31px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Behalte deinen Schnitt immer im Blick.
+                                </h3>
+                                <p class="text-[14px] text-[#6e665e] font-medium leading-relaxed">
+                                    Jede eingetragene Note aktualisiert sofort Halbjahr, Gesamtschnitt und deine Zielprognose.
+                                </p>
+                            </div>
+
+                            <div class="pt-4 border-t border-[#ded3c4] flex items-center justify-between text-[13px] font-extrabold text-[#1f1b16]">
+                                <span>Speichern für später 📌</span>
+                                <span class="text-[#2d694c]">@schooly.app</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 3 als PNG laden</button>
+                </div>
+            </div>
+
+            <!-- Caption Box Post 2 -->
+            <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="text-xs text-[#1f1b16] leading-relaxed whitespace-pre-line flex-1" id="caption-post-2">Kurz vor der Klausur noch schnell im Kopf ausrechnen, ob es noch für die 1,7 reicht? Mach’s dir leichter. 🧮✨
+In schooly stellst du pro Fach deine genaue Gewichtung (Klausuren vs. Sonstiges) ein und siehst sofort deine Punktzahl, umgerechnete Note und was du als Nächstes brauchst.
+
+Speicher dir den Beitrag für die nächste Klausurenphase! 📌
+#klausurenphase #abitur2026 #noten #gymnasium #schülerleben #notenschnitt #schooly</div>
+                <button onclick="copyText(document.getElementById('caption-post-2').innerText, this)" class="px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                    Caption kopieren
+                </button>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             BEITRAG 3: FREUNDES-DUELL & INSIGHTS (4 SLIDES)
+             ===================================================================== -->
+        <section id="beitrag-3" class="space-y-6 pt-4 border-t border-[#e5dcd0]">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <div class="text-xs font-extrabold text-[#2d694c]">Beitrag 03 · Karussell (4 Slides)</div>
+                    <h2 class="text-2xl font-black text-[#1f1b16] font-epilogue mt-0.5">Viral Hook: „Wer von euch hat den besseren Schnitt?“</h2>
+                </div>
+                <button onclick="downloadPostSlides(3, this)" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Beitrag 3 (4 PNGs)</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- SLIDE 3.1: COVER (ESPRESSO DARK + DUELL-UI-CARD, KEIN HANDY) -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-espresso p-8" data-post="3" data-filename="schooly_beitrag3_slide1_cover.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#c7bdb3]">
+                                <span class="text-[#fed8b1] font-extrabold">Freundes-Duell</span>
+                                <span>01 / 04</span>
+                            </div>
+
+                            <div class="mt-2 space-y-2">
+                                <h3 class="text-[32px] font-black text-white font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    Wer hat eigentlich den <span class="text-[#fed8b1]">besseren Schnitt?</span>
+                                </h3>
+                                <p class="text-[13.5px] font-medium text-[#d6cdc4]">
+                                    Direkter Vergleich mit deinen Freunden – Fach für Fach.
+                                </p>
+                            </div>
+
+                            <!-- Floating Authentic Battle UI Card -->
+                            <div class="my-auto bg-[#faf7f2] text-[#1f1b16] rounded-[1.75rem] p-5 space-y-4 shadow-xl">
+                                <div class="flex items-center justify-between px-1">
+                                    <div class="text-center flex-1">
+                                        <div class="w-11 h-11 rounded-full bg-white border-2 border-[#2d694c]/30 text-[#2d694c] font-black text-[13px] flex items-center justify-center mx-auto">MA</div>
+                                        <div class="text-[12px] font-extrabold mt-2">Max</div>
+                                        <div class="text-[24px] font-black text-[#2d694c] font-epilogue tabular-nums leading-none mt-1.5">13,00</div>
+                                        <div class="text-[9.5px] font-bold text-[#6e665e] mt-1.5">DEIN Ø</div>
+                                    </div>
+
+                                    <div class="shrink-0 px-2 text-center">
+                                        <div class="w-8 h-8 rounded-full bg-white border border-[#e5dcd0] flex items-center justify-center text-[11px] font-black text-[#1f1b16] mx-auto">VS</div>
+                                        <div class="text-[10px] font-bold text-[#6e665e] mt-1.5 tabular-nums">5 : 1</div>
+                                    </div>
+
+                                    <div class="text-center flex-1">
+                                        <div class="w-11 h-11 rounded-full bg-[#f4ece4] border-2 border-[#d97706]/30 text-[#b45309] font-black text-[13px] flex items-center justify-center mx-auto">LU</div>
+                                        <div class="text-[12px] font-extrabold mt-2">Lukas M.</div>
+                                        <div class="text-[24px] font-black text-[#b45309] font-epilogue tabular-nums leading-none mt-1.5">11,83</div>
+                                        <div class="text-[9.5px] font-bold text-[#6e665e] mt-1.5">FREUND Ø</div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-[#d1fae5] border border-[#a7f3d0] text-[#14532d] rounded-full py-2 px-3 text-center text-[11.5px] font-extrabold">
+                                    🏆 +1,17 Pkt Vorsprung für dich!
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[12px] font-extrabold text-white">
+                                <span>@schooly.app</span>
+                                <span class="text-[#c7bdb3]">Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 1 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 3.2: HANDY SHOWCASE FREUNDES-DUELL -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="3" data-filename="schooly_beitrag3_slide2_duell.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Head-to-Head</span>
+                                <span>02 / 04</span>
+                            </div>
+
+                            <div class="mt-2 space-y-1.5">
+                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    Jedes gemeinsame Fach im <span class="text-[#2d694c]">Vergleich.</span>
+                                </h3>
+                                <p class="text-[13px] font-semibold text-[#6e665e]">
+                                    Sieh sofort, wo du vorne liegst – ganz ohne Zettel.
+                                </p>
+                            </div>
+
+                            <div class="flex-1 flex items-center justify-center relative pt-2">
+                                <div class="iphone-stage" style="transform: rotate(-2deg);">
+                                    <div class="iphone-chassis" style="width: 186px;">
+                                        <div class="iphone-btn-left-1"></div>
+                                        <div class="iphone-btn-left-2"></div>
+                                        <div class="iphone-btn-left-3"></div>
+                                        <div class="iphone-btn-right"></div>
+                                        <div class="iphone-bezel">
+                                            <div class="iphone-island"><div class="iphone-lens"></div></div>
+                                            <div class="iphone-screen">
+                                                <img src="/assets/screenshot_insights_mobile.png" alt="schooly Freundes-Duell" class="screenshot-img" />
+                                                <div class="iphone-glass"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#2d694c]">
+                                <span>@schooly.app</span>
+                                <span class="text-[#6e665e]">Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 2 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 3.3: DIAGRAMME & TRENDS (MACBOOK) -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="3" data-filename="schooly_beitrag3_slide3_charts.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Insights &amp; Trends</span>
+                                <span>03 / 04</span>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Jeder Trend in <span class="text-[#2d694c]">echten Diagrammen.</span>
+                                </h3>
+                                <p class="text-[13px] font-medium text-[#6e665e]">
+                                    Punkteverteilung, Verlaufs-Kurve und Fächer-Ranking.
+                                </p>
+                            </div>
+
+                            <div class="my-auto py-2">
+                                <div class="mac-frame">
+                                    <div class="mac-cam"></div>
+                                    <div class="mac-screen">
+                                        <img src="/assets/screenshot_insights_charts_laptop.png" alt="schooly Insights Diagramme" class="screenshot-img" />
+                                    </div>
+                                </div>
+                                <div class="mac-base"><div class="mac-notch"></div></div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#6e665e]">
+                                <span>Übersicht · Diagramme · Vergleich</span>
+                                <span>Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 3 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 3.4: VIRAL COMMENT CTA -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-sage p-8" data-post="3" data-filename="schooly_beitrag3_slide4_cta.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#cfe2d7]">
+                                <span>Challenge</span>
+                                <span>04 / 04</span>
+                            </div>
+
+                            <div class="my-auto space-y-6">
+                                <div class="bg-white/12 border border-white/20 rounded-3xl p-6 space-y-2">
+                                    <div class="text-[12px] font-bold text-[#fed8b1]">Aktueller Duell-Stand</div>
+                                    <div class="flex items-baseline justify-between font-epilogue font-black">
+                                        <span class="text-[28px] text-white tabular-nums">13,00</span>
+                                        <span class="text-[14px] text-[#dcebe2]">vs</span>
+                                        <span class="text-[28px] text-[#fed8b1] tabular-nums">11,83</span>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-[30px] font-black text-white font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Wen forderst du als Erstes heraus?
+                                </h3>
+                                <p class="text-[14px] text-[#dcebe2] font-medium leading-relaxed">
+                                    Markier deinen Lernpartner oder schick diesen Beitrag in eure Klassengruppe.
+                                </p>
+                            </div>
+
+                            <div class="pt-4 border-t border-white/20 flex items-center justify-between text-[13px] font-extrabold text-white">
+                                <span>In Kommentaren markieren 👇</span>
+                                <span>@schooly.app</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 4 als PNG laden</button>
+                </div>
+            </div>
+
+            <!-- Caption Box Post 3 -->
+            <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="text-xs text-[#1f1b16] leading-relaxed whitespace-pre-line flex-1" id="caption-post-3">„Ich hab bestimmt den besseren Schnitt als du.“ – Zeit für Fakten. 👀⚔️
+Mit dem Freundes-Duell in schooly vergleichst du deinen Gesamtschnitt und einzelne Fächer direkt mit deinen Freunden – plus Notenverteilung &amp; Verlaufs-Diagramme für maximale Motivation.
+
+👇 Markier jemanden in den Kommentaren, gegen den du direkt antreten würdest!
+#freundesduell #schule #oberstufe #lerntipps #studytok #abiturvorbereitung #schooly</div>
+                <button onclick="copyText(document.getElementById('caption-post-3').innerText, this)" class="px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                    Caption kopieren
+                </button>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             BEITRAG 5: KALENDER & PRÜFUNGSDRUCK (4 SLIDES)
+             ===================================================================== -->
+        <section id="beitrag-5" class="space-y-6 pt-4 border-t border-[#e5dcd0]">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <div class="text-xs font-extrabold text-[#2d694c]">Beitrag 05 · Karussell / Reel (4 Slides)</div>
+                    <h2 class="text-2xl font-black text-[#1f1b16] font-epilogue mt-0.5">Kalender &amp; Prüfungsdruck: Stundenplan, Klausuren &amp; Google-Sync</h2>
+                </div>
+                <button onclick="downloadPostSlides(5, this)" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Beitrag 5 (4 PNGs)</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- SLIDE 5.1: COVER (WARM SAND + PRÜFUNGSDRUCK-CARD, KEIN HANDY) -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-warm p-8" data-post="5" data-filename="schooly_beitrag5_slide1_cover.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Planer &amp; Kalender</span>
+                                <span>01 / 04</span>
+                            </div>
+
+                            <div class="mt-2 space-y-2">
+                                <h3 class="text-[31px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    Nie wieder von <span class="text-[#2d694c]">drei Klausuren</span> überrascht.
+                                </h3>
+                                <p class="text-[13.5px] font-semibold text-[#6e665e]">
+                                    Stundenplan, Aufgaben &amp; Google Kalender vereint.
+                                </p>
+                            </div>
+
+                            <!-- Floating Workload & Exams Card -->
+                            <div class="my-auto bg-white border border-[#e5dcd0] rounded-[1.75rem] p-5 space-y-4 shadow-xl">
+                                <div class="flex items-center justify-between border-b border-[#f0e8dc] pb-3">
+                                    <div>
+                                        <div class="text-[11px] font-bold text-[#6e665e]">Wochen-Arbeitslast · KW 46</div>
+                                        <div class="text-[18px] font-black text-[#1f1b16] font-epilogue mt-0.5">Prüfungsdruck</div>
+                                    </div>
+                                    <span class="inline-block px-3 pt-[5px] pb-[8px] leading-tight rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-extrabold">Hoch · 2 Klausuren</span>
+                                </div>
+
+                                <div class="space-y-2 text-[12px] font-bold">
+                                    <div class="flex items-center justify-between bg-[#faf7f2] rounded-xl px-3 py-2 border border-[#ede3d8]">
+                                        <span class="text-[#1f1b16]">Di · Physik LK Klausur</span>
+                                        <span class="text-rose-700 font-extrabold">100 Min</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-[#faf7f2] rounded-xl px-3 py-2 border border-[#ede3d8]">
+                                        <span class="text-[#1f1b16]">Do · Geschichte Klausur</span>
+                                        <span class="text-[#2d694c] font-extrabold">Quellen</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between text-[11.5px] font-extrabold text-[#2d694c] pt-1">
+                                    <span>Google Kalender Synchronisation aktiv</span>
+                                    <span>✓</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#ded3c4] flex items-center justify-between text-[12px] font-extrabold text-[#1f1b16]">
+                                <span>@schooly.app</span>
+                                <span class="text-[#6e665e]">Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 1 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 5.2: MACBOOK KALENDER SCREENSHOT -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="5" data-filename="schooly_beitrag5_slide2_kalender.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Echter App-Einblick</span>
+                                <span>02 / 04</span>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Alles im <span class="text-[#2d694c]">Zusammenhang</span> sehen.
+                                </h3>
+                                <p class="text-[13px] font-medium text-[#6e665e]">
+                                    Monatsansicht, Wochen-Fokus &amp; direkte Fächerverknüpfung.
+                                </p>
+                            </div>
+
+                            <div class="my-auto py-2">
+                                <div class="mac-frame">
+                                    <div class="mac-cam"></div>
+                                    <div class="mac-screen">
+                                        <img src="/assets/screenshot_kalender_laptop.png" alt="schooly Kalender Laptop" class="screenshot-img" />
+                                    </div>
+                                </div>
+                                <div class="mac-base"><div class="mac-notch"></div></div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#6e665e]">
+                                <span>Monat · Woche · Stundenplan</span>
+                                <span>Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 2 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 5.3: 3 FEATURES -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="5" data-filename="schooly_beitrag5_slide3_sync.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Smarte Planung</span>
+                                <span>03 / 04</span>
+                            </div>
+
+                            <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                Dein Schuljahr vorausgedacht.
+                            </h3>
+
+                            <div class="space-y-3.5 my-auto">
+                                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5">
+                                    <div class="text-[14px] font-extrabold text-[#1f1b16]">Prüfungsdruck-Indikator</div>
+                                    <p class="text-[12.5px] text-[#6e665e] mt-1 leading-relaxed">
+                                        Erkennt volle Klausuren-Wochen frühzeitig, damit du rechtzeitig vorlernen kannst.
+                                    </p>
+                                </div>
+
+                                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5">
+                                    <div class="text-[14px] font-extrabold text-[#1f1b16]">Stundenplan + Aufgaben</div>
+                                    <p class="text-[12.5px] text-[#6e665e] mt-1 leading-relaxed">
+                                        Hausaufgaben und Tests hängen automatisch am richtigen Fach und Unterrichtstag.
+                                    </p>
+                                </div>
+
+                                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5">
+                                    <div class="text-[14px] font-extrabold text-[#1f1b16]">Google Kalender Sync</div>
+                                    <p class="text-[12.5px] text-[#6e665e] mt-1 leading-relaxed">
+                                        Importiert persönliche Termine direkt in deinen Schulplaner und erinnert rechtzeitig.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#6e665e]">
+                                <span>@schooly.app</span>
+                                <span>Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 3 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 5.4: SAVEABLE CTA -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-sage p-8" data-post="5" data-filename="schooly_beitrag5_slide4_cta.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#cfe2d7]">
+                                <span>Prüfungsphase</span>
+                                <span>04 / 04</span>
+                            </div>
+
+                            <div class="my-auto space-y-6">
+                                <div class="text-[48px] font-black font-epilogue text-[#fed8b1] leading-none">0 Chaos</div>
+                                <h3 class="text-[31px] font-black text-white font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Behalte jede Klausurwoche unter Kontrolle.
+                                </h3>
+                                <p class="text-[14px] text-[#dcebe2] font-medium leading-relaxed">
+                                    Weniger Last-Minute-Stress durch klaren Wochenfokus und Google-Kalender-Abgleich.
+                                </p>
+                            </div>
+
+                            <div class="pt-4 border-t border-white/20 flex items-center justify-between text-[13px] font-extrabold text-white">
+                                <span>Speichern für später 📌</span>
+                                <span>@schooly.app</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 4 als PNG laden</button>
+                </div>
+            </div>
+
+            <!-- Caption Box Post 5 -->
+            <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="text-xs text-[#1f1b16] leading-relaxed whitespace-pre-line flex-1" id="caption-post-5">Montag Physik-Klausur, Mittwoch Vortrag, Donnerstag Geschichte – und du merkst es erst am Sonntagabend? 😅📅
+In schooly greifen Stundenplan, Klausuren-Termine und Google Kalender nahtlos ineinander. Der Prüfungsdruck-Indikator zeigt dir volle Wochen frühzeitig an, bevor der Stress losgeht.
+
+📌 Speicher dir den Beitrag für die nächste Klausurenphase! (@schooly.app)
+#klausuren #prüfungsdruck #stundenplan #lernorganisation #schule #abitur #schooly</div>
+                <button onclick="copyText(document.getElementById('caption-post-5').innerText, this)" class="px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                    Caption kopieren
+                </button>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             BEITRAG 7: SNEAK PEEK – DIGITALER HEFTER (4 SLIDES · ROADMAP HYPE)
+             ===================================================================== -->
+        <section id="beitrag-7" class="space-y-6 pt-4 border-t border-[#e5dcd0]">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <div class="text-xs font-extrabold text-[#825500]">Beitrag 07 · Roadmap Teaser &amp; Hype-Post (4 Slides)</div>
+                    <h2 class="text-2xl font-black text-[#1f1b16] font-epilogue mt-0.5">Sneak Peek: Digitaler Hefter (Stylus + Tastatur direkt in schooly)</h2>
+                </div>
+                <button onclick="downloadPostSlides(7, this)" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Beitrag 7 (4 PNGs)</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- SLIDE 7.1: COVER (KARO-PAPIER + HANDSCHRIFT + HYPE HOOK, KEIN HANDY) -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas paper-grid p-8" data-post="7" data-filename="schooly_beitrag7_slide1_cover.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#825500] font-extrabold">Roadmap · Sneak Peek</span>
+                                <span>01 / 04</span>
+                            </div>
+
+                            <div class="mt-2 space-y-2">
+                                <h3 class="text-[32px] font-black text-[#1f1b16] font-epilogue leading-[1.06] tracking-tight" style="text-wrap: balance;">
+                                    Digitaler Hefter direkt in <span class="text-[#2d694c]">schooly.</span>
+                                </h3>
+                                <p class="text-[13.5px] font-semibold text-[#6e665e]">
+                                    Stylus &amp; Tastatur verknüpft mit Stundenplan und Klausuren.
+                                </p>
+                            </div>
+
+                            <!-- Crisp Handwriting + Coil Vector Preview -->
+                            <div class="my-auto bg-white/95 border border-[#d8cfc2] rounded-[1.75rem] p-6 space-y-4 shadow-xl">
+                                <div class="flex items-center justify-between text-[11px] font-extrabold text-[#6e665e] border-b border-[#ede3d8] pb-2.5">
+                                    <span class="text-[#4f46e5]">● Physik LK · Induktion</span>
+                                    <span>3. Stunde</span>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3 py-1">
+                                    <div class="font-handwriting text-[34px] text-[#2d694c] font-bold leading-none">
+                                        U<span class="text-[20px]">ind</span> = −N · (dΦ/dt)
+                                    </div>
+                                    <svg width="78" height="38" viewBox="0 0 96 44" fill="none" class="shrink-0">
+                                        <path d="M8 22 C14 6, 22 6, 28 22 C34 38, 42 38, 48 22 C54 6, 62 6, 68 22 C74 38, 82 38, 88 22" stroke="#4f46e5" stroke-width="2.6" stroke-linecap="round"/>
+                                        <line x1="4" y1="22" x2="92" y2="22" stroke="#2d694c" stroke-width="1.6" stroke-dasharray="4 3"/>
+                                    </svg>
+                                </div>
+
+                                <div class="bg-[#f4f9f6] border border-[#cfe2d7] rounded-xl px-3.5 pt-[7px] pb-[10px] leading-tight text-[11.5px] font-extrabold text-[#2d694c]">
+                                    Verknüpft mit: Physik Klausur (17. Nov)
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#d8cfc2] flex items-center justify-between text-[12px] font-extrabold text-[#1f1b16]">
+                                <span>@schooly.app</span>
+                                <span class="text-[#825500]">Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 1 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 7.2: FOLIE 08 TABLET PAPER MOCKUP SHOWCASE -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="7" data-filename="schooly_beitrag7_slide2_tablet.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#825500] font-extrabold">Smart Notebook</span>
+                                <span>02 / 04</span>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Handschrift &amp; <span class="text-[#2d694c]">Tastatur</span> an einem Ort.
+                                </h3>
+                                <p class="text-[13px] font-medium text-[#6e665e]">
+                                    Mitschriften vom Tablet nahtlos auf dem Laptop weiterbearbeiten.
+                                </p>
+                            </div>
+
+                            <!-- Sleek Tablet Mockup adapted from Pitch Deck Folie 08 -->
+                            <div class="my-auto bg-[#1f1b16] p-2.5 rounded-[1.5rem] shadow-2xl">
+                                <div class="paper-grid rounded-[1.05rem] overflow-hidden border border-[#d8cfc2]">
+                                    <!-- Toolbar -->
+                                    <div class="bg-[#f4ece4] border-b border-[#e5dcd0] px-3.5 py-2 flex items-center justify-between">
+                                        <div class="flex items-center gap-1.5 text-[11px] font-extrabold text-[#1f1b16]">
+                                            <span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span>
+                                            <span>Physik LK · Induktionsgesetz</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-[#6e665e]">
+                                            <span class="w-6 h-6 rounded-md bg-[#2d694c] text-white flex items-center justify-center"><i data-lucide="pen-tool" class="w-3 h-3"></i></span>
+                                            <span class="w-6 h-6 rounded-md bg-white border border-[#e5dcd0] flex items-center justify-center"><i data-lucide="highlighter" class="w-3 h-3"></i></span>
+                                            <span class="w-6 h-6 rounded-md bg-white border border-[#e5dcd0] flex items-center justify-center"><i data-lucide="type" class="w-3 h-3"></i></span>
+                                        </div>
+                                    </div>
+                                    <!-- Paper Area -->
+                                    <div class="p-4 space-y-2.5">
+                                        <div class="text-[10px] font-bold text-[#6e665e]">14. November · 3. Stunde (Stundenplan-verknüpft)</div>
+                                        <div class="text-[14px] font-black text-[#1f1b16] font-epilogue leading-tight">
+                                            Elektromagnetische Induktion (Faraday)
+                                        </div>
+                                        <div class="flex items-center gap-3 pt-1">
+                                            <div class="font-handwriting text-[26px] text-[#2d694c] font-bold leading-none">
+                                                U<span class="text-[15px]">ind</span> = −N · (dΦ / dt)
+                                            </div>
+                                            <svg width="74" height="34" viewBox="0 0 96 44" fill="none" class="shrink-0 opacity-85">
+                                                <path d="M8 22 C14 6, 22 6, 28 22 C34 38, 42 38, 48 22 C54 6, 62 6, 68 22 C74 38, 82 38, 88 22" stroke="#4f46e5" stroke-width="2.4" stroke-linecap="round"/>
+                                                <line x1="4" y1="22" x2="92" y2="22" stroke="#2d694c" stroke-width="1.5" stroke-dasharray="4 3"/>
+                                            </svg>
+                                        </div>
+                                        <p class="font-handwriting text-[18px] text-[#1f1b16] leading-snug">
+                                            → Je schneller sich Φ ändert, desto größer U.
+                                        </p>
+                                        <div class="pt-2 border-t border-[#e5dcd0] flex items-center justify-between text-[10px] font-bold text-[#2d694c]">
+                                            <span>Klausur-Link: 17. Nov</span>
+                                            <span class="text-[#6e665e]">Stylus &amp; Tastatur</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#6e665e]">
+                                <span>@schooly.app</span>
+                                <span>Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 2 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 7.3: WARUM KEIN MEDIENBRUCH -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas p-8" data-post="7" data-filename="schooly_beitrag7_slide3_vorteile.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#6e665e]">
+                                <span class="text-[#2d694c] font-extrabold">Kein Medienbruch</span>
+                                <span>03 / 04</span>
+                            </div>
+
+                            <h3 class="text-[28px] font-black text-[#1f1b16] font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                Warum wir einen eigenen Hefter bauen.
+                            </h3>
+
+                            <div class="space-y-3.5 my-auto">
+                                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5">
+                                    <div class="text-[14px] font-extrabold text-[#1f1b16]">Stylus + Tastatur vereint</div>
+                                    <p class="text-[12.5px] text-[#6e665e] mt-1 leading-relaxed">
+                                        Auf dem iPad oder Tablet mit Stift skizzieren und am Laptop direkt per Tastatur ausformulieren.
+                                    </p>
+                                </div>
+
+                                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5">
+                                    <div class="text-[14px] font-extrabold text-[#1f1b16]">Auto-Sortierung nach Fach</div>
+                                    <p class="text-[12.5px] text-[#6e665e] mt-1 leading-relaxed">
+                                        Neue Seiten landen durch deinen Stundenplan automatisch im richtigen Fach-Ordner.
+                                    </p>
+                                </div>
+
+                                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5">
+                                    <div class="text-[14px] font-extrabold text-[#1f1b16]">Direkt bei der Klausur</div>
+                                    <p class="text-[12.5px] text-[#6e665e] mt-1 leading-relaxed">
+                                        Mitschriften und Lernzettel direkt mit deinen anstehenden Klausuren verknüpft.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[12px] font-extrabold text-[#6e665e]">
+                                <span>@schooly.app</span>
+                                <span>Wischen →</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 3 als PNG laden</button>
+                </div>
+
+                <!-- SLIDE 7.4: HYPE POLL CTA -->
+                <div class="space-y-2.5 flex flex-col items-center">
+                    <div class="ig-slide-viewport">
+                        <div class="ig-canvas ig-canvas-espresso p-8" data-post="7" data-filename="schooly_beitrag7_slide4_hype.png">
+                            <div class="flex items-center justify-between text-[12px] font-bold text-[#fed8b1]">
+                                <span>Coming Soon · Roadmap</span>
+                                <span>04 / 04</span>
+                            </div>
+
+                            <div class="my-auto space-y-6">
+                                <div class="text-[14px] font-extrabold tracking-wide text-[#fed8b1]">
+                                    Nächstes großes Upgrade
+                                </div>
+
+                                <h3 class="text-[31px] font-black text-white font-epilogue leading-[1.08] tracking-tight" style="text-wrap: balance;">
+                                    Würdest du damit deine alte Notiz-App ersetzen?
+                                </h3>
+                                <p class="text-[14px] text-[#d6cdc4] font-medium leading-relaxed">
+                                    Noten, Termine &amp; Hefter endlich in einem System — ohne Hin-und-her-Kopieren vor Klausuren.
+                                </p>
+                            </div>
+
+                            <div class="pt-4 border-t border-white/15 flex items-center justify-between text-[13px] font-extrabold text-white">
+                                <span>👍 oder 👀 in die Kommentare!</span>
+                                <span class="text-[#fed8b1]">@schooly.app</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 4 als PNG laden</button>
+                </div>
+            </div>
+
+            <!-- Caption Box Post 7 -->
+            <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="text-xs text-[#1f1b16] leading-relaxed whitespace-pre-line flex-1" id="caption-post-7">Stell dir vor, deine Notiz-App weiß automatisch, welche Stunde gerade läuft – und verknüpft deinen Aufschrieb direkt mit der nächsten Klausur. 🤯📓✨
+Genau daran arbeiten wir als nächstes Upgrade für schooly: Der Digitale Hefter (Stylus + Tastatur) nativ direkt im Schulsystem.
+
+👇 Hand aufs Herz: Würdest du dafür GoodNotes oder deine alte Notiz-App ablösen? Schreib’s in die Kommentare! (@schooly.app)
+#digitalerhefter #ipadnotes #goodnotes #schule #oberstufe #lernapp #abitur #schooly</div>
+                <button onclick="copyText(document.getElementById('caption-post-7').innerText, this)" class="px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                    Caption kopieren
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#faf7f2] border-t border-[#e5dcd0] py-5 text-center text-xs font-semibold text-[#6e665e]">
+        schooly Instagram Studio · @schooly.app · Export in 4K-Qualität (2160 × 2700 px · 4:5 Feed-Format)
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        function scalePreviews() {
+            document.querySelectorAll('.ig-slide-viewport').forEach((vp) => {
+                const canvas = vp.querySelector('.ig-canvas');
+                if (!canvas) return;
+                const scale = vp.clientWidth / 540;
+                canvas.style.transform = `scale(${scale})`;
+            });
+        }
+        window.addEventListener('resize', scalePreviews);
+        scalePreviews();
+
+        async function copyText(text, btn) {
+            try {
+                await navigator.clipboard.writeText(text);
+                if (btn) {
+                    const orig = btn.textContent;
+                    btn.textContent = 'Kopiert!';
+                    setTimeout(() => btn.textContent = orig, 1600);
+                }
+            } catch (_) {}
+        }
+
+        async function loadImageAsDataUrl(path) {
+            const url = path.startsWith('http') ? path : window.location.origin + path;
+            const res = await fetch(url, { credentials: 'same-origin' });
+            const blob = await res.blob();
+            return await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        function triggerDownload(dataUrl, filename) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        function drawRoundedRectPath(ctx, x, y, w, h, r) {
+            const rad = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + rad, y);
+            ctx.arcTo(x + w, y, x + w, y + h, rad);
+            ctx.arcTo(x + w, y + h, x, y + h, rad);
+            ctx.arcTo(x, y + h, x, y, rad);
+            ctx.arcTo(x, y, x + w, y, rad);
+            ctx.closePath();
+        }
+
+        const IG_EXPORT_SCALE = 4; // 540x675 * 4 = 2160x2700 (4K 4:5 Instagram PNG)
+
+        // Exports an ig-canvas at exact 2160x2700 px (4K) with full-native-res rounded screenshots + glass sheen
+        async function renderIgSlidePng(canvasEl) {
+            if (document.fonts && document.fonts.ready) {
+                await document.fonts.ready;
+            }
+            const imgCache = {};
+            for (const img of canvasEl.querySelectorAll('img')) {
+                const src = img.getAttribute('src');
+                if (src && !src.startsWith('data:') && !imgCache[src]) {
+                    imgCache[src] = await loadImageAsDataUrl(src);
+                }
+            }
+
+            const stage = document.createElement('div');
+            stage.style.cssText = 'position:fixed;left:-20000px;top:0;width:540px;height:675px;overflow:hidden;pointer-events:none;z-index:-1;';
+            document.body.appendChild(stage);
+
+            try {
+                const clone = canvasEl.cloneNode(true);
+                clone.style.transform = 'none';
+                clone.style.position = 'static';
+                clone.querySelectorAll('img').forEach(img => {
+                    const src = img.getAttribute('src');
+                    if (src && imgCache[src]) img.setAttribute('src', imgCache[src]);
+                });
+                stage.appendChild(clone);
+
+                await Promise.all(Array.from(clone.querySelectorAll('img')).map(im => im.decode ? im.decode().catch(() => {}) : Promise.resolve()));
+                await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+                const outCanvas = await html2canvas(clone, {
+                    width: 540,
+                    height: 675,
+                    windowWidth: 540,
+                    windowHeight: 675,
+                    x: 0,
+                    y: 0,
+                    scrollX: 0,
+                    scrollY: 0,
+                    scale: IG_EXPORT_SCALE,
+                    useCORS: true,
+                    logging: false
+                });
+
+                // Composite crisp native-resolution screenshots & logos onto a clean 4K (2160x2700) canvas
+                // (isolates from any leftover html2canvas transform/clip state)
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = outCanvas.width;
+                finalCanvas.height = outCanvas.height;
+                const ctx = finalCanvas.getContext('2d');
+                ctx.drawImage(outCanvas, 0, 0);
+                const cloneRect = clone.getBoundingClientRect();
+
+                const chassisOverlays = Array.from(clone.querySelectorAll('.iphone-chassis')).map(ch => {
+                    const cr = ch.getBoundingClientRect();
+                    const stageEl = ch.closest('.iphone-stage');
+                    let angle = 0;
+                    if (stageEl) {
+                        const tf = getComputedStyle(stageEl).transform;
+                        if (tf && tf !== 'none') {
+                            const m = tf.match(/matrix\(([^)]+)\)/);
+                            if (m) {
+                                const [a, b] = m[1].split(',').map(Number);
+                                angle = Math.atan2(b, a);
+                            }
+                        }
+                    }
+                    return {
+                        cx: ((cr.left + cr.right) / 2 - cloneRect.left) * IG_EXPORT_SCALE,
+                        cy: ((cr.top + cr.bottom) / 2 - cloneRect.top) * IG_EXPORT_SCALE,
+                        w: ch.offsetWidth * IG_EXPORT_SCALE,
+                        h: ch.offsetHeight * IG_EXPORT_SCALE,
+                        rad: (parseFloat(getComputedStyle(ch).borderTopLeftRadius) || 32) * IG_EXPORT_SCALE,
+                        angle
+                    };
+                });
+
+                const screens = Array.from(clone.querySelectorAll('.mac-screen, .iphone-screen'));
+                for (const scr of screens) {
+                    const imgEl = scr.querySelector('img');
+                    if (!imgEl || !imgEl.naturalWidth) continue;
+
+                    const sr = scr.getBoundingClientRect();
+                    const stageEl = scr.closest('.iphone-stage');
+                    let angleRad = 0;
+                    if (stageEl) {
+                        const tf = getComputedStyle(stageEl).transform;
+                        if (tf && tf !== 'none') {
+                            const m = tf.match(/matrix\(([^)]+)\)/);
+                            if (m) {
+                                const [a, b] = m[1].split(',').map(Number);
+                                angleRad = Math.atan2(b, a);
+                            }
+                        }
+                    }
+
+                    const cssW = scr.offsetWidth;
+                    const cssH = scr.offsetHeight;
+                    const cx = ((sr.left + sr.right) / 2 - cloneRect.left) * IG_EXPORT_SCALE;
+                    const cy = ((sr.top + sr.bottom) / 2 - cloneRect.top) * IG_EXPORT_SCALE;
+                    const drawW = cssW * IG_EXPORT_SCALE;
+                    const drawH = cssH * IG_EXPORT_SCALE;
+                    const rad = (parseFloat(getComputedStyle(scr).borderTopLeftRadius) || 0) * IG_EXPORT_SCALE;
+
+                    if (scr.classList.contains('mac-screen') && chassisOverlays.length > 0) {
+                        const macCanvas = document.createElement('canvas');
+                        macCanvas.width = finalCanvas.width;
+                        macCanvas.height = finalCanvas.height;
+                        const mctx = macCanvas.getContext('2d');
+                        mctx.save();
+                        mctx.translate(cx, cy);
+                        if (angleRad) mctx.rotate(angleRad);
+                        drawRoundedRectPath(mctx, -drawW / 2, -drawH / 2, drawW, drawH, rad);
+                        mctx.clip();
+                        mctx.imageSmoothingEnabled = true;
+                        mctx.imageSmoothingQuality = 'high';
+                        mctx.drawImage(imgEl, -drawW / 2, -drawH / 2, drawW, drawH);
+                        mctx.restore();
+
+                        for (const ch of chassisOverlays) {
+                            mctx.save();
+                            mctx.translate(ch.cx, ch.cy);
+                            if (ch.angle) mctx.rotate(ch.angle);
+                            mctx.globalCompositeOperation = 'destination-out';
+                            mctx.fillStyle = '#000';
+                            drawRoundedRectPath(mctx, -ch.w / 2 - 2, -ch.h / 2 - 2, ch.w + 4, ch.h + 4, ch.rad + 2);
+                            mctx.fill();
+                            mctx.restore();
+                        }
+
+                        ctx.drawImage(macCanvas, 0, 0);
+                        continue;
+                    }
+
+                    ctx.save();
+                    ctx.translate(cx, cy);
+                    if (angleRad) ctx.rotate(angleRad);
+                    drawRoundedRectPath(ctx, -drawW / 2, -drawH / 2, drawW, drawH, rad);
+                    ctx.clip();
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(imgEl, -drawW / 2, -drawH / 2, drawW, drawH);
+
+                    // Subtle glass reflection over screen
+                    if (scr.classList.contains('iphone-screen')) {
+                        const grad = ctx.createLinearGradient(-drawW / 2, -drawH / 2, drawW / 2, drawH / 2);
+                        grad.addColorStop(0, 'rgba(255,255,255,0.14)');
+                        grad.addColorStop(0.35, 'rgba(255,255,255,0.03)');
+                        grad.addColorStop(0.55, 'rgba(255,255,255,0)');
+                        ctx.fillStyle = grad;
+                        ctx.fillRect(-drawW / 2, -drawH / 2, drawW, drawH);
+                    }
+                    ctx.restore();
+                }
+
+                // Also composite crisp standalone logos (e.g., Slide 1.4 wordmark) at full 4K quality
+                for (const logoImg of clone.querySelectorAll('img[data-crisp-img="true"]')) {
+                    if (!logoImg.naturalWidth) continue;
+                    const lr = logoImg.getBoundingClientRect();
+                    ctx.save();
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(
+                        logoImg,
+                        (lr.left - cloneRect.left) * IG_EXPORT_SCALE,
+                        (lr.top - cloneRect.top) * IG_EXPORT_SCALE,
+                        lr.width * IG_EXPORT_SCALE,
+                        lr.height * IG_EXPORT_SCALE
+                    );
+                    ctx.restore();
+                }
+
+                return finalCanvas.toDataURL('image/png');
+            } finally {
+                stage.remove();
+            }
+        }
+
+        async function downloadSingleSlide(btn) {
+            const orig = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Exportiere 4K PNG...';
+            try {
+                const canvasEl = btn.parentElement.querySelector('.ig-canvas');
+                const filename = canvasEl.getAttribute('data-filename') || 'schooly_slide.png';
+                const png = await renderIgSlidePng(canvasEl);
+                triggerDownload(png, filename);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = orig;
+            }
+        }
+
+        async function downloadPostSlides(postNum, btn) {
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            const slides = Array.from(document.querySelectorAll(`.ig-canvas[data-post="${postNum}"]`));
+            try {
+                for (let i = 0; i < slides.length; i++) {
+                    btn.innerHTML = `<span>4K Export (${i + 1}/${slides.length})...</span>`;
+                    const filename = slides[i].getAttribute('data-filename');
+                    const png = await renderIgSlidePng(slides[i]);
+                    triggerDownload(png, filename);
+                    await new Promise(r => setTimeout(r, 250));
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+
+        async function downloadAllPosts(btn) {
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            const slides = Array.from(document.querySelectorAll('.ig-canvas'));
+            try {
+                for (let i = 0; i < slides.length; i++) {
+                    btn.innerHTML = `<span>4K Export (${i + 1}/${slides.length})...</span>`;
+                    const filename = slides[i].getAttribute('data-filename');
+                    const png = await renderIgSlidePng(slides[i]);
+                    triggerDownload(png, filename);
+                    await new Promise(r => setTimeout(r, 250));
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+
+        // Generates clean 4K (2160x2160) Instagram Profile Picture PNG
+        async function downloadAvatarPng(btn) {
+            const orig = btn ? btn.innerHTML : '';
+            if (btn) btn.disabled = true;
+            try {
+                const S = 2160;
+                const c = document.createElement('canvas');
+                c.width = S;
+                c.height = S;
+                const ctx = c.getContext('2d');
+                ctx.fillStyle = '#faf7f2';
+                ctx.fillRect(0, 0, S, S);
+
+                // Subtle soft radial sage accent behind icon
+                const g = ctx.createRadialGradient(S / 2, S / 2, 160, S / 2, S / 2, 960);
+                g.addColorStop(0, 'rgba(45, 105, 76, 0.08)');
+                g.addColorStop(1, 'rgba(45, 105, 76, 0)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, S, S);
+
+                const img = new Image();
+                img.src = await loadImageAsDataUrl('/assets/aistudio/schooly_app_icon_7d45ac62.svg');
+                await img.decode();
+                const size = 1320;
+                ctx.drawImage(img, (S - size) / 2, (S - size) / 2, size, size);
+                triggerDownload(c.toDataURL('image/png'), 'schooly_instagram_profilbild_4k.png');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                }
+            }
+        }
+
+        // Generates 4K Portrait (2160x3840) Story Highlight Cover PNG using exact Lucide icon vector
+        async function downloadSingleHighlight(label, iconName) {
+            const stage = document.createElement('div');
+            stage.style.cssText = 'position:fixed;left:-20000px;top:0;width:540px;height:960px;background:#faf7f2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;';
+            stage.innerHTML = `
+                <div style="width:220px;height:220px;border-radius:999px;background:#ffffff;border:3px solid #e5dcd0;display:flex;align-items:center;justify-content:center;color:#2d694c;box-shadow:0 20px 44px rgba(31,27,22,0.08);">
+                    <i data-lucide="${iconName}" style="width:92px;height:92px;stroke-width:2;"></i>
+                </div>
+                <div style="font-family:'Epilogue',sans-serif;font-weight:900;font-size:38px;color:#1f1b16;letter-spacing:-0.02em;">${label}</div>
+            `;
+            document.body.appendChild(stage);
+            lucide.createIcons({ nodes: [stage] });
+            if (document.fonts && document.fonts.ready) await document.fonts.ready;
+            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+            try {
+                const canvas = await html2canvas(stage, { width: 540, height: 960, scale: 4, backgroundColor: '#faf7f2', logging: false });
+                const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                triggerDownload(canvas.toDataURL('image/png'), `schooly_highlight_${slug}_4k.png`);
+            } finally {
+                stage.remove();
+            }
+        }
+
+        async function downloadAllHighlights(btn) {
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            const list = [
+                ['Start', 'rocket'],
+                ['Noten', 'calculator'],
+                ['ABI-Check', 'graduation-cap'],
+                ['Duell', 'swords'],
+                ['Roadmap', 'pen-tool']
+            ];
+            try {
+                for (let i = 0; i < list.length; i++) {
+                    btn.innerHTML = `<span>Covers (${i + 1}/5)...</span>`;
+                    await downloadSingleHighlight(list[i][0], list[i][1]);
+                    await new Promise(r => setTimeout(r, 250));
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+    </script>
+</body>
+</html>

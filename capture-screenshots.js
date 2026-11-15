@@ -12,15 +12,15 @@ async function capture() {
 
   // Helper to seed complete, realistic data before page scripts run via evaluateOnNewDocument
   await page.evaluateOnNewDocument(() => {
-    localStorage.setItem('sf_build_id', 'schooly-v17');
+    localStorage.setItem('sf_build_id', 'schooly-v18');
     localStorage.setItem('sf_last_uid', 'demo123');
     localStorage.setItem('sf_cached_user', JSON.stringify({
       uid: 'demo123',
-      email: 'lenny@schooly.de',
-      displayName: 'Lenny'
+      email: 'max@schooly.de',
+      displayName: 'Max'
     }));
     localStorage.setItem('sf_user_config_demo123', JSON.stringify({
-      userName: 'Lenny',
+      userName: 'Max',
       schoolStartYear: 2025,
       currentClass: 11,
       gradeSystem: '15',
@@ -45,10 +45,10 @@ async function capture() {
     const el = document.getElementById('app');
     if (el && el._vnode && el._vnode.component) {
       const state = el._vnode.component.setupState;
-      state.user = { uid: 'demo123', email: 'lenny@schooly.de', displayName: 'Lenny' };
+      state.user = { uid: 'demo123', email: 'max@schooly.de', displayName: 'Max' };
       state.authLoading = false;
       state.isOnboarding = false;
-      state.displayName = 'Lenny';
+      state.displayName = 'Max';
       state.currentClass = 11;
       state.gradeSystem = '15';
       state.lkBonusActive = true;
@@ -224,22 +224,22 @@ async function capture() {
 
   const screenshotsDir = path.resolve('./public/assets');
 
-  // 1. Laptop Dashboard (1440x900)
+  // 1. Laptop Dashboard (1440x900 @ 3x -> 4320x2700 4K)
   console.log('1/7 Capturing Laptop Dashboard...');
-  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 3 });
   await page.goto('http://localhost:3000', { waitUntil: 'networkidle2' });
   await page.evaluate(applyDemoDataScript);
   await waitReady();
   await page.screenshot({ path: path.join(screenshotsDir, 'screenshot_dashboard.png') });
 
-  // 2. Mobile Dashboard (390x844)
+  // 2. Mobile Dashboard (390x844 @ 4x -> 1560x3376)
   console.log('2/7 Capturing Mobile Dashboard...');
-  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 4 });
   await page.evaluate(applyDemoDataScript);
   await waitReady();
   await page.screenshot({ path: path.join(screenshotsDir, 'screenshot_dashboard_mobile.png') });
 
-  // 3. Mobile Fächer & Noten (390x844)
+  // 3. Mobile Fächer & Noten (390x844 @ 4x)
   console.log('3/7 Capturing Mobile Fächer...');
   await page.evaluate(() => {
     const state = document.getElementById('app')._vnode.component.setupState;
@@ -249,9 +249,9 @@ async function capture() {
   await waitReady();
   await page.screenshot({ path: path.join(screenshotsDir, 'screenshot_faecher_mobile.png') });
 
-  // 4. Laptop Kalender (1440x900)
+  // 4. Laptop Kalender (1440x900 @ 3x)
   console.log('4/7 Capturing Laptop Kalender...');
-  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 3 });
   await page.evaluate(() => {
     const state = document.getElementById('app')._vnode.component.setupState;
     state.currentTab = 'planner';
@@ -263,9 +263,9 @@ async function capture() {
   await waitReady();
   await page.screenshot({ path: path.join(screenshotsDir, 'screenshot_kalender_laptop.png') });
 
-  // 5. Mobile Insights Vergleich / Duell (390x844)
+  // 5. Mobile Insights Vergleich / Duell (390x844 @ 4x)
   console.log('5/7 Capturing Mobile Insights (Vergleich Duell)...');
-  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 4 });
   await page.evaluate(() => {
     const state = document.getElementById('app')._vnode.component.setupState;
     state.currentTab = 'stats';
@@ -274,9 +274,9 @@ async function capture() {
   await waitReady();
   await page.screenshot({ path: path.join(screenshotsDir, 'screenshot_insights_mobile.png') });
 
-  // 6. Laptop Insights Diagramme (1440x900)
+  // 6. Laptop Insights Diagramme (1440x900 @ 3x)
   console.log('6/7 Capturing Laptop Insights (Diagramme)...');
-  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 3 });
   await page.evaluate(() => {
     const state = document.getElementById('app')._vnode.component.setupState;
     state.currentTab = 'stats';
@@ -286,9 +286,9 @@ async function capture() {
   await waitReady();
   await page.screenshot({ path: path.join(screenshotsDir, 'screenshot_insights_charts_laptop.png') });
 
-  // 7. Laptop ABI-Rechner (1440x900)
+  // 7. Laptop ABI-Rechner (1440x900 @ 3x)
   console.log('7/7 Capturing Laptop ABI-Rechner...');
-  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 3 });
   await page.evaluate(() => {
     const state = document.getElementById('app')._vnode.component.setupState;
     state.currentTab = 'abitur';
