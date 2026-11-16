@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
-// Garantiert sofortiges Laden und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v44';
+// Garantiert sofortiges Laden, aktuelle App-Shell und vollständige Offline-Nutzung
+const CACHE_NAME = 'schooly-cache-v46';
 
 const PRECACHE_URLS = [
   '/',
@@ -59,29 +59,31 @@ self.addEventListener('activate', (event) => {
 
 // 3. Fetch-Strategie:
 // - Firebase & Google APIs: Direkt durchleiten (Firestore IndexedDB übernimmt Offline-Sync)
-// - Navigation: Network-First (no-store) mit 15s Timeout, Fallback auf lokalen Cache
+// - Navigation: Network-First über saubere URL-Anfrage (vermeidet WebKit/PWA navigate-Request-Fehler)
 // - Statische Ressourcen (JS, CSS, Schriften, Bilder, Icons): Cache-First für 0ms Antwortzeit
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Nicht-HTTP Anfragen ignorieren
-  if (!url.protocol.startsWith('http')) return;
+  // Nicht-HTTP oder Nicht-GET Anfragen ignorieren
+  if (!url.protocol.startsWith('http') || req.method !== 'GET') return;
 
-  // Firebase Firestore/Auth API direkt durchleiten (wird von IndexedDB gehandhabt)
+  // Firebase Firestore/Auth/Google APIs direkt durchleiten (wird von IndexedDB gehandhabt)
   if (
     url.hostname.includes('firestore.googleapis.com') ||
     url.hostname.includes('identitytoolkit.googleapis.com') ||
     url.hostname.includes('securetoken.googleapis.com') ||
     url.hostname.includes('firebaseinstallations.googleapis.com') ||
     url.hostname.includes('fcmregistrations.googleapis.com') ||
+    url.hostname.includes('googleapis.com') ||
     url.hostname.includes('accounts.google.com')
   ) {
     return;
   }
 
-  // Pitchdeck-, Social-Studio-, API- & Vite-Dev-Interna niemals durch SW abfangen/cachen
+  // Landing, Pitchdeck, Social-Studio, API- & Vite-Dev-Interna niemals durch SW abfangen/cachen
   if (
+    url.pathname.startsWith('/landing') ||
     url.pathname.startsWith('/pitchdeck') ||
     url.pathname.startsWith('/social') ||
     url.pathname.startsWith('/api/') ||
@@ -96,24 +98,32 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       (async () => {
         try {
-          // 15-Sekunden Timeout für Remote Cloud Run Verbindungen, immer frisches HTML holen
+          // Sauberen URL-Fetch statt fetch(navigateReq, init) verwenden (verhindert TypeError auf iOS Safari & Standalone-PWA)
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 15000);
-          const networkRes = await fetch(req, { cache: 'no-store', signal: controller.signal });
+          const timer = setTimeout(() => controller.abort(), 12000);
+          const fetchTarget = (url.pathname === '/' || url.pathname === '/index.html')
+            ? '/index.html'
+            : (url.pathname + url.search);
+          const networkRes = await fetch(fetchTarget, {
+            cache: 'no-store',
+            credentials: 'same-origin',
+            signal: controller.signal
+          });
           clearTimeout(timer);
           if (networkRes && networkRes.status === 200) {
             const cache = await caches.open(CACHE_NAME);
             if (url.pathname === '/' || url.pathname === '/index.html') {
-              cache.put('/index.html', networkRes.clone());
-              cache.put('/', networkRes.clone());
+              await cache.put('/index.html', networkRes.clone());
+              await cache.put('/', networkRes.clone());
             } else {
-              cache.put(req, networkRes.clone());
+              await cache.put(url.pathname + url.search, networkRes.clone());
             }
             return networkRes;
           }
         } catch (_) {
-          // Offline oder Timeout -> Sofort aus Cache
+          // Offline oder Timeout -> Fallback auf lokalen Cache
         }
+
         const cache = await caches.open(CACHE_NAME);
         const isRoot = url.pathname === '/' || url.pathname === '/index.html';
         const cached = isRoot

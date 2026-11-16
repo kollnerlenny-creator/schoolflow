@@ -109,87 +109,72 @@
             padding-bottom: 10px;
         }
 
-        /* 3D Extruded Tactile Cards, CTA Bento Grids & Floating Callouts (never clips photos/hardware) */
+        /* Tactile Elevated Cards, CTA Bento Grids & Floating Callouts (html2canvas-safe: no inset or negative-spread shadows) */
         .ig-canvas .grid.grid-cols-2.w-full.text-left {
             gap: 13px !important;
             padding-top: 10px !important;
         }
         .ig-canvas .grid.grid-cols-2.w-full.text-left > div {
-            border: 1px solid rgba(31, 27, 22, 0.11) !important;
+            border: 1px solid rgba(31, 27, 22, 0.12) !important;
             border-radius: 1.2rem !important;
             padding: 13px 15px !important;
-            background: linear-gradient(165deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 246, 239, 0.88) 100%) !important;
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 1),
-                inset 0 -1px 0 rgba(31, 27, 22, 0.04),
-                0 5px 0 rgba(31, 27, 22, 0.09),
-                0 18px 32px -10px rgba(20, 16, 12, 0.18) !important;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.97) 0%, rgba(250, 246, 239, 0.90) 100%) !important;
+            box-shadow: 0 14px 28px rgba(20, 16, 12, 0.11) !important;
         }
         .ig-canvas-sage .grid.grid-cols-2.w-full.text-left > div,
         .ig-canvas-dark .grid.grid-cols-2.w-full.text-left > div,
         .ig-canvas-espresso .grid.grid-cols-2.w-full.text-left > div,
         .ig-canvas-chestnut .grid.grid-cols-2.w-full.text-left > div {
-            background: linear-gradient(165deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.07) 100%) !important;
+            background: rgba(255, 255, 255, 0.12) !important;
             border: 1px solid rgba(255, 255, 255, 0.24) !important;
-            box-shadow:
-                inset 0 1.5px 0 rgba(255, 255, 255, 0.30),
-                0 5px 0 rgba(0, 0, 0, 0.34),
-                0 18px 32px -10px rgba(0, 0, 0, 0.42) !important;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24) !important;
         }
         .ig-canvas .rounded-3xl:not(.overflow-hidden):not(.p-0),
         .ig-story-canvas .rounded-3xl:not(.overflow-hidden):not(.p-0) {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 0.96),
-                inset 0 -1px 0 rgba(31, 27, 22, 0.05),
-                0 7px 0 rgba(31, 27, 22, 0.09),
-                0 30px 54px -12px rgba(20, 16, 12, 0.20) !important;
+            box-shadow: 0 18px 36px rgba(20, 16, 12, 0.11) !important;
         }
-        .ig-canvas .rounded-2xl:not(.overflow-hidden):not(.ig-fg-layer) {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 0.94),
-                0 5px 0 rgba(31, 27, 22, 0.08),
-                0 18px 34px -10px rgba(20, 16, 12, 0.16) !important;
+        .ig-canvas .rounded-3xl.overflow-hidden,
+        .ig-story-canvas .rounded-3xl.overflow-hidden {
+            box-shadow: 0 18px 36px rgba(20, 16, 12, 0.18) !important;
+        }
+        .ig-canvas .rounded-2xl:not(.overflow-hidden):not(.ig-fg-layer),
+        .ig-story-canvas .rounded-2xl:not(.overflow-hidden):not(.ig-fg-layer) {
+            box-shadow: 0 12px 24px rgba(20, 16, 12, 0.10) !important;
         }
         .ig-canvas .bg-\[\#2d694c\].rounded-3xl,
-        .ig-canvas .bg-\[\#2d694c\].rounded-2xl {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 0.34),
-                0 7px 0 #183d2b,
-                0 30px 52px -12px rgba(24, 61, 43, 0.48) !important;
+        .ig-canvas .bg-\[\#2d694c\].rounded-2xl,
+        .ig-story-canvas .bg-\[\#2d694c\].rounded-3xl,
+        .ig-story-canvas .bg-\[\#2d694c\].rounded-2xl {
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            box-shadow: 0 20px 38px rgba(24, 61, 43, 0.28) !important;
         }
         .ig-canvas .bg-\[\#1f1b16\].rounded-3xl,
-        .ig-canvas .bg-\[\#1f1b16\].rounded-2xl {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 0.26),
-                0 7px 0 #090806,
-                0 30px 52px -12px rgba(10, 8, 6, 0.54) !important;
+        .ig-canvas .bg-\[\#1f1b16\].rounded-2xl,
+        .ig-story-canvas .bg-\[\#1f1b16\].rounded-3xl,
+        .ig-story-canvas .bg-\[\#1f1b16\].rounded-2xl {
+            border: 1px solid rgba(255, 255, 255, 0.14) !important;
+            box-shadow: 0 20px 38px rgba(10, 8, 6, 0.34) !important;
         }
         .ig-canvas .bg-\[\#e7f3de\].rounded-2xl,
-        .ig-canvas .bg-\[\#e7f3de\].rounded-3xl {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 0.98),
-                0 5px 0 #add1a7,
-                0 20px 36px -10px rgba(45, 105, 76, 0.22) !important;
+        .ig-canvas .bg-\[\#e7f3de\].rounded-3xl,
+        .ig-story-canvas .bg-\[\#e7f3de\].rounded-2xl,
+        .ig-story-canvas .bg-\[\#e7f3de\].rounded-3xl {
+            box-shadow: 0 14px 28px rgba(45, 105, 76, 0.14) !important;
         }
         .ig-canvas .bg-\[\#ffe6b9\].rounded-2xl,
-        .ig-canvas .bg-\[\#ffe6b9\].rounded-3xl {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 0.92),
-                0 5px 0 #d8ad5e,
-                0 20px 36px -10px rgba(122, 78, 0, 0.22) !important;
+        .ig-canvas .bg-\[\#ffe6b9\].rounded-3xl,
+        .ig-story-canvas .bg-\[\#ffe6b9\].rounded-2xl,
+        .ig-story-canvas .bg-\[\#ffe6b9\].rounded-3xl {
+            box-shadow: 0 14px 28px rgba(122, 78, 0, 0.14) !important;
         }
         .ig-fg-layer {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 0.32),
-                0 7px 0 rgba(10, 8, 6, 0.42),
-                0 32px 58px -10px rgba(12, 10, 8, 0.56) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 20px 40px rgba(12, 10, 8, 0.34) !important;
         }
         .ig-fg-layer.bg-\[\#faf7f2\],
         .ig-fg-layer.bg-white {
-            box-shadow:
-                inset 0 2px 0 rgba(255, 255, 255, 1),
-                0 7px 0 #cfc3af,
-                0 32px 58px -10px rgba(16, 13, 10, 0.48) !important;
+            border: 1px solid rgba(31, 27, 22, 0.10);
+            box-shadow: 0 20px 40px rgba(16, 13, 10, 0.26) !important;
         }
 
         .ig-canvas-white {
@@ -5932,13 +5917,13 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
             ctx.restore();
         }
 
-        // Studio 3D Natural Brushed-Titanium Smartphone Renderer (Mathematically Smooth Convex-Hull Silhouette -> Zero Edge Jaggies or Kinks)
-        function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 10.5) {
+        // Studio 3D Natural Brushed-Titanium Smartphone Renderer (Mathematically Smooth Convex-Hull Silhouette + True 3D Depth)
+        function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 16.5) {
             const W = 274 * sc;
             const H = 588 * sc;
             const R = 39 * sc;
-            const D = 10.6 * sc; // Natural authentic titanium flagship thickness
-            const focal = 2250 * sc; // Crisp 85mm telephoto studio lens (natural non-distorted perspective)
+            const D = 26.0 * sc; // Solid physical titanium flagship thickness so it clearly reads as 3D
+            const focal = 2100 * sc;
             const yaw = yawDeg * Math.PI / 180;
             const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
 
@@ -5962,21 +5947,21 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
 
             // 1a. Grounded Studio Floor Contact Elliptical Shadow
             ctx.save();
-            const contactGrad = ctx.createRadialGradient(-6 * sc, H * 0.504, 4 * sc, -6 * sc, H * 0.504, W * 0.62);
-            contactGrad.addColorStop(0, 'rgba(10, 15, 12, 0.34)');
-            contactGrad.addColorStop(0.55, 'rgba(10, 15, 12, 0.12)');
+            const contactGrad = ctx.createRadialGradient(-6 * sc, H * 0.504, 4 * sc, -6 * sc, H * 0.504, W * 0.65);
+            contactGrad.addColorStop(0, 'rgba(10, 15, 12, 0.36)');
+            contactGrad.addColorStop(0.55, 'rgba(10, 15, 12, 0.14)');
             contactGrad.addColorStop(1, 'rgba(10, 15, 12, 0)');
             ctx.fillStyle = contactGrad;
             ctx.beginPath();
-            ctx.ellipse(-6 * sc, H * 0.504, W * 0.58, 22 * sc, 0, 0, Math.PI * 2);
+            ctx.ellipse(-6 * sc, H * 0.504, W * 0.62, 22 * sc, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
 
-            // 1b. Soft Diffused Inset Drop Shadow (inset prevents dark shadow halo bleed around bright titanium corners)
+            // 1b. Soft Diffused Inset Drop Shadow
             ctx.save();
             ctx.shadowColor = 'rgba(12, 18, 15, 0.32)';
             ctx.shadowBlur = 36 * sc;
-            ctx.shadowOffsetX = -9 * sc;
+            ctx.shadowOffsetX = -10 * sc;
             ctx.shadowOffsetY = 18 * sc;
             traceProjectedPath(ctx, insetShadowOuter);
             ctx.fillStyle = 'rgba(16, 20, 18, 0.44)';
@@ -5988,105 +5973,88 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
             traceProjectedPath(ctx, outerHull);
             ctx.clip();
 
-            // Base brushed titanium metallic sheen across entire shell depth
-            const shellGrad = ctx.createLinearGradient(-W * 0.52, -H * 0.42, W * 0.45, H * 0.48);
-            shellGrad.addColorStop(0, '#c6ced6');
-            shellGrad.addColorStop(0.24, '#eef2f6');
-            shellGrad.addColorStop(0.52, '#aab3bd');
-            shellGrad.addColorStop(0.78, '#d4dce4');
-            shellGrad.addColorStop(1, '#98a1ab');
+            const shellGrad = ctx.createLinearGradient(-W * 0.58, -H * 0.30, W * 0.45, H * 0.35);
+            shellGrad.addColorStop(0, '#9ba4ae');
+            shellGrad.addColorStop(0.16, '#eef3f7');
+            shellGrad.addColorStop(0.32, '#cfd7df');
+            shellGrad.addColorStop(0.62, '#a3acb6');
+            shellGrad.addColorStop(1, '#848d97');
             ctx.fillStyle = shellGrad;
-            ctx.fillRect(-W * 0.7, -H * 0.6, W * 1.4, H * 1.2);
+            ctx.fillRect(-W * 0.72, -H * 0.62, W * 1.44, H * 1.24);
 
-            // Subtle directional studio highlight band along visible titanium side wall (safely inside hull clip)
-            const lx = -0.60, ly = -0.56, lz = 0.57;
-            const hx = lx, hy = ly, hz = lz + 1;
-            const hlen = Math.hypot(hx, hy, hz);
-            for (let i = 0; i < outerSamples.length; i++) {
-                const j = (i + 1) % outerSamples.length;
-                const s = outerSamples[i];
-                const nx3 = s.nx * cosY;
-                const ny3 = s.ny;
-                const nz3 = -s.nx * sinY;
-                const f = frontOuter[i], fn = frontOuter[j];
-                const b = backOuter[i], bn = backOuter[j];
-                if ((nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz)) <= 0) continue;
-
-                const ndotl = Math.max(0, nx3 * lx + ny3 * ly + nz3 * lz);
-                const spec = Math.pow(Math.max(0, (nx3 * hx + ny3 * hy + nz3 * hz) / hlen), 18);
-                const lit = Math.min(1, 0.58 + 0.34 * ndotl + 0.38 * spec);
-                const cFront = Math.round(176 + lit * 76);
-                const cBack = Math.round(126 + lit * 54);
-                const gSide = ctx.createLinearGradient(b.px, b.py, f.px, f.py);
-                gSide.addColorStop(0, `rgb(${cBack}, ${cBack + 3}, ${cBack + 6})`);
-                gSide.addColorStop(1, `rgb(${Math.min(252, cFront)}, ${Math.min(254, cFront + 2)}, ${Math.min(255, cFront + 4)})`);
-
-                ctx.beginPath();
-                ctx.moveTo(b.px, b.py);
-                ctx.lineTo(bn.px, bn.py);
-                ctx.lineTo(fn.px, fn.py);
-                ctx.lineTo(f.px, f.py);
-                ctx.closePath();
-                ctx.fillStyle = gSide;
-                ctx.fill();
-            }
-            ctx.restore();
-
-            // One single continuous silky-smooth outer hairline around the entire convex hull (zero jitter!)
-            traceProjectedPath(ctx, outerHull);
-            ctx.strokeStyle = 'rgba(38, 46, 54, 0.22)';
-            ctx.lineWidth = Math.max(0.75, 0.85 * sc);
-            ctx.lineJoin = 'round';
+            // Back edge chamfer shading along backOuter for clear physical cylindrical rail depth
+            traceProjectedPath(ctx, backOuter);
+            ctx.strokeStyle = 'rgba(42, 50, 58, 0.34)';
+            ctx.lineWidth = Math.max(1.1, 1.9 * sc);
             ctx.stroke();
 
-            // Subtle Satin Antenna Banding strictly inside left brushed rail
+            // Subtle Satin Antenna Banding across solid left brushed rail
             for (const ay of [-H / 2 + 64 * sc, H / 2 - 64 * sc]) {
-                const ab = proj(-W / 2, ay, -D * 0.36);
-                const af = proj(-W / 2, ay, D * 0.36);
+                const ab = proj(-W / 2, ay, -D * 0.45);
+                const af = proj(-W / 2, ay, D * 0.45);
                 ctx.beginPath();
                 ctx.moveTo(ab.px, ab.py);
                 ctx.lineTo(af.px, af.py);
-                ctx.strokeStyle = 'rgba(84, 94, 104, 0.28)';
+                ctx.strokeStyle = 'rgba(54, 62, 70, 0.42)';
                 ctx.lineCap = 'round';
-                ctx.lineWidth = Math.max(0.85, 1.15 * sc);
+                ctx.lineWidth = Math.max(1.0, 1.55 * sc);
                 ctx.stroke();
             }
+            ctx.restore();
 
-            // Ultra-Flush Micro-Sculpted Titanium Side Buttons (hairline flush profile, zero protruding blobs)
-            const drawFlushSideButton = (yTop, yBot) => {
-                const pTop = proj(-W / 2 - 0.32 * sc, yTop, -D * 0.06);
-                const pBot = proj(-W / 2 - 0.32 * sc, yBot, -D * 0.06);
+            // One single continuous silky-smooth outer hairline around the entire convex hull
+            traceProjectedPath(ctx, outerHull);
+            ctx.strokeStyle = 'rgba(32, 38, 46, 0.28)';
+            ctx.lineWidth = Math.max(0.75, 0.9 * sc);
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            // Sculpted 3D Raised Hardware Side Keys resting cleanly on left titanium rail
+            const draw3DSideKey = (yTop, yBot) => {
+                const depthOut = 1.65 * sc;
+                const pB1 = proj(-W / 2, yTop, -D * 0.14);
+                const pB2 = proj(-W / 2, yBot, -D * 0.14);
+                const pT1 = proj(-W / 2 - depthOut, yTop + 0.8 * sc, D * 0.10);
+                const pT2 = proj(-W / 2 - depthOut, yBot - 0.8 * sc, D * 0.10);
+
                 ctx.save();
-                ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(pTop.px, pTop.py);
-                ctx.lineTo(pBot.px, pBot.py);
-                ctx.strokeStyle = 'rgba(72, 80, 90, 0.36)';
-                ctx.lineWidth = Math.max(1.2, 1.85 * sc);
+                ctx.moveTo(pB1.px, pB1.py);
+                ctx.lineTo(pB2.px, pB2.py);
+                ctx.lineTo(pT2.px, pT2.py);
+                ctx.lineTo(pT1.px, pT1.py);
+                ctx.closePath();
+                ctx.fillStyle = '#9aa3ad';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(28, 34, 40, 0.38)';
+                ctx.lineWidth = Math.max(0.65, 0.85 * sc);
                 ctx.stroke();
+
                 ctx.beginPath();
-                ctx.moveTo(pTop.px + 0.25 * sc, pTop.py);
-                ctx.lineTo(pBot.px + 0.25 * sc, pBot.py);
-                ctx.strokeStyle = '#eef3f7';
-                ctx.lineWidth = Math.max(0.8, 1.15 * sc);
+                ctx.moveTo(pT1.px, pT1.py);
+                ctx.lineTo(pT2.px, pT2.py);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = Math.max(0.9, 1.35 * sc);
+                ctx.lineCap = 'round';
                 ctx.stroke();
                 ctx.restore();
             };
-            drawFlushSideButton(-H * 0.215, -H * 0.148);
-            drawFlushSideButton(-H * 0.116, -H * 0.038);
+            draw3DSideKey(-H * 0.215, -H * 0.145);
+            draw3DSideKey(-H * 0.115, -H * 0.035);
+            draw3DSideKey(-H * 0.295, -H * 0.258);
 
             // 3. Front Machined Silver Rim + Symmetric Black OLED Display Bezel
             const rimGrad = ctx.createLinearGradient(-W * 0.48, -H * 0.45, W * 0.45, H * 0.48);
-            rimGrad.addColorStop(0, '#fcfdfe');
-            rimGrad.addColorStop(0.28, '#d4dbe2');
-            rimGrad.addColorStop(0.55, '#f4f7fa');
-            rimGrad.addColorStop(0.82, '#b9c1ca');
+            rimGrad.addColorStop(0, '#ffffff');
+            rimGrad.addColorStop(0.28, '#dbe2e8');
+            rimGrad.addColorStop(0.55, '#f6f8fa');
+            rimGrad.addColorStop(0.82, '#bcc5ce');
             rimGrad.addColorStop(1, '#e6ebf0');
             traceProjectedPath(ctx, frontOuter);
             ctx.fillStyle = rimGrad;
             ctx.fill();
-            ctx.strokeStyle = 'rgba(42, 50, 58, 0.22)';
-            ctx.lineWidth = Math.max(0.7, 0.8 * sc);
+            ctx.strokeStyle = 'rgba(30, 36, 42, 0.30)';
+            ctx.lineWidth = Math.max(0.85, 1.05 * sc);
             ctx.lineJoin = 'round';
             ctx.stroke();
 
@@ -6601,7 +6569,7 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 st.classList.add('is-3d-hydrated');
             }
 
-            // 4. Hydrate all 45 Smooth Convex-Hull 3D Titanium Smartphones (natural 10.5° angle)
+            // 4. Hydrate all 45 Smooth Convex-Hull 3D Titanium Smartphones (16.5° natural depth)
             for (const st of phoneStages) {
                 const ps = parseFloat(getComputedStyle(st).getPropertyValue('--ps')) || 1;
                 const im = st.querySelector('img.screenshot-img');
@@ -6621,7 +6589,7 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 const cctx = cv.getContext('2d');
                 cctx.setTransform(DPR, 0, 0, DPR, 0, 0);
                 cctx.clearRect(0, 0, wCss, hCss);
-                drawStudio3DPhone(cctx, 192 * ps, 336.34 * ps, ps, 0, im, 10.5);
+                drawStudio3DPhone(cctx, 192 * ps, 336.34 * ps, ps, 0, im, 16.5);
                 st.classList.add('is-3d-hydrated');
             }
         }
@@ -6665,6 +6633,23 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                     if (src && imgCache[src]) img.setAttribute('src', imgCache[src]);
                 });
                 stage.appendChild(clone);
+
+                // Belt-and-suspenders: strip any inset or negative-spread box-shadows on cloned nodes (html2canvas 1.4.1 draws white cutouts on them)
+                clone.querySelectorAll('*').forEach(el => {
+                    const cs = getComputedStyle(el);
+                    if (cs.boxShadow && cs.boxShadow !== 'none') {
+                        const cleaned = cs.boxShadow
+                            .split(/,(?![^(]*\))/)
+                            .map(part => part.trim())
+                            .filter(part => !/\binset\b/i.test(part))
+                            .map(part => {
+                                // Drop 4th length (spread) if negative (e.g. "0px 20px 40px -12px rgba(...)")
+                                return part.replace(/(\S+px)\s+(\S+px)\s+(\S+px)\s+-\S+px/g, '$1 $2 $3');
+                            })
+                            .join(', ');
+                        el.style.boxShadow = cleaned || 'none';
+                    }
+                });
 
                 await Promise.all(Array.from(clone.querySelectorAll('img')).map(im => im.decode ? im.decode().catch(() => {}) : Promise.resolve()));
                 await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -6787,9 +6772,9 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                     drawStudio3DMacBook(ctx, mc.cx, mc.cy, mc.wFrame, mc.imgEl, 4.2);
                 }
 
-                // Layer 4: True 4K Smooth Convex-Hull 3D Titanium Smartphones (natural 10.5° studio angle)
+                // Layer 4: True 4K Smooth Convex-Hull 3D Titanium Smartphones (16.5° studio angle)
                 for (const ph of phoneSpecs) {
-                    drawStudio3DPhone(ctx, ph.cx, ph.cy, ph.sc, ph.angleRad, ph.imgEl, 10.5);
+                    drawStudio3DPhone(ctx, ph.cx, ph.cy, ph.sc, ph.angleRad, ph.imgEl, 16.5);
                 }
 
                 // Composite crisp standalone logos not inside foreground layer

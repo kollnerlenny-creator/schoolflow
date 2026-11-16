@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Schooly">
     <meta name="theme-color" content="#f7f3eb">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
     <link rel="shortcut icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
-    <link rel="apple-touch-icon" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Schooly</title>
@@ -51,7 +52,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v18';
+        const CURRENT_BUILD = 'schooly-v46';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -63,7 +64,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v17') {
+                        if (k !== 'schooly-cache-v45') {
                             caches.delete(k);
                         }
                     });
@@ -198,10 +199,6 @@
         @media (display-mode: standalone) {
             :root {
                 --nav-bar-height: env(safe-area-inset-bottom, 0px);
-            }
-            html {
-                height: 100vh;
-                overflow: hidden;
             }
             body {
                 padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -2179,7 +2176,7 @@
                                             {{ isLKSubject(selectedSubject) ? 'Leistungskurs (LK)' : 'Grundkurs (GK)' }}
                                         </span>
                                         <span class="text-[11px] font-bold text-[#6E665E]">
-                                            {{ selectedSubject.examWeight }}% Klausur · {{ 100 - selectedSubject.examWeight }}% Sonstige
+                                            {{ activeSubjectData ? activeSubjectData.examWeight : getExamWeightFor(selectedSubject, selectedHalfYear) }}% Klausur · {{ 100 - (activeSubjectData ? activeSubjectData.examWeight : getExamWeightFor(selectedSubject, selectedHalfYear)) }}% Sonstige
                                         </span>
                                     </div>
                                     <h1 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight truncate leading-tight">
@@ -4687,12 +4684,17 @@
                             </div>
 
                             <!-- Freunde-Wahl Leiste -->
-                            <div v-if="!friends || friends.length === 0" class="text-center py-8 bg-[#f4ece4] rounded-2xl border border-[#ede3d8] space-y-2">
+                            <div v-if="!friends || friends.length === 0" class="text-center py-8 bg-[#f4ece4] rounded-2xl border border-[#ede3d8] space-y-2.5 px-4">
                                 <p class="text-sm font-bold text-[#1f1b16]">Noch keine Freunde verbunden</p>
                                 <p class="text-xs text-[#6E665E]">Verbinde dich mit Mitschülern über das Freunde-Symbol oben, um eure Schnitte zu vergleichen.</p>
-                                <button @click="isFriendsOpen = true; friendsTab = 'members'" class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
-                                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
-                                </button>
+                                <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
+                                    <button @click="isFriendsOpen = true; friendsTab = 'members'" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
+                                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
+                                    </button>
+                                    <button type="button" @click="refreshSocialData()" :disabled="socialLoading" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-[#1f1b16] border border-[#ded5c7] rounded-full text-xs font-bold cursor-pointer hover:bg-[#faf6ef] transition-all disabled:opacity-50">
+                                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5" :class="socialLoading ? 'animate-spin' : ''"></i> Aktualisieren
+                                    </button>
+                                </div>
                             </div>
 
                             <div v-else class="space-y-4">
@@ -5006,7 +5008,7 @@
 
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5 space-y-4">
                         <div class="flex justify-between items-center ml-2">
-                            <p class="font-bold text-white text-base">Klausurgewichtung</p>
+                            <p class="font-bold text-white text-base">Klausurgewichtung <span v-if="isSettingsModalOpen" class="text-xs font-extrabold text-accent ml-1">({{ selectedHalfYear }})</span></p>
                             <div class="flex items-center gap-1.5">
                                 <input
                                     type="number"
@@ -6087,11 +6089,15 @@
 
                 <!-- MITGLIEDER-LISTE -->
                 <div v-if="friendsTab === 'members'" class="space-y-2.5">
-                    <div v-if="!allMembers || allMembers.length === 0" class="text-center py-10 space-y-2">
+                    <div v-if="!allMembers || allMembers.length === 0" class="text-center py-10 space-y-3">
                         <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mx-auto empty-state-icon">
                             <i data-lucide="user-x" class="w-7 h-7 text-slate-600"></i>
                         </div>
-                        <p class="text-slate-500 font-bold text-sm">Keine weiteren Nutzer gefunden</p>
+                        <p class="text-slate-500 font-bold text-sm">{{ socialLoading ? 'Nutzer werden geladen...' : 'Keine weiteren Nutzer gefunden' }}</p>
+                        <button type="button" @click="refreshSocialData()" :disabled="socialLoading" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2d694c] text-white text-xs font-bold cursor-pointer hover:bg-[#23533c] active:scale-95 transition-all disabled:opacity-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" :class="socialLoading ? 'animate-spin' : ''"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            {{ socialLoading ? 'Lädt...' : 'Nutzer neu laden' }}
+                        </button>
                     </div>
                     <div v-else-if="filteredAllMembers.length === 0" class="text-center py-8">
                         <p class="text-slate-500 font-bold text-sm">Keine Treffer für „{{ memberSearchQuery }}“</p>
@@ -6157,8 +6163,12 @@
                         <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mx-auto empty-state-icon">
                             <i data-lucide="user-plus" class="w-7 h-7 text-slate-600"></i>
                         </div>
-                        <p class="text-slate-500 font-bold text-sm">Noch keine Freunde</p>
+                        <p class="text-slate-500 font-bold text-sm">{{ socialLoading ? 'Freunde werden geladen...' : 'Noch keine Freunde' }}</p>
                         <p class="text-xs text-slate-600">Füge Nutzer über die Mitgliederliste hinzu</p>
+                        <button type="button" @click="refreshSocialData()" :disabled="socialLoading" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2d694c] text-white text-xs font-bold cursor-pointer hover:bg-[#23533c] active:scale-95 transition-all disabled:opacity-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" :class="socialLoading ? 'animate-spin' : ''"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            Aktualisieren
+                        </button>
                     </div>
                     <div v-else-if="filteredFriends.length === 0" class="text-center py-8">
                         <p class="text-slate-500 font-bold text-sm">Keine Treffer für „{{ memberSearchQuery }}“</p>
@@ -6208,8 +6218,12 @@
                         <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mx-auto empty-state-icon">
                             <i data-lucide="lock" class="w-7 h-7 text-slate-600"></i>
                         </div>
-                        <p class="text-slate-500 font-bold text-sm">Keine Freunde</p>
+                        <p class="text-slate-500 font-bold text-sm">{{ socialLoading ? 'Freunde werden geladen...' : 'Keine Freunde' }}</p>
                         <p class="text-xs text-slate-600">Befreunde dich zuerst mit jemandem</p>
+                        <button type="button" @click="refreshSocialData()" :disabled="socialLoading" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2d694c] text-white text-xs font-bold cursor-pointer hover:bg-[#23533c] active:scale-95 transition-all disabled:opacity-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" :class="socialLoading ? 'animate-spin' : ''"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            Aktualisieren
+                        </button>
                     </div>
 
                     <div v-else>
@@ -6541,7 +6555,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
@@ -6648,25 +6662,34 @@
 
         const app = initializeApp(firebaseConfig);
         
-        // Firestore mit Single-Tab IndexedDB-Persistenz (nutzt kein localStorage, verhindert QuotaExceededError) + AutoDetect
+        // Firestore mit Multi-Tab IndexedDB-Persistenz (verhindert Konflikte zwischen Browser-Tab und installierter PWA!) + AutoDetect
         let db;
         try {
             db = initializeFirestore(app, {
                 localCache: persistentLocalCache({
-                    tabManager: persistentSingleTabManager({ forceOwnership: true })
+                    tabManager: persistentMultipleTabManager()
                 }),
                 experimentalAutoDetectLongPolling: true
             });
-            console.log("Firebase Firestore: IndexedDB-Cache & AutoDetect initialisiert.");
+            console.log("Firebase Firestore: Multi-Tab IndexedDB-Cache & AutoDetect initialisiert.");
         } catch (err) {
-            console.warn("Fallback zu Memory-Firestore:", err);
+            console.warn("Fallback zu Single-Tab / Memory-Firestore:", err);
             try {
                 db = initializeFirestore(app, {
-                    localCache: memoryLocalCache(),
+                    localCache: persistentLocalCache({
+                        tabManager: persistentSingleTabManager({ forceOwnership: true })
+                    }),
                     experimentalAutoDetectLongPolling: true
                 });
             } catch (_) {
-                db = getFirestore(app);
+                try {
+                    db = initializeFirestore(app, {
+                        localCache: memoryLocalCache(),
+                        experimentalAutoDetectLongPolling: true
+                    });
+                } catch (__) {
+                    db = getFirestore(app);
+                }
             }
         }
 
@@ -7227,12 +7250,16 @@
                 };
                 watch(tasks, () => { if (examRemindersEnabled.value) checkExamReminders(); });
                 const friendsTab = ref('members');
-                watch(friendsTab, () => {
+                watch(friendsTab, (tab) => {
                     confirmingRemoveFriendUid.value = null;
+                    if (tab === 'compare' && selectedFriend.value?.uid) {
+                        loadSelectedFriendSubjects(selectedFriend.value.uid, true);
+                    }
                     refreshIcons();
                 });
                 const allMembers = ref([]);
                 const friends = ref([]);
+                const socialLoading = ref(false);
                 const sentRequests = ref([]); // UIDs an die ich Anfragen gesendet habe
                 const notifications = ref([]);
                 const selectedFriend = ref(null);
@@ -7591,13 +7618,29 @@
                     }
                 };
 
+                const waitForFirebaseAuth = async (timeoutMs = 1800) => {
+                    try {
+                        if (auth && auth.currentUser) return auth.currentUser;
+                        if (auth && typeof auth.authStateReady === 'function') {
+                            await Promise.race([
+                                auth.authStateReady(),
+                                new Promise(resolve => setTimeout(resolve, timeoutMs))
+                            ]);
+                        }
+                        return auth ? auth.currentUser : null;
+                    } catch (_) {
+                        return auth ? auth.currentUser : null;
+                    }
+                };
+
+                let allMembersLoadEpoch = 0;
+                let friendsLoadEpoch = 0;
+
                 // Alle registrierten Nutzer laden (außer den aktuell angemeldeten Nutzer selbst)
                 const loadAllMembers = async (uid) => {
                     if (!uid && user.value && user.value.uid) uid = user.value.uid;
                     if (!uid) return;
-                    if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
-
-                    await loadHiddenMemberUids();
+                    const epoch = ++allMembersLoadEpoch;
 
                     const updateMembersState = (profiles, fromCacheOnly = false) => {
                         (profiles || []).forEach(p => {
@@ -7649,7 +7692,7 @@
                         refreshIcons();
                     };
 
-                    // Sofort aus lokalem Cache initialisieren für 0ms Latenz (Demo- & Admin-Profile dabei sofort entfernen)
+                    // 1. Sofort synchron aus lokalem Cache initialisieren für 0ms Latenz (Demo- & Admin-Profile sofort entfernen)
                     try {
                         for (let i = localStorage.length - 1; i >= 0; i--) {
                             const k = localStorage.key(i);
@@ -7672,27 +7715,45 @@
                         }
                     } catch (_) {}
 
+                    socialLoading.value = true;
                     try {
+                        // Auth erst abwarten, damit PWA/Cold-Start nie unauthentifiziert abgewiesen wird
+                        await waitForFirebaseAuth();
+                        if (epoch !== allMembersLoadEpoch) return;
+
+                        // Versteckte UIDs parallel & nicht-blockierend laden, danach Listen nachfiltern
+                        loadHiddenMemberUids().then(() => {
+                            if (epoch !== allMembersLoadEpoch) return;
+                            allMembers.value = (allMembers.value || []).filter(m => !isDemoProfile(m) && !isAdminProfile(m));
+                            friends.value = (friends.value || []).filter(f => !isDemoProfile(f) && !isAdminProfile(f));
+                        }).catch(() => {});
+
                         const { onSnapshot: onSnap2, collection: col2, getDocs: getD2 } = window.__firestoreModule || {};
                         if (!onSnap2) {
                             console.warn('[GradeFlow] Firestore noch nicht geladen');
                             return;
                         }
 
-                        // 1. Sofortiges One-Time getDocs für schnellste Anzeige ohne Wartezeit
-                        try {
-                            if (getD2) {
-                                getD2(col2(db, 'publicProfiles')).then(snap => {
-                                    if (snap && !snap.empty) {
-                                        const list = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
-                                        updateMembersState(list, !!snap.metadata?.fromCache);
-                                    }
-                                }).catch(e => console.warn('[GradeFlow] getDocs publicProfiles notice:', e?.message || e));
-                            }
-                        } catch (_) {}
+                        if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
 
-                        // 2. Real-Time Snapshot Listener für Live-Updates
+                        // 2. Sofortiges One-Time getDocs für schnellste Anzeige ohne Wartezeit
+                        if (getD2) {
+                            getD2(col2(db, 'publicProfiles')).then(snap => {
+                                if (epoch !== allMembersLoadEpoch) return;
+                                if (snap && !snap.empty) {
+                                    const list = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
+                                    updateMembersState(list, !!snap.metadata?.fromCache);
+                                }
+                            }).catch(e => console.warn('[GradeFlow] getDocs publicProfiles notice:', e?.message || e))
+                            .finally(() => {
+                                if (epoch === allMembersLoadEpoch) socialLoading.value = false;
+                            });
+                        }
+
+                        // 3. Real-Time Snapshot Listener für Live-Updates
                         unsubscribeAllMembers = onSnap2(col2(db, 'publicProfiles'), snap => {
+                            if (epoch !== allMembersLoadEpoch) return;
+                            socialLoading.value = false;
                             try {
                                 let realMembers = [];
                                 if (snap && !snap.empty) {
@@ -7703,10 +7764,20 @@
                                 console.warn('[GradeFlow] Error parsing publicProfiles:', snapErr);
                             }
                         }, err => {
+                            if (epoch !== allMembersLoadEpoch) return;
+                            socialLoading.value = false;
                             console.info('[GradeFlow] publicProfiles listener notice:', err?.message || err);
-                            // Vorhandene Mitglieder aus Cache/Freundesliste beibehalten
+                            // Bei temporärem Auth/Netzwerk-Fehler in PWA automatisch einmal nachladen
+                            if (navigator.onLine && auth.currentUser) {
+                                setTimeout(() => {
+                                    if (epoch === allMembersLoadEpoch && allMembers.value.length === 0) {
+                                        loadAllMembers(uid);
+                                    }
+                                }, 2500);
+                            }
                         });
                     } catch (e) {
+                        socialLoading.value = false;
                         console.warn('[GradeFlow] loadAllMembers error:', e.message);
                     }
                 };
@@ -7749,10 +7820,7 @@
                 // Freundesliste + gesendete Anfragen + Benachrichtigungen aus Firestore
                 const loadFriendsData = async (uid) => {
                     if (!uid) return;
-                    if (unsubscribeFriends) { unsubscribeFriends(); unsubscribeFriends = null; }
-                    if (unsubscribeSentRequests) { unsubscribeSentRequests(); unsubscribeSentRequests = null; }
-                    if (unsubscribeDeclinedRequests) { unsubscribeDeclinedRequests(); unsubscribeDeclinedRequests = null; }
-                    if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
+                    const epoch = ++friendsLoadEpoch;
 
                     // Sofort aus lokalem Cache für 0ms Latenz laden (Demo-Profile herausfiltern)
                     try {
@@ -7773,6 +7841,14 @@
                     } catch (_) {}
 
                     try {
+                        await waitForFirebaseAuth();
+                        if (epoch !== friendsLoadEpoch) return;
+
+                        if (unsubscribeFriends) { unsubscribeFriends(); unsubscribeFriends = null; }
+                        if (unsubscribeSentRequests) { unsubscribeSentRequests(); unsubscribeSentRequests = null; }
+                        if (unsubscribeDeclinedRequests) { unsubscribeDeclinedRequests(); unsubscribeDeclinedRequests = null; }
+                        if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
+
                         const { onSnapshot: onSnap, collection: col } = window.__firestoreModule || {};
                         if (!onSnap) return;
 
@@ -8045,7 +8121,7 @@
                             return;
                         }
                         const messaging = getMessaging(app);
-                        const swReg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+                        const swReg = await navigator.serviceWorker.register('./firebase-messaging-sw.js', { scope: './firebase-cloud-messaging-push-scope' });
                         const fcmToken = await getToken(messaging, { vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: swReg });
                         if (fcmToken && user.value) {
                             await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { fcmToken, fcmTokenUpdatedAt: new Date().toISOString() }, { merge: true });
@@ -8064,6 +8140,46 @@
                 // Geladene Fächer des ausgewählten Freundes
                 const friendSubjectsLoaded = ref([]);
 
+                const loadSelectedFriendSubjects = async (friendUid, force = false) => {
+                    if (!friendUid) {
+                        friendSubjectsLoaded.value = [];
+                        return;
+                    }
+                    if (!force && friendSubjectsLoaded.value.length > 0 && selectedFriend.value?.uid === friendUid) {
+                        return;
+                    }
+                    fetchFriendProfileDetails(friendUid);
+                    try {
+                        await waitForFirebaseAuth();
+                        const { getDocs, collection: col } = window.__firestoreModule || {};
+                        if (!getDocs) return;
+                        let snap = await getDocs(col(db, 'users', friendUid, 'subjects'));
+                        if (!snap || snap.empty) snap = await getDocs(col(db, 'users', friendUid, 'subjects_lower'));
+                        if (selectedFriend.value?.uid === friendUid && snap && !snap.empty) {
+                            friendSubjectsLoaded.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                        }
+                    } catch (e) { console.warn('loadFriendSubjects:', e); }
+                };
+
+                const refreshSocialData = async ({ quiet = false } = {}) => {
+                    const uid = user.value?.uid || auth.currentUser?.uid;
+                    if (!uid) return;
+                    if (!quiet) socialLoading.value = true;
+                    try {
+                        await ensurePublicProfile(uid);
+                        await Promise.all([
+                            loadAllMembers(uid),
+                            loadFriendsData(uid)
+                        ]);
+                        if (selectedFriend.value?.uid) {
+                            await loadSelectedFriendSubjects(selectedFriend.value.uid, true);
+                        }
+                    } finally {
+                        if (!quiet) socialLoading.value = false;
+                        refreshIcons();
+                    }
+                };
+
                 // Fächer des Freundes aus Firestore nachladen wenn ein anderer Freund ausgewählt wird (per UID, verhindert Flackern bei Profil-Updates)
                 watch(() => selectedFriend.value?.uid, async (friendUid, oldUid) => {
                     if (!friendUid) {
@@ -8080,20 +8196,7 @@
                         return;
                     }
                     friendSubjectsLoaded.value = [];
-
-                    // Detail-Profil (inklusive echtes Profilbild) einmalig nachladen
-                    fetchFriendProfileDetails(friendUid);
-
-                    try {
-                        const { getDocs, collection: col } = window.__firestoreModule || {};
-                        if (!getDocs) return;
-                        // Oberstufe-Fächer versuchen, dann Unterstufe
-                        let snap = await getDocs(col(db, 'users', friendUid, 'subjects'));
-                        if (!snap || snap.empty) snap = await getDocs(col(db, 'users', friendUid, 'subjects_lower'));
-                        if (selectedFriend.value?.uid === friendUid && snap && !snap.empty) {
-                            friendSubjectsLoaded.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                        }
-                    } catch (e) { console.warn('loadFriendSubjects:', e); }
+                    await loadSelectedFriendSubjects(friendUid, true);
                 }, { immediate: true });
 
                 // Fächernamen-Matching: Aliase + Fuzzy
@@ -8432,7 +8535,14 @@
 
                     nextTick(updatePlannerIndicator);
                     window.addEventListener('resize', updatePlannerIndicator);
-                    document.addEventListener('visibilitychange', () => { if (!document.hidden) checkExamReminders(); });
+                    document.addEventListener('visibilitychange', () => {
+                        if (!document.hidden) {
+                            checkExamReminders();
+                            if (user.value?.uid && navigator.onLine) {
+                                refreshSocialData({ quiet: true });
+                            }
+                        }
+                    });
                     // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
                     if (window.earlyDeferredPrompt) {
                         deferredPrompt.value = window.earlyDeferredPrompt;
@@ -8453,9 +8563,12 @@
                         deferredPrompt.value = e;
                     });
 
-                    // Online/Offline-Status überwachen
+                    // Online/Offline-Status überwachen & Sozialdaten bei Reconnect neu laden
                     window.addEventListener('online', () => {
                         isOnline.value = true;
+                        if (user.value?.uid) {
+                            refreshSocialData({ quiet: true });
+                        }
                     });
                     window.addEventListener('offline', () => {
                         isOnline.value = false;
@@ -8491,6 +8604,9 @@
                             loadAllMembers(currentUser.uid);
                             loadFriendsData(currentUser.uid);
                             ensurePublicProfile(currentUser.uid);
+                            if (selectedFriend.value?.uid) {
+                                loadSelectedFriendSubjects(selectedFriend.value.uid, true);
+                            }
 
                             // Im Hintergrund prüfen & synchronisieren (ohne UI zu blockieren)
                             (async () => {
@@ -8511,11 +8627,13 @@
                                 }
                             })();
                         } else {
-                            // Wenn kein gecachter User existiert, abmelden
-                            if (!initialCachedUser) {
+                            // Wenn online und keine gültige Firebase Auth-Sitzung existiert (z.B. PWA nach Cache/Neuinstallation),
+                            // keine unauthentifizierte "Zombie-Sitzung" halten (sonst scheitern Nutzer/Freunde mit permission-denied).
+                            if (!initialCachedUser || navigator.onLine !== false) {
                                 user.value = null;
                                 isOnboarding.value = false;
                                 unsubscribeAllListeners();
+                                try { localStorage.removeItem('sf_cached_user'); } catch (_) {}
                             }
                         }
                         refreshIcons();
@@ -10664,8 +10782,11 @@
                 // Übersteuerung für dieses Halbjahr (examWeightByHalfYear), sonst der Fach-Standardwert.
                 // So bleibt eine Änderung z.B. für 12/1 auf andere Halbjahre wie 11/2 ohne Auswirkung.
                 const getExamWeightFor = (subject, halfYear) => {
-                    const override = subject.examWeightByHalfYear?.[halfYear];
-                    return (override !== undefined && override !== null) ? override : (subject.examWeight ?? 50);
+                    if (!subject) return 50;
+                    const raw = subject.id ? (subjects.value || []).find(item => item.id === subject.id) : null;
+                    const src = raw || subject;
+                    const override = src.examWeightByHalfYear?.[halfYear];
+                    return (override !== undefined && override !== null) ? override : (src.examWeight ?? 50);
                 };
 
                 // Chronologischer Verlauf des offiziellen Gesamtdurchschnitts im gewählten Halbjahr —
@@ -12089,7 +12210,7 @@
                         finalGrade: null,
                         reportCardGrade: null,
                         weight: (selectedSubject.value.isLK && lkBonusActive.value) ? 2 : 1,
-                        examWeight: selectedSubject.value.examWeight ?? 50
+                        examWeight: getExamWeightFor(selectedSubject.value, selectedHalfYear.value)
                     };
                 });
 
@@ -12102,10 +12223,15 @@
                 const goalCategory = ref('other'); // 'exam' | 'other'
                 watch(selectedSubject, (s) => {
                     if (!s) return;
-                    if (s.examWeight === 0) goalCategory.value = 'other';
-                    else if (s.examWeight === 100) goalCategory.value = 'exam';
+                    const resolvedW = getExamWeightFor(s, selectedHalfYear.value);
+                    if (resolvedW === 0) goalCategory.value = 'other';
+                    else if (resolvedW === 100) goalCategory.value = 'exam';
                     subjectDetailGradeTab.value = 'all';
                     nextTick(() => { triggerCharts(); refreshIcons(); });
+                });
+                watch(() => activeSubjectData.value?.examWeight, (w) => {
+                    if (w === 0) goalCategory.value = 'other';
+                    else if (w === 100) goalCategory.value = 'exam';
                 });
                 const goalCalculation = computed(() => {
                     const s = activeSubjectData.value;
@@ -12280,22 +12406,27 @@
                         const targetId = selectedSubject.value?.id || subjectForm.value?.id;
                         if (!targetId) return;
                         const semKey = selectedHalfYear.value || '11/1';
-                        const existingOverrides = (selectedSubject.value?.examWeightByHalfYear && typeof selectedSubject.value.examWeightByHalfYear === 'object')
-                            ? selectedSubject.value.examWeightByHalfYear
+                        const rawSubject = subjects.value.find(s => s.id === targetId);
+                        const baseSource = rawSubject || selectedSubject.value || {};
+                        const existingOverrides = (baseSource.examWeightByHalfYear && typeof baseSource.examWeightByHalfYear === 'object')
+                            ? baseSource.examWeightByHalfYear
                             : {};
                         const examWeightByHalfYear = { ...existingOverrides, [semKey]: safeExamWeight };
+                        const baseExamWeight = Number.isFinite(Number(baseSource.examWeight))
+                            ? Number(baseSource.examWeight)
+                            : 50;
                         const updatePayload = {
                             name: cleanName,
                             isLK: safeIsLK,
                             color: safeColor,
                             abiType: safeAbiType,
                             icon: safeIcon,
-                            examWeight: safeExamWeight,
+                            examWeight: baseExamWeight,
                             examWeightByHalfYear
                         };
 
                         // Sofort lokales reaktives Update & Modal schließen
-                        selectedSubject.value = { ...(selectedSubject.value || {}), id: targetId, ...updatePayload };
+                        selectedSubject.value = { ...(selectedSubject.value || {}), id: targetId, ...updatePayload, examWeight: safeExamWeight };
                         const sIdx = subjects.value.findIndex(s => s.id === targetId);
                         if (sIdx !== -1) {
                             subjects.value[sIdx] = { ...subjects.value[sIdx], ...updatePayload };
@@ -12303,7 +12434,7 @@
                         }
                         try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
                         closeSubjectModal();
-                        showToast('Fach gespeichert ✓');
+                        showToast(`Fach gespeichert (${semKey}) ✓`);
 
                         try {
                             await setDoc(doc(db, 'users', user.value.uid, collName, targetId), updatePayload, { merge: true });
@@ -12824,6 +12955,13 @@
                     nextTick(scrollToTop);
                 });
                 watch(insightsSubTab, (sub) => {
+                    if (sub === 'compare') {
+                        if (user.value?.uid && (!allMembers.value.length || !friends.value.length)) {
+                            refreshSocialData({ quiet: true });
+                        } else if (selectedFriend.value?.uid) {
+                            loadSelectedFriendSubjects(selectedFriend.value.uid, true);
+                        }
+                    }
                     nextTick(() => {
                         refreshIcons();
                         if (sub === 'charts' && currentTab.value === 'stats') {
@@ -13128,12 +13266,12 @@
                     currentClass, tempCurrentClass, gradeSystem, tempGradeSystem, abiturViewClass, lowerSchoolClasses,
                     selectedReportCardKey, reportCardClassOptions, closeModal,
                     isFriendsOpen, confirmingRemoveFriendUid, memberSearchQuery, filteredAllMembers, filteredFriends,
-                    isNotificationsOpen, friendsTab, allMembers, friends, sentRequests, notifications,
+                    isNotificationsOpen, friendsTab, allMembers, friends, socialLoading, sentRequests, notifications,
                     toastState, triggerToastAction, dismissToast,
                     examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
-                    comparisonData, comparisonSummary, ensurePublicProfile, friendSubjectsLoaded,
+                    comparisonData, comparisonSummary, ensurePublicProfile, friendSubjectsLoaded, refreshSocialData,
                     getMemberAvatar, resolveAvatar, isImageAvatar,
                     activeNavIndex, userAvatar, isAvatarModalOpen, avatarFileInput, avatarPresets, setAvatarPreset, removeAvatar, handleAvatarFileUpload, refreshIcons, scrollToTop
                 };

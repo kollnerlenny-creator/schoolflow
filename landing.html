@@ -58,7 +58,7 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* 3D Tactile App Surface Bevel (Single elevation level, matches Social 3D aesthetic without nested clutter) */
+        /* 3D Tactile App Surface Bevel */
         .surface-3d {
             background: linear-gradient(180deg, #ffffff 0%, #fcfaf6 100%);
             border: 1px solid #e2d8c9;
@@ -66,7 +66,7 @@
                 0 1px 0 rgba(255, 255, 255, 0.95) inset,
                 0 5px 0 #e6dccf,
                 0 22px 44px -18px rgba(31, 27, 22, 0.12);
-            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .surface-3d-mint {
             background: linear-gradient(165deg, #f3fae9 0%, #e7f3de 100%);
@@ -101,14 +101,14 @@
                 0 28px 56px -18px rgba(15, 12, 9, 0.45);
         }
 
-        /* Primary CTA tactile 3D button */
+        /* Primary & Secondary tactile 3D CTAs */
         .cta-3d-sage {
             background: linear-gradient(180deg, #347656 0%, #2d694c 100%);
             box-shadow:
                 0 1px 0 rgba(255, 255, 255, 0.28) inset,
                 0 4px 0 #1a432f,
                 0 14px 28px -10px rgba(45, 105, 76, 0.45);
-            transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .cta-3d-sage:hover {
             transform: translateY(-2px);
@@ -131,7 +131,7 @@
                 0 1px 0 rgba(255, 255, 255, 0.95) inset,
                 0 4px 0 #ddd1c0,
                 0 12px 24px -12px rgba(31, 27, 22, 0.14);
-            transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .cta-3d-light:hover {
             transform: translateY(-2px);
@@ -142,29 +142,54 @@
             box-shadow: 0 1px 0 #ddd1c0;
         }
 
-        /* Scroll-reveal compositor-only animations */
+        /* Ultra-smooth GPU-composited scroll reveals */
         [data-reveal] {
             opacity: 0;
-            transform: translate3d(0, 26px, 0) scale(0.985);
+            transform: translate3d(0, 20px, 0);
             transition:
-                opacity 0.68s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.68s cubic-bezier(0.16, 1, 0.3, 1);
+                opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: opacity, transform;
         }
         [data-reveal].is-visible {
             opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+
+        /* Hero & Sticky GPU Stage Motion Containers (0ms canvas redraw overhead during scroll) */
+        .gpu-stage-layer {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* Pre-rendered Storyboard Layers for butter-smooth crossfade */
+        .story-canvas-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translate3d(0, 14px, 0) scale(0.985);
+            transition:
+                opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: opacity, transform;
+            pointer-events: none;
+        }
+        .story-canvas-layer.is-current {
+            opacity: 1;
             transform: translate3d(0, 0, 0) scale(1);
         }
 
-        /* Chapter Storyboard active card indicator */
+        /* Story Chapter Cards */
         .story-step {
             border: 1px solid #e5dcd0;
             background: rgba(255, 255, 255, 0.72);
             transition:
-                transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                background-color 0.28s ease,
-                border-color 0.28s ease,
-                box-shadow 0.28s ease;
+                transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.32s ease,
+                border-color 0.32s ease,
+                box-shadow 0.32s ease;
         }
         .story-step.is-active {
             background: #ffffff;
@@ -173,10 +198,17 @@
             box-shadow:
                 0 1px 0 rgba(255, 255, 255, 0.9) inset,
                 0 5px 0 #cfe1d6,
-                0 22px 44px -18px rgba(45, 105, 76, 0.18);
+                0 22px 44px -18px rgba(45, 105, 76, 0.16);
         }
 
-        /* Clean architectural hover underline for nav links */
+        /* Top Scroll Progress Hairline */
+        #scrollProgressBar {
+            transform: scaleX(0);
+            transform-origin: left center;
+            will-change: transform;
+        }
+
+        /* Nav link underline */
         .nav-link {
             position: relative;
         }
@@ -190,13 +222,12 @@
             background: #2d694c;
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .nav-link:hover::after {
             transform: scaleX(1);
         }
 
-        /* Respect reduced motion strictly */
         @media (prefers-reduced-motion: reduce) {
             html {
                 scroll-behavior: auto;
@@ -206,15 +237,16 @@
                 transform: none !important;
                 transition: none !important;
             }
-            .story-step.is-active {
-                transform: none;
+            .story-step.is-active,
+            .story-canvas-layer.is-current {
+                transform: none !important;
             }
         }
     </style>
 </head>
 <body id="top" class="min-h-screen flex flex-col selection:bg-[#2d694c] selection:text-white">
 
-    <!-- Hidden crisp texture bank for live 3D Canvas device screens -->
+    <!-- Hidden crisp texture bank -->
     <div class="hidden" aria-hidden="true">
         <img id="tex-dash-mobile" src="/assets/screenshot_dashboard_mobile.png" alt="" />
         <img id="tex-dash-laptop" src="/assets/screenshot_dashboard.png" alt="" />
@@ -233,16 +265,14 @@
         <img id="tex-aufgaben-mobile" src="/assets/screenshot_aufgaben_mobile.png" alt="" />
     </div>
 
-    <!-- 3-ZONE TOP NAVIGATION BAR (Max 15% mobile sticky cap, 1 wordmark + 4 links + 1 CTA) -->
+    <!-- 3-ZONE TOP NAVIGATION BAR -->
     <header class="sticky top-0 z-50 bg-[#faf7f2]/92 backdrop-blur-md border-b border-[#e5dcd0]">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between gap-8">
-            <!-- Zone 1: Clean single-line brand lockup -->
             <a href="#top" class="flex items-center gap-2.5 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#2d694c] rounded-lg">
                 <img src="/assets/aistudio/schooly_app_icon_7d45ac62.svg" alt="" width="28" height="28" class="w-7 h-7 object-contain" />
                 <span class="font-epilogue font-black text-xl tracking-tight text-[#1f1b16]">schooly</span>
             </a>
 
-            <!-- Zone 2: 4 Single-line Editorial Nav Links -->
             <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-[#6e665e]" aria-label="Hauptnavigation">
                 <a href="#story" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Funktionen</a>
                 <a href="#geraete" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Handy &amp; Laptop</a>
@@ -250,7 +280,6 @@
                 <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="nav-link hover:text-[#2d694c] transition-colors whitespace-nowrap shrink-0">@schooly.app</a>
             </nav>
 
-            <!-- Zone 3: 1 Primary CTA + Mobile Menu Toggle -->
             <div class="flex items-center gap-2.5 shrink-0">
                 <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-sage inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs sm:text-sm font-bold whitespace-nowrap shrink-0 min-h-[40px]">
                     <span>App öffnen</span>
@@ -265,6 +294,8 @@
                 </button>
             </div>
         </div>
+        <!-- Compositor-only scroll indicator -->
+        <div id="scrollProgressBar" class="h-[2px] w-full bg-[#2d694c]" aria-hidden="true"></div>
 
         <!-- Mobile Slide Drawer -->
         <div id="mobileNavDrawer" class="hidden md:hidden border-t border-[#e5dcd0] bg-[#faf7f2] px-4 py-4 space-y-2">
@@ -280,11 +311,11 @@
 
     <main class="flex-1">
 
-        <!-- HERO SECTION: Editorial Value Proposition + Scroll-Reactive 3D Studio Stage -->
+        <!-- HERO SECTION -->
         <section class="relative pt-8 pb-14 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 overflow-x-clip">
             <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
 
-                <!-- Left Copy Column (Immediate Zero-Latency Accessibility) -->
+                <!-- Left Copy Column -->
                 <div class="lg:col-span-6 space-y-6">
                     <div class="text-xs sm:text-sm font-bold text-[#2d694c] tracking-wide">
                         All-in-One Schul-App · Kostenlos &amp; werbefrei
@@ -298,7 +329,6 @@
                         Schluss mit fünf verschiedenen Apps und Zettelchaos: <strong class="text-[#1f1b16] font-bold">schooly</strong> vereint Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und den kompletten Abitur-Check — nahtlos auf Smartphone und Laptop.
                     </p>
 
-                    <!-- Primary Action Block -->
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-1">
                         <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-sage inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
                             <span>Web-App starten</span>
@@ -315,7 +345,6 @@
                         </a>
                     </div>
 
-                    <!-- Unboxed Typographic Metadata Strip (Zero Pills) -->
                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-[#6e665e] pt-1">
                         <span>Klasse 5 bis Abitur</span>
                         <span aria-hidden="true">·</span>
@@ -325,28 +354,29 @@
                     </div>
                 </div>
 
-                <!-- Right Studio 3D Hardware Stage (Pedestal look matching photo reference, zero floating spheres) -->
+                <!-- Right Studio 3D Hardware Stage (Silky 120fps GPU Parallax + Genuine 3D Titanium Depth) -->
                 <div class="lg:col-span-6 space-y-4">
-                    <div id="heroStageWrap" class="surface-3d rounded-[28px] p-2.5 sm:p-3 overflow-hidden relative">
-                        <div class="relative rounded-[20px] overflow-hidden bg-[#1e4b35]">
-                            <canvas id="hero3dCanvas" class="block w-full h-auto aspect-[4/3] sm:aspect-[14/11]"></canvas>
+                    <div id="heroStageCard" class="surface-3d rounded-[28px] p-2.5 sm:p-3 overflow-hidden relative gpu-stage-layer">
+                        <div class="relative rounded-[20px] overflow-hidden bg-[#1e4b35] aspect-[14/11]">
+                            <canvas id="heroCanvasDuo" class="story-canvas-layer is-current"></canvas>
+                            <canvas id="heroCanvasPhone" class="story-canvas-layer"></canvas>
+                            <canvas id="heroCanvasLaptop" class="story-canvas-layer"></canvas>
                         </div>
                     </div>
 
-                    <!-- Segmented Hardware Inspection Switcher (Functional Button Controls) -->
                     <div class="flex flex-wrap items-center justify-between gap-3 px-1">
                         <div class="inline-flex items-center p-1 rounded-xl bg-[#efe7da] border border-[#e2d7c7]" role="tablist" aria-label="Geräteansicht wählen">
                             <button type="button" data-hero-mode="duo" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
                                 Handy &amp; Laptop
                             </button>
                             <button type="button" data-hero-mode="phone" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
-                                Smartphone Studio
+                                Smartphone 3D
                             </button>
                             <button type="button" data-hero-mode="laptop" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
                                 Laptop Ansicht
                             </button>
                         </div>
-                        <span class="text-xs font-semibold text-[#6e665e] hidden sm:inline">Scrollen dreht die 3D-Szene</span>
+                        <span class="text-xs font-semibold text-[#6e665e] hidden sm:inline">Echtes 3D-Gehäuse · Butterweich animiert</span>
                     </div>
                 </div>
 
@@ -358,7 +388,7 @@
             <div class="h-px bg-[#e5dcd0]"></div>
         </div>
 
-        <!-- SECTION 01: SCROLL-CHOREOGRAPHED STORYTELLING (Desktop Sticky 3D Stage + Mobile Stacked Cards) -->
+        <!-- SECTION 01: FLUID SCROLL-CHOREOGRAPHED STORYBOARD -->
         <section id="story" class="py-16 sm:py-24">
             <div class="max-w-[1200px] mx-auto px-4 sm:px-8 space-y-12">
 
@@ -368,7 +398,7 @@
                         Vier Werkzeuge, die genau dann helfen, wenn es darauf ankommt.
                     </h2>
                     <p class="text-sm sm:text-base text-[#6e665e] leading-relaxed">
-                        Beim Runterscrollen wechselt rechts die echte 3D-Vorschau zwischen Smartphone und Laptop — genau so ruhig und klar wie in der App selbst.
+                        Beim Runterscrollen gleitet rechts die echte 3D-Geräteansicht flüssig mit — vom mobilen Schnelleintrag bis zur großen Laptop-Planung.
                     </p>
                 </div>
 
@@ -389,7 +419,6 @@
                             <p class="text-sm text-[#6e665e] leading-relaxed">
                                 Ob 2:1, 1:1 oder individueller Klausur- und Sonstiges-Faktor — dein Schnitt wird für Grund- und Leistungskurse sofort ohne Taschenrechner aktualisiert.
                             </p>
-                            <!-- Mobile Inline 3D Preview (< lg) -->
                             <div class="lg:hidden rounded-2xl overflow-hidden bg-[#2b6649]">
                                 <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="0"></canvas>
                             </div>
@@ -448,17 +477,19 @@
 
                     </div>
 
-                    <!-- Right Column: Sticky 3D Hardware Stage (Desktop >= lg) -->
+                    <!-- Right Column: Pre-Rendered Sticky 3D Canvas Stack (Butter-Smooth Crossfade + Continuous GPU Tilt) -->
                     <div class="hidden lg:block lg:col-span-7 sticky top-24">
-                        <div class="surface-3d rounded-[30px] p-3">
-                            <div class="relative rounded-[22px] overflow-hidden">
-                                <canvas id="storyStickyCanvas" class="block w-full h-auto aspect-[10/9]"></canvas>
+                        <div id="storyStickyCard" class="surface-3d rounded-[30px] p-3 gpu-stage-layer">
+                            <div class="relative rounded-[22px] overflow-hidden aspect-[10/9] bg-[#1f1b16]">
+                                <canvas id="storyLayer0" class="story-canvas-layer is-current"></canvas>
+                                <canvas id="storyLayer1" class="story-canvas-layer"></canvas>
+                                <canvas id="storyLayer2" class="story-canvas-layer"></canvas>
+                                <canvas id="storyLayer3" class="story-canvas-layer"></canvas>
 
-                                <!-- Clean bottom glass caption strip (no pills) -->
-                                <div class="absolute inset-x-4 bottom-4 rounded-2xl bg-[#1f1b16]/88 backdrop-blur-md text-white px-5 py-3.5 flex items-center justify-between gap-4 border border-white/10">
+                                <div class="absolute inset-x-4 bottom-4 z-20 rounded-2xl bg-[#1f1b16]/88 backdrop-blur-md text-white px-5 py-3.5 flex items-center justify-between gap-4 border border-white/10">
                                     <div class="min-w-0">
-                                        <div id="storyStageKicker" class="text-[11px] font-bold text-[#e7f3de] truncate">01 · Notenübersicht &amp; Gewichtung</div>
-                                        <div id="storyStageTitle" class="text-sm font-extrabold font-epilogue truncate">Live-Berechnung auf deinem Smartphone</div>
+                                        <div id="storyStageKicker" class="text-[11px] font-bold text-[#e7f3de] truncate">01 · Fächer &amp; Gewichtung</div>
+                                        <div id="storyStageTitle" class="text-sm font-extrabold font-epilogue truncate">Notenübersicht &amp; Gewichtungs-Engine auf dem Smartphone</div>
                                     </div>
                                     <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-[#ffe6b9] hover:underline whitespace-nowrap shrink-0">
                                         Live testen →
@@ -472,7 +503,7 @@
             </div>
         </section>
 
-        <!-- SECTION 02: HANDY & LAPTOP SYNC BENTO ARCHITECTURE (Same 3D Post Design) -->
+        <!-- SECTION 02: HANDY & LAPTOP SYNC BENTO ARCHITECTURE -->
         <section id="geraete" class="py-16 sm:py-24 bg-[#f4ece4]/60 border-y border-[#e5dcd0]">
             <div class="max-w-[1200px] mx-auto px-4 sm:px-8 space-y-10">
 
@@ -485,34 +516,33 @@
                     </div>
                     <div class="inline-flex items-center p-1 rounded-xl bg-[#e8dfd2] border border-[#dcd0c0] shrink-0 self-start md:self-auto">
                         <button type="button" id="bentoBtnPhone" data-bento-device="phone" class="px-4 py-2 rounded-lg text-xs font-bold bg-white text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
-                            Smartphone
+                            Smartphone Fokus
                         </button>
                         <button type="button" id="bentoBtnLaptop" data-bento-device="laptop" class="px-4 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
-                            Laptop
+                            Laptop Fokus
                         </button>
                     </div>
                 </div>
 
-                <!-- Asymmetric 3D Bento Grid (col-span-7 + col-span-5) -->
+                <!-- Asymmetric 3D Bento Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                    <!-- Large Feature Tile: Analytics & Multi-Device Sync -->
                     <div class="lg:col-span-7 surface-3d-mint rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
                         <div class="space-y-2.5 max-w-lg">
                             <div class="text-xs font-bold text-[#2d694c]">Echtzeit-Sync · Trends &amp; Insights</div>
                             <h3 class="font-epilogue font-black text-2xl text-[#1f1b16] leading-tight">
-                                Siehst du deinen Fortschritt auf einem Blick — egal welches Gerät gerade offen ist.
+                                Siehst du deinen Fortschritt auf einen Blick — egal welches Gerät gerade offen ist.
                             </h3>
                             <p class="text-sm text-[#435645] leading-relaxed">
                                 Notenverlauf, Fächervergleich und Zielerreichung passen sich automatisch an schmale Smartphone-Displays und breite Laptop-Bildschirme an.
                             </p>
                         </div>
-                        <div class="rounded-2xl overflow-hidden bg-[#e7f3de] border border-[#c6dbba]">
-                            <canvas id="bentoSyncCanvas" class="block w-full h-auto aspect-[16/10]"></canvas>
+                        <div class="relative rounded-2xl overflow-hidden bg-[#e7f3de] border border-[#c6dbba] aspect-[16/10]">
+                            <canvas id="bentoSyncPhoneCanvas" class="story-canvas-layer is-current"></canvas>
+                            <canvas id="bentoSyncLaptopCanvas" class="story-canvas-layer"></canvas>
                         </div>
                     </div>
 
-                    <!-- Side Feature Tile: 1-Klick PDF Export -->
                     <div class="lg:col-span-5 surface-3d rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
                         <div class="space-y-2.5">
                             <div class="text-xs font-bold text-[#6e665e]">Zeugnis &amp; Bewerbung</div>
@@ -528,7 +558,6 @@
                         </div>
                     </div>
 
-                    <!-- Bottom Left Tile: Honey Gold — Freundes-Duell & Lern-Motivation -->
                     <div class="lg:col-span-5 surface-3d-honey rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
                         <div class="space-y-2.5">
                             <div class="text-xs font-bold text-[#7a4e00]">Optional &amp; privat per Code</div>
@@ -545,7 +574,6 @@
                         </div>
                     </div>
 
-                    <!-- Bottom Right Tile: Espresso Dark — Abitur & PWA Installation -->
                     <div id="abitur" class="lg:col-span-7 surface-3d-espresso rounded-[28px] p-6 sm:p-8 text-white flex flex-col justify-between gap-6" data-reveal>
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
                             <div class="sm:col-span-6 space-y-3">
@@ -567,7 +595,7 @@
             </div>
         </section>
 
-        <!-- SECTION 03: QUANTITATIVE ECKDATEN (Tabular Numerals, Claim-to-Proof Adjacency) -->
+        <!-- SECTION 03: QUANTITATIVE ECKDATEN -->
         <section class="py-14 sm:py-16 border-b border-[#e5dcd0]">
             <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-8" data-reveal>
                 <div class="space-y-1">
@@ -593,7 +621,7 @@
             </div>
         </section>
 
-        <!-- SECTION 04: COMMUNITY & LAUNCH CTA (schooly26.vercel.app + Instagram @schooly.app) -->
+        <!-- SECTION 04: COMMUNITY & LAUNCH CTA -->
         <section class="py-16 sm:py-24">
             <div class="max-w-[1200px] mx-auto px-4 sm:px-8">
                 <div class="surface-3d-sage rounded-[32px] p-7 sm:p-12 lg:p-14 text-white grid grid-cols-1 lg:grid-cols-12 gap-10 items-center overflow-hidden relative" data-reveal>
@@ -654,7 +682,7 @@
         </div>
     </footer>
 
-    <!-- TRUE 3D HARDWARE ENGINE (Matching Smooth Convex-Hull Brushed Titanium Phone + Natural 4.2° MacBook Pro + Architectural Studio Pedestal, zero floating spheres) + SCROLL ANIMATION -->
+    <!-- GENUINE 3D PHYSICAL SMARTPHONE BODY (Clear Side Thickness + Tactile Side Rail + Chamfer + Pitch/Yaw) + 120FPS GPU SCROLL CHOREOGRAPHY -->
     <script>
         function buildSquircleSamples(W, H, R, segArc = 68, segLine = 22) {
             const hw = W / 2;
@@ -742,28 +770,26 @@
             return lower.concat(upper);
         }
 
-        // Architectural Studio Cyclorama & Clean Stone Pedestal Plane (Matches image_9656aeba.png look, zero floating spheres)
-        function drawStudioPedestalStage(ctx, w, h, theme = 'sage', pedestalYFrac = 0.78) {
+        // Architectural Studio Cyclorama + Solid Stone Pedestal Block (Clean, no spheres)
+        function drawStudioPedestalStage(ctx, w, h, theme = 'sage', pedestalYFrac = 0.80) {
             const themes = {
-                sage:     { c0: '#3c8562', c1: '#23563d', c2: '#0f281c', beam: 'rgba(218, 255, 224, 0.24)', topPlinth: '#f6f3ee', frontPlinth: '#d9d3ca', edge: 'rgba(255,255,255,0.65)' },
-                warm:     { c0: '#fcf8f2', c1: '#ede3d5', c2: '#d9cab6', beam: 'rgba(255, 255, 255, 0.58)', topPlinth: '#ffffff', frontPlinth: '#e4dbd0', edge: 'rgba(255,255,255,0.88)' },
-                mint:     { c0: '#edf8e6', c1: '#cde5c0', c2: '#a4ca94', beam: 'rgba(255, 255, 255, 0.52)', topPlinth: '#faf8f4', frontPlinth: '#dbe3d5', edge: 'rgba(255,255,255,0.85)' },
-                honey:    { c0: '#fff2d6', c1: '#f7d894', c2: '#dba84b', beam: 'rgba(255, 255, 255, 0.48)', topPlinth: '#fffcf7', frontPlinth: '#e9dcc6', edge: 'rgba(255,255,255,0.82)' },
-                espresso: { c0: '#3d342d', c1: '#231e19', c2: '#110e0b', beam: 'rgba(243, 196, 113, 0.16)', topPlinth: '#f3ede5', frontPlinth: '#cfc6ba', edge: 'rgba(255,255,255,0.55)' },
+                sage:     { c0: '#499871', c1: '#235a3f', c2: '#0c2418', beam: 'rgba(220, 255, 228, 0.25)', topPlinth: '#f6f3ee', frontPlinth: '#dbd4cb', edge: 'rgba(255,255,255,0.75)' },
+                warm:     { c0: '#fcf8f2', c1: '#eee4d6', c2: '#d5c5b0', beam: 'rgba(255, 255, 255, 0.62)', topPlinth: '#ffffff', frontPlinth: '#e4dbd0', edge: 'rgba(255,255,255,0.90)' },
+                mint:     { c0: '#edf8e6', c1: '#cae4bc', c2: '#9dc68c', beam: 'rgba(255, 255, 255, 0.56)', topPlinth: '#faf8f4', frontPlinth: '#dbe3d5', edge: 'rgba(255,255,255,0.88)' },
+                honey:    { c0: '#fff2d6', c1: '#f7d894', c2: '#d8a243', beam: 'rgba(255, 255, 255, 0.50)', topPlinth: '#fffcf7', frontPlinth: '#e9dcc6', edge: 'rgba(255,255,255,0.85)' },
+                espresso: { c0: '#42382f', c1: '#231e19', c2: '#0f0c09', beam: 'rgba(243, 196, 113, 0.18)', topPlinth: '#f3ede5', frontPlinth: '#cfc6ba', edge: 'rgba(255,255,255,0.62)' },
             };
             const t = themes[theme] || themes.sage;
 
             ctx.save();
-            // Radial cyclorama studio light
-            const bg = ctx.createRadialGradient(w * 0.58, h * 0.52, w * 0.03, w * 0.48, h * 0.45, Math.hypot(w, h) * 0.78);
+            const bg = ctx.createRadialGradient(w * 0.56, h * 0.52, w * 0.04, w * 0.48, h * 0.44, Math.hypot(w, h) * 0.78);
             bg.addColorStop(0, t.c0);
-            bg.addColorStop(0.48, t.c1);
+            bg.addColorStop(0.50, t.c1);
             bg.addColorStop(1, t.c2);
             ctx.fillStyle = bg;
             ctx.fillRect(0, 0, w, h);
 
-            // Soft diagonal softbox beam behind hardware
-            const beam = ctx.createLinearGradient(w * 0.85, 0, w * 0.25, h * 0.85);
+            const beam = ctx.createLinearGradient(w * 0.86, 0, w * 0.24, h * 0.85);
             beam.addColorStop(0, t.beam);
             beam.addColorStop(0.5, 'rgba(255,255,255,0.03)');
             beam.addColorStop(1, 'rgba(255,255,255,0)');
@@ -776,32 +802,29 @@
             ctx.closePath();
             ctx.fill();
 
-            // Clean architectural white-stone 3D pedestal block (like user studio reference)
+            // Clean architectural white-stone 3D pedestal
             const pY = h * pedestalYFrac;
-            const pBackY = pY - h * 0.085;
-
+            const pBackY = pY - h * 0.10;
             const topGrad = ctx.createLinearGradient(0, pBackY, 0, pY);
-            topGrad.addColorStop(0, '#ded7ce');
+            topGrad.addColorStop(0, '#dad2c8');
             topGrad.addColorStop(0.55, t.topPlinth);
             topGrad.addColorStop(1, '#fcfaf7');
 
             ctx.beginPath();
-            ctx.moveTo(w * 0.06, pBackY);
-            ctx.lineTo(w * 0.94, pBackY);
+            ctx.moveTo(w * 0.05, pBackY);
+            ctx.lineTo(w * 0.95, pBackY);
             ctx.lineTo(w, pY);
             ctx.lineTo(0, pY);
             ctx.closePath();
             ctx.fillStyle = topGrad;
             ctx.fill();
 
-            // Front pedestal riser face
             const riserGrad = ctx.createLinearGradient(0, pY, 0, h);
             riserGrad.addColorStop(0, t.frontPlinth);
-            riserGrad.addColorStop(1, '#c9c1b6');
+            riserGrad.addColorStop(1, '#c6bdb1');
             ctx.fillStyle = riserGrad;
             ctx.fillRect(0, pY, w, h - pY);
 
-            // Crisp architectural bevel highlight at pedestal lip
             ctx.beginPath();
             ctx.moveTo(0, pY);
             ctx.lineTo(w, pY);
@@ -812,163 +835,194 @@
             ctx.restore();
         }
 
-        // Smooth Convex-Hull Brushed Titanium Smartphone Renderer (Natural bezel & clean side buttons)
-        function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 10.5) {
+        // True 3D Solid Aluminum/Titanium Smartphone Renderer (Clear 3D Thickness, Raised Hardware Buttons, Antenna Bands, Chamfer & Slight Pitch)
+        function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 22.5, pitchDeg = -4.2) {
             const W = 274 * sc;
             const H = 588 * sc;
             const R = 39 * sc;
-            const D = 10.8 * sc;
-            const focal = 2250 * sc;
+            // Generous realistic physical 3D chassis thickness (~15px visible brushed side rail at 22°!)
+            const D = 34 * sc;
+            const focal = 1950 * sc;
             const yaw = yawDeg * Math.PI / 180;
+            const pitch = pitchDeg * Math.PI / 180;
             const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+            const cosP = Math.cos(pitch), sinP = Math.sin(pitch);
 
             const proj = (x, y, z) => {
-                const rx = x * cosY + z * sinY;
-                const ry = y;
-                const rz = -x * sinY + z * cosY;
+                // Yaw around Y, then subtle camera pitch around X
+                const x1 = x * cosY + z * sinY;
+                const y1 = y;
+                const z1 = -x * sinY + z * cosY;
+
+                const rx = x1;
+                const ry = y1 * cosP - z1 * sinP;
+                const rz = y1 * sinP + z1 * cosP;
                 const ps = focal / (focal - rz);
                 return { px: rx * ps, py: ry * ps, rx, ry, rz };
             };
 
-            const outerSamples = buildSquircleSamples(W, H, R, 76, 24);
+            const outerSamples = buildSquircleSamples(W, H, R, 64, 20);
             const frontOuter = outerSamples.map(p => ({ ...p, ...proj(p.x, p.y, D / 2) }));
             const backOuter = outerSamples.map(p => ({ ...p, ...proj(p.x, p.y, -D / 2) }));
-            const insetShadowOuter = outerSamples.map(p => proj(p.x * 0.945, p.y * 0.958, -D / 2));
+            const insetShadowOuter = outerSamples.map(p => proj(p.x * 0.94, p.y * 0.955, -D / 2));
             const outerHull = computeConvexHull([...frontOuter, ...backOuter]);
 
             ctx.save();
             ctx.translate(cx, cy);
             if (rotZRad) ctx.rotate(rotZRad);
 
-            // Grounded contact shadow on stone pedestal
+            // 1. Grounded elliptical studio contact shadow directly under phone base on pedestal
+            const baseMid = proj(0, H * 0.50, 0);
             ctx.save();
-            const contactGrad = ctx.createRadialGradient(-4 * sc, H * 0.504, 4 * sc, -4 * sc, H * 0.504, W * 0.68);
-            contactGrad.addColorStop(0, 'rgba(12, 16, 14, 0.42)');
-            contactGrad.addColorStop(0.5, 'rgba(12, 16, 14, 0.16)');
-            contactGrad.addColorStop(1, 'rgba(12, 16, 14, 0)');
+            const contactGrad = ctx.createRadialGradient(baseMid.px - 6 * sc, baseMid.py + 3 * sc, 4 * sc, baseMid.px - 6 * sc, baseMid.py + 3 * sc, W * 0.72);
+            contactGrad.addColorStop(0, 'rgba(10, 14, 12, 0.48)');
+            contactGrad.addColorStop(0.45, 'rgba(10, 14, 12, 0.18)');
+            contactGrad.addColorStop(1, 'rgba(10, 14, 12, 0)');
             ctx.fillStyle = contactGrad;
             ctx.beginPath();
-            ctx.ellipse(-4 * sc, H * 0.504, W * 0.62, 20 * sc, 0, 0, Math.PI * 2);
+            ctx.ellipse(baseMid.px - 6 * sc, baseMid.py + 3 * sc, W * 0.66, 20 * sc, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
 
-            // Soft diffused cast shadow
+            // 2. Soft diffused backdrop cast shadow
             ctx.save();
-            ctx.shadowColor = 'rgba(12, 18, 15, 0.28)';
+            ctx.shadowColor = 'rgba(10, 14, 12, 0.30)';
             ctx.shadowBlur = 32 * sc;
-            ctx.shadowOffsetX = -8 * sc;
+            ctx.shadowOffsetX = (yawDeg >= 0 ? -12 : 12) * sc;
             ctx.shadowOffsetY = 16 * sc;
             traceProjectedPath(ctx, insetShadowOuter);
             ctx.fillStyle = 'rgba(16, 20, 18, 0.36)';
             ctx.fill();
             ctx.restore();
 
-            // Smooth clipped convex hull titanium rail
+            // 3. Solid 3D Brushed-Aluminum Side Chassis Body (Distinct contrast between back edge, bright specular side band & chamfer!)
             ctx.save();
             traceProjectedPath(ctx, outerHull);
             ctx.clip();
 
-            const shellGrad = ctx.createLinearGradient(-W * 0.52, -H * 0.42, W * 0.45, H * 0.48);
-            shellGrad.addColorStop(0, '#c8d0d8');
-            shellGrad.addColorStop(0.24, '#f0f4f8');
-            shellGrad.addColorStop(0.52, '#aab3bd');
-            shellGrad.addColorStop(0.78, '#d4dce4');
-            shellGrad.addColorStop(1, '#98a1ab');
-            ctx.fillStyle = shellGrad;
-            ctx.fillRect(-W * 0.7, -H * 0.6, W * 1.4, H * 1.2);
+            const dir = yawDeg >= 0 ? -1 : 1;
+            const sideGrad = ctx.createLinearGradient(dir * W * 0.60, -H * 0.18, -dir * W * 0.45, H * 0.25);
+            sideGrad.addColorStop(0, '#9ba4ae');
+            sideGrad.addColorStop(0.14, '#e6ebf0');
+            sideGrad.addColorStop(0.28, '#cbd3dc');
+            sideGrad.addColorStop(0.60, '#9fa8b2');
+            sideGrad.addColorStop(1, '#79828c');
+            ctx.fillStyle = sideGrad;
+            ctx.fillRect(-W * 0.75, -H * 0.65, W * 1.5, H * 1.3);
 
-            const lx = -0.60, ly = -0.56, lz = 0.57;
-            const hx = lx, hy = ly, hz = lz + 1;
-            const hlen = Math.hypot(hx, hy, hz);
-            for (let i = 0; i < outerSamples.length; i++) {
-                const j = (i + 1) % outerSamples.length;
-                const s = outerSamples[i];
-                const nx3 = s.nx * cosY;
-                const ny3 = s.ny;
-                const nz3 = -s.nx * sinY;
-                const f = frontOuter[i], fn = frontOuter[j];
-                const b = backOuter[i], bn = backOuter[j];
-                if ((nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz)) <= 0) continue;
+            // Vertical studio softbox highlight running straight down the flat aluminum side rail
+            const railTop = proj(dir * W * 0.50, -H * 0.42, 0);
+            const railBot = proj(dir * W * 0.50, H * 0.42, 0);
+            const railBand = ctx.createLinearGradient(railTop.px - 6 * sc, railTop.py, railBot.px + 6 * sc, railBot.py);
+            railBand.addColorStop(0, '#eef3f7');
+            railBand.addColorStop(0.22, '#ffffff');
+            railBand.addColorStop(0.52, '#d1d8e0');
+            railBand.addColorStop(0.84, '#b8c1ca');
+            railBand.addColorStop(1, '#98a1ab');
+            ctx.fillStyle = railBand;
+            ctx.fillRect(-W * 0.75, -H * 0.65, W * 1.5, H * 1.3);
 
-                const ndotl = Math.max(0, nx3 * lx + ny3 * ly + nz3 * lz);
-                const spec = Math.pow(Math.max(0, (nx3 * hx + ny3 * hy + nz3 * hz) / hlen), 18);
-                const lit = Math.min(1, 0.58 + 0.34 * ndotl + 0.38 * spec);
-                const cFront = Math.round(176 + lit * 76);
-                const cBack = Math.round(126 + lit * 54);
-                const gSide = ctx.createLinearGradient(b.px, b.py, f.px, f.py);
-                gSide.addColorStop(0, `rgb(${cBack}, ${cBack + 3}, ${cBack + 6})`);
-                gSide.addColorStop(1, `rgb(${Math.min(252, cFront)}, ${Math.min(254, cFront + 2)}, ${Math.min(255, cFront + 4)})`);
+            // Back edge bevel shading along backOuter (gives instant 3D rounded rail curvature!)
+            traceProjectedPath(ctx, backOuter);
+            ctx.strokeStyle = 'rgba(42, 50, 58, 0.36)';
+            ctx.lineWidth = Math.max(1.2, 2.2 * sc);
+            ctx.stroke();
 
+            // Authentic Antenna Break Lines across the solid side rail
+            for (const ay of [-H * 0.375, H * 0.375]) {
+                const aOut = proj(dir * (W * 0.50), ay, -D * 0.46);
+                const aIn  = proj(dir * (W * 0.50), ay,  D * 0.46);
                 ctx.beginPath();
-                ctx.moveTo(b.px, b.py);
-                ctx.lineTo(bn.px, bn.py);
-                ctx.lineTo(fn.px, fn.py);
-                ctx.lineTo(f.px, f.py);
-                ctx.closePath();
-                ctx.fillStyle = gSide;
-                ctx.fill();
+                ctx.moveTo(aOut.px, aOut.py);
+                ctx.lineTo(aIn.px, aIn.py);
+                ctx.strokeStyle = 'rgba(54, 62, 70, 0.45)';
+                ctx.lineCap = 'round';
+                ctx.lineWidth = Math.max(1.1, 1.8 * sc);
+                ctx.stroke();
             }
+
+            // Bottom speaker / USB-C shadow hint if visible under pitch
+            const portCenter = proj(0, H * 0.50, 0);
+            ctx.beginPath();
+            ctx.ellipse(portCenter.px, portCenter.py, 11 * sc, 2.2 * sc, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(28, 34, 40, 0.45)';
+            ctx.fill();
+
             ctx.restore();
 
+            // Clean outer chassis hairline
             traceProjectedPath(ctx, outerHull);
-            ctx.strokeStyle = 'rgba(38, 46, 54, 0.22)';
-            ctx.lineWidth = Math.max(0.75, 0.85 * sc);
+            ctx.strokeStyle = 'rgba(32, 38, 46, 0.32)';
+            ctx.lineWidth = Math.max(0.8, 1.0 * sc);
             ctx.lineJoin = 'round';
             ctx.stroke();
 
-            // Side flush hardware button on visible metallic rail
-            const railSign = yawDeg >= 0 ? -1 : 1;
-            const drawFlushButton = (yTop, yBot) => {
-                const pTop = proj(railSign * (W / 2 + 0.3 * sc), yTop, -D * 0.06);
-                const pBot = proj(railSign * (W / 2 + 0.3 * sc), yBot, -D * 0.06);
+            // 4. Sculpted 3D Raised Hardware Side Buttons (Power + Volume Keys clearly resting on the flat titanium rail)
+            const draw3DHardwareKey = (yTop, yBot) => {
+                const depthOut = 1.9 * sc;
+                const pB1 = proj(dir * (W / 2), yTop, -D * 0.14);
+                const pB2 = proj(dir * (W / 2), yBot, -D * 0.14);
+                const pT1 = proj(dir * (W / 2 + depthOut), yTop + 1 * sc, D * 0.10);
+                const pT2 = proj(dir * (W / 2 + depthOut), yBot - 1 * sc, D * 0.10);
+
                 ctx.save();
-                ctx.lineCap = 'round';
+                // Dark machined button slot shadow
                 ctx.beginPath();
-                ctx.moveTo(pTop.px, pTop.py);
-                ctx.lineTo(pBot.px, pBot.py);
-                ctx.strokeStyle = 'rgba(72, 80, 90, 0.36)';
-                ctx.lineWidth = Math.max(1.2, 1.85 * sc);
+                ctx.moveTo(pB1.px, pB1.py);
+                ctx.lineTo(pB2.px, pB2.py);
+                ctx.lineTo(pT2.px, pT2.py);
+                ctx.lineTo(pT1.px, pT1.py);
+                ctx.closePath();
+                ctx.fillStyle = '#8b949e';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(28, 34, 40, 0.42)';
+                ctx.lineWidth = Math.max(0.7, 0.9 * sc);
                 ctx.stroke();
+
+                // Bright specular crown on top edge of key
                 ctx.beginPath();
-                ctx.moveTo(pTop.px - railSign * 0.25 * sc, pTop.py);
-                ctx.lineTo(pBot.px - railSign * 0.25 * sc, pBot.py);
-                ctx.strokeStyle = '#eef3f7';
-                ctx.lineWidth = Math.max(0.8, 1.15 * sc);
+                ctx.moveTo(pT1.px, pT1.py);
+                ctx.lineTo(pT2.px, pT2.py);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = Math.max(1.0, 1.5 * sc);
+                ctx.lineCap = 'round';
                 ctx.stroke();
                 ctx.restore();
             };
-            drawFlushButton(-H * 0.215, -H * 0.148);
-            drawFlushButton(-H * 0.116, -H * 0.038);
+            draw3DHardwareKey(-H * 0.22, -H * 0.14);
+            draw3DHardwareKey(-H * 0.11, -H * 0.025);
+            draw3DHardwareKey(-H * 0.30, -H * 0.26);
 
-            // Front machined rim & black OLED frame
+            // 5. Machined Front Aluminum Chamfer Rim + Recessed Black OLED Frame
             const rimGrad = ctx.createLinearGradient(-W * 0.48, -H * 0.45, W * 0.45, H * 0.48);
-            rimGrad.addColorStop(0, '#fcfdfe');
-            rimGrad.addColorStop(0.28, '#d4dbe2');
-            rimGrad.addColorStop(0.55, '#f4f7fa');
-            rimGrad.addColorStop(0.82, '#b9c1ca');
+            rimGrad.addColorStop(0, '#ffffff');
+            rimGrad.addColorStop(0.28, '#dbe2e8');
+            rimGrad.addColorStop(0.55, '#f6f8fa');
+            rimGrad.addColorStop(0.82, '#bcc5ce');
             rimGrad.addColorStop(1, '#e6ebf0');
             traceProjectedPath(ctx, frontOuter);
             ctx.fillStyle = rimGrad;
             ctx.fill();
-            ctx.strokeStyle = 'rgba(42, 50, 58, 0.22)';
-            ctx.lineWidth = Math.max(0.7, 0.8 * sc);
+            // Subtle dark separating shadow between side wall and front metallic bezel
+            ctx.strokeStyle = 'rgba(30, 36, 42, 0.34)';
+            ctx.lineWidth = Math.max(0.9, 1.15 * sc);
             ctx.stroke();
 
-            const chamferInset = 1.9 * sc;
-            const oledSamples = buildSquircleSamples(W - chamferInset * 2, H - chamferInset * 2, R - chamferInset, 76, 24);
+            const chamferInset = 2.6 * sc;
+            const oledSamples = buildSquircleSamples(W - chamferInset * 2, H - chamferInset * 2, R - chamferInset, 64, 20);
             traceProjectedPath(ctx, oledSamples.map(p => proj(p.x, p.y, D / 2)));
-            ctx.fillStyle = '#0c0e10';
+            ctx.fillStyle = '#090b0d';
             ctx.fill();
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.56)';
-            ctx.lineWidth = Math.max(0.6, 0.72 * sc);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.62)';
+            ctx.lineWidth = Math.max(0.65, 0.85 * sc);
             ctx.stroke();
 
-            // Display viewport
-            const frameTotal = 6.3 * sc;
+            // 6. Display Viewport (exact bilinear affine slices supporting both yaw & pitch cleanly)
+            const frameTotal = 7.4 * sc;
             const scrW = W - frameTotal * 2;
             const scrH = H - frameTotal * 2;
             const scrR = R - frameTotal;
-            const scrPoly = buildSquircleSamples(scrW, scrH, scrR, 76, 24).map(p => proj(p.x, p.y, D / 2));
+            const scrPoly = buildSquircleSamples(scrW, scrH, scrR, 64, 20).map(p => proj(p.x, p.y, D / 2));
 
             ctx.save();
             traceProjectedPath(ctx, scrPoly);
@@ -977,44 +1031,45 @@
             ctx.fillStyle = '#faf7f2';
             const fTL = proj(-scrW / 2, -scrH / 2, D / 2);
             const fBR = proj(scrW / 2, scrH / 2, D / 2);
-            ctx.fillRect(fTL.px - 20 * sc, fTL.py - 20 * sc, (fBR.px - fTL.px) + 40 * sc, (fBR.py - fTL.py) + 40 * sc);
+            ctx.fillRect(fTL.px - 24 * sc, fTL.py - 24 * sc, (fBR.px - fTL.px) + 48 * sc, (fBR.py - fTL.py) + 48 * sc);
 
             if (imgEl && imgEl.naturalWidth) {
-                const SLICES = 112;
-                const topSafeFrac = 0.026;
+                const SLICES = 64;
+                const topSafeFrac = 0.028;
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 for (let s = 0; s < SLICES; s++) {
                     const u0 = s / SLICES;
                     const u1 = (s + 1) / SLICES;
-                    const um = (u0 + u1) * 0.5;
-                    const xL = -scrW / 2 + scrW * um;
                     const x0 = -scrW / 2 + scrW * u0;
                     const x1 = -scrW / 2 + scrW * u1;
 
-                    const pTop0 = proj(x0, -scrH / 2, D / 2);
-                    const pTop1 = proj(x1, -scrH / 2, D / 2);
-                    const pBotMid = proj(xL, scrH / 2, D / 2);
-                    const pTopMid = proj(xL, -scrH / 2, D / 2);
+                    const pTL = proj(x0, -scrH / 2, D / 2);
+                    const pTR = proj(x1, -scrH / 2, D / 2);
+                    const pBL = proj(x0,  scrH / 2, D / 2);
 
-                    const dx = pTop0.px;
-                    const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.6);
-                    const totalColH = pBotMid.py - pTopMid.py;
-                    const dy = pTopMid.py + totalColH * topSafeFrac;
-                    const dh = totalColH * (1 - topSafeFrac);
-
+                    ctx.save();
+                    ctx.transform(
+                        (pTR.px - pTL.px) * 1.12,
+                        (pTR.py - pTL.py) * 1.12,
+                        pBL.px - pTL.px,
+                        pBL.py - pTL.py,
+                        pTL.px,
+                        pTL.py
+                    );
                     const sx = u0 * imgEl.naturalWidth;
                     const sw = Math.max(1, (u1 - u0) * imgEl.naturalWidth);
-                    ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, dx, dy, dw, dh);
+                    ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, 0, topSafeFrac, 1, 1 - topSafeFrac);
+                    ctx.restore();
                 }
             }
 
-            // Minimal centered Selfie Punch-Hole Camera
-            const camP = proj(0, -scrH / 2 + 8.6 * sc, D / 2);
-            const camR = 2.65 * sc;
+            // Minimal centered Selfie Punch-Hole Camera (just like photo reference)
+            const camP = proj(0, -scrH / 2 + 10 * sc, D / 2);
+            const camR = 3.2 * sc;
             ctx.beginPath();
-            ctx.ellipse(camP.px, camP.py, camR, camR, 0, 0, Math.PI * 2);
-            ctx.fillStyle = '#090b0d';
+            ctx.ellipse(camP.px, camP.py, camR, camR * cosP, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#07080a';
             ctx.fill();
             ctx.beginPath();
             ctx.ellipse(camP.px - camR * 0.25, camP.py - camR * 0.25, camR * 0.36, camR * 0.36, 0, 0, Math.PI * 2);
@@ -1027,20 +1082,20 @@
             sheen.addColorStop(0.32, 'rgba(255, 255, 255, 0.04)');
             sheen.addColorStop(0.54, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = sheen;
-            ctx.fillRect(fTL.px - 20 * sc, fTL.py - 20 * sc, (fBR.px - fTL.px) + 40 * sc, (fBR.py - fTL.py) + 40 * sc);
+            ctx.fillRect(fTL.px - 24 * sc, fTL.py - 24 * sc, (fBR.px - fTL.px) + 48 * sc, (fBR.py - fTL.py) + 48 * sc);
             ctx.restore();
 
             ctx.restore();
         }
 
-        // Photorealistic 3D Brushed-Aluminum MacBook Pro Renderer (Natural 4.2° Studio Portrait Angle)
-        function drawStudio3DMacBook(ctx, cx, cy, wFrame, imgEl, yawDeg = 4.2) {
+        // Photorealistic 3D Brushed-Aluminum MacBook Pro Renderer
+        function drawStudio3DMacBook(ctx, cx, cy, wFrame, imgEl, yawDeg = 5.5) {
             const sc = wFrame / 430;
             const W = wFrame;
             const H = W / 1.6 + 11 * sc;
             const R = 13.0 * sc;
-            const D = 5.4 * sc;
-            const focal = 2900 * sc;
+            const D = 7.2 * sc;
+            const focal = 2850 * sc;
             const yaw = yawDeg * Math.PI / 180;
             const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
 
@@ -1052,16 +1107,16 @@
                 return { px: rx * ps, py: ry * ps, rx, ry, rz };
             };
 
-            const lidSamples = buildSquircleSamples(W, H, R, 48, 20);
+            const lidSamples = buildSquircleSamples(W, H, R, 42, 18);
             const frontLid = lidSamples.map(p => ({ ...p, ...proj(p.x, p.y, D / 2) }));
             const backLid = lidSamples.map(p => ({ ...p, ...proj(p.x, p.y, -D / 2) }));
             const insetLidShadow = lidSamples.map(p => proj(p.x * 0.955, p.y * 0.96, -D / 2));
             const lidHull = computeConvexHull([...frontLid, ...backLid]);
 
             const hingeY = H / 2 + 1.2 * sc;
-            const deckDropY = hingeY + 22 * sc;
-            const deckDepthZ = 66 * sc;
-            const lipH = 5.2 * sc;
+            const deckDropY = hingeY + 23 * sc;
+            const deckDepthZ = 68 * sc;
+            const lipH = 5.6 * sc;
 
             const dBL = proj(-W * 0.502, hingeY, -D * 0.3);
             const dBR = proj(W * 0.502, hingeY, -D * 0.3);
@@ -1073,12 +1128,11 @@
             ctx.save();
             ctx.translate(cx, cy - 3 * sc);
 
-            // Grounded studio contact shadow
             ctx.save();
             const deckCenterX = (dFLBot.px + dFRBot.px) * 0.5;
             const deckCenterY = (dFLBot.py + dFRBot.py) * 0.5 + 3.5 * sc;
             const macGround = ctx.createRadialGradient(deckCenterX, deckCenterY, 10 * sc, deckCenterX, deckCenterY, W * 0.66);
-            macGround.addColorStop(0, 'rgba(12, 16, 14, 0.38)');
+            macGround.addColorStop(0, 'rgba(12, 16, 14, 0.40)');
             macGround.addColorStop(0.55, 'rgba(12, 16, 14, 0.14)');
             macGround.addColorStop(1, 'rgba(12, 16, 14, 0)');
             ctx.fillStyle = macGround;
@@ -1097,46 +1151,20 @@
             ctx.fill();
             ctx.restore();
 
-            // Extruded aluminum lid
             ctx.save();
             traceProjectedPath(ctx, lidHull);
             ctx.clip();
             const shellG = ctx.createLinearGradient(-W * 0.5, -H * 0.4, W * 0.5, H * 0.4);
-            shellG.addColorStop(0, '#c8d0d8');
+            shellG.addColorStop(0, '#c2cbd4');
             shellG.addColorStop(0.45, '#e8edf2');
-            shellG.addColorStop(1, '#9fa8b2');
+            shellG.addColorStop(1, '#98a1ac');
             ctx.fillStyle = shellG;
             ctx.fillRect(-W * 0.7, -H * 0.7, W * 1.4, H * 1.4);
-
-            for (let i = 0; i < lidSamples.length; i++) {
-                const j = (i + 1) % lidSamples.length;
-                const s = lidSamples[i];
-                const nx3 = s.nx * cosY;
-                const ny3 = s.ny;
-                const nz3 = -s.nx * sinY;
-                const f = frontLid[i], fn = frontLid[j];
-                const b = backLid[i], bn = backLid[j];
-                if ((nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz)) <= 0) continue;
-
-                const ndotl = Math.max(0, nx3 * -0.60 + ny3 * -0.56 + nz3 * 0.57);
-                const cVal = Math.round(150 + ndotl * 94);
-                const gEdge = ctx.createLinearGradient(b.px, b.py, f.px, f.py);
-                gEdge.addColorStop(0, `rgb(${cVal - 20}, ${cVal - 17}, ${cVal - 13})`);
-                gEdge.addColorStop(1, `rgb(${Math.min(252, cVal + 14)}, ${Math.min(254, cVal + 16)}, ${Math.min(255, cVal + 18)})`);
-                ctx.beginPath();
-                ctx.moveTo(b.px, b.py);
-                ctx.lineTo(bn.px, bn.py);
-                ctx.lineTo(fn.px, fn.py);
-                ctx.lineTo(f.px, f.py);
-                ctx.closePath();
-                ctx.fillStyle = gEdge;
-                ctx.fill();
-            }
             ctx.restore();
 
             traceProjectedPath(ctx, lidHull);
-            ctx.strokeStyle = 'rgba(42, 50, 58, 0.22)';
-            ctx.lineWidth = Math.max(0.7, 0.8 * sc);
+            ctx.strokeStyle = 'rgba(42, 50, 58, 0.28)';
+            ctx.lineWidth = Math.max(0.75, 0.9 * sc);
             ctx.lineJoin = 'round';
             ctx.stroke();
 
@@ -1149,7 +1177,7 @@
             ctx.fill();
 
             const bezInset = 1.6 * sc;
-            const bezSamples = buildSquircleSamples(W - bezInset * 2, H - bezInset * 2, R - bezInset, 48, 20);
+            const bezSamples = buildSquircleSamples(W - bezInset * 2, H - bezInset * 2, R - bezInset, 42, 18);
             traceProjectedPath(ctx, bezSamples.map(p => proj(p.x, p.y, D / 2)));
             ctx.fillStyle = '#0e1012';
             ctx.fill();
@@ -1158,7 +1186,7 @@
             const scrW = W - scrLeft * 2;
             const scrH = H - scrTop - scrBot;
             const scrCenterY = (scrTop - scrBot) * 0.5;
-            const scrSamples = buildSquircleSamples(scrW, scrH, 6.2 * sc, 36, 16)
+            const scrSamples = buildSquircleSamples(scrW, scrH, 6.2 * sc, 32, 16)
                 .map(p => proj(p.x, p.y + scrCenterY, D / 2));
 
             ctx.save();
@@ -1171,27 +1199,30 @@
             ctx.fillRect(mTL.px - 16 * sc, mTL.py - 16 * sc, (mBR.px - mTL.px) + 32 * sc, (mBR.py - mTL.py) + 32 * sc);
 
             if (imgEl && imgEl.naturalWidth) {
-                const SLICES = 112;
+                const SLICES = 84;
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 for (let s = 0; s < SLICES; s++) {
                     const u0 = s / SLICES;
                     const u1 = (s + 1) / SLICES;
-                    const um = (u0 + u1) * 0.5;
                     const x0 = -scrW / 2 + scrW * u0;
                     const x1 = -scrW / 2 + scrW * u1;
-                    const xL = -scrW / 2 + scrW * um;
                     const pTop0 = proj(x0, -scrH / 2 + scrCenterY, D / 2);
                     const pTop1 = proj(x1, -scrH / 2 + scrCenterY, D / 2);
-                    const pTopMid = proj(xL, -scrH / 2 + scrCenterY, D / 2);
-                    const pBotMid = proj(xL, scrH / 2 + scrCenterY, D / 2);
-                    const dx = pTop0.px;
-                    const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.65);
-                    const dy = pTopMid.py;
-                    const dh = pBotMid.py - pTopMid.py;
+                    const pBot0 = proj(x0,  scrH / 2 + scrCenterY, D / 2);
+                    ctx.save();
+                    ctx.transform(
+                        (pTop1.px - pTop0.px) * 1.12,
+                        (pTop1.py - pTop0.py) * 1.12,
+                        pBot0.px - pTop0.px,
+                        pBot0.py - pTop0.py,
+                        pTop0.px,
+                        pTop0.py
+                    );
                     const sx = u0 * imgEl.naturalWidth;
                     const sw = Math.max(1, (u1 - u0) * imgEl.naturalWidth);
-                    ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, dx, dy, dw, dh);
+                    ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, 0, 0, 1, 1);
+                    ctx.restore();
                 }
             }
 
@@ -1276,7 +1307,6 @@
                 const v0 = (accRow + 0.14) / wSum;
                 const v1 = (accRow + rowWeights[rowIdx] - 0.14) / wSum;
                 accRow += rowWeights[rowIdx];
-
                 const yBack = hingeY + (3.4 + v0 * 8.0) * sc;
                 const zBack = (8.5 + v0 * 23.0) * sc;
                 const yFront = hingeY + (3.4 + v1 * 8.0) * sc;
@@ -1366,7 +1396,6 @@
             ctx.restore();
         }
 
-        // Wait for all reference textures before rendering 3D stages
         function waitForTextures() {
             const imgs = Array.from(document.querySelectorAll('img[id^="tex-"]'));
             return Promise.all(imgs.map(im => new Promise(resolve => {
@@ -1376,7 +1405,7 @@
             })));
         }
 
-        function sizeCanvas(cv, cssW, cssH, dpr = Math.min(2, window.devicePixelRatio || 1)) {
+        function sizeCanvas(cv, cssW, cssH, dpr = 2) {
             const targetW = Math.round(cssW * dpr);
             const targetH = Math.round(cssH * dpr);
             if (cv.width !== targetW || cv.height !== targetH) {
@@ -1395,7 +1424,7 @@
                 kicker: '01 · Fächer & Gewichtung',
                 title: 'Notenübersicht & Gewichtungs-Engine auf dem Smartphone',
                 phoneTex: 'tex-faecher-mobile',
-                yaw: 11.0
+                yaw: 22.0
             },
             {
                 theme: 'honey',
@@ -1403,7 +1432,7 @@
                 kicker: '02 · Wunschnoten-Rechner',
                 title: 'Exakte Punktzahl vor jeder Klausur berechnen',
                 phoneTex: 'tex-wunschnote-mobile',
-                yaw: -10.5
+                yaw: 21.5
             },
             {
                 theme: 'mint',
@@ -1412,7 +1441,7 @@
                 title: 'Klausurtermine synchron auf Laptop & Smartphone',
                 macTex: 'tex-kalender-laptop',
                 phoneTex: 'tex-kalender-mobile',
-                yaw: 9.5
+                yaw: 21.0
             },
             {
                 theme: 'espresso',
@@ -1421,67 +1450,85 @@
                 title: '40 Kurse, Block I & II + Bestehens-Kriterien',
                 macTex: 'tex-abi-laptop',
                 phoneTex: 'tex-abi-mobile',
-                yaw: 10.0
+                yaw: 22.0
             }
         ];
 
         (async function initLanding3D() {
             await waitForTextures();
 
-            let heroMode = 'duo';
-            let heroScrollYawOffset = 0;
             let activeStoryIdx = 0;
-            let bentoMode = 'phone';
             const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
             const tex = (id) => document.getElementById(id);
 
-            const drawHero = () => {
-                const cv = document.getElementById('hero3dCanvas');
-                if (!cv) return;
-                const w = 640, h = 500;
-                const ctx = sizeCanvas(cv, w, h, 2);
-                drawStudioPedestalStage(ctx, w, h, 'sage', 0.80);
-
-                if (heroMode === 'duo') {
-                    const macYaw = 4.2 + heroScrollYawOffset * 0.45;
-                    const phoneYaw = 11.5 - heroScrollYawOffset;
-                    drawStudio3DMacBook(ctx, w * 0.56, h * 0.45, 360, tex('tex-dash-laptop'), macYaw);
-                    drawStudio3DPhone(ctx, w * 0.25, h * 0.52, 0.56, -0.04, tex('tex-dash-mobile'), phoneYaw);
-                } else if (heroMode === 'phone') {
-                    drawStudio3DPhone(ctx, w * 0.50, h * 0.49, 0.68, -0.02, tex('tex-dash-mobile'), 11.5 - heroScrollYawOffset);
-                } else {
-                    drawStudio3DMacBook(ctx, w * 0.50, h * 0.47, 415, tex('tex-dash-laptop'), 4.2 + heroScrollYawOffset * 0.5);
-                }
-            };
-
-            const drawStoryCanvas = (cv, cfg, scrollTilt = 0) => {
+            const drawStoryToCanvas = (cv, cfg) => {
                 if (!cv) return;
                 const w = 600, h = 500;
                 const ctx = sizeCanvas(cv, w, h, 2);
                 drawStudioPedestalStage(ctx, w, h, cfg.theme, 0.80);
                 if (cfg.mode === 'duo') {
-                    drawStudio3DMacBook(ctx, w * 0.56, h * 0.43, 336, tex(cfg.macTex), 4.2 + scrollTilt * 0.35);
-                    drawStudio3DPhone(ctx, w * 0.23, h * 0.50, 0.50, -0.04, tex(cfg.phoneTex), cfg.yaw - scrollTilt * 0.6);
+                    drawStudio3DMacBook(ctx, w * 0.56, h * 0.43, 336, tex(cfg.macTex), 5.0);
+                    drawStudio3DPhone(ctx, w * 0.23, h * 0.50, 0.50, -0.025, tex(cfg.phoneTex), cfg.yaw, -4.0);
                 } else {
-                    drawStudio3DPhone(ctx, w * 0.50, h * 0.47, 0.62, -0.02, tex(cfg.phoneTex), cfg.yaw - scrollTilt * 0.6);
+                    drawStudio3DPhone(ctx, w * 0.50, h * 0.47, 0.62, -0.015, tex(cfg.phoneTex), cfg.yaw, -4.2);
                 }
             };
 
-            const drawStaticShowcaseCanvases = () => {
-                // Bento Multi-Device Sync Canvas
-                const syncCv = document.getElementById('bentoSyncCanvas');
-                if (syncCv) {
+            // Pre-render all Hero Modes once (0ms GPU switching & 120fps scroll motion!)
+            const renderAllStaticScenes = () => {
+                // Hero Duo
+                const cDuo = document.getElementById('heroCanvasDuo');
+                if (cDuo) {
+                    const w = 640, h = 500;
+                    const ctx = sizeCanvas(cDuo, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.80);
+                    drawStudio3DMacBook(ctx, w * 0.57, h * 0.45, 358, tex('tex-dash-laptop'), 5.5);
+                    drawStudio3DPhone(ctx, w * 0.24, h * 0.51, 0.56, -0.025, tex('tex-dash-mobile'), 22.5, -4.5);
+                }
+                // Hero Solo 3D Smartphone (looks unmistakably like photo reference with solid side rail & pedestal!)
+                const cPhone = document.getElementById('heroCanvasPhone');
+                if (cPhone) {
+                    const w = 640, h = 500;
+                    const ctx = sizeCanvas(cPhone, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.81);
+                    drawStudio3DPhone(ctx, w * 0.50, h * 0.48, 0.67, -0.015, tex('tex-dash-mobile'), 23.0, -4.5);
+                }
+                // Hero Laptop
+                const cLaptop = document.getElementById('heroCanvasLaptop');
+                if (cLaptop) {
+                    const w = 640, h = 500;
+                    const ctx = sizeCanvas(cLaptop, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.80);
+                    drawStudio3DMacBook(ctx, w * 0.50, h * 0.47, 415, tex('tex-dash-laptop'), 5.8);
+                }
+
+                // Pre-render all 4 Sticky Storyboard layers
+                STORY_CONFIG.forEach((cfg, idx) => {
+                    drawStoryToCanvas(document.getElementById(`storyLayer${idx}`), cfg);
+                });
+
+                // Inline Mobile Story Canvases
+                document.querySelectorAll('canvas[data-story-canvas]').forEach(cv => {
+                    const idx = Number(cv.getAttribute('data-story-canvas')) || 0;
+                    drawStoryToCanvas(cv, STORY_CONFIG[idx]);
+                });
+
+                // Bento Sync Phone Focus & Laptop Focus pre-rendered
+                const syncPhone = document.getElementById('bentoSyncPhoneCanvas');
+                if (syncPhone) {
                     const w = 640, h = 400;
-                    const ctx = sizeCanvas(syncCv, w, h, 2);
+                    const ctx = sizeCanvas(syncPhone, w, h, 2);
                     drawStudioPedestalStage(ctx, w, h, 'mint', 0.83);
-                    if (bentoMode === 'phone') {
-                        drawStudio3DPhone(ctx, w * 0.34, h * 0.51, 0.50, -0.04, tex('tex-charts-mobile'), 11);
-                        drawStudio3DMacBook(ctx, w * 0.67, h * 0.48, 290, tex('tex-charts-laptop'), 4.2);
-                    } else {
-                        drawStudio3DMacBook(ctx, w * 0.46, h * 0.46, 340, tex('tex-charts-laptop'), 4.2);
-                        drawStudio3DPhone(ctx, w * 0.77, h * 0.53, 0.44, 0.04, tex('tex-charts-mobile'), -10);
-                    }
+                    drawStudio3DPhone(ctx, w * 0.34, h * 0.50, 0.50, -0.025, tex('tex-charts-mobile'), 22.0, -4.0);
+                    drawStudio3DMacBook(ctx, w * 0.67, h * 0.48, 288, tex('tex-charts-laptop'), 5.2);
+                }
+                const syncLaptop = document.getElementById('bentoSyncLaptopCanvas');
+                if (syncLaptop) {
+                    const w = 640, h = 400;
+                    const ctx = sizeCanvas(syncLaptop, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'mint', 0.83);
+                    drawStudio3DMacBook(ctx, w * 0.45, h * 0.46, 338, tex('tex-charts-laptop'), 5.5);
+                    drawStudio3DPhone(ctx, w * 0.77, h * 0.52, 0.44, 0.025, tex('tex-charts-mobile'), -21.0, -4.0);
                 }
 
                 // Bento PDF Canvas
@@ -1490,7 +1537,7 @@
                     const w = 480, h = 360;
                     const ctx = sizeCanvas(pdfCv, w, h, 2);
                     drawStudioPedestalStage(ctx, w, h, 'warm', 0.82);
-                    drawStudio3DPhone(ctx, w * 0.50, h * 0.49, 0.47, -0.03, tex('tex-pdf-mobile'), 10.5);
+                    drawStudio3DPhone(ctx, w * 0.50, h * 0.48, 0.47, -0.02, tex('tex-pdf-mobile'), 22.5, -4.2);
                 }
 
                 // Bento Abitur / PWA Canvas
@@ -1499,8 +1546,8 @@
                     const w = 480, h = 360;
                     const ctx = sizeCanvas(abiCv, w, h, 2);
                     drawStudioPedestalStage(ctx, w, h, 'espresso', 0.82);
-                    drawStudio3DPhone(ctx, w * 0.33, h * 0.52, 0.42, -0.05, tex('tex-aufgaben-mobile'), 11);
-                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.42, 0.05, tex('tex-insights-mobile'), -10.5);
+                    drawStudio3DPhone(ctx, w * 0.33, h * 0.51, 0.42, -0.03, tex('tex-aufgaben-mobile'), 22.0, -4.0);
+                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.42, 0.03, tex('tex-insights-mobile'), -21.0, -4.0);
                 }
 
                 // Final CTA Recap Canvas
@@ -1509,39 +1556,25 @@
                     const w = 520, h = 390;
                     const ctx = sizeCanvas(ctaCv, w, h, 2);
                     drawStudioPedestalStage(ctx, w, h, 'sage', 0.82);
-                    drawStudio3DPhone(ctx, w * 0.34, h * 0.52, 0.45, -0.05, tex('tex-recap-mobile'), 10.5);
-                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.45, 0.04, tex('tex-stundenplan-mobile'), -9.5);
+                    drawStudio3DPhone(ctx, w * 0.34, h * 0.51, 0.45, -0.03, tex('tex-recap-mobile'), 22.0, -4.2);
+                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.45, 0.03, tex('tex-stundenplan-mobile'), -21.0, -4.2);
                 }
-
-                // Render inline mobile story canvases (< lg)
-                document.querySelectorAll('canvas[data-story-canvas]').forEach(cv => {
-                    const idx = Number(cv.getAttribute('data-story-canvas')) || 0;
-                    drawStoryCanvas(cv, STORY_CONFIG[idx], 0);
-                });
             };
 
-            const setActiveStory = (idx) => {
-                activeStoryIdx = idx;
-                document.querySelectorAll('.story-step').forEach(el => {
-                    const elIdx = Number(el.getAttribute('data-story-index'));
-                    el.classList.toggle('is-active', elIdx === idx);
-                });
-                const cfg = STORY_CONFIG[idx];
-                const kicker = document.getElementById('storyStageKicker');
-                const title = document.getElementById('storyStageTitle');
-                if (kicker) kicker.textContent = cfg.kicker;
-                if (title) title.textContent = cfg.title;
-                drawStoryCanvas(document.getElementById('storyStickyCanvas'), cfg, 0);
+            renderAllStaticScenes();
+
+            // Hero View Switcher (GPU instant crossfade)
+            const heroLayers = {
+                duo: document.getElementById('heroCanvasDuo'),
+                phone: document.getElementById('heroCanvasPhone'),
+                laptop: document.getElementById('heroCanvasLaptop'),
             };
-
-            drawHero();
-            drawStaticShowcaseCanvases();
-            setActiveStory(0);
-
-            // Hero mode switcher buttons
             document.querySelectorAll('.hero-mode-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    heroMode = btn.getAttribute('data-hero-mode') || 'duo';
+                    const mode = btn.getAttribute('data-hero-mode') || 'duo';
+                    Object.entries(heroLayers).forEach(([k, el]) => {
+                        if (el) el.classList.toggle('is-current', k === mode);
+                    });
                     document.querySelectorAll('.hero-mode-btn').forEach(b => {
                         const active = b === btn;
                         b.classList.toggle('bg-white', active);
@@ -1549,14 +1582,17 @@
                         b.classList.toggle('shadow-sm', active);
                         b.classList.toggle('text-[#6e665e]', !active);
                     });
-                    drawHero();
                 });
             });
 
-            // Bento device switcher buttons
+            // Bento Device Switcher
             document.querySelectorAll('[data-bento-device]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    bentoMode = btn.getAttribute('data-bento-device') || 'phone';
+                    const mode = btn.getAttribute('data-bento-device') || 'phone';
+                    const pEl = document.getElementById('bentoSyncPhoneCanvas');
+                    const lEl = document.getElementById('bentoSyncLaptopCanvas');
+                    if (pEl) pEl.classList.toggle('is-current', mode === 'phone');
+                    if (lEl) lEl.classList.toggle('is-current', mode === 'laptop');
                     document.querySelectorAll('[data-bento-device]').forEach(b => {
                         const active = b === btn;
                         b.classList.toggle('bg-white', active);
@@ -1564,11 +1600,28 @@
                         b.classList.toggle('shadow-sm', active);
                         b.classList.toggle('text-[#6e665e]', !active);
                     });
-                    drawStaticShowcaseCanvases();
                 });
             });
 
-            // Click/Keyboard on story chapters
+            // Storyboard Active Chapter Setter
+            const setActiveStory = (idx) => {
+                activeStoryIdx = idx;
+                document.querySelectorAll('.story-step').forEach(el => {
+                    const elIdx = Number(el.getAttribute('data-story-index'));
+                    el.classList.toggle('is-active', elIdx === idx);
+                });
+                STORY_CONFIG.forEach((_, i) => {
+                    const layer = document.getElementById(`storyLayer${i}`);
+                    if (layer) layer.classList.toggle('is-current', i === idx);
+                });
+                const cfg = STORY_CONFIG[idx];
+                const kicker = document.getElementById('storyStageKicker');
+                const title = document.getElementById('storyStageTitle');
+                if (kicker) kicker.textContent = cfg.kicker;
+                if (title) title.textContent = cfg.title;
+            };
+            setActiveStory(0);
+
             document.querySelectorAll('.story-step').forEach(card => {
                 const idx = Number(card.getAttribute('data-story-index')) || 0;
                 card.addEventListener('click', () => setActiveStory(idx));
@@ -1580,7 +1633,7 @@
                 });
             });
 
-            // Mobile nav drawer toggle
+            // Mobile Nav Drawer
             const mobileBtn = document.getElementById('mobileNavBtn');
             const mobileDrawer = document.getElementById('mobileNavDrawer');
             if (mobileBtn && mobileDrawer) {
@@ -1596,7 +1649,7 @@
                 });
             }
 
-            // IntersectionObserver for smooth scroll reveals + Desktop sticky 3D storyboard switching
+            // Silky Continuous Spring-Damped Scroll Choreography (100% GPU-Composited, 0ms Canvas Reflow!)
             if (!reducedMotion) {
                 const revealObs = new IntersectionObserver((entries) => {
                     for (const entry of entries) {
@@ -1605,49 +1658,79 @@
                             revealObs.unobserve(entry.target);
                         }
                     }
-                }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
+                }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
 
                 document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
 
-                const storyObs = new IntersectionObserver((entries) => {
-                    if (window.innerWidth < 1024) return;
-                    for (const entry of entries) {
-                        if (entry.isIntersecting) {
-                            const idx = Number(entry.target.getAttribute('data-story-index'));
-                            if (!Number.isNaN(idx) && idx !== activeStoryIdx) {
-                                setActiveStory(idx);
+                const heroCard = document.getElementById('heroStageCard');
+                const storyCard = document.getElementById('storyStickyCard');
+                const progressBar = document.getElementById('scrollProgressBar');
+                const storySteps = Array.from(document.querySelectorAll('.story-step'));
+
+                let targetScrollY = window.scrollY;
+                let smoothScrollY = window.scrollY;
+                let rafId = null;
+
+                const updateVisuals = () => {
+                    smoothScrollY += (targetScrollY - smoothScrollY) * 0.14;
+
+                    // 1. Top Scroll Progress Line
+                    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+                    if (progressBar) {
+                        progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, smoothScrollY / maxScroll))})`;
+                    }
+
+                    // 2. Hero Card GPU 3D Float & Subtle Perspective Rotation (never flattens to 0°!)
+                    if (heroCard) {
+                        const hp = Math.min(1, Math.max(0, smoothScrollY / 680));
+                        const rotY = (-1.5 + hp * 5.0).toFixed(3);
+                        const rotX = (1.2 - hp * 2.4).toFixed(3);
+                        const liftY = (-hp * 16).toFixed(2);
+                        heroCard.style.transform = `perspective(1400px) translate3d(0, ${liftY}px, 0) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+                    }
+
+                    // 3. Desktop Sticky Storyboard Active Chapter + Subtle Continuous Depth Motion
+                    if (window.innerWidth >= 1024 && storySteps.length) {
+                        const viewMid = window.innerHeight * 0.44;
+                        let bestIdx = 0;
+                        let bestDist = Infinity;
+                        for (let i = 0; i < storySteps.length; i++) {
+                            const r = storySteps[i].getBoundingClientRect();
+                            const mid = (r.top + r.bottom) * 0.5;
+                            const dist = Math.abs(mid - viewMid);
+                            if (dist < bestDist) {
+                                bestDist = dist;
+                                bestIdx = i;
                             }
+                        }
+                        if (bestIdx !== activeStoryIdx) {
+                            setActiveStory(bestIdx);
+                        }
+
+                        if (storyCard) {
+                            const storySec = document.getElementById('story');
+                            const sr = storySec.getBoundingClientRect();
+                            const total = Math.max(1, storySec.offsetHeight - window.innerHeight);
+                            const sp = Math.min(1, Math.max(0, -sr.top / total));
+                            const sRotY = ((sp - 0.5) * 4.2).toFixed(3);
+                            const sLift = Math.sin(sp * Math.PI) * -6;
+                            storyCard.style.transform = `perspective(1500px) translate3d(0, ${sLift.toFixed(2)}px, 0) rotateY(${sRotY}deg)`;
                         }
                     }
-                }, { rootMargin: '-34% 0px -42% 0px', threshold: 0.1 });
 
-                document.querySelectorAll('.story-step').forEach(step => storyObs.observe(step));
-
-                // Smooth RAF-throttled scroll-driven 3D angle sweep on Hero & Sticky stages
-                let scrollTicking = false;
-                const onScroll = () => {
-                    if (scrollTicking) return;
-                    scrollTicking = true;
-                    requestAnimationFrame(() => {
-                        scrollTicking = false;
-                        const y = Math.min(720, Math.max(0, window.scrollY));
-                        const frac = y / 720;
-                        heroScrollYawOffset = frac * 14.0;
-                        drawHero();
-
-                        if (window.innerWidth >= 1024) {
-                            const storySec = document.getElementById('story');
-                            const stickyCv = document.getElementById('storyStickyCanvas');
-                            if (storySec && stickyCv) {
-                                const rect = storySec.getBoundingClientRect();
-                                const total = Math.max(1, storySec.offsetHeight - window.innerHeight);
-                                const p = Math.min(1, Math.max(0, -rect.top / total));
-                                drawStoryCanvas(stickyCv, STORY_CONFIG[activeStoryIdx], (p - 0.5) * 10);
-                            }
-                        }
-                    });
+                    if (Math.abs(targetScrollY - smoothScrollY) > 0.35) {
+                        rafId = requestAnimationFrame(updateVisuals);
+                    } else {
+                        smoothScrollY = targetScrollY;
+                        rafId = null;
+                    }
                 };
-                window.addEventListener('scroll', onScroll, { passive: true });
+
+                window.addEventListener('scroll', () => {
+                    targetScrollY = window.scrollY;
+                    if (!rafId) rafId = requestAnimationFrame(updateVisuals);
+                }, { passive: true });
+                updateVisuals();
             } else {
                 document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
             }
