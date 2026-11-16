@@ -71,7 +71,127 @@
             justify-content: space-between;
             box-sizing: border-box;
         }
-        /* Rich Studio Atmospheric Depth Backgrounds (never flat 2D paint) */
+        /* Rich Studio Atmospheric Depth Backgrounds + 3D Canvas Stage Layer */
+        .studio-3d-backdrop {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            display: block;
+        }
+        .ig-canvas > *:not(.studio-3d-backdrop):not(.pointer-events-none):not(.ig-fg-layer),
+        .ig-story-canvas > *:not(.studio-3d-backdrop):not(.pointer-events-none):not(.ig-fg-layer) {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Guarantee generous editorial spacing between Eyebrow, Headline & Content (fixes collapsed justify-between flex gaps) */
+        .ig-canvas > .flex + h3,
+        .ig-canvas > .flex + h4,
+        .ig-story-canvas > .flex + h3,
+        .ig-story-canvas > .flex + h4 {
+            margin-top: 18px !important;
+            margin-bottom: 14px !important;
+        }
+        .ig-canvas > .space-y-2 > h4,
+        .ig-canvas > .space-y-2\.5 > h4,
+        .ig-canvas > .space-y-3 > h4,
+        .ig-canvas > .space-y-3\.5 > h4,
+        .ig-story-canvas .space-y-2 > h4,
+        .ig-story-canvas .space-y-2\.5 > h4,
+        .ig-story-canvas .space-y-3\.5 > h4 {
+            margin-top: 12px !important;
+        }
+        .ig-canvas > .my-auto {
+            padding-top: 12px;
+            padding-bottom: 10px;
+        }
+
+        /* 3D Extruded Tactile Cards, CTA Bento Grids & Floating Callouts (never clips photos/hardware) */
+        .ig-canvas .grid.grid-cols-2.w-full.text-left {
+            gap: 13px !important;
+            padding-top: 10px !important;
+        }
+        .ig-canvas .grid.grid-cols-2.w-full.text-left > div {
+            border: 1px solid rgba(31, 27, 22, 0.11) !important;
+            border-radius: 1.2rem !important;
+            padding: 13px 15px !important;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 246, 239, 0.88) 100%) !important;
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 1),
+                inset 0 -1px 0 rgba(31, 27, 22, 0.04),
+                0 5px 0 rgba(31, 27, 22, 0.09),
+                0 18px 32px -10px rgba(20, 16, 12, 0.18) !important;
+        }
+        .ig-canvas-sage .grid.grid-cols-2.w-full.text-left > div,
+        .ig-canvas-dark .grid.grid-cols-2.w-full.text-left > div,
+        .ig-canvas-espresso .grid.grid-cols-2.w-full.text-left > div,
+        .ig-canvas-chestnut .grid.grid-cols-2.w-full.text-left > div {
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.07) 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.24) !important;
+            box-shadow:
+                inset 0 1.5px 0 rgba(255, 255, 255, 0.30),
+                0 5px 0 rgba(0, 0, 0, 0.34),
+                0 18px 32px -10px rgba(0, 0, 0, 0.42) !important;
+        }
+        .ig-canvas .rounded-3xl:not(.overflow-hidden):not(.p-0),
+        .ig-story-canvas .rounded-3xl:not(.overflow-hidden):not(.p-0) {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.96),
+                inset 0 -1px 0 rgba(31, 27, 22, 0.05),
+                0 7px 0 rgba(31, 27, 22, 0.09),
+                0 30px 54px -12px rgba(20, 16, 12, 0.20) !important;
+        }
+        .ig-canvas .rounded-2xl:not(.overflow-hidden):not(.ig-fg-layer) {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.94),
+                0 5px 0 rgba(31, 27, 22, 0.08),
+                0 18px 34px -10px rgba(20, 16, 12, 0.16) !important;
+        }
+        .ig-canvas .bg-\[\#2d694c\].rounded-3xl,
+        .ig-canvas .bg-\[\#2d694c\].rounded-2xl {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.34),
+                0 7px 0 #183d2b,
+                0 30px 52px -12px rgba(24, 61, 43, 0.48) !important;
+        }
+        .ig-canvas .bg-\[\#1f1b16\].rounded-3xl,
+        .ig-canvas .bg-\[\#1f1b16\].rounded-2xl {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.26),
+                0 7px 0 #090806,
+                0 30px 52px -12px rgba(10, 8, 6, 0.54) !important;
+        }
+        .ig-canvas .bg-\[\#e7f3de\].rounded-2xl,
+        .ig-canvas .bg-\[\#e7f3de\].rounded-3xl {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.98),
+                0 5px 0 #add1a7,
+                0 20px 36px -10px rgba(45, 105, 76, 0.22) !important;
+        }
+        .ig-canvas .bg-\[\#ffe6b9\].rounded-2xl,
+        .ig-canvas .bg-\[\#ffe6b9\].rounded-3xl {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.92),
+                0 5px 0 #d8ad5e,
+                0 20px 36px -10px rgba(122, 78, 0, 0.22) !important;
+        }
+        .ig-fg-layer {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.32),
+                0 7px 0 rgba(10, 8, 6, 0.42),
+                0 32px 58px -10px rgba(12, 10, 8, 0.56) !important;
+        }
+        .ig-fg-layer.bg-\[\#faf7f2\],
+        .ig-fg-layer.bg-white {
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 1),
+                0 7px 0 #cfc3af,
+                0 32px 58px -10px rgba(16, 13, 10, 0.48) !important;
+        }
+
         .ig-canvas-white {
             background: radial-gradient(circle at 72% 48%, #ffffff 0%, #fbf8f3 58%, #efe7da 100%);
             color: #1f1b16;
@@ -176,13 +296,14 @@
             background-size: 24px 24px;
         }
 
-        /* Unified Studio 3D Brushed-Silver Titanium Smartphone Engine */
+        /* Unified Studio 3D Brushed-Silver Titanium Smartphone Engine (Zero Side Kinks) */
         .iphone-stage {
             --ps: 1;
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            z-index: 20;
         }
         .iphone-chassis {
             position: relative;
@@ -203,7 +324,7 @@
             width: calc(384px * var(--ps, 1));
             height: calc(672.68px * var(--ps, 1));
             pointer-events: none;
-            z-index: 4;
+            z-index: 22;
         }
         .iphone-bezel {
             position: relative;
@@ -227,11 +348,22 @@
             object-fit: fill;
         }
 
-
-
-        /* Realistic Ultra-Slim MacBook Pro Mockup with Metallic Rim & Studio Depth */
+        /* True 3D Aluminum MacBook Pro Engine */
         .mac-stage {
             position: relative;
+            z-index: 15;
+        }
+        .mac-stage.is-3d-hydrated .mac-frame,
+        .mac-stage.is-3d-hydrated .mac-base {
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .mac-3d-canvas {
+            position: absolute;
+            left: -26px;
+            top: -20px;
+            pointer-events: none;
+            z-index: 16;
         }
         .mac-frame {
             background: linear-gradient(145deg, #625a52 0%, #2a2520 35%, #161310 100%);
@@ -279,8 +411,7 @@
             margin: 0 auto;
         }
         .ig-fg-layer {
-            position: relative;
-            z-index: 30;
+            z-index: 40 !important;
         }
     </style>
 </head>
@@ -295,6 +426,7 @@
         <nav class="hidden lg:flex items-center gap-2.5 text-xs font-bold text-[#6e665e]">
             <a href="#profil" class="hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Profil</a>
             <a href="#plan" class="hover:text-[#2d694c] text-[#2d694c] transition-colors whitespace-nowrap shrink-0">Plan</a>
+            <a href="#kurzvideos" class="hover:text-[#2d694c] text-[#2d694c] font-extrabold transition-colors whitespace-nowrap shrink-0">Skripte &amp; Ideen</a>
             <a href="#stories" class="hover:text-[#7a4e00] text-[#7a4e00] font-extrabold transition-colors whitespace-nowrap shrink-0">Highlights</a>
             <a href="#reel" class="hover:text-[#2d694c] text-[#2d694c] font-extrabold transition-colors whitespace-nowrap shrink-0">Werbe-Reel</a>
             <a href="#beitrag-1" class="hover:text-[#1f1b16] text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">#1</a>
@@ -339,11 +471,11 @@
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-[#6e665e] shrink-0">
+                <a href="/landing.html" class="text-[#2d694c] hover:underline font-extrabold">Landing Page →</a>
+                <span aria-hidden="true">·</span>
                 <span>4:5 Feed (2160×2700)</span>
                 <span aria-hidden="true">·</span>
                 <span>9:16 Stories (2160×3840)</span>
-                <span aria-hidden="true">·</span>
-                <span>18 Karussells &amp; 6 Highlights</span>
             </div>
         </section>
 
@@ -626,6 +758,26 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Instagram Publishing Bridge Status Card -->
+            <div id="igPublishBridgeCard" class="bg-white border border-[#e5dcd0] rounded-[2rem] p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="space-y-1.5 flex-1">
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <span id="igPublishStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e7f3de] text-[#2d694c] text-[11px] font-extrabold">
+                            <span class="w-2 h-2 rounded-full bg-[#2d694c]"></span>
+                            <span id="igPublishStatusBadgeText">Instagram-Publishing Status wird geprüft...</span>
+                        </span>
+                        <span class="text-xs font-extrabold text-[#1f1b16]">@schooly.app · 1-Klick Export &amp; Publish</span>
+                    </div>
+                    <p id="igPublishStatusDesc" class="text-xs text-[#6e665e] leading-relaxed">
+                        Jeder Beitrag (#1–#18) besitzt jetzt einen <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong>-Button: Slides werden in 4K gerendert, die Caption automatisch kopiert und per Teilen-Menü oder direkt über die Meta Graph API (sobald <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_USER_ID</code>, <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> &amp; <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_PUBLIC_BASE_URL</code> in den Server-Secrets hinterlegt sind) veröffentlicht.
+                    </p>
+                </div>
+                <button onclick="refreshInstagramPublishStatus(this)" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] transition-colors cursor-pointer shrink-0 whitespace-nowrap">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                    <span>Status aktualisieren</span>
+                </button>
+            </div>
         </section>
 
         <!-- SECTION 2: REDAKTIONSPLAN & CONTENT-KALENDER -->
@@ -800,6 +952,177 @@
                     <div class="text-base font-black text-[#1f1b16] font-epilogue">Gebaut für echte Schultage</div>
                     <p class="text-xs text-[#6e665e] leading-relaxed">Lifestyle-Setup mit Smartphone, Tablet &amp; Rucksack — Klasse 5–12, als PWA sofort startklar &amp; 100 % werbefrei.</p>
                 </a>
+            </div>
+        </section>
+
+        <!-- SECTION 2B: KURZVIDEO-SKRIPTE & NEUE BEITRAG-VORSCHLÄGE -->
+        <section id="kurzvideos" class="space-y-8 pt-4 border-t border-[#e5dcd0]">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <div class="text-xs font-extrabold text-[#2d694c]">02b. Kurzvideo-Plan (Reels · TikTok · Shorts) &amp; Neue Beitrags-Vorschläge</div>
+                    <h2 class="text-2xl font-black text-[#1f1b16] font-epilogue mt-0.5">5 fertige Dreh-Skripte (12–25 Sek.) &amp; 6 neue Content-Ideen (#19–#24)</h2>
+                    <p class="text-xs text-[#6e665e] font-medium mt-1">Direkt mit Sekunden-Timings, Hook, Schnittanweisung &amp; Voiceover – jeweils per 1-Klick kopierbar.</p>
+                </div>
+            </div>
+
+            <!-- 5 Kurzvideo-Skripte -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <!-- Skript 1 -->
+                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-6 space-y-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="text-[11px] font-extrabold text-[#2d694c]">REEL SKRIPT 01 · PROBLEM → LÖSUNG (14 SEK.)</div>
+                            <h3 class="text-lg font-black font-epilogue text-[#1f1b16] mt-0.5">„5 Schul-Apps vs. 1 App“</h3>
+                        </div>
+                        <button onclick="copyText(document.getElementById('script-1').innerText, this)" class="px-3.5 py-1.5 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-[11px] font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                            Skript kopieren
+                        </button>
+                    </div>
+                    <div id="script-1" class="space-y-2.5 text-xs text-[#1f1b16] leading-relaxed">
+                        <div><span class="font-extrabold text-[#b91c1c]">0–2s HOOK (POV Handy-Homescreen):</span> Text-Overlay: „Warum haben Schüler eigentlich 5 verschiedene Apps für die Schule?“ — Voiceover: „Noten im Taschenrechner, Stundenplan als Foto in der Galerie, Klausuren irgendwo im Kalender…“</div>
+                        <div><span class="font-extrabold text-[#2d694c]">2–7s REVEAL (Hard Cut auf schooly):</span> Schneller Zoom aufs schooly Dashboard. Voiceover: „Mit schooly hast du Schnitt, Wunschnote, Stundenplan und Abitur-Check an einem ruhigen Ort.“</div>
+                        <div><span class="font-extrabold text-[#7a4e00]">7–12s BEWEIS (Laptop + Handy Sync):</span> Schnitt auf Laptop &amp; Handy nebeneinander. Voiceover: „Einmal eingetragen, auf Handy, Tablet und Laptop sofort synchron — und komplett kostenlos.“</div>
+                        <div><span class="font-extrabold text-[#1f1b16]">12–14s CTA:</span> Logo-Einblendung + „Folge @schooly.app für den Launch!“</div>
+                    </div>
+                </div>
+
+                <!-- Skript 2 -->
+                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-6 space-y-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="text-[11px] font-extrabold text-[#2d694c]">REEL SKRIPT 02 · FEATURE-AHA (15 SEK.)</div>
+                            <h3 class="text-lg font-black font-epilogue text-[#1f1b16] mt-0.5">„Welche Note brauchst du in der Klausur?“</h3>
+                        </div>
+                        <button onclick="copyText(document.getElementById('script-2').innerText, this)" class="px-3.5 py-1.5 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-[11px] font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                            Skript kopieren
+                        </button>
+                    </div>
+                    <div id="script-2" class="space-y-2.5 text-xs text-[#1f1b16] leading-relaxed">
+                        <div><span class="font-extrabold text-[#b91c1c]">0–2s HOOK (Schreibtisch vor Klausur):</span> Text-Overlay: „Wenn du vor der Klausur rechnest, was du mindestens brauchst…“ — genervtes Tippen in Handy-Taschenrechner.</div>
+                        <div><span class="font-extrabold text-[#2d694c]">2–9s LÖSUNG (Wunschnoten-Rechner Screen):</span> Tippe Zielnote (z. B. 13 Punkte) ein → App zeigt live „Du brauchst 14 Punkte in der nächsten Klausur (Gewichtung &amp; LK-Faktor eingerechnet)“.</div>
+                        <div><span class="font-extrabold text-[#7a4e00]">9–13s DETAIL:</span> Lernfortschritt-Regler von 40 % auf 85 % hochziehen. Voiceover: „Kein Rätselraten mehr mit Prozenten — einfach Ziel setzen und gezielt lernen.“</div>
+                        <div><span class="font-extrabold text-[#1f1b16]">13–15s CTA:</span> „Speicher dir das vor deiner nächsten Klausurenphase · @schooly.app“</div>
+                    </div>
+                </div>
+
+                <!-- Skript 3 -->
+                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-6 space-y-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="text-[11px] font-extrabold text-[#2d694c]">REEL SKRIPT 03 · OBERSTUFE / ABI (18 SEK.)</div>
+                            <h3 class="text-lg font-black font-epilogue text-[#1f1b16] mt-0.5">„Wie viele Kurse darf ich im Abi streichen?“</h3>
+                        </div>
+                        <button onclick="copyText(document.getElementById('script-3').innerText, this)" class="px-3.5 py-1.5 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-[11px] font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                            Skript kopieren
+                        </button>
+                    </div>
+                    <div id="script-3" class="space-y-2.5 text-xs text-[#1f1b16] leading-relaxed">
+                        <div><span class="font-extrabold text-[#b91c1c]">0–3s HOOK (Kaputte Excel-Tabelle abfilmen):</span> Text-Overlay: „Oberstufen-Schüler um 23 Uhr beim Abi-Punkte-Ausrechnen 💀“ — chaotische Formeln &amp; Zettel.</div>
+                        <div><span class="font-extrabold text-[#2d694c]">3–11s REVEAL (schooly ABI-Check Laptop):</span> Auf die 40-Kurse-Übersicht + Block I &amp; II wechseln. Voiceover: „In schooly rechnet Block I mit allen Pflichtkursen, Streichungen und den 5 Bestehens-Kriterien komplett automatisch.“</div>
+                        <div><span class="font-extrabold text-[#7a4e00]">11–15s WAS-WÄRE-WENN:</span> P1-Note antippen → Schnitt springt live von 2,0 auf 1,8. „Teste direkt, was 2 Punkte mehr in P1 ausmachen.“</div>
+                        <div><span class="font-extrabold text-[#1f1b16]">15–18s CTA:</span> „Schick das jemandem aus deinem Abi-Jahrgang! @schooly.app“</div>
+                    </div>
+                </div>
+
+                <!-- Skript 4 -->
+                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-6 space-y-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="text-[11px] font-extrabold text-[#7a4e00]">REEL SKRIPT 04 · VIRAL / FREUNDES-DUELL (12 SEK.)</div>
+                            <h3 class="text-lg font-black font-epilogue text-[#1f1b16] mt-0.5">„Wer hat wirklich den besseren Schnitt?“</h3>
+                        </div>
+                        <button onclick="copyText(document.getElementById('script-4').innerText, this)" class="px-3.5 py-1.5 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-[11px] font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                            Skript kopieren
+                        </button>
+                    </div>
+                    <div id="script-4" class="space-y-2.5 text-xs text-[#1f1b16] leading-relaxed">
+                        <div><span class="font-extrabold text-[#b91c1c]">0–2s HOOK (2 Freunde auf dem Schulhof):</span> Text-Overlay: „POV: Nach der Klausur-Rückgabe diskutieren, wer besser steht 👀“</div>
+                        <div><span class="font-extrabold text-[#2d694c]">2–8s DUELL-CARD:</span> Beide halten Handy hoch → Freundes-Duell Karte zeigt live „13,0 vs. 11,8 Punkte“ + Bestnoten ohne peinliches Klassen-Ranking.</div>
+                        <div><span class="font-extrabold text-[#1f1b16]">8–12s CTA (Tag-Trigger):</span> „Nur per privatem Code. Markier deinen Lernbuddy, gegen den du direkt gewinnen würdest 👇“</div>
+                    </div>
+                </div>
+
+                <!-- Skript 5 -->
+                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-6 space-y-4 lg:col-span-2">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <div class="text-[11px] font-extrabold text-[#2d694c]">REEL SKRIPT 05 · AESTHETIC WEEKLY RECAP + PDF (20 SEK.)</div>
+                            <h3 class="text-lg font-black font-epilogue text-[#1f1b16] mt-0.5">„Sonntagabend Reset für die neue Schulwoche“</h3>
+                        </div>
+                        <button onclick="copyText(document.getElementById('script-5').innerText, this)" class="px-3.5 py-1.5 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-[11px] font-bold text-[#1f1b16] shrink-0 cursor-pointer">
+                            Skript kopieren
+                        </button>
+                    </div>
+                    <div id="script-5" class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs text-[#1f1b16] leading-relaxed">
+                        <div class="bg-[#faf7f2] rounded-2xl p-3.5 border border-[#e5dcd0]"><div class="font-extrabold text-[#2d694c] mb-1">0–4s ATMOSPHÄRE</div>Ruhiger Schreibtisch, Tee/Kaffee, iPad + iPhone. Text: „Mein 3-Minuten Sonntagabend Reset vor einer vollen Woche.“</div>
+                        <div class="bg-[#faf7f2] rounded-2xl p-3.5 border border-[#e5dcd0]"><div class="font-extrabold text-[#2d694c] mb-1">4–10s WEEKLY RECAP</div>Story-Rückblick in schooly durchtippen: erledigte Aufgaben, Ø Prüfungs-Fortschritt &amp; beste Note der Woche.</div>
+                        <div class="bg-[#faf7f2] rounded-2xl p-3.5 border border-[#e5dcd0]"><div class="font-extrabold text-[#2d694c] mb-1">10–15s KALENDER + SYNC</div>Prüfungsdruck für nächste Woche checken &amp; Termine per 1 Klick mit Google Kalender synchronisieren.</div>
+                        <div class="bg-[#faf7f2] rounded-2xl p-3.5 border border-[#e5dcd0]"><div class="font-extrabold text-[#2d694c] mb-1">15–20s PAYOFF &amp; CTA</div>Optional 1-Klick PDF-Notenspiegel sichern. Text: „So startest du ruhig in den Montag. Folge @schooly.app!“</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6 Neue Beitrag-Vorschläge (#19 - #24) -->
+            <div class="space-y-4 pt-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="text-lg font-black font-epilogue text-[#1f1b16]">6 neue Beitrags-Vorschläge (#19 bis #24 · für Woche 7 &amp; 8)</h3>
+                    <span class="text-xs font-bold text-[#6e665e]">Passend zum 3er-Reihen-Farbsystem (Mint · Salbei · Honig)</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-extrabold">
+                            <span class="text-[#2d694c]">VORSCHLAG #19 · MINT</span>
+                            <span class="px-2 py-0.5 rounded-full bg-[#e7f3de] text-[#2d694c]">Saveable Guide</span>
+                        </div>
+                        <div class="text-base font-black font-epilogue text-[#1f1b16]">Notenpunkte ↔ Schulnoten Umrechner (0–15 Pkt.)</div>
+                        <p class="text-xs text-[#6e665e] leading-relaxed"><strong class="text-[#1f1b16]">Slides (4×):</strong> Cover mit 3D-Tabelle („Was sind 11 Punkte?“), komplette KMK-Tabelle von 15 bis 00 Pkt., Unterschied Unterkurs (&lt;05 Pkt.), CTA zum Abspeichern vor Zeugnissen.</p>
+                    </div>
+
+                    <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-extrabold">
+                            <span class="text-[#2d694c]">VORSCHLAG #20 · MINT</span>
+                            <span class="px-2 py-0.5 rounded-full bg-[#e7f3de] text-[#2d694c]">Behind the App</span>
+                        </div>
+                        <div class="text-base font-black font-epilogue text-[#1f1b16]">Warum schooly 0 € &amp; komplett werbefrei bleibt</div>
+                        <p class="text-xs text-[#6e665e] leading-relaxed"><strong class="text-[#1f1b16]">Slides (3×):</strong> Vergleich andere Noten-Apps (Abo-Paywall &amp; Werbung) vs. schooly (kein Tracking, kein Banner-Spam, schnell als PWA).</p>
+                    </div>
+
+                    <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-extrabold">
+                            <span class="text-[#7a4e00]">VORSCHLAG #21 · HONIG</span>
+                            <span class="px-2 py-0.5 rounded-full bg-[#ffe6b9] text-[#7a4e00]">Community Poll</span>
+                        </div>
+                        <div class="text-base font-black font-epilogue text-[#1f1b16]">Team iPad, Laptop oder klassisch Heft?</div>
+                        <p class="text-xs text-[#6e665e] leading-relaxed"><strong class="text-[#1f1b16]">Slides (3×):</strong> 3D-Setup-Vergleich (iPad + Stylus vs. MacBook vs. Handy-Schnelleintrag) — hoher Kommentar-Impuls für Algorithmus-Boost.</p>
+                    </div>
+
+                    <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-extrabold">
+                            <span class="text-[#2d694c]">VORSCHLAG #22 · SALBEIGRÜN</span>
+                            <span class="px-2 py-0.5 rounded-full bg-[#f4f9f6] text-[#2d694c]">Deep Dive</span>
+                        </div>
+                        <div class="text-base font-black font-epilogue text-[#1f1b16]">So funktioniert die 2:1 / 1:1 Noten-Gewichtung richtig</div>
+                        <p class="text-xs text-[#6e665e] leading-relaxed"><strong class="text-[#1f1b16]">Slides (4×):</strong> Konkretes Rechenbeispiel in Mathe/Geschichte (Klausur vs. mündliche Note) + Screenshot aus den Fach-Einstellungen.</p>
+                    </div>
+
+                    <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-extrabold">
+                            <span class="text-[#1f1b16]">VORSCHLAG #23 · ESPRESSO</span>
+                            <span class="px-2 py-0.5 rounded-full bg-[#f4ece4] text-[#1f1b16]">Schüler-POV</span>
+                        </div>
+                        <div class="text-base font-black font-epilogue text-[#1f1b16]">3 Dinge, die ich mir schon in Klasse 10 gewünscht hätte</div>
+                        <p class="text-xs text-[#6e665e] leading-relaxed"><strong class="text-[#1f1b16]">Slides (4×):</strong> 1. Früh sehen, welche Klausuren sich ballen · 2. Zielnote statt Panik · 3. Keine Unterkurs-Überraschung im Abi.</p>
+                    </div>
+
+                    <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-extrabold">
+                            <span class="text-[#2d694c]">VORSCHLAG #24 · WEISS</span>
+                            <span class="px-2 py-0.5 rounded-full bg-[#f4f9f6] text-[#2d694c]">Roadmap Teaser</span>
+                        </div>
+                        <div class="text-base font-black font-epilogue text-[#1f1b16]">Sneak Peek: Was als Nächstes in schooly kommt</div>
+                        <p class="text-xs text-[#6e665e] leading-relaxed"><strong class="text-[#1f1b16]">Slides (3×):</strong> Community-Umfrage-Slide („Welches Feature zuerst?“), schwebende 3D-Feature-Karten &amp; Kommentar-Aufruf.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -1773,6 +2096,10 @@
                         <i data-lucide="film" class="w-3.5 h-3.5"></i>
                         <span>10s Reel als MP4 exportieren</span>
                     </button>
+                    <button onclick="shareReelForInstagram(this)" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-[#f4ece4] border border-[#e5dcd0] text-[#1f1b16] text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap">
+                        <i data-lucide="send" class="w-3.5 h-3.5 text-[#2d694c]"></i>
+                        <span>Caption kopieren &amp; Reel vorbereiten</span>
+                    </button>
                 </div>
             </div>
 
@@ -1957,22 +2284,24 @@ Mit schooly hast du alles kostenlos und werbefrei auf Handy, Tablet &amp; Laptop
                 <div class="flex flex-col items-center gap-3">
                     <div class="ig-slide-viewport">
                         <div class="ig-canvas ig-canvas-warm px-10 py-9" data-post="1" data-filename="schooly_beitrag1_slide2_problem.png">
-                            <div class="flex items-center justify-between text-[13px] font-extrabold text-[#2d694c]">
-                                <span>VORHER VS. NACHHER</span>
-                                <span>02 / 04</span>
-                            </div>
-                            <h4 class="text-[29px] font-black font-epilogue text-[#1f1b16] leading-[1.08]">Schluss mit App-Chaos.</h4>
-                            <div class="space-y-4 my-auto">
-                                <div class="bg-white rounded-3xl p-5 shadow-[0_14px_30px_-10px_rgba(31,27,22,0.08)] space-y-1.5">
-                                    <div class="text-[13px] font-extrabold text-[#dc2626] uppercase tracking-wider">Bisher</div>
-                                    <div class="text-[16px] font-bold text-[#1f1b16]">Noten im Kopf, Stundenplan als Foto &amp; Abitur in kaputten Excel-Tabellen.</div>
+                            <div class="space-y-3 relative z-10">
+                                <div class="flex items-center justify-between text-[13px] font-extrabold text-[#2d694c]">
+                                    <span>VORHER VS. NACHHER</span>
+                                    <span class="tabular-nums">02 / 04</span>
                                 </div>
-                                <div class="bg-[#2d694c] rounded-3xl p-5 shadow-[0_20px_40px_-12px_rgba(45,105,76,0.38)] space-y-1.5 text-white">
-                                    <div class="text-[13px] font-extrabold text-[#ffe6b9] uppercase tracking-wider">Mit schooly</div>
+                                <h4 class="text-[29px] font-black font-epilogue text-[#1f1b16] leading-[1.08]" style="text-wrap: balance;">Schluss mit App-Chaos.</h4>
+                            </div>
+                            <div class="space-y-5 my-auto relative z-10">
+                                <div class="bg-white rounded-3xl p-5 shadow-[0_14px_30px_-10px_rgba(31,27,22,0.08)] space-y-2">
+                                    <div class="text-[12.5px] font-extrabold text-[#dc2626] uppercase tracking-wider">Bisher</div>
+                                    <div class="text-[16px] font-bold text-[#1f1b16] leading-snug">Noten im Kopf, Stundenplan als Foto &amp; Abitur in kaputten Excel-Tabellen.</div>
+                                </div>
+                                <div class="bg-[#2d694c] rounded-3xl p-5 shadow-[0_20px_40px_-12px_rgba(45,105,76,0.38)] space-y-2 text-white">
+                                    <div class="text-[12.5px] font-extrabold text-[#ffe6b9] uppercase tracking-wider">Mit schooly</div>
                                     <div class="text-[16px] font-bold leading-snug">Alle Fächer, Stundenplan, Prüfungsdruck &amp; ABI-Check live auf Handy, Tablet &amp; Laptop.</div>
                                 </div>
                             </div>
-                            <div class="pt-3 border-t border-[#e5dcd0] text-[13.5px] font-extrabold text-[#1f1b16] flex justify-between">
+                            <div class="pt-3.5 border-t border-[#e5dcd0] text-[13.5px] font-extrabold text-[#1f1b16] flex justify-between relative z-10">
                                 <span>Klasse 5 bis 12</span>
                                 <span class="text-[#2d694c]">100 % werbefrei</span>
                             </div>
@@ -1984,12 +2313,15 @@ Mit schooly hast du alles kostenlos und werbefrei auf Handy, Tablet &amp; Laptop
                 <div class="flex flex-col items-center gap-3">
                     <div class="ig-slide-viewport">
                         <div class="ig-canvas ig-canvas-mint relative px-9 py-9" data-post="1" data-filename="schooly_beitrag1_slide3_sync.png">
-                            <div class="flex items-center justify-between text-[13px] font-extrabold text-[#2d694c]">
-                                <span>GERÄTE-SYNC</span>
-                                <span>03 / 04</span>
+                            <div class="space-y-3.5 relative z-10">
+                                <div class="flex items-center justify-between text-[13px] font-extrabold text-[#2d694c]">
+                                    <span>GERÄTE-SYNC</span>
+                                    <span class="tabular-nums">03 / 04</span>
+                                </div>
+                                <h4 class="text-[28px] font-black font-epilogue text-[#1f1b16] leading-[1.10]" style="text-wrap: balance;">Handy, Tablet &amp; Laptop synchron.</h4>
+                                <p class="text-[14px] font-semibold text-[#2d694c]/85 leading-snug">Einmal eintragen — überall in Echtzeit aktuell.</p>
                             </div>
-                            <h4 class="text-[28px] font-black font-epilogue text-[#1f1b16] leading-[1.08]">Handy, Tablet &amp; Laptop synchron.</h4>
-                            <div class="relative flex items-end justify-start my-auto py-2">
+                            <div class="relative flex items-end justify-start my-auto pt-4 pb-2 z-10">
                                 <div class="w-[330px]">
                                 <div class="mac-stage w-full mx-auto" style="max-width: 330px;">
                                     <div class="mac-frame">
@@ -2000,8 +2332,8 @@ Mit schooly hast du alles kostenlos und werbefrei auf Handy, Tablet &amp; Laptop
                                     </div>
                                     <div class="mac-base"><div class="mac-notch"></div></div>
                                 </div></div>
-                                <div class="ml-[-84px] mb-[-8px] relative z-10">
-                                    <div class="iphone-stage" style="--ps: 0.5643; transform: rotate(4deg); ">
+                                <div class="ml-[-78px] mb-[-10px] relative z-20">
+                                    <div class="iphone-stage" style="--ps: 0.5643; transform: rotate(3.5deg); ">
                                         <div class="iphone-chassis">
                                             <div class="iphone-btn-left-1"></div>
                                             <div class="iphone-btn-left-2"></div>
@@ -2017,7 +2349,7 @@ Mit schooly hast du alles kostenlos und werbefrei auf Handy, Tablet &amp; Laptop
                                         </div>
                                     </div></div>
                             </div>
-                            <div class="pt-3 border-t border-[#2d694c]/20 text-[13.5px] font-extrabold text-[#1f1b16] flex justify-between">
+                            <div class="pt-3.5 border-t border-[#2d694c]/20 text-[13.5px] font-extrabold text-[#1f1b16] flex justify-between relative z-10">
                                 <span>iOS · Android · Web</span>
                                 <span class="text-[#2d694c]">In Echtzeit</span>
                             </div>
@@ -5367,32 +5699,58 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
             ctx.closePath();
         }
 
-        function buildRoundedRectSamples(w, h, r, segArc = 26, segLine = 18) {
-            const pts = [];
+        function buildSquircleSamples(w, h, r, segArc = 72, segLine = 24) {
+            const raw = [];
             const hw = w / 2, hh = h / 2;
             const cr = Math.min(r, hw, hh);
+            const pExp = 2.42; // Superellipse exponent: smooth continuous curvature into straight rails (zero corner facet kinks)
+            const q = 2 / pExp;
             const pushCorner = (cx, cy, a0, a1) => {
                 for (let i = 0; i <= segArc; i++) {
                     const a = a0 + (a1 - a0) * (i / segArc);
-                    const nx = Math.cos(a), ny = Math.sin(a);
-                    pts.push({ x: cx + cr * nx, y: cy + cr * ny, nx, ny });
+                    const ca = Math.cos(a), sa = Math.sin(a);
+                    const sx = Math.sign(ca) * Math.pow(Math.abs(ca), q);
+                    const sy = Math.sign(sa) * Math.pow(Math.abs(sa), q);
+                    raw.push({ x: cx + cr * sx, y: cy + cr * sy });
                 }
             };
-            const pushEdge = (x0, y0, x1, y1, nx, ny) => {
+            const pushEdge = (x0, y0, x1, y1) => {
                 for (let i = 1; i < segLine; i++) {
                     const t = i / segLine;
-                    pts.push({ x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * t, nx, ny });
+                    raw.push({ x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * t });
                 }
             };
-            // Top-left corner -> Top edge -> Top-right -> Right -> Bottom-right -> Bottom -> Bottom-left -> Left
+            // Clockwise loop in screen coords (+x right, +y down): Top-left -> Top -> Top-right -> Right -> Bottom-right -> Bottom -> Bottom-left -> Left
             pushCorner(-hw + cr, -hh + cr, Math.PI, Math.PI * 1.5);
-            pushEdge(-hw + cr, -hh, hw - cr, -hh, 0, -1);
+            pushEdge(-hw + cr, -hh, hw - cr, -hh);
             pushCorner(hw - cr, -hh + cr, -Math.PI / 2, 0);
-            pushEdge(hw, -hh + cr, hw, hh - cr, 1, 0);
+            pushEdge(hw, -hh + cr, hw, hh - cr);
             pushCorner(hw - cr, hh - cr, 0, Math.PI / 2);
-            pushEdge(hw - cr, hh, -hw + cr, hh, 0, 1);
+            pushEdge(hw - cr, hh, -hw + cr, hh);
             pushCorner(-hw + cr, hh - cr, Math.PI / 2, Math.PI);
-            pushEdge(-hw, hh - cr, -hw, -hh + cr, -1, 0);
+            pushEdge(-hw, hh - cr, -hw, -hh + cr);
+
+            // Deduplicate & derive continuous outward normals from chord tangents
+            const pts = [];
+            for (let i = 0; i < raw.length; i++) {
+                const prev = pts[pts.length - 1];
+                if (!prev || Math.hypot(raw[i].x - prev.x, raw[i].y - prev.y) > 1e-3) {
+                    pts.push({ x: raw[i].x, y: raw[i].y, nx: 0, ny: 0 });
+                }
+            }
+            if (pts.length > 2 && Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].y - pts[pts.length - 1].y) <= 1e-3) {
+                pts.pop();
+            }
+            const n = pts.length;
+            for (let i = 0; i < n; i++) {
+                const a = pts[(i - 1 + n) % n];
+                const b = pts[(i + 1) % n];
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const len = Math.hypot(dx, dy) || 1;
+                pts[i].nx = dy / len;
+                pts[i].ny = -dx / len;
+            }
             return pts;
         }
 
@@ -5405,13 +5763,182 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
             ctx.closePath();
         }
 
-        // Agency-grade Studio 3D Brushed-Silver Titanium Smartphone Renderer (pure 2D canvas projection)
-        function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 16.5) {
+        function detectSlideTheme(el) {
+            if (!el) return 'white';
+            if (el.classList.contains('ig-canvas-sage') || el.classList.contains('ig-canvas-dark')) return 'sage';
+            if (el.classList.contains('ig-canvas-espresso')) return 'espresso';
+            if (el.classList.contains('ig-canvas-warm')) return 'warm';
+            if (el.classList.contains('ig-canvas-honey')) return 'honey';
+            if (el.classList.contains('ig-canvas-mint')) return 'mint';
+            if (el.classList.contains('ig-canvas-chestnut')) return 'chestnut';
+            return 'white';
+        }
+
+        // Exact 2D Convex Hull (Andrew's Monotone Chain) -> mathematically smooth, zero-kink outer perimeter for any projected convex superellipse prism
+        function computeConvexHull(pts) {
+            if (!pts || pts.length < 3) return pts || [];
+            const sorted = pts.map(p => ({ px: p.px, py: p.py }))
+                .sort((a, b) => (a.px !== b.px ? a.px - b.px : a.py - b.py));
+            const cross = (o, a, b) => (a.px - o.px) * (b.py - o.py) - (a.py - o.py) * (b.px - o.px);
+            const lower = [];
+            for (const p of sorted) {
+                while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
+                lower.push(p);
+            }
+            const upper = [];
+            for (let i = sorted.length - 1; i >= 0; i--) {
+                const p = sorted[i];
+                while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
+                upper.push(p);
+            }
+            lower.pop();
+            upper.pop();
+            return lower.concat(upper);
+        }
+
+        // Studio 3D Architectural Cyclorama Backdrop (Volumetric Softbox + Subtle Depth Orbits + True Perspective 3D Floor, clean without floating spheres)
+        function drawStudio3DBackdrop(ctx, w, h, theme, isStory = false) {
+            const palettes = {
+                white:    { c0: '#ffffff', c1: '#faf6ef', c2: '#eadfce', beam: 'rgba(255,255,255,0.60)', grid: 'rgba(45,105,76,0.065)', ring: 'rgba(45,105,76,0.080)', horizon: 'rgba(255,255,255,0.92)', floorTint: 'rgba(222,209,190,0.38)' },
+                warm:     { c0: '#fdf9f3', c1: '#f3eae0', c2: '#dfd0bd', beam: 'rgba(255,252,245,0.48)', grid: 'rgba(31,27,22,0.055)', ring: 'rgba(122,78,0,0.068)', horizon: 'rgba(255,255,255,0.78)', floorTint: 'rgba(208,189,166,0.40)' },
+                mint:     { c0: '#f5fcf2', c1: '#dff0d5', c2: '#b8d6ac', beam: 'rgba(255,255,255,0.52)', grid: 'rgba(45,105,76,0.088)', ring: 'rgba(45,105,76,0.095)', horizon: 'rgba(255,255,255,0.82)', floorTint: 'rgba(150,194,138,0.34)' },
+                sage:     { c0: '#3f8b66', c1: '#2b6649', c2: '#153625', beam: 'rgba(255,246,214,0.15)', grid: 'rgba(255,255,255,0.080)', ring: 'rgba(255,230,185,0.11)', horizon: 'rgba(255,230,185,0.28)', floorTint: 'rgba(11,32,20,0.42)' },
+                espresso: { c0: '#413830', c1: '#231e19', c2: '#100d0a', beam: 'rgba(243,196,113,0.14)', grid: 'rgba(243,196,113,0.090)', ring: 'rgba(243,196,113,0.115)', horizon: 'rgba(243,196,113,0.26)', floorTint: 'rgba(8,6,5,0.50)' },
+                honey:    { c0: '#fff4dc', c1: '#ffe1a6', c2: '#e7b150', beam: 'rgba(255,255,255,0.48)', grid: 'rgba(122,78,0,0.075)', ring: 'rgba(122,78,0,0.090)', horizon: 'rgba(255,255,255,0.75)', floorTint: 'rgba(208,148,44,0.32)' },
+                chestnut: { c0: '#986200', c1: '#744a00', c2: '#3f2700', beam: 'rgba(255,230,185,0.17)', grid: 'rgba(255,230,185,0.095)', ring: 'rgba(255,230,185,0.115)', horizon: 'rgba(255,230,185,0.30)', floorTint: 'rgba(36,20,0,0.44)' }
+            };
+            const p = palettes[theme] || palettes.white;
+
+            ctx.save();
+            // 1. Base Studio Cyclorama Radial Backdrop
+            const bgGrad = ctx.createRadialGradient(w * 0.68, h * 0.34, w * 0.04, w * 0.50, h * 0.50, Math.hypot(w, h) * 0.74);
+            bgGrad.addColorStop(0, p.c0);
+            bgGrad.addColorStop(0.50, p.c1);
+            bgGrad.addColorStop(1, p.c2);
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // 2. Dual Volumetric Studio Softbox Diagonal Light Beams
+            ctx.save();
+            const beamGrad = ctx.createLinearGradient(w * 0.94, -h * 0.08, w * 0.14, h * 0.78);
+            beamGrad.addColorStop(0, p.beam);
+            beamGrad.addColorStop(0.55, 'rgba(255,255,255,0.04)');
+            beamGrad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = beamGrad;
+            ctx.beginPath();
+            ctx.moveTo(w * 0.34, 0);
+            ctx.lineTo(w, 0);
+            ctx.lineTo(w, h * 0.56);
+            ctx.lineTo(w * 0.06, h * 0.88);
+            ctx.closePath();
+            ctx.fill();
+
+            const beam2 = ctx.createLinearGradient(w * 0.05, h * 0.12, w * 0.55, h * 0.85);
+            beam2.addColorStop(0, p.beam);
+            beam2.addColorStop(0.5, 'rgba(255,255,255,0)');
+            ctx.globalAlpha = 0.35;
+            ctx.fillStyle = beam2;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(w * 0.24, 0);
+            ctx.lineTo(w * 0.62, h * 0.72);
+            ctx.lineTo(0, h * 0.54);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // 3. Architectural Subtle Concentric Depth Orbits
+            ctx.save();
+            const orbX = w * 0.72;
+            const orbY = h * (isStory ? 0.56 : 0.60);
+            [0.34, 0.50, 0.68].forEach((mult, idx) => {
+                ctx.beginPath();
+                ctx.ellipse(orbX, orbY, w * mult, w * mult * 0.82, -0.18, 0, Math.PI * 2);
+                ctx.strokeStyle = p.ring;
+                ctx.lineWidth = Math.max(1, w * (0.0022 - idx * 0.0004));
+                ctx.stroke();
+            });
+            ctx.restore();
+
+            // 5. Grounded True 3D Perspective Studio Floor Plane + Pedestal Glow
+            const horizonY = h * (isStory ? 0.73 : 0.70);
+            const vpY = horizonY - h * 0.24;
+            const vpX = w * 0.50;
+
+            const floorGrad = ctx.createLinearGradient(0, horizonY, 0, h);
+            floorGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            floorGrad.addColorStop(0.16, p.floorTint);
+            floorGrad.addColorStop(1, p.floorTint);
+            ctx.fillStyle = floorGrad;
+            ctx.fillRect(0, horizonY, w, h - horizonY);
+
+            // Soft luminous cyclorama horizon bounce + stage spotlight pool
+            const glowGrad = ctx.createRadialGradient(w * 0.50, horizonY, 0, w * 0.50, horizonY, w * 0.68);
+            glowGrad.addColorStop(0, p.horizon);
+            glowGrad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = glowGrad;
+            ctx.fillRect(0, horizonY - h * 0.09, w, h * 0.22);
+
+            const stageSpot = ctx.createRadialGradient(w * 0.50, h * (isStory ? 0.84 : 0.83), w * 0.02, w * 0.50, h * (isStory ? 0.84 : 0.83), w * 0.44);
+            stageSpot.addColorStop(0, p.horizon);
+            stageSpot.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.save();
+            ctx.globalAlpha = 0.42;
+            ctx.fillStyle = stageSpot;
+            ctx.fillRect(0, horizonY, w, h - horizonY);
+            ctx.restore();
+
+            // Clipped perspective studio floor grid lines below horizonY
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, horizonY, w, h - horizonY);
+            ctx.clip();
+
+            ctx.strokeStyle = p.grid;
+            ctx.lineWidth = Math.max(1, w * 0.0018);
+
+            for (let k = -9; k <= 9; k++) {
+                const bx = vpX + k * (w * 0.145);
+                const tH = (horizonY - vpY) / (h - vpY);
+                const hx = vpX + (bx - vpX) * tH;
+                ctx.beginPath();
+                ctx.moveTo(hx, horizonY);
+                ctx.lineTo(bx, h + 4);
+                ctx.stroke();
+            }
+
+            for (let row = 0; row < 8; row++) {
+                const f = Math.pow((row + 0.5) / 8, 1.88);
+                const yy = horizonY + (h - horizonY) * f;
+                ctx.beginPath();
+                ctx.moveTo(0, yy);
+                ctx.lineTo(w, yy);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            // Crisp architectural horizon hairline fade
+            const lineGrad = ctx.createLinearGradient(w * 0.05, 0, w * 0.95, 0);
+            lineGrad.addColorStop(0, 'rgba(255,255,255,0)');
+            lineGrad.addColorStop(0.5, p.horizon);
+            lineGrad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.beginPath();
+            ctx.moveTo(w * 0.05, horizonY);
+            ctx.lineTo(w * 0.95, horizonY);
+            ctx.strokeStyle = lineGrad;
+            ctx.lineWidth = Math.max(1, w * 0.002);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Studio 3D Natural Brushed-Titanium Smartphone Renderer (Mathematically Smooth Convex-Hull Silhouette -> Zero Edge Jaggies or Kinks)
+        function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 10.5) {
             const W = 274 * sc;
             const H = 588 * sc;
             const R = 39 * sc;
-            const D = 27 * sc;
-            const focal = 1750 * sc;
+            const D = 10.6 * sc; // Natural authentic titanium flagship thickness
+            const focal = 2250 * sc; // Crisp 85mm telephoto studio lens (natural non-distorted perspective)
             const yaw = yawDeg * Math.PI / 180;
             const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
 
@@ -5423,44 +5950,58 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 return { px: rx * ps, py: ry * ps, rx, ry, rz };
             };
 
-            const outerSamples = buildRoundedRectSamples(W, H, R, 26, 20);
+            const outerSamples = buildSquircleSamples(W, H, R, 76, 24);
             const frontOuter = outerSamples.map(p => ({ ...p, ...proj(p.x, p.y, D / 2) }));
             const backOuter = outerSamples.map(p => ({ ...p, ...proj(p.x, p.y, -D / 2) }));
+            const insetShadowOuter = outerSamples.map(p => proj(p.x * 0.945, p.y * 0.958, -D / 2));
+            const outerHull = computeConvexHull([...frontOuter, ...backOuter]);
 
             ctx.save();
             ctx.translate(cx, cy);
             if (rotZRad) ctx.rotate(rotZRad);
 
-            // 1. Soft multi-layered grounded studio drop shadow (zero hard brick silhouette)
+            // 1a. Grounded Studio Floor Contact Elliptical Shadow
             ctx.save();
-            ctx.shadowColor = 'rgba(12, 18, 15, 0.34)';
-            ctx.shadowBlur = 32 * sc;
-            ctx.shadowOffsetX = -6 * sc;
+            const contactGrad = ctx.createRadialGradient(-6 * sc, H * 0.504, 4 * sc, -6 * sc, H * 0.504, W * 0.62);
+            contactGrad.addColorStop(0, 'rgba(10, 15, 12, 0.34)');
+            contactGrad.addColorStop(0.55, 'rgba(10, 15, 12, 0.12)');
+            contactGrad.addColorStop(1, 'rgba(10, 15, 12, 0)');
+            ctx.fillStyle = contactGrad;
+            ctx.beginPath();
+            ctx.ellipse(-6 * sc, H * 0.504, W * 0.58, 22 * sc, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 1b. Soft Diffused Inset Drop Shadow (inset prevents dark shadow halo bleed around bright titanium corners)
+            ctx.save();
+            ctx.shadowColor = 'rgba(12, 18, 15, 0.32)';
+            ctx.shadowBlur = 36 * sc;
+            ctx.shadowOffsetX = -9 * sc;
             ctx.shadowOffsetY = 18 * sc;
-            traceProjectedPath(ctx, backOuter);
-            ctx.fillStyle = 'rgba(18, 22, 20, 0.85)';
+            traceProjectedPath(ctx, insetShadowOuter);
+            ctx.fillStyle = 'rgba(16, 20, 18, 0.44)';
             ctx.fill();
             ctx.restore();
 
+            // 2. Silky-Smooth Clipped Convex-Hull Titanium Unibody Shell (zero quad seams, zero corner notches)
             ctx.save();
-            ctx.shadowColor = 'rgba(12, 18, 15, 0.22)';
-            ctx.shadowBlur = 12 * sc;
-            ctx.shadowOffsetX = -3 * sc;
-            ctx.shadowOffsetY = 6 * sc;
-            traceProjectedPath(ctx, backOuter);
-            ctx.fillStyle = 'rgba(18, 22, 20, 0.70)';
-            ctx.fill();
-            ctx.restore();
+            traceProjectedPath(ctx, outerHull);
+            ctx.clip();
 
-            // 2. Sculpted 3D Brushed-Silver Titanium Extruded Side Wall
-            // Base anodized rear rim fill
-            traceProjectedPath(ctx, backOuter);
-            ctx.fillStyle = '#9ea6af';
-            ctx.fill();
+            // Base brushed titanium metallic sheen across entire shell depth
+            const shellGrad = ctx.createLinearGradient(-W * 0.52, -H * 0.42, W * 0.45, H * 0.48);
+            shellGrad.addColorStop(0, '#c6ced6');
+            shellGrad.addColorStop(0.24, '#eef2f6');
+            shellGrad.addColorStop(0.52, '#aab3bd');
+            shellGrad.addColorStop(0.78, '#d4dce4');
+            shellGrad.addColorStop(1, '#98a1ab');
+            ctx.fillStyle = shellGrad;
+            ctx.fillRect(-W * 0.7, -H * 0.6, W * 1.4, H * 1.2);
 
-            // Light direction vector (studio softbox top-left-front)
-            const lx = -0.62, ly = -0.58, lz = 0.52;
-            const visibleBackPts = [];
+            // Subtle directional studio highlight band along visible titanium side wall (safely inside hull clip)
+            const lx = -0.60, ly = -0.56, lz = 0.57;
+            const hx = lx, hy = ly, hz = lz + 1;
+            const hlen = Math.hypot(hx, hy, hz);
             for (let i = 0; i < outerSamples.length; i++) {
                 const j = (i + 1) % outerSamples.length;
                 const s = outerSamples[i];
@@ -5469,25 +6010,16 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 const nz3 = -s.nx * sinY;
                 const f = frontOuter[i], fn = frontOuter[j];
                 const b = backOuter[i], bn = backOuter[j];
-                // Camera visibility test against ray to (0, 0, focal)
-                const vis = nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz);
-                if (vis <= -0.02 * focal) continue;
+                if ((nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz)) <= 0) continue;
 
-                visibleBackPts.push([b, bn, ny3, nx3, nz3]);
                 const ndotl = Math.max(0, nx3 * lx + ny3 * ly + nz3 * lz);
-                const hx = lx, hy = ly, hz = lz + 1;
-                const hlen = Math.hypot(hx, hy, hz);
-                const spec = Math.pow(Math.max(0, (nx3 * hx + ny3 * hy + nz3 * hz) / hlen), 16);
-                const vFalloff = 0.94 - 0.14 * ((s.y / H) + 0.5);
-                const lit = Math.min(1, (0.58 + 0.36 * ndotl) * vFalloff + 0.42 * spec);
-                const cFront = Math.round(166 + lit * 84);
-                const cMid = Math.round(146 + lit * 72);
-                const cBack = Math.round(112 + lit * 56);
-
+                const spec = Math.pow(Math.max(0, (nx3 * hx + ny3 * hy + nz3 * hz) / hlen), 18);
+                const lit = Math.min(1, 0.58 + 0.34 * ndotl + 0.38 * spec);
+                const cFront = Math.round(176 + lit * 76);
+                const cBack = Math.round(126 + lit * 54);
                 const gSide = ctx.createLinearGradient(b.px, b.py, f.px, f.py);
-                gSide.addColorStop(0, `rgb(${cBack}, ${cBack + 3}, ${cBack + 7})`);
-                gSide.addColorStop(0.55, `rgb(${cMid}, ${cMid + 3}, ${cMid + 7})`);
-                gSide.addColorStop(1, `rgb(${Math.min(252, cFront)}, ${Math.min(254, cFront + 2)}, ${Math.min(255, cFront + 5)})`);
+                gSide.addColorStop(0, `rgb(${cBack}, ${cBack + 3}, ${cBack + 6})`);
+                gSide.addColorStop(1, `rgb(${Math.min(252, cFront)}, ${Math.min(254, cFront + 2)}, ${Math.min(255, cFront + 4)})`);
 
                 ctx.beginPath();
                 ctx.moveTo(b.px, b.py);
@@ -5497,142 +6029,98 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 ctx.closePath();
                 ctx.fillStyle = gSide;
                 ctx.fill();
-                // Micro-seam fill to avoid anti-aliasing pinholes between strips
-                ctx.strokeStyle = gSide;
-                ctx.lineWidth = 0.7 * sc;
-                ctx.stroke();
             }
+            ctx.restore();
 
-            // Clean outer graphite chamfer outline along visible silver back-rim edge (separates brightly even on white slides)
-            if (visibleBackPts.length > 0) {
-                ctx.save();
-                ctx.beginPath();
-                visibleBackPts.forEach(([b, bn], idx) => {
-                    if (idx === 0) ctx.moveTo(b.px, b.py);
-                    ctx.lineTo(bn.px, bn.py);
-                });
-                ctx.strokeStyle = 'rgba(38, 46, 54, 0.36)';
-                ctx.lineWidth = Math.max(0.85, 0.95 * sc);
-                ctx.lineJoin = 'round';
-                ctx.stroke();
-                ctx.restore();
-            }
+            // One single continuous silky-smooth outer hairline around the entire convex hull (zero jitter!)
+            traceProjectedPath(ctx, outerHull);
+            ctx.strokeStyle = 'rgba(38, 46, 54, 0.22)';
+            ctx.lineWidth = Math.max(0.75, 0.85 * sc);
+            ctx.lineJoin = 'round';
+            ctx.stroke();
 
-            // Anodized dark antenna slits near top-left & bottom-left brushed rail (authentic flagship hardware touch)
-            for (const ay of [-H / 2 + 52 * sc, H / 2 - 52 * sc]) {
-                const ab = proj(-W / 2, ay, -D * 0.48);
-                const af = proj(-W / 2, ay, D * 0.48);
+            // Subtle Satin Antenna Banding strictly inside left brushed rail
+            for (const ay of [-H / 2 + 64 * sc, H / 2 - 64 * sc]) {
+                const ab = proj(-W / 2, ay, -D * 0.36);
+                const af = proj(-W / 2, ay, D * 0.36);
                 ctx.beginPath();
                 ctx.moveTo(ab.px, ab.py);
                 ctx.lineTo(af.px, af.py);
-                ctx.strokeStyle = 'rgba(72, 80, 88, 0.72)';
-                ctx.lineWidth = Math.max(1.1, 1.5 * sc);
-                ctx.stroke();
-
-                const abHi = proj(-W / 2, ay + 1.5 * sc, -D * 0.46);
-                const afHi = proj(-W / 2, ay + 1.5 * sc, D * 0.46);
-                ctx.beginPath();
-                ctx.moveTo(abHi.px, abHi.py);
-                ctx.lineTo(afHi.px, afHi.py);
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
-                ctx.lineWidth = Math.max(0.6, 0.8 * sc);
+                ctx.strokeStyle = 'rgba(84, 94, 104, 0.28)';
+                ctx.lineCap = 'round';
+                ctx.lineWidth = Math.max(0.85, 1.15 * sc);
                 ctx.stroke();
             }
 
-            // Sculpted Machined Silver Pill Side Button(s) seated flush on left Titanium rail
-            const drawRailButton = (yTop, yBot) => {
-                const xBase = -W / 2;
-                const xOut = xBase - 2.0 * sc;
-                const z0 = -D * 0.28, z1 = D * 0.26;
-                const pTL = proj(xOut, yTop, z1), pTR = proj(xOut, yTop, z0);
-                const pBL = proj(xOut, yBot, z1), pBR = proj(xOut, yBot, z0);
-                const bTL = proj(xBase, yTop, z1), bBL = proj(xBase, yBot, z1);
-
-                // Recessed seam shadow
-                ctx.beginPath();
-                ctx.moveTo(pTR.px - 0.5 * sc, pTR.py);
-                ctx.lineTo(pBR.px - 0.5 * sc, pBR.py);
-                ctx.strokeStyle = 'rgba(48, 56, 64, 0.52)';
-                ctx.lineWidth = Math.max(1.2, 1.6 * sc);
+            // Ultra-Flush Micro-Sculpted Titanium Side Buttons (hairline flush profile, zero protruding blobs)
+            const drawFlushSideButton = (yTop, yBot) => {
+                const pTop = proj(-W / 2 - 0.32 * sc, yTop, -D * 0.06);
+                const pBot = proj(-W / 2 - 0.32 * sc, yBot, -D * 0.06);
+                ctx.save();
                 ctx.lineCap = 'round';
-                ctx.stroke();
-
-                // Metallic brushed face
-                const bg = ctx.createLinearGradient(pTR.px, pTR.py, pTL.px, pBL.py);
-                bg.addColorStop(0, '#c8d0d8');
-                bg.addColorStop(0.35, '#ffffff');
-                bg.addColorStop(0.75, '#b6bec7');
-                bg.addColorStop(1, '#8c949d');
                 ctx.beginPath();
-                ctx.moveTo(pTR.px, pTR.py);
-                ctx.lineTo(pTL.px, pTL.py);
-                ctx.lineTo(bTL.px, bTL.py);
-                ctx.lineTo(bBL.px, bBL.py);
-                ctx.lineTo(pBL.px, pBL.py);
-                ctx.lineTo(pBR.px, pBR.py);
-                ctx.closePath();
-                ctx.fillStyle = bg;
-                ctx.fill();
-
-                // Sharp crisp front silver highlight line
-                ctx.beginPath();
-                ctx.moveTo(pTL.px, pTL.py);
-                ctx.lineTo(pBL.px, pBL.py);
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
-                ctx.lineWidth = Math.max(0.75, 0.9 * sc);
+                ctx.moveTo(pTop.px, pTop.py);
+                ctx.lineTo(pBot.px, pBot.py);
+                ctx.strokeStyle = 'rgba(72, 80, 90, 0.36)';
+                ctx.lineWidth = Math.max(1.2, 1.85 * sc);
                 ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(pTop.px + 0.25 * sc, pTop.py);
+                ctx.lineTo(pBot.px + 0.25 * sc, pBot.py);
+                ctx.strokeStyle = '#eef3f7';
+                ctx.lineWidth = Math.max(0.8, 1.15 * sc);
+                ctx.stroke();
+                ctx.restore();
             };
-            // Sleek elongated flagship side pill + subtle action/volume pills matching hardware rail
-            drawRailButton(-H * 0.22, -H * 0.145);
-            drawRailButton(-H * 0.115, -H * 0.025);
+            drawFlushSideButton(-H * 0.215, -H * 0.148);
+            drawFlushSideButton(-H * 0.116, -H * 0.038);
 
-            // 3. Front Machined Silver Rim + Ultra-Slim Symmetric Black OLED Display Border
+            // 3. Front Machined Silver Rim + Symmetric Black OLED Display Bezel
             const rimGrad = ctx.createLinearGradient(-W * 0.48, -H * 0.45, W * 0.45, H * 0.48);
-            rimGrad.addColorStop(0, '#f7f9fb');
-            rimGrad.addColorStop(0.28, '#cbd2da');
-            rimGrad.addColorStop(0.55, '#eef1f5');
-            rimGrad.addColorStop(0.82, '#aeb6bf');
-            rimGrad.addColorStop(1, '#dfe4ea');
+            rimGrad.addColorStop(0, '#fcfdfe');
+            rimGrad.addColorStop(0.28, '#d4dbe2');
+            rimGrad.addColorStop(0.55, '#f4f7fa');
+            rimGrad.addColorStop(0.82, '#b9c1ca');
+            rimGrad.addColorStop(1, '#e6ebf0');
             traceProjectedPath(ctx, frontOuter);
             ctx.fillStyle = rimGrad;
             ctx.fill();
-            ctx.strokeStyle = 'rgba(38, 46, 54, 0.26)';
-            ctx.lineWidth = Math.max(0.75, 0.85 * sc);
+            ctx.strokeStyle = 'rgba(42, 50, 58, 0.22)';
+            ctx.lineWidth = Math.max(0.7, 0.8 * sc);
+            ctx.lineJoin = 'round';
             ctx.stroke();
 
-            // Dark anodized OLED frame ring (inset 2.1 * sc cleanly inside silver chamfer)
-            const chamferInset = 2.1 * sc;
-            const oledSamples = buildRoundedRectSamples(W - chamferInset * 2, H - chamferInset * 2, R - chamferInset, 26, 20);
+            // Jet-Black OLED Bezel Ring
+            const chamferInset = 1.9 * sc;
+            const oledSamples = buildSquircleSamples(W - chamferInset * 2, H - chamferInset * 2, R - chamferInset, 76, 24);
             const oledOuter = oledSamples.map(p => proj(p.x, p.y, D / 2));
             traceProjectedPath(ctx, oledOuter);
             ctx.fillStyle = '#0c0e10';
             ctx.fill();
-            // Bright front silver edge catchlight just outside OLED black rim
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.50)';
-            ctx.lineWidth = Math.max(0.6, 0.75 * sc);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.56)';
+            ctx.lineWidth = Math.max(0.6, 0.72 * sc);
             ctx.stroke();
 
-            // 4. Perspective-Mapped Crisp App Display Screen (uniform 6.8 * sc total border per side!)
-            const frameTotal = 6.8 * sc;
+            // 4. Perspective-Mapped Crisp App Display Screen (uniform thin 6.3 * sc border)
+            const frameTotal = 6.3 * sc;
             const scrW = W - frameTotal * 2;
             const scrH = H - frameTotal * 2;
             const scrR = R - frameTotal;
-            const scrSamples = buildRoundedRectSamples(scrW, scrH, scrR, 26, 20);
+            const scrSamples = buildSquircleSamples(scrW, scrH, scrR, 76, 24);
             const scrPoly = scrSamples.map(p => proj(p.x, p.y, D / 2));
 
             ctx.save();
             traceProjectedPath(ctx, scrPoly);
             ctx.clip();
 
-            // Seamless warm cream top margin matching schooly app header + clean camera space
             ctx.fillStyle = '#faf7f2';
             const fTL = proj(-scrW / 2, -scrH / 2, D / 2);
             const fBR = proj(scrW / 2, scrH / 2, D / 2);
             ctx.fillRect(fTL.px - 20 * sc, fTL.py - 20 * sc, (fBR.px - fTL.px) + 40 * sc, (fBR.py - fTL.py) + 40 * sc);
 
             if (imgEl && imgEl.naturalWidth) {
-                const SLICES = 96;
-                const topSafeFrac = 0.028; // clean 2.8% top notch space above schooly app header
+                const SLICES = 128;
+                const topSafeFrac = 0.028;
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 for (let s = 0; s < SLICES; s++) {
@@ -5649,7 +6137,7 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                     const pTopMid = proj(xL, -scrH / 2, D / 2);
 
                     const dx = pTop0.px;
-                    const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.65);
+                    const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.6);
                     const totalColH = pBotMid.py - pTopMid.py;
                     const dy = pTopMid.py + totalColH * topSafeFrac;
                     const dh = totalColH * (1 - topSafeFrac);
@@ -5660,21 +6148,20 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 }
             }
 
-            // Minimal centered Flagship Punch-Hole Selfie Camera (matching image_9656aeba.png look!)
+            // Minimal centered Flagship Selfie Lens
             const camP = proj(0, -scrH / 2 + 8.6 * sc, D / 2);
-            const camRx = 2.85 * sc;
-            const camRy = 2.85 * sc;
+            const camR = 2.65 * sc;
             ctx.beginPath();
-            ctx.ellipse(camP.px, camP.py, camRx, camRy, 0, 0, Math.PI * 2);
+            ctx.ellipse(camP.px, camP.py, camR, camR, 0, 0, Math.PI * 2);
             ctx.fillStyle = '#090b0d';
             ctx.fill();
             ctx.beginPath();
-            ctx.ellipse(camP.px - camRx * 0.25, camP.py - camRy * 0.25, camRx * 0.36, camRy * 0.36, 0, 0, Math.PI * 2);
+            ctx.ellipse(camP.px - camR * 0.25, camP.py - camR * 0.25, camR * 0.36, camR * 0.36, 0, 0, Math.PI * 2);
             ctx.fillStyle = '#3b6d8e';
             ctx.fill();
 
-            // Subtle laminated glass diagonal sheen across OLED face
-            const sheen = ctx.createLinearGradient(fTL.px, fTL.py, fBR.px * 0.7, fBR.py * 0.65);
+            // Subtle laminated OLED glass sheen
+            const sheen = ctx.createLinearGradient(fTL.px, fTL.py, fBR.px * 0.72, fBR.py * 0.65);
             sheen.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
             sheen.addColorStop(0.32, 'rgba(255, 255, 255, 0.04)');
             sheen.addColorStop(0.54, 'rgba(255, 255, 255, 0)');
@@ -5685,10 +6172,387 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
             ctx.restore();
         }
 
-        async function hydrateAll3DPhones() {
-            const stages = Array.from(document.querySelectorAll('.iphone-stage'));
+        // Studio Photorealistic 3D Brushed-Aluminum MacBook Pro Renderer (Natural 4.2° Hero Angle + Chiclet Keys + Speaker Micro-Grilles + Smooth Convex Hull)
+        function drawStudio3DMacBook(ctx, cx, cy, wFrame, imgEl, yawDeg = 4.2) {
+            const sc = wFrame / 430;
+            const W = wFrame;
+            const H = W / 1.6 + 11 * sc;
+            const R = 13.0 * sc;
+            const D = 5.4 * sc;
+            const focal = 2900 * sc; // Authentic 85mm studio portrait lens (zero unnatural trapezoid warp)
+            const yaw = yawDeg * Math.PI / 180;
+            const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+
+            const proj = (x, y, z) => {
+                const rx = x * cosY + z * sinY;
+                const ry = y;
+                const rz = -x * sinY + z * cosY;
+                const ps = focal / (focal - rz);
+                return { px: rx * ps, py: ry * ps, rx, ry, rz };
+            };
+
+            const lidSamples = buildSquircleSamples(W, H, R, 48, 20);
+            const frontLid = lidSamples.map(p => ({ ...p, ...proj(p.x, p.y, D / 2) }));
+            const backLid = lidSamples.map(p => ({ ...p, ...proj(p.x, p.y, -D / 2) }));
+            const insetLidShadow = lidSamples.map(p => proj(p.x * 0.955, p.y * 0.96, -D / 2));
+            const lidHull = computeConvexHull([...frontLid, ...backLid]);
+
+            // Balanced proportional Unibody Keyboard Deck below hinge
+            const hingeY = H / 2 + 1.2 * sc;
+            const deckDropY = hingeY + 22 * sc;
+            const deckDepthZ = 66 * sc;
+            const lipH = 5.2 * sc;
+
+            const dBL = proj(-W * 0.502, hingeY, -D * 0.3);
+            const dBR = proj(W * 0.502, hingeY, -D * 0.3);
+            const dFL = proj(-W * 0.528, deckDropY, deckDepthZ);
+            const dFR = proj(W * 0.528, deckDropY, deckDepthZ);
+            const dFLBot = { px: dFL.px, py: dFL.py + lipH };
+            const dFRBot = { px: dFR.px, py: dFR.py + lipH };
+
+            ctx.save();
+            ctx.translate(cx, cy - 3 * sc);
+
+            // 1. Studio Grounded Floor Contact Shadow + Dual Rubber Feet Shadow Pools
+            ctx.save();
+            const deckCenterX = (dFLBot.px + dFRBot.px) * 0.5;
+            const deckCenterY = (dFLBot.py + dFRBot.py) * 0.5 + 3.5 * sc;
+            const macGround = ctx.createRadialGradient(deckCenterX, deckCenterY, 10 * sc, deckCenterX, deckCenterY, W * 0.66);
+            macGround.addColorStop(0, 'rgba(12, 16, 14, 0.36)');
+            macGround.addColorStop(0.55, 'rgba(12, 16, 14, 0.14)');
+            macGround.addColorStop(1, 'rgba(12, 16, 14, 0)');
+            ctx.fillStyle = macGround;
+            ctx.beginPath();
+            ctx.ellipse(deckCenterX, deckCenterY, W * 0.62, 18 * sc, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // Soft Ambient Lid Drop Shadow
+            ctx.save();
+            ctx.shadowColor = 'rgba(14, 18, 15, 0.24)';
+            ctx.shadowBlur = 28 * sc;
+            ctx.shadowOffsetX = -5 * sc;
+            ctx.shadowOffsetY = 12 * sc;
+            traceProjectedPath(ctx, insetLidShadow);
+            ctx.fillStyle = 'rgba(18, 22, 20, 0.35)';
+            ctx.fill();
+            ctx.restore();
+
+            // 2. Silky Smooth Clipped Extruded Aluminum Lid Shell
+            ctx.save();
+            traceProjectedPath(ctx, lidHull);
+            ctx.clip();
+
+            const shellG = ctx.createLinearGradient(-W * 0.5, -H * 0.4, W * 0.5, H * 0.4);
+            shellG.addColorStop(0, '#c8d0d8');
+            shellG.addColorStop(0.45, '#e8edf2');
+            shellG.addColorStop(1, '#9fa8b2');
+            ctx.fillStyle = shellG;
+            ctx.fillRect(-W * 0.7, -H * 0.7, W * 1.4, H * 1.4);
+
+            for (let i = 0; i < lidSamples.length; i++) {
+                const j = (i + 1) % lidSamples.length;
+                const s = lidSamples[i];
+                const nx3 = s.nx * cosY;
+                const ny3 = s.ny;
+                const nz3 = -s.nx * sinY;
+                const f = frontLid[i], fn = frontLid[j];
+                const b = backLid[i], bn = backLid[j];
+                if ((nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz)) <= 0) continue;
+
+                const ndotl = Math.max(0, nx3 * -0.60 + ny3 * -0.56 + nz3 * 0.57);
+                const cVal = Math.round(150 + ndotl * 94);
+                const gEdge = ctx.createLinearGradient(b.px, b.py, f.px, f.py);
+                gEdge.addColorStop(0, `rgb(${cVal - 20}, ${cVal - 17}, ${cVal - 13})`);
+                gEdge.addColorStop(1, `rgb(${Math.min(252, cVal + 14)}, ${Math.min(254, cVal + 16)}, ${Math.min(255, cVal + 18)})`);
+                ctx.beginPath();
+                ctx.moveTo(b.px, b.py);
+                ctx.lineTo(bn.px, bn.py);
+                ctx.lineTo(fn.px, fn.py);
+                ctx.lineTo(f.px, f.py);
+                ctx.closePath();
+                ctx.fillStyle = gEdge;
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // Clean outer aluminum hull hairline
+            traceProjectedPath(ctx, lidHull);
+            ctx.strokeStyle = 'rgba(42, 50, 58, 0.22)';
+            ctx.lineWidth = Math.max(0.7, 0.8 * sc);
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            // Front Machined Aluminum Lid Trim & Jet-Black Glass Display Bezel
+            const rimG = ctx.createLinearGradient(-W * 0.45, -H * 0.45, W * 0.45, H * 0.45);
+            rimG.addColorStop(0, '#f8fafc');
+            rimG.addColorStop(0.5, '#d5dce3');
+            rimG.addColorStop(1, '#b6bec7');
+            traceProjectedPath(ctx, frontLid);
+            ctx.fillStyle = rimG;
+            ctx.fill();
+
+            const bezInset = 1.6 * sc;
+            const bezSamples = buildSquircleSamples(W - bezInset * 2, H - bezInset * 2, R - bezInset, 48, 20);
+            traceProjectedPath(ctx, bezSamples.map(p => proj(p.x, p.y, D / 2)));
+            ctx.fillStyle = '#0e1012';
+            ctx.fill();
+
+            // Perspective-Mapped 16:10 Crisp App Desktop Display Screen
+            const scrLeft = 7.4 * sc, scrTop = 8.8 * sc, scrBot = 7.4 * sc;
+            const scrW = W - scrLeft * 2;
+            const scrH = H - scrTop - scrBot;
+            const scrCenterY = (scrTop - scrBot) * 0.5;
+            const scrSamples = buildSquircleSamples(scrW, scrH, 6.2 * sc, 36, 16)
+                .map(p => proj(p.x, p.y + scrCenterY, D / 2));
+
+            ctx.save();
+            traceProjectedPath(ctx, scrSamples);
+            ctx.clip();
+
+            ctx.fillStyle = '#faf7f2';
+            const mTL = proj(-scrW / 2, -scrH / 2 + scrCenterY, D / 2);
+            const mBR = proj(scrW / 2, scrH / 2 + scrCenterY, D / 2);
+            ctx.fillRect(mTL.px - 16 * sc, mTL.py - 16 * sc, (mBR.px - mTL.px) + 32 * sc, (mBR.py - mTL.py) + 32 * sc);
+
+            if (imgEl && imgEl.naturalWidth) {
+                const SLICES = 120;
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                for (let s = 0; s < SLICES; s++) {
+                    const u0 = s / SLICES;
+                    const u1 = (s + 1) / SLICES;
+                    const um = (u0 + u1) * 0.5;
+                    const x0 = -scrW / 2 + scrW * u0;
+                    const x1 = -scrW / 2 + scrW * u1;
+                    const xL = -scrW / 2 + scrW * um;
+                    const pTop0 = proj(x0, -scrH / 2 + scrCenterY, D / 2);
+                    const pTop1 = proj(x1, -scrH / 2 + scrCenterY, D / 2);
+                    const pTopMid = proj(xL, -scrH / 2 + scrCenterY, D / 2);
+                    const pBotMid = proj(xL, scrH / 2 + scrCenterY, D / 2);
+                    const dx = pTop0.px;
+                    const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.65);
+                    const dy = pTopMid.py;
+                    const dh = pBotMid.py - pTopMid.py;
+                    const sx = u0 * imgEl.naturalWidth;
+                    const sw = Math.max(1, (u1 - u0) * imgEl.naturalWidth);
+                    ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, dx, dy, dw, dh);
+                }
+            }
+
+            // Diagonal soft anti-reflective screen glass gloss
+            const mGloss = ctx.createLinearGradient(mTL.px, mTL.py, mBR.px * 0.72, mBR.py * 0.72);
+            mGloss.addColorStop(0, 'rgba(255, 255, 255, 0.11)');
+            mGloss.addColorStop(0.38, 'rgba(255, 255, 255, 0.02)');
+            mGloss.addColorStop(0.58, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = mGloss;
+            ctx.fillRect(mTL.px - 16 * sc, mTL.py - 16 * sc, (mBR.px - mTL.px) + 32 * sc, (mBR.py - mTL.py) + 32 * sc);
+            ctx.restore();
+
+            // Top MacBook Camera Lens
+            const mCam = proj(0, -H / 2 + 4.8 * sc, D / 2);
+            ctx.beginPath();
+            ctx.ellipse(mCam.px, mCam.py, 1.95 * sc, 1.95 * sc, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#2d5169';
+            ctx.fill();
+
+            // 3. Recessed Precision Black Clutch Hinge
+            const hL = proj(-W * 0.37, hingeY - 1.2 * sc, 0);
+            const hR = proj(W * 0.37, hingeY - 1.2 * sc, 0);
+            ctx.beginPath();
+            ctx.moveTo(hL.px, hL.py);
+            ctx.lineTo(hR.px, hR.py);
+            ctx.strokeStyle = '#17191b';
+            ctx.lineWidth = Math.max(2, 3.2 * sc);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // 4. Brushed-Aluminum Unibody Keyboard Deck + Micro Speaker Grilles + Chiclet Keys + Force Touch Trackpad
+            const deckGrad = ctx.createLinearGradient(0, dBL.py, 0, dFL.py);
+            deckGrad.addColorStop(0, '#c6ced6');
+            deckGrad.addColorStop(0.45, '#e6ebf0');
+            deckGrad.addColorStop(1, '#f4f7fa');
+            ctx.beginPath();
+            ctx.moveTo(dBL.px, dBL.py);
+            ctx.lineTo(dBR.px, dBR.py);
+            ctx.lineTo(dFR.px, dFR.py);
+            ctx.lineTo(dFL.px, dFL.py);
+            ctx.closePath();
+            ctx.fillStyle = deckGrad;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.70)';
+            ctx.lineWidth = Math.max(0.6, 0.8 * sc);
+            ctx.stroke();
+
+            // Left & Right Laser-Microperforated MacBook Pro Speaker Grilles
+            const drawSpeakerGrille = (xStart, xEnd) => {
+                ctx.save();
+                ctx.fillStyle = 'rgba(42, 48, 54, 0.42)';
+                for (let r = 0; r < 6; r++) {
+                    const tz = (r + 0.5) / 6;
+                    const yPos = hingeY + (3.8 + tz * 7.6) * sc;
+                    const zPos = (9 + tz * 22) * sc;
+                    for (let c = 0; c < 4; c++) {
+                        const tx = (c + 0.5) / 4;
+                        const xPos = xStart + (xEnd - xStart) * tx;
+                        const gp = proj(xPos, yPos, zPos);
+                        ctx.beginPath();
+                        ctx.ellipse(gp.px, gp.py, Math.max(0.55, 0.8 * sc), Math.max(0.32, 0.42 * sc), 0, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.restore();
+            };
+            drawSpeakerGrille(-W * 0.475, -W * 0.405);
+            drawSpeakerGrille(W * 0.405, W * 0.475);
+
+            // Recessed Anodized Black Keyboard Well
+            const kbBL = proj(-W * 0.378, hingeY + 3.4 * sc, 8.5 * sc);
+            const kbBR = proj(W * 0.378, hingeY + 3.4 * sc, 8.5 * sc);
+            const kbFL = proj(-W * 0.392, hingeY + 11.4 * sc, 31.5 * sc);
+            const kbFR = proj(W * 0.392, hingeY + 11.4 * sc, 31.5 * sc);
+            ctx.beginPath();
+            ctx.moveTo(kbBL.px, kbBL.py);
+            ctx.lineTo(kbBR.px, kbBR.py);
+            ctx.lineTo(kbFR.px, kbFR.py);
+            ctx.lineTo(kbFL.px, kbFL.py);
+            ctx.closePath();
+            ctx.fillStyle = '#181a1d';
+            ctx.fill();
+
+            // 6 Staggered Rows of Photorealistic Chiclet Keycaps inside Keyboard Well
+            const rowWeights = [0.78, 1, 1, 1, 1, 1.15];
+            const wSum = rowWeights.reduce((a, b) => a + b, 0);
+            let accRow = 0;
+            for (let rowIdx = 0; rowIdx < rowWeights.length; rowIdx++) {
+                const v0 = (accRow + 0.14) / wSum;
+                const v1 = (accRow + rowWeights[rowIdx] - 0.14) / wSum;
+                accRow += rowWeights[rowIdx];
+
+                const yBack = hingeY + (3.4 + v0 * 8.0) * sc;
+                const zBack = (8.5 + v0 * 23.0) * sc;
+                const yFront = hingeY + (3.4 + v1 * 8.0) * sc;
+                const zFront = (8.5 + v1 * 23.0) * sc;
+                const halfSpanBack = W * (0.374 + v0 * 0.014);
+                const halfSpanFront = W * (0.374 + v1 * 0.014);
+
+                const cols = rowIdx === 5
+                    ? [0, 1, 2, 3, 7, 8, 9, 10] // Wide spacebar span across cols 3..7
+                    : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                const totalCols = rowIdx === 5 ? 11 : 13;
+
+                for (let ci = 0; ci < cols.length; ci++) {
+                    const colStart = cols[ci];
+                    const colEnd = (rowIdx === 5 && colStart === 3) ? 7 : colStart + 1;
+                    const u0 = (colStart + 0.09) / totalCols;
+                    const u1 = (colEnd - 0.09) / totalCols;
+                    const kBL = proj(-halfSpanBack + halfSpanBack * 2 * u0, yBack, zBack);
+                    const kBR = proj(-halfSpanBack + halfSpanBack * 2 * u1, yBack, zBack);
+                    const kFR = proj(-halfSpanFront + halfSpanFront * 2 * u1, yFront, zFront);
+                    const kFL = proj(-halfSpanFront + halfSpanFront * 2 * u0, yFront, zFront);
+
+                    ctx.beginPath();
+                    ctx.moveTo(kBL.px, kBL.py);
+                    ctx.lineTo(kBR.px, kBR.py);
+                    ctx.lineTo(kFR.px, kFR.py);
+                    ctx.lineTo(kFL.px, kFL.py);
+                    ctx.closePath();
+                    ctx.fillStyle = '#262a2f';
+                    ctx.fill();
+                    // Subtle top keycap rim highlight
+                    ctx.beginPath();
+                    ctx.moveTo(kBL.px, kBL.py);
+                    ctx.lineTo(kBR.px, kBR.py);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+                    ctx.lineWidth = Math.max(0.45, 0.55 * sc);
+                    ctx.stroke();
+                }
+            }
+
+            // Force Touch Glass Trackpad (recessed matte sheen + chamfered border)
+            const tpBL = proj(-W * 0.155, hingeY + 13.6 * sc, 37 * sc);
+            const tpBR = proj(W * 0.155, hingeY + 13.6 * sc, 37 * sc);
+            const tpFL = proj(-W * 0.162, hingeY + 20.0 * sc, 59 * sc);
+            const tpFR = proj(W * 0.162, hingeY + 20.0 * sc, 59 * sc);
+            ctx.beginPath();
+            ctx.moveTo(tpBL.px, tpBL.py);
+            ctx.lineTo(tpBR.px, tpBR.py);
+            ctx.lineTo(tpFR.px, tpFR.py);
+            ctx.lineTo(tpFL.px, tpFL.py);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(220, 226, 232, 0.35)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(40, 46, 52, 0.28)';
+            ctx.lineWidth = Math.max(0.6, 0.8 * sc);
+            ctx.stroke();
+
+            // 5. Extruded Front Aluminum Chassis Lip & Centered Thumb Scoop Notch
+            const lipGrad = ctx.createLinearGradient(dFL.px, dFL.py, dFR.px, dFRBot.py);
+            lipGrad.addColorStop(0, '#a6aeb7');
+            lipGrad.addColorStop(0.28, '#e3e8ed');
+            lipGrad.addColorStop(0.55, '#c2cad2');
+            lipGrad.addColorStop(0.82, '#dfe4ea');
+            lipGrad.addColorStop(1, '#9ea6af');
+            ctx.beginPath();
+            ctx.moveTo(dFL.px, dFL.py);
+            ctx.lineTo(dFR.px, dFR.py);
+            ctx.lineTo(dFRBot.px, dFRBot.py);
+            ctx.quadraticCurveTo((dFLBot.px + dFRBot.px) * 0.5, dFRBot.py + 1.4 * sc, dFLBot.px, dFLBot.py);
+            ctx.closePath();
+            ctx.fillStyle = lipGrad;
+            ctx.fill();
+
+            // Dual Low-Profile Dark Rubber Feet peeking smoothly at base corners
+            for (const fx of [-W * 0.43, W * 0.43]) {
+                const rf = proj(fx, deckDropY, deckDepthZ * 0.92);
+                ctx.beginPath();
+                ctx.ellipse(rf.px, rf.py + lipH + 0.6 * sc, 11 * sc, 1.4 * sc, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(18, 22, 24, 0.52)';
+                ctx.fill();
+            }
+
+            // Front Thumb Scoop Notch
+            const nL = proj(-26 * sc, deckDropY, deckDepthZ);
+            const nR = proj(26 * sc, deckDropY, deckDepthZ);
+            ctx.beginPath();
+            ctx.moveTo(nL.px, nL.py);
+            ctx.lineTo(nR.px, nR.py);
+            ctx.lineTo(nR.px - 2 * sc, nR.py + 2.6 * sc);
+            ctx.lineTo(nL.px + 2 * sc, nL.py + 2.6 * sc);
+            ctx.closePath();
+            ctx.fillStyle = '#363b40';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        async function hydrateAll3DStages() {
+            // 1. Inject Luminous 3D Studio Cyclorama Backdrops + 3D Floating Spheres into all 86 Instagram Posts & Story Highlights
+            const allSlides = Array.from(document.querySelectorAll('.ig-canvas, .ig-story-canvas'));
+            const BACKDROP_DPR = 2;
+            for (const slideEl of allSlides) {
+                const isStory = slideEl.classList.contains('ig-story-canvas');
+                const wCss = 540;
+                const hCss = isStory ? 960 : 675;
+                let bgCv = slideEl.querySelector(':scope > canvas.studio-3d-backdrop');
+                if (!bgCv) {
+                    bgCv = document.createElement('canvas');
+                    bgCv.className = 'studio-3d-backdrop pointer-events-none';
+                    bgCv.setAttribute('aria-hidden', 'true');
+                    slideEl.prepend(bgCv);
+                }
+                bgCv.width = wCss * BACKDROP_DPR;
+                bgCv.height = hCss * BACKDROP_DPR;
+                const bctx = bgCv.getContext('2d');
+                bctx.setTransform(BACKDROP_DPR, 0, 0, BACKDROP_DPR, 0, 0);
+                drawStudio3DBackdrop(bctx, wCss, hCss, detectSlideTheme(slideEl), isStory);
+            }
+
+            // 2. Preload all Hardware Screen Textures
+            const phoneStages = Array.from(document.querySelectorAll('.iphone-stage'));
+            const macStages = Array.from(document.querySelectorAll('.mac-stage'));
             const imgMap = new Map();
-            await Promise.all(stages.map(st => {
+            await Promise.all([...phoneStages, ...macStages].map(st => {
                 const im = st.querySelector('img.screenshot-img');
                 if (!im) return Promise.resolve();
                 const src = im.getAttribute('src');
@@ -5702,8 +6566,43 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 return p;
             }));
 
-            const DPR = 3; // Supersampled HiDPI crispness in live browser view
-            for (const st of stages) {
+            // DPR = 2 gives clean retina sharpness in browser without 3x downscale diagonal aliasing; 4K PNG export uses IG_EXPORT_SCALE = 4
+            const DPR = 2;
+            // 3. Hydrate all 6 Photorealistic 3D Aluminum MacBooks (natural 4.2° angle)
+            for (const st of macStages) {
+                const frameEl = st.querySelector('.mac-frame');
+                const im = st.querySelector('img.screenshot-img');
+                if (!frameEl || !im || !im.naturalWidth) continue;
+                const wFrame = frameEl.offsetWidth || 430;
+                const hFrame = frameEl.offsetHeight || (wFrame / 1.6 + 14);
+                const padX = 42;
+                const padTop = 26;
+                const padBot = 56;
+                const wCss = wFrame + padX * 2;
+                const hCss = hFrame + padTop + padBot;
+
+                let cv = st.querySelector('canvas.mac-3d-canvas');
+                if (!cv) {
+                    cv = document.createElement('canvas');
+                    cv.className = 'mac-3d-canvas';
+                    cv.setAttribute('aria-hidden', 'true');
+                    st.appendChild(cv);
+                }
+                cv.style.left = `-${padX}px`;
+                cv.style.top = `-${padTop}px`;
+                cv.style.width = `${wCss}px`;
+                cv.style.height = `${hCss}px`;
+                cv.width = Math.round(wCss * DPR);
+                cv.height = Math.round(hCss * DPR);
+                const mctx = cv.getContext('2d');
+                mctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+                mctx.clearRect(0, 0, wCss, hCss);
+                drawStudio3DMacBook(mctx, padX + wFrame / 2, padTop + hFrame / 2, wFrame, im, 4.2);
+                st.classList.add('is-3d-hydrated');
+            }
+
+            // 4. Hydrate all 45 Smooth Convex-Hull 3D Titanium Smartphones (natural 10.5° angle)
+            for (const st of phoneStages) {
                 const ps = parseFloat(getComputedStyle(st).getPropertyValue('--ps')) || 1;
                 const im = st.querySelector('img.screenshot-img');
                 if (!im || !im.naturalWidth) continue;
@@ -5722,19 +6621,21 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 const cctx = cv.getContext('2d');
                 cctx.setTransform(DPR, 0, 0, DPR, 0, 0);
                 cctx.clearRect(0, 0, wCss, hCss);
-                drawStudio3DPhone(cctx, 192 * ps, 336.34 * ps, ps, 0, im, 16.5);
+                drawStudio3DPhone(cctx, 192 * ps, 336.34 * ps, ps, 0, im, 10.5);
                 st.classList.add('is-3d-hydrated');
             }
         }
+        const hydrateAll3DPhones = hydrateAll3DStages;
 
         const IG_EXPORT_SCALE = 4; // 540x675 * 4 = 2160x2700 (4K 4:5 Instagram PNG)
 
-        // Exports an ig-canvas (4:5 -> 2160x2700) or ig-story-canvas (9:16 -> 2160x3840) at 4K with crisp images & 3D Titanium phones
+        // Exports an ig-canvas (4:5 -> 2160x2700) or ig-story-canvas (9:16 -> 2160x3840) at full 4K with 3D studio backdrops, 3D MacBooks & Titanium phones
         async function renderIgSlidePng(canvasEl) {
             if (document.fonts && document.fonts.ready) {
                 await document.fonts.ready;
             }
             const isStory = canvasEl.classList.contains('ig-story-canvas');
+            const theme = detectSlideTheme(canvasEl);
             const targetW = 540;
             const targetH = isStory ? 960 : 675;
 
@@ -5754,8 +6655,11 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 const clone = canvasEl.cloneNode(true);
                 clone.style.transform = 'none';
                 clone.style.position = 'static';
-                clone.querySelectorAll('canvas.iphone-3d-canvas').forEach(c => c.remove());
-                clone.querySelectorAll('.iphone-stage').forEach(st => st.classList.remove('is-3d-hydrated'));
+                clone.style.background = 'transparent';
+                clone.style.backgroundImage = 'none';
+                clone.style.backgroundColor = 'transparent';
+                clone.querySelectorAll('canvas.studio-3d-backdrop, canvas.iphone-3d-canvas, canvas.mac-3d-canvas').forEach(c => c.remove());
+                clone.querySelectorAll('.iphone-stage, .mac-stage').forEach(st => st.classList.remove('is-3d-hydrated'));
                 clone.querySelectorAll('img').forEach(img => {
                     const src = img.getAttribute('src');
                     if (src && imgCache[src]) img.setAttribute('src', imgCache[src]);
@@ -5765,7 +6669,7 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 await Promise.all(Array.from(clone.querySelectorAll('img')).map(im => im.decode ? im.decode().catch(() => {}) : Promise.resolve()));
                 await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-                // Collect exact 3D phone placements from DOM geometry BEFORE hiding .iphone-stage for Pass A
+                // Collect exact 3D phone & 3D MacBook placements from DOM geometry BEFORE hiding hardware elements
                 const cloneRect = clone.getBoundingClientRect();
                 const phoneSpecs = Array.from(clone.querySelectorAll('.iphone-stage')).map(st => {
                     const ch = st.querySelector('.iphone-chassis');
@@ -5791,15 +6695,28 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                     };
                 }).filter(Boolean);
 
-                // Pass A: Backplane + Typography + Halos + MacBook frame (phones & fg overlays hidden)
+                const macSpecs = Array.from(clone.querySelectorAll('.mac-stage')).map(st => {
+                    const frEl = st.querySelector('.mac-frame');
+                    const imgEl = st.querySelector('img.screenshot-img');
+                    if (!frEl || !imgEl) return null;
+                    const fr = frEl.getBoundingClientRect();
+                    return {
+                        cx: ((fr.left + fr.right) / 2 - cloneRect.left) * IG_EXPORT_SCALE,
+                        cy: ((fr.top + fr.bottom) / 2 - cloneRect.top) * IG_EXPORT_SCALE,
+                        wFrame: fr.width * IG_EXPORT_SCALE,
+                        imgEl
+                    };
+                }).filter(Boolean);
+
+                // Pass A: Transparent typography, halos & 3D beveled cards (hardware & fg overlays hidden)
                 const fgEls = Array.from(clone.querySelectorAll('.ig-fg-layer'));
                 const phoneEls = Array.from(clone.querySelectorAll('.iphone-stage'));
-                const overlapDevEls = Array.from(clone.querySelectorAll('.mac-stage[data-overlaps-photo="true"]'));
+                const macEls = Array.from(clone.querySelectorAll('.mac-stage'));
                 fgEls.forEach(el => el.style.visibility = 'hidden');
                 phoneEls.forEach(el => el.style.visibility = 'hidden');
-                overlapDevEls.forEach(el => el.style.visibility = 'hidden');
+                macEls.forEach(el => el.style.visibility = 'hidden');
 
-                const baseCanvas = await html2canvas(clone, {
+                const uiCanvas = await html2canvas(clone, {
                     width: targetW,
                     height: targetH,
                     windowWidth: targetW,
@@ -5809,17 +6726,23 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                     scrollX: 0,
                     scrollY: 0,
                     scale: IG_EXPORT_SCALE,
+                    backgroundColor: null,
                     useCORS: true,
                     logging: false
                 });
 
                 const finalCanvas = document.createElement('canvas');
-                finalCanvas.width = baseCanvas.width;
-                finalCanvas.height = baseCanvas.height;
+                finalCanvas.width = uiCanvas.width;
+                finalCanvas.height = uiCanvas.height;
                 const ctx = finalCanvas.getContext('2d');
-                ctx.drawImage(baseCanvas, 0, 0);
 
-                // Crisp 4K photographs on Backplane
+                // Layer 0: Native 4K Studio 3D Cyclorama Backdrop (Volumetric light + 3D floor perspective grid)
+                drawStudio3DBackdrop(ctx, finalCanvas.width, finalCanvas.height, theme, isStory);
+
+                // Layer 1: Crisp Typography, 3D Tactile Cards & Halos
+                ctx.drawImage(uiCanvas, 0, 0);
+
+                // Layer 2: Crisp 4K photographs on Backplane
                 for (const photoImg of clone.querySelectorAll('img[data-crisp-photo="true"]')) {
                     if (!photoImg.naturalWidth || !photoImg.naturalHeight) continue;
                     const pr = photoImg.getBoundingClientRect();
@@ -5859,77 +6782,14 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                     ctx.restore();
                 }
 
-                const isolateElementsForPass = (targetEls) => {
-                    const keepSet = new Set(targetEls);
-                    const saved = [];
-                    const walk = (el) => {
-                        if (keepSet.has(el)) return;
-                        const containsTarget = targetEls.some(t => el.contains(t));
-                        if (!containsTarget) {
-                            saved.push([el, el.style.visibility]);
-                            el.style.visibility = 'hidden';
-                        } else {
-                            Array.from(el.children).forEach(walk);
-                        }
-                    };
-                    Array.from(clone.children).forEach(walk);
-                    return saved;
-                };
-
-                // Pass B: Overlapping MacBook hardware (if any) + Crisp MacBook Screens BEFORE drawing foreground 3D Phones
-                if (overlapDevEls.length > 0) {
-                    const hiddenForDevPass = isolateElementsForPass(overlapDevEls);
-                    const origBg = clone.style.background;
-                    const origBgImg = clone.style.backgroundImage;
-                    const origBgCol = clone.style.backgroundColor;
-                    clone.style.background = 'transparent';
-                    clone.style.backgroundImage = 'none';
-                    clone.style.backgroundColor = 'transparent';
-                    overlapDevEls.forEach(el => el.style.visibility = 'visible');
-
-                    const devCanvas = await html2canvas(clone, {
-                        width: targetW,
-                        height: targetH,
-                        windowWidth: targetW,
-                        windowHeight: targetH,
-                        x: 0,
-                        y: 0,
-                        scrollX: 0,
-                        scrollY: 0,
-                        scale: IG_EXPORT_SCALE,
-                        backgroundColor: null,
-                        useCORS: true,
-                        logging: false
-                    });
-                    ctx.drawImage(devCanvas, 0, 0);
-                    clone.style.background = origBg;
-                    clone.style.backgroundImage = origBgImg;
-                    clone.style.backgroundColor = origBgCol;
-                    hiddenForDevPass.forEach(([el, prev]) => el.style.visibility = prev);
+                // Layer 3: True 4K Photorealistic 3D Brushed-Aluminum MacBooks (natural 4.2° studio angle)
+                for (const mc of macSpecs) {
+                    drawStudio3DMacBook(ctx, mc.cx, mc.cy, mc.wFrame, mc.imgEl, 4.2);
                 }
 
-                for (const scr of clone.querySelectorAll('.mac-screen')) {
-                    const imgEl = scr.querySelector('img');
-                    if (!imgEl || !imgEl.naturalWidth) continue;
-                    const sr = scr.getBoundingClientRect();
-                    const drawW = scr.offsetWidth * IG_EXPORT_SCALE;
-                    const drawH = scr.offsetHeight * IG_EXPORT_SCALE;
-                    const cx = ((sr.left + sr.right) / 2 - cloneRect.left) * IG_EXPORT_SCALE;
-                    const cy = ((sr.top + sr.bottom) / 2 - cloneRect.top) * IG_EXPORT_SCALE;
-                    const rad = (parseFloat(getComputedStyle(scr).borderTopLeftRadius) || 0) * IG_EXPORT_SCALE;
-                    ctx.save();
-                    ctx.translate(cx, cy);
-                    drawRoundedRectPath(ctx, -drawW / 2, -drawH / 2, drawW, drawH, rad);
-                    ctx.clip();
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.imageSmoothingQuality = 'high';
-                    ctx.drawImage(imgEl, -drawW / 2, -drawH / 2, drawW, drawH);
-                    ctx.restore();
-                }
-
-                // Draw True 4K 3D Brushed-Silver Titanium Smartphones natively on finalCanvas
+                // Layer 4: True 4K Smooth Convex-Hull 3D Titanium Smartphones (natural 10.5° studio angle)
                 for (const ph of phoneSpecs) {
-                    drawStudio3DPhone(ctx, ph.cx, ph.cy, ph.sc, ph.angleRad, ph.imgEl, 16.5);
+                    drawStudio3DPhone(ctx, ph.cx, ph.cy, ph.sc, ph.angleRad, ph.imgEl, 10.5);
                 }
 
                 // Composite crisp standalone logos not inside foreground layer
@@ -5949,12 +6809,26 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                     ctx.restore();
                 }
 
-                // Pass C: Render True Z-Foreground Overlay Cards & Handwritten Callouts (.ig-fg-layer) ABOVE hardware/photos
+                // Pass C: Render True Z-Foreground Overlay Cards & Floating 3D Badges (.ig-fg-layer) ABOVE hardware
+                const isolateElementsForPass = (targetEls) => {
+                    const keepSet = new Set(targetEls);
+                    const saved = [];
+                    const walk = (el) => {
+                        if (keepSet.has(el)) return;
+                        const containsTarget = targetEls.some(t => el.contains(t));
+                        if (!containsTarget) {
+                            saved.push([el, el.style.visibility]);
+                            el.style.visibility = 'hidden';
+                        } else {
+                            Array.from(el.children).forEach(walk);
+                        }
+                    };
+                    Array.from(clone.children).forEach(walk);
+                    return saved;
+                };
+
                 if (fgEls.length > 0) {
                     const hiddenForFgPass = isolateElementsForPass(fgEls);
-                    clone.style.background = 'transparent';
-                    clone.style.backgroundImage = 'none';
-                    clone.style.backgroundColor = 'transparent';
                     fgEls.forEach(el => el.style.visibility = 'visible');
 
                     const fgCanvas = await html2canvas(clone, {
@@ -6082,6 +6956,210 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
                 btn.disabled = false;
                 btn.innerHTML = origHtml;
             }
+        }
+
+        // =====================================================================
+        // INSTAGRAM DIRECT PUBLISHING & 1-CLICK SHARE ENGINE (@schooly.app)
+        // =====================================================================
+        let igApiStatus = { configured: false, publicBaseUrlConfigured: false, accountHandle: '@schooly.app' };
+
+        async function refreshInstagramPublishStatus(btn) {
+            const badge = document.getElementById('igPublishStatusBadge');
+            const badgeText = document.getElementById('igPublishStatusBadgeText');
+            const desc = document.getElementById('igPublishStatusDesc');
+            if (btn) btn.disabled = true;
+            try {
+                const res = await fetch('/api/instagram-status');
+                if (res.ok) {
+                    igApiStatus = await res.json();
+                }
+            } catch (_) {
+                igApiStatus = { configured: false, publicBaseUrlConfigured: false, accountHandle: '@schooly.app' };
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+
+            if (badge && badgeText && desc) {
+                if (igApiStatus.configured) {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e7f3de] text-[#2d694c] text-[11px] font-extrabold';
+                    badgeText.textContent = igApiStatus.publicBaseUrlConfigured
+                        ? 'Meta Graph API aktiv — Direkt-Posten bereit'
+                        : 'Meta Graph API Token aktiv (HTTPS-URL prüfen)';
+                    desc.innerHTML = 'Die Verbindung zu <strong class="text-[#1f1b16]">@schooly.app</strong> über die Meta Graph API ist aktiv. Ein Klick auf <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong> rendert alle 4K-Slides und veröffentlicht den Beitrag inkl. Caption direkt auf Instagram.';
+                } else {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[11px] font-extrabold';
+                    badgeText.textContent = '1-Klick Share & Export bereit (Graph API optional)';
+                    desc.innerHTML = 'Mit <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong> bei jedem Beitrag (#1–#18) werden alle 4K-Slides gerendert, die Caption automatisch kopiert und direkt an das Teilen-Menü (Instagram-App) bzw. als Download-Paket übergeben. Für vollautomatisches Direkt-Posten einfach <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_USER_ID</code>, <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> und <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_PUBLIC_BASE_URL</code> in den Secrets hinterlegen.';
+                }
+            }
+            updatePublishButtonLabels();
+        }
+
+        function updatePublishButtonLabels() {
+            document.querySelectorAll('[data-ig-publish-btn]').forEach((btn) => {
+                if (btn.disabled) return;
+                const label = btn.querySelector('.ig-pub-label');
+                if (label) {
+                    label.textContent = igApiStatus.configured ? 'Direkt auf Instagram posten' : 'Auf Instagram posten';
+                }
+            });
+        }
+
+        function setPostPublishFeedback(postNum, text, isError) {
+            const section = document.getElementById(`beitrag-${postNum}`);
+            if (!section) return;
+            let note = section.querySelector('.ig-publish-feedback');
+            if (!note) {
+                note = document.createElement('div');
+                note.className = 'ig-publish-feedback text-xs font-bold rounded-2xl px-4 py-2.5 border';
+                const header = section.firstElementChild;
+                if (header && header.nextSibling) {
+                    section.insertBefore(note, header.nextSibling);
+                } else {
+                    section.prepend(note);
+                }
+            }
+            note.className = isError
+                ? 'ig-publish-feedback text-xs font-bold rounded-2xl px-4 py-2.5 border bg-[#fdf2f2] border-[#f2c6c6] text-[#9b2c2c]'
+                : 'ig-publish-feedback text-xs font-bold rounded-2xl px-4 py-2.5 border bg-[#e7f3de] border-[#b9d7b5] text-[#2d694c]';
+            note.textContent = text;
+        }
+
+        function dataUrlToPngFile(dataUrl, filename) {
+            const parts = dataUrl.split(',');
+            const bin = atob(parts[1]);
+            const arr = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            return new File([arr], filename, { type: 'image/png' });
+        }
+
+        async function publishPostToInstagram(postNum, btn) {
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            const slides = Array.from(document.querySelectorAll(`.ig-canvas[data-post="${postNum}"]`));
+            const captionEl = document.getElementById(`caption-post-${postNum}`);
+            const caption = captionEl ? captionEl.innerText.trim() : '';
+
+            let captionCopied = false;
+            if (caption && navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(caption);
+                    captionCopied = true;
+                } catch (_) {}
+            }
+
+            try {
+                const dataUrls = [];
+                const filenames = [];
+                for (let i = 0; i < slides.length; i++) {
+                    btn.innerHTML = `<span>Rendere 4K (${i + 1}/${slides.length})...</span>`;
+                    const filename = slides[i].getAttribute('data-filename') || `schooly_beitrag${postNum}_slide${i + 1}.png`;
+                    const png = await renderIgSlidePng(slides[i]);
+                    dataUrls.push(png);
+                    filenames.push(filename);
+                }
+
+                if (igApiStatus.configured) {
+                    btn.innerHTML = '<span>Sende an Instagram...</span>';
+                    const res = await fetch('/api/instagram-publish', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ slides: dataUrls, caption }),
+                    });
+                    const payload = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        setPostPublishFeedback(postNum, payload.message || payload.error || 'Direkt-Upload über Meta Graph API fehlgeschlagen.', true);
+                    } else {
+                        setPostPublishFeedback(postNum, `Beitrag #${postNum} erfolgreich auf @schooly.app veröffentlicht! (Media-ID: ${payload.id})`, false);
+                        return;
+                    }
+                }
+
+                // 1-Click Native Share (Web Share API for Mobile/iPad/macOS -> Instagram)
+                const files = dataUrls.map((u, idx) => dataUrlToPngFile(u, filenames[idx]));
+                if (navigator.share && navigator.canShare && navigator.canShare({ files })) {
+                    try {
+                        btn.innerHTML = '<span>Teilen-Menü wird geöffnet...</span>';
+                        await navigator.share({
+                            title: `schooly Instagram Beitrag #${postNum}`,
+                            text: caption,
+                            files,
+                        });
+                        setPostPublishFeedback(
+                            postNum,
+                            `Beitrag #${postNum} geteilt!${captionCopied ? ' Caption liegt zusätzlich in der Zwischenablage.' : ''}`,
+                            false
+                        );
+                        return;
+                    } catch (shareErr) {
+                        if (shareErr && shareErr.name === 'AbortError') {
+                            setPostPublishFeedback(
+                                postNum,
+                                `Teilen abgebrochen.${captionCopied ? ' Die komplette Caption ist weiterhin in deiner Zwischenablage gespeichert.' : ''}`,
+                                false
+                            );
+                            return;
+                        }
+                    }
+                }
+
+                // Desktop fallback: Export all 4K PNGs cleanly + caption already in clipboard
+                for (let i = 0; i < dataUrls.length; i++) {
+                    triggerDownload(dataUrls[i], filenames[i]);
+                    await new Promise((r) => setTimeout(r, 220));
+                }
+                setPostPublishFeedback(
+                    postNum,
+                    `Alle ${dataUrls.length} 4K-Slides heruntergeladen${captionCopied ? ' & Caption in die Zwischenablage kopiert ✓ — direkt in Instagram hochladen und Caption einfügen.' : ' ✓ — jetzt in Instagram hochladen.'}`,
+                    false
+                );
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                updatePublishButtonLabels();
+            }
+        }
+
+        async function shareReelForInstagram(btn) {
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            const captionEl = document.getElementById('caption-reel');
+            const caption = captionEl ? captionEl.innerText.trim() : '';
+            if (caption && navigator.clipboard && navigator.clipboard.writeText) {
+                try { await navigator.clipboard.writeText(caption); } catch (_) {}
+            }
+            btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-[#2d694c]"></i><span>Caption kopiert!</span>';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            const reelBtn = document.getElementById('reelExportBtn');
+            if (reelBtn) reelBtn.click();
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }, 2200);
+        }
+
+        function initInstagramPublishButtons() {
+            for (let n = 1; n <= 18; n++) {
+                const section = document.getElementById(`beitrag-${n}`);
+                if (!section) continue;
+                const dlBtn = section.querySelector(`button[onclick*="downloadPostSlides(${n}"]`);
+                if (!dlBtn || section.querySelector('[data-ig-publish-btn]')) continue;
+                const wrap = document.createElement('div');
+                wrap.className = 'flex flex-wrap items-center gap-2';
+                dlBtn.parentNode.insertBefore(wrap, dlBtn);
+                wrap.appendChild(dlBtn);
+
+                const pubBtn = document.createElement('button');
+                pubBtn.setAttribute('data-ig-publish-btn', String(n));
+                pubBtn.setAttribute('onclick', `publishPostToInstagram(${n}, this)`);
+                pubBtn.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1f1b16] hover:bg-[#383129] text-white text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap';
+                pubBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i><span class="ig-pub-label">Auf Instagram posten</span>';
+                wrap.appendChild(pubBtn);
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            refreshInstagramPublishStatus();
         }
 
         // Generates clean 4K (2160x2160) Instagram Profile Picture PNG
@@ -7047,7 +8125,8 @@ Keine Werbung, kein Chaos, sondern Noten, Kalender, ABI-Check &amp; Lernfokus an
             }
         }
 
-        // Initial thumbnail render & hydrate all 45 3D Brushed-Silver Titanium Smartphones
+        // Initial thumbnail render, publish buttons & hydrate all 45 3D Brushed-Silver Titanium Smartphones
+        initInstagramPublishButtons();
         hydrateAll3DPhones();
         loadReelAssets().then(() => {
             if (document.fonts && document.fonts.ready) {

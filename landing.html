@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>schooly – Dein Schulalltag ruhig sortiert | Handy &amp; Laptop</title>
+    <meta name="description" content="Noten mit Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und Abitur-Check. Kostenlos &amp; werbefrei auf schooly26.vercel.app." />
+    <meta property="og:title" content="schooly – All-in-One Schul-App für Handy &amp; Laptop" />
+    <meta property="og:description" content="Noten, Wunschnote, Stundenplan, Kalender-Sync &amp; Abitur-Check an einem ruhigen Ort. Jetzt kostenlos auf schooly26.vercel.app starten." />
+    <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg" />
+    <link rel="apple-touch-icon" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        epilogue: ['Epilogue', 'sans-serif'],
+                        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --bg-cream: #faf7f2;
+            --surface-warm: #f4ece4;
+            --border-hairline: #e5dcd0;
+            --ink-espresso: #1f1b16;
+            --ink-muted: #6e665e;
+            --sage: #2d694c;
+            --sage-dark: #23533c;
+            --mint: #e7f3de;
+            --honey: #ffe6b9;
+            --honey-ink: #7a4e00;
+        }
+
+        html, body {
+            background-color: var(--bg-cream);
+            color: var(--ink-espresso);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: clip;
+        }
+
+        h1, h2, h3, .font-epilogue {
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 3D Tactile App Surface Bevel (Single elevation level, matches Social 3D aesthetic without nested clutter) */
+        .surface-3d {
+            background: linear-gradient(180deg, #ffffff 0%, #fcfaf6 100%);
+            border: 1px solid #e2d8c9;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.95) inset,
+                0 5px 0 #e6dccf,
+                0 22px 44px -18px rgba(31, 27, 22, 0.12);
+            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .surface-3d-mint {
+            background: linear-gradient(165deg, #f3fae9 0%, #e7f3de 100%);
+            border: 1px solid #cce0be;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.9) inset,
+                0 5px 0 #c6dbba,
+                0 22px 44px -18px rgba(45, 105, 76, 0.14);
+        }
+        .surface-3d-honey {
+            background: linear-gradient(165deg, #fff5df 0%, #ffe6b9 100%);
+            border: 1px solid #f0d095;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.85) inset,
+                0 5px 0 #e5c384,
+                0 22px 44px -18px rgba(122, 78, 0, 0.14);
+        }
+        .surface-3d-sage {
+            background: linear-gradient(165deg, #357a59 0%, #2d694c 55%, #23533c 100%);
+            border: 1px solid #214e38;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.24) inset,
+                0 6px 0 #193c2b,
+                0 26px 52px -18px rgba(24, 58, 41, 0.38);
+        }
+        .surface-3d-espresso {
+            background: linear-gradient(165deg, #2d2721 0%, #1f1b16 65%, #16130f 100%);
+            border: 1px solid #3c342c;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.14) inset,
+                0 6px 0 #110e0b,
+                0 28px 56px -18px rgba(15, 12, 9, 0.45);
+        }
+
+        /* Primary CTA tactile 3D button */
+        .cta-3d-sage {
+            background: linear-gradient(180deg, #347656 0%, #2d694c 100%);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.28) inset,
+                0 4px 0 #1a432f,
+                0 14px 28px -10px rgba(45, 105, 76, 0.45);
+            transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cta-3d-sage:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.32) inset,
+                0 5px 0 #1a432f,
+                0 18px 34px -10px rgba(45, 105, 76, 0.52);
+        }
+        .cta-3d-sage:active {
+            transform: translateY(2px);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.2) inset,
+                0 1px 0 #1a432f;
+        }
+
+        .cta-3d-light {
+            background: linear-gradient(180deg, #ffffff 0%, #f7f2ea 100%);
+            border: 1px solid #dfd4c4;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.95) inset,
+                0 4px 0 #ddd1c0,
+                0 12px 24px -12px rgba(31, 27, 22, 0.14);
+            transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cta-3d-light:hover {
+            transform: translateY(-2px);
+            border-color: #2d694c;
+        }
+        .cta-3d-light:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #ddd1c0;
+        }
+
+        /* Scroll-reveal compositor-only animations */
+        [data-reveal] {
+            opacity: 0;
+            transform: translate3d(0, 26px, 0) scale(0.985);
+            transition:
+                opacity 0.68s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.68s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        [data-reveal].is-visible {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+        }
+
+        /* Chapter Storyboard active card indicator */
+        .story-step {
+            border: 1px solid #e5dcd0;
+            background: rgba(255, 255, 255, 0.72);
+            transition:
+                transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.28s ease,
+                border-color 0.28s ease,
+                box-shadow 0.28s ease;
+        }
+        .story-step.is-active {
+            background: #ffffff;
+            border-color: #2d694c;
+            transform: translate3d(4px, -2px, 0);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.9) inset,
+                0 5px 0 #cfe1d6,
+                0 22px 44px -18px rgba(45, 105, 76, 0.18);
+        }
+
+        /* Clean architectural hover underline for nav links */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -4px;
+            height: 2px;
+            background: #2d694c;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* Respect reduced motion strictly */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            [data-reveal] {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+            .story-step.is-active {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body id="top" class="min-h-screen flex flex-col selection:bg-[#2d694c] selection:text-white">
+
+    <!-- Hidden crisp texture bank for live 3D Canvas device screens -->
+    <div class="hidden" aria-hidden="true">
+        <img id="tex-dash-mobile" src="/assets/screenshot_dashboard_mobile.png" alt="" />
+        <img id="tex-dash-laptop" src="/assets/screenshot_dashboard.png" alt="" />
+        <img id="tex-faecher-mobile" src="/assets/screenshot_faecher_mobile.png" alt="" />
+        <img id="tex-wunschnote-mobile" src="/assets/screenshot_wunschnote_mobile.png" alt="" />
+        <img id="tex-kalender-laptop" src="/assets/screenshot_kalender_laptop.png" alt="" />
+        <img id="tex-kalender-mobile" src="/assets/screenshot_kalender_mobile.png" alt="" />
+        <img id="tex-abi-laptop" src="/assets/screenshot_abi_laptop.png" alt="" />
+        <img id="tex-abi-mobile" src="/assets/screenshot_abi_mobile.png" alt="" />
+        <img id="tex-charts-laptop" src="/assets/screenshot_insights_charts_laptop.png" alt="" />
+        <img id="tex-charts-mobile" src="/assets/screenshot_insights_charts_mobile.png" alt="" />
+        <img id="tex-pdf-mobile" src="/assets/screenshot_pdf_mobile.png" alt="" />
+        <img id="tex-stundenplan-mobile" src="/assets/screenshot_stundenplan_mobile.png" alt="" />
+        <img id="tex-recap-mobile" src="/assets/screenshot_recap_mobile.png" alt="" />
+        <img id="tex-insights-mobile" src="/assets/screenshot_insights_mobile.png" alt="" />
+        <img id="tex-aufgaben-mobile" src="/assets/screenshot_aufgaben_mobile.png" alt="" />
+    </div>
+
+    <!-- 3-ZONE TOP NAVIGATION BAR (Max 15% mobile sticky cap, 1 wordmark + 4 links + 1 CTA) -->
+    <header class="sticky top-0 z-50 bg-[#faf7f2]/92 backdrop-blur-md border-b border-[#e5dcd0]">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between gap-8">
+            <!-- Zone 1: Clean single-line brand lockup -->
+            <a href="#top" class="flex items-center gap-2.5 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#2d694c] rounded-lg">
+                <img src="/assets/aistudio/schooly_app_icon_7d45ac62.svg" alt="" width="28" height="28" class="w-7 h-7 object-contain" />
+                <span class="font-epilogue font-black text-xl tracking-tight text-[#1f1b16]">schooly</span>
+            </a>
+
+            <!-- Zone 2: 4 Single-line Editorial Nav Links -->
+            <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-[#6e665e]" aria-label="Hauptnavigation">
+                <a href="#story" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Funktionen</a>
+                <a href="#geraete" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Handy &amp; Laptop</a>
+                <a href="#abitur" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Abitur-Check</a>
+                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="nav-link hover:text-[#2d694c] transition-colors whitespace-nowrap shrink-0">@schooly.app</a>
+            </nav>
+
+            <!-- Zone 3: 1 Primary CTA + Mobile Menu Toggle -->
+            <div class="flex items-center gap-2.5 shrink-0">
+                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-sage inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs sm:text-sm font-bold whitespace-nowrap shrink-0 min-h-[40px]">
+                    <span>App öffnen</span>
+                    <span aria-hidden="true">→</span>
+                </a>
+                <button id="mobileNavBtn" type="button" aria-expanded="false" aria-controls="mobileNavDrawer" aria-label="Menü öffnen" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-[#e5dcd0] bg-white text-[#1f1b16] cursor-pointer">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                        <line x1="4" y1="7" x2="20" y2="7"></line>
+                        <line x1="4" y1="12" x2="20" y2="12"></line>
+                        <line x1="4" y1="17" x2="20" y2="17"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Slide Drawer -->
+        <div id="mobileNavDrawer" class="hidden md:hidden border-t border-[#e5dcd0] bg-[#faf7f2] px-4 py-4 space-y-2">
+            <a href="#story" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-[#1f1b16] hover:bg-[#f4ece4]">Funktionen entdecken</a>
+            <a href="#geraete" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-[#1f1b16] hover:bg-[#f4ece4]">Handy &amp; Laptop Sync</a>
+            <a href="#abitur" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-[#1f1b16] hover:bg-[#f4ece4]">Abitur- &amp; Noten-Check</a>
+            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="mobile-nav-link flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-bold text-[#2d694c] hover:bg-[#e7f3de]">
+                <span>Instagram @schooly.app</span>
+                <span aria-hidden="true">↗</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1">
+
+        <!-- HERO SECTION: Editorial Value Proposition + Scroll-Reactive 3D Studio Stage -->
+        <section class="relative pt-8 pb-14 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 overflow-x-clip">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+
+                <!-- Left Copy Column (Immediate Zero-Latency Accessibility) -->
+                <div class="lg:col-span-6 space-y-6">
+                    <div class="text-xs sm:text-sm font-bold text-[#2d694c] tracking-wide">
+                        All-in-One Schul-App · Kostenlos &amp; werbefrei
+                    </div>
+
+                    <h1 class="font-epilogue font-black text-[#1f1b16] tracking-tight leading-[1.06]" style="font-size: clamp(2.25rem, 4.4vw, 3.85rem); text-wrap: balance;">
+                        Dein Schulalltag. Ruhig sortiert in einer App.
+                    </h1>
+
+                    <p class="text-[15px] sm:text-[17px] text-[#6e665e] leading-[1.65] max-w-xl">
+                        Schluss mit fünf verschiedenen Apps und Zettelchaos: <strong class="text-[#1f1b16] font-bold">schooly</strong> vereint Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und den kompletten Abitur-Check — nahtlos auf Smartphone und Laptop.
+                    </p>
+
+                    <!-- Primary Action Block -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-1">
+                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-sage inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
+                            <span>Web-App starten</span>
+                            <span class="text-[#e7f3de] font-semibold">· schooly26.vercel.app →</span>
+                        </a>
+
+                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="cta-3d-light inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl text-[#1f1b16] font-bold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
+                            <svg class="w-4 h-4 text-[#2d694c] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                            <span>@schooly.app</span>
+                        </a>
+                    </div>
+
+                    <!-- Unboxed Typographic Metadata Strip (Zero Pills) -->
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-[#6e665e] pt-1">
+                        <span>Klasse 5 bis Abitur</span>
+                        <span aria-hidden="true">·</span>
+                        <span>1–15 Punkte &amp; Noten 1–6</span>
+                        <span aria-hidden="true">·</span>
+                        <span>Echtzeit Cloud-Sync</span>
+                    </div>
+                </div>
+
+                <!-- Right Studio 3D Hardware Stage (Pedestal look matching photo reference, zero floating spheres) -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div id="heroStageWrap" class="surface-3d rounded-[28px] p-2.5 sm:p-3 overflow-hidden relative">
+                        <div class="relative rounded-[20px] overflow-hidden bg-[#1e4b35]">
+                            <canvas id="hero3dCanvas" class="block w-full h-auto aspect-[4/3] sm:aspect-[14/11]"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Segmented Hardware Inspection Switcher (Functional Button Controls) -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 px-1">
+                        <div class="inline-flex items-center p-1 rounded-xl bg-[#efe7da] border border-[#e2d7c7]" role="tablist" aria-label="Geräteansicht wählen">
+                            <button type="button" data-hero-mode="duo" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                                Handy &amp; Laptop
+                            </button>
+                            <button type="button" data-hero-mode="phone" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                                Smartphone Studio
+                            </button>
+                            <button type="button" data-hero-mode="laptop" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                                Laptop Ansicht
+                            </button>
+                        </div>
+                        <span class="text-xs font-semibold text-[#6e665e] hidden sm:inline">Scrollen dreht die 3D-Szene</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- HORIZONTAL DIVIDER -->
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-8">
+            <div class="h-px bg-[#e5dcd0]"></div>
+        </div>
+
+        <!-- SECTION 01: SCROLL-CHOREOGRAPHED STORYTELLING (Desktop Sticky 3D Stage + Mobile Stacked Cards) -->
+        <section id="story" class="py-16 sm:py-24">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 space-y-12">
+
+                <div class="max-w-2xl space-y-3" data-reveal>
+                    <div class="text-xs font-bold text-[#2d694c]">01. So begleitet dich schooly durchs Schuljahr</div>
+                    <h2 class="font-epilogue font-black text-[#1f1b16] tracking-tight leading-tight" style="font-size: clamp(1.75rem, 3.2vw, 2.75rem); text-wrap: balance;">
+                        Vier Werkzeuge, die genau dann helfen, wenn es darauf ankommt.
+                    </h2>
+                    <p class="text-sm sm:text-base text-[#6e665e] leading-relaxed">
+                        Beim Runterscrollen wechselt rechts die echte 3D-Vorschau zwischen Smartphone und Laptop — genau so ruhig und klar wie in der App selbst.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+
+                    <!-- Left Column: 4 Interactive / Scroll-Driven Story Chapters -->
+                    <div class="lg:col-span-5 space-y-5">
+
+                        <!-- Chapter 1 -->
+                        <article class="story-step is-active rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="0" tabindex="0">
+                            <div class="flex items-center justify-between text-xs font-bold text-[#2d694c]">
+                                <span>01. Fächer &amp; Gewichtung</span>
+                                <span>Handy &amp; Laptop</span>
+                            </div>
+                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
+                                Jede Note zählt exakt so, wie dein Lehrer rechnet.
+                            </h3>
+                            <p class="text-sm text-[#6e665e] leading-relaxed">
+                                Ob 2:1, 1:1 oder individueller Klausur- und Sonstiges-Faktor — dein Schnitt wird für Grund- und Leistungskurse sofort ohne Taschenrechner aktualisiert.
+                            </p>
+                            <!-- Mobile Inline 3D Preview (< lg) -->
+                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#2b6649]">
+                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="0"></canvas>
+                            </div>
+                        </article>
+
+                        <!-- Chapter 2 -->
+                        <article class="story-step rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="1" tabindex="0">
+                            <div class="flex items-center justify-between text-xs font-bold text-[#7a4e00]">
+                                <span>02. Wunschnoten-Rechner</span>
+                                <span>Klausur-Strategie</span>
+                            </div>
+                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
+                                Vorher wissen, welche Punktzahl in der nächsten Arbeit reicht.
+                            </h3>
+                            <p class="text-sm text-[#6e665e] leading-relaxed">
+                                Zielnote festlegen — schooly berechnet dir live, wie viele Punkte du noch brauchst und berücksichtigt Gewichtungen sowie Halbjahresstand.
+                            </p>
+                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#f6e4be]">
+                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="1"></canvas>
+                            </div>
+                        </article>
+
+                        <!-- Chapter 3 -->
+                        <article class="story-step rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="2" tabindex="0">
+                            <div class="flex items-center justify-between text-xs font-bold text-[#2d694c]">
+                                <span>03. Stundenplan &amp; Kalender-Sync</span>
+                                <span>Google Kalender</span>
+                            </div>
+                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
+                                Wochenbelastung &amp; Klausuren im Blick statt böser Überraschungen.
+                            </h3>
+                            <p class="text-sm text-[#6e665e] leading-relaxed">
+                                Trage Klausuren, Tests und Hausaufgaben direkt im Stundenplan ein und synchronisiere wichtige Prüfungstermine per Knopfdruck mit deinem Google Kalender.
+                            </p>
+                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#dff0d5]">
+                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="2"></canvas>
+                            </div>
+                        </article>
+
+                        <!-- Chapter 4 -->
+                        <article class="story-step rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="3" tabindex="0">
+                            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e]">
+                                <span>04. Oberstufe &amp; Abitur-Check</span>
+                                <span>40 Kurse · Block I &amp; II</span>
+                            </div>
+                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
+                                Schluss mit fehleranfälligen Excel-Tabellen fürs Abi.
+                            </h3>
+                            <p class="text-sm text-[#6e665e] leading-relaxed">
+                                Automatische Streichungs-Logik für Block I, Prüfung der 5 Bestehens-Kriterien und Was-wäre-wenn-Simulation für deine Prüfungsfächer P1 bis P5.
+                            </p>
+                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#231e19]">
+                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="3"></canvas>
+                            </div>
+                        </article>
+
+                    </div>
+
+                    <!-- Right Column: Sticky 3D Hardware Stage (Desktop >= lg) -->
+                    <div class="hidden lg:block lg:col-span-7 sticky top-24">
+                        <div class="surface-3d rounded-[30px] p-3">
+                            <div class="relative rounded-[22px] overflow-hidden">
+                                <canvas id="storyStickyCanvas" class="block w-full h-auto aspect-[10/9]"></canvas>
+
+                                <!-- Clean bottom glass caption strip (no pills) -->
+                                <div class="absolute inset-x-4 bottom-4 rounded-2xl bg-[#1f1b16]/88 backdrop-blur-md text-white px-5 py-3.5 flex items-center justify-between gap-4 border border-white/10">
+                                    <div class="min-w-0">
+                                        <div id="storyStageKicker" class="text-[11px] font-bold text-[#e7f3de] truncate">01 · Notenübersicht &amp; Gewichtung</div>
+                                        <div id="storyStageTitle" class="text-sm font-extrabold font-epilogue truncate">Live-Berechnung auf deinem Smartphone</div>
+                                    </div>
+                                    <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-[#ffe6b9] hover:underline whitespace-nowrap shrink-0">
+                                        Live testen →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 02: HANDY & LAPTOP SYNC BENTO ARCHITECTURE (Same 3D Post Design) -->
+        <section id="geraete" class="py-16 sm:py-24 bg-[#f4ece4]/60 border-y border-[#e5dcd0]">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 space-y-10">
+
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6" data-reveal>
+                    <div class="max-w-2xl space-y-3">
+                        <div class="text-xs font-bold text-[#2d694c]">02. Angepasst für Handy &amp; Laptop</div>
+                        <h2 class="font-epilogue font-black text-[#1f1b16] tracking-tight leading-tight" style="font-size: clamp(1.75rem, 3.2vw, 2.75rem); text-wrap: balance;">
+                            Unterwegs blitzschnell eintragen. Am Schreibtisch entspannt auswerten.
+                        </h2>
+                    </div>
+                    <div class="inline-flex items-center p-1 rounded-xl bg-[#e8dfd2] border border-[#dcd0c0] shrink-0 self-start md:self-auto">
+                        <button type="button" id="bentoBtnPhone" data-bento-device="phone" class="px-4 py-2 rounded-lg text-xs font-bold bg-white text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                            Smartphone
+                        </button>
+                        <button type="button" id="bentoBtnLaptop" data-bento-device="laptop" class="px-4 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                            Laptop
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Asymmetric 3D Bento Grid (col-span-7 + col-span-5) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                    <!-- Large Feature Tile: Analytics & Multi-Device Sync -->
+                    <div class="lg:col-span-7 surface-3d-mint rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
+                        <div class="space-y-2.5 max-w-lg">
+                            <div class="text-xs font-bold text-[#2d694c]">Echtzeit-Sync · Trends &amp; Insights</div>
+                            <h3 class="font-epilogue font-black text-2xl text-[#1f1b16] leading-tight">
+                                Siehst du deinen Fortschritt auf einem Blick — egal welches Gerät gerade offen ist.
+                            </h3>
+                            <p class="text-sm text-[#435645] leading-relaxed">
+                                Notenverlauf, Fächervergleich und Zielerreichung passen sich automatisch an schmale Smartphone-Displays und breite Laptop-Bildschirme an.
+                            </p>
+                        </div>
+                        <div class="rounded-2xl overflow-hidden bg-[#e7f3de] border border-[#c6dbba]">
+                            <canvas id="bentoSyncCanvas" class="block w-full h-auto aspect-[16/10]"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Side Feature Tile: 1-Klick PDF Export -->
+                    <div class="lg:col-span-5 surface-3d rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
+                        <div class="space-y-2.5">
+                            <div class="text-xs font-bold text-[#6e665e]">Zeugnis &amp; Bewerbung</div>
+                            <h3 class="font-epilogue font-black text-2xl text-[#1f1b16] leading-tight">
+                                1-Klick PDF-Notenspiegel.
+                            </h3>
+                            <p class="text-sm text-[#6e665e] leading-relaxed">
+                                Exportiere deinen kompletten Notenstand sauber formatiert als PDF — bereit für Elternabend, Praktikum oder Studienbewerbung.
+                            </p>
+                        </div>
+                        <div class="rounded-2xl overflow-hidden bg-[#f4ece4]">
+                            <canvas id="bentoPdfCanvas" class="block w-full h-auto aspect-[4/3]"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Left Tile: Honey Gold — Freundes-Duell & Lern-Motivation -->
+                    <div class="lg:col-span-5 surface-3d-honey rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
+                        <div class="space-y-2.5">
+                            <div class="text-xs font-bold text-[#7a4e00]">Optional &amp; privat per Code</div>
+                            <h3 class="font-epilogue font-black text-2xl text-[#1f1b16] leading-tight">
+                                Freundes-Duell statt peinlicher Klassen-Rankings.
+                            </h3>
+                            <p class="text-sm text-[#614210] leading-relaxed">
+                                Vergleiche deinen Punkteschnitt nur mit engen Freunden über einen privaten Einladungscode — motivierend, fair und jederzeit abschaltbar.
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-[#e8c682] flex items-center justify-between text-xs font-bold text-[#7a4e00]">
+                            <span>Kein öffentliches Profil nötig</span>
+                            <span class="tabular-nums">100 % freiwillig</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Right Tile: Espresso Dark — Abitur & PWA Installation -->
+                    <div id="abitur" class="lg:col-span-7 surface-3d-espresso rounded-[28px] p-6 sm:p-8 text-white flex flex-col justify-between gap-6" data-reveal>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+                            <div class="sm:col-span-6 space-y-3">
+                                <div class="text-xs font-bold text-[#ffe6b9]">Als App auf dem Homescreen</div>
+                                <h3 class="font-epilogue font-black text-2xl leading-tight">
+                                    In 10 Sekunden installiert — wie eine native App.
+                                </h3>
+                                <p class="text-sm text-[#d4cbc2] leading-relaxed">
+                                    Kein App-Store-Umweg nötig: Öffne <strong class="text-white">schooly26.vercel.app</strong> im Browser, füge schooly zum Home-Bildschirm hinzu und nutze alle Daten auch unterwegs.
+                                </p>
+                            </div>
+                            <div class="sm:col-span-6 rounded-2xl overflow-hidden bg-[#15120f]">
+                                <canvas id="bentoAbiCanvas" class="block w-full h-auto aspect-[4/3]"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 03: QUANTITATIVE ECKDATEN (Tabular Numerals, Claim-to-Proof Adjacency) -->
+        <section class="py-14 sm:py-16 border-b border-[#e5dcd0]">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-8" data-reveal>
+                <div class="space-y-1">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#2d694c] tabular-nums">0 €</div>
+                    <div class="text-sm font-bold text-[#1f1b16]">Dauerhaft kostenlos</div>
+                    <p class="text-xs text-[#6e665e]">Ohne Abo-Paywall und ohne Werbebanner.</p>
+                </div>
+                <div class="space-y-1">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#1f1b16] tabular-nums">1–15 Pkt.</div>
+                    <div class="text-sm font-bold text-[#1f1b16]">Beide Notensysteme</div>
+                    <p class="text-xs text-[#6e665e]">Sekundarstufe I (1–6) &amp; Oberstufe (0–15).</p>
+                </div>
+                <div class="space-y-1">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#1f1b16] tabular-nums">40 Kurse</div>
+                    <div class="text-sm font-bold text-[#1f1b16]">Abitur-Vollcheck</div>
+                    <p class="text-xs text-[#6e665e]">Block I &amp; II samt Bestehens-Kriterien.</p>
+                </div>
+                <div class="space-y-1">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#1f1b16] tabular-nums">100 %</div>
+                    <div class="text-sm font-bold text-[#1f1b16]">Responsive 3D-Sync</div>
+                    <p class="text-xs text-[#6e665e]">Handy, Tablet &amp; Laptop immer synchron.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 04: COMMUNITY & LAUNCH CTA (schooly26.vercel.app + Instagram @schooly.app) -->
+        <section class="py-16 sm:py-24">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8">
+                <div class="surface-3d-sage rounded-[32px] p-7 sm:p-12 lg:p-14 text-white grid grid-cols-1 lg:grid-cols-12 gap-10 items-center overflow-hidden relative" data-reveal>
+
+                    <div class="lg:col-span-7 space-y-5 relative z-10">
+                        <div class="text-xs font-bold text-[#e7f3de]">Bereit für ruhigere Schulwochen</div>
+                        <h2 class="font-epilogue font-black tracking-tight leading-[1.08]" style="font-size: clamp(1.9rem, 3.6vw, 3rem); text-wrap: balance;">
+                            Jetzt direkt starten — oder auf @schooly.app alle Updates verfolgen.
+                        </h2>
+                        <p class="text-sm sm:text-base text-[#d9eadf] leading-relaxed max-w-xl">
+                            Teste schooly sofort kostenlos auf deinem Handy oder Laptop über <strong class="text-white">schooly26.vercel.app</strong> und hol dir Tipps, Feature-Sneak-Peeks und Klausur-Hacks auf Instagram.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+                            <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-light inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-[#1f1b16] font-extrabold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
+                                <span>schooly26.vercel.app öffnen</span>
+                                <span aria-hidden="true">→</span>
+                            </a>
+
+                            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/14 hover:bg-white/22 border border-white/25 text-white font-bold text-sm sm:text-base transition-colors whitespace-nowrap min-h-[48px]">
+                                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                                </svg>
+                                <span>@schooly.app auf Instagram</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 relative z-10">
+                        <div class="rounded-2xl overflow-hidden bg-[#1e4b35] border border-white/15">
+                            <canvas id="ctaRecapCanvas" class="block w-full h-auto aspect-[4/3]"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- QUIET EDITORIAL FOOTER -->
+    <footer class="border-t border-[#e5dcd0] bg-[#faf7f2] py-10">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div class="flex items-center gap-2.5">
+                <img src="/assets/aistudio/schooly_app_icon_7d45ac62.svg" alt="" width="24" height="24" class="w-6 h-6 object-contain" />
+                <span class="font-epilogue font-black text-base text-[#1f1b16]">schooly</span>
+                <span class="text-xs text-[#6e665e] pl-2">· Gebaut für echte Schultage</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-[#6e665e]">
+                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#2d694c] font-bold hover:underline">schooly26.vercel.app</a>
+                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="hover:text-[#1f1b16] hover:underline">Instagram @schooly.app</a>
+                <a href="/pitchdeck.html" class="hover:text-[#1f1b16] hover:underline">Pitch Deck</a>
+                <a href="/social.html" class="hover:text-[#1f1b16] hover:underline">Social Hub</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- TRUE 3D HARDWARE ENGINE (Matching Smooth Convex-Hull Brushed Titanium Phone + Natural 4.2° MacBook Pro + Architectural Studio Pedestal, zero floating spheres) + SCROLL ANIMATION -->
+    <script>
+        function buildSquircleSamples(W, H, R, segArc = 68, segLine = 22) {
+            const hw = W / 2;
+            const hh = H / 2;
+            const cr = Math.min(R, hw - 1, hh - 1);
+            const pExp = 2.42;
+            const q = 2 / pExp;
+            const raw = [];
+
+            const pushCorner = (cx, cy, a0, a1) => {
+                for (let i = 0; i <= segArc; i++) {
+                    const a = a0 + (a1 - a0) * (i / segArc);
+                    const ca = Math.cos(a), sa = Math.sin(a);
+                    const sx = Math.sign(ca) * Math.pow(Math.abs(ca), q);
+                    const sy = Math.sign(sa) * Math.pow(Math.abs(sa), q);
+                    raw.push({ x: cx + cr * sx, y: cy + cr * sy });
+                }
+            };
+            const pushEdge = (x0, y0, x1, y1) => {
+                for (let i = 1; i < segLine; i++) {
+                    const t = i / segLine;
+                    raw.push({ x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * t });
+                }
+            };
+
+            pushCorner(-hw + cr, -hh + cr, Math.PI, Math.PI * 1.5);
+            pushEdge(-hw + cr, -hh, hw - cr, -hh);
+            pushCorner(hw - cr, -hh + cr, -Math.PI / 2, 0);
+            pushEdge(hw, -hh + cr, hw, hh - cr);
+            pushCorner(hw - cr, hh - cr, 0, Math.PI / 2);
+            pushEdge(hw - cr, hh, -hw + cr, hh);
+            pushCorner(-hw + cr, hh - cr, Math.PI / 2, Math.PI);
+            pushEdge(-hw, hh - cr, -hw, -hh + cr);
+
+            const pts = [];
+            for (let i = 0; i < raw.length; i++) {
+                const prev = pts[pts.length - 1];
+                if (!prev || Math.hypot(raw[i].x - prev.x, raw[i].y - prev.y) > 1e-3) {
+                    pts.push({ x: raw[i].x, y: raw[i].y, nx: 0, ny: 0 });
+                }
+            }
+            if (pts.length > 2 && Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].y - pts[pts.length - 1].y) <= 1e-3) {
+                pts.pop();
+            }
+            const n = pts.length;
+            for (let i = 0; i < n; i++) {
+                const a = pts[(i - 1 + n) % n];
+                const b = pts[(i + 1) % n];
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const len = Math.hypot(dx, dy) || 1;
+                pts[i].nx = dy / len;
+                pts[i].ny = -dx / len;
+            }
+            return pts;
+        }
+
+        function traceProjectedPath(ctx, pts) {
+            ctx.beginPath();
+            for (let i = 0; i < pts.length; i++) {
+                if (i === 0) ctx.moveTo(pts[i].px, pts[i].py);
+                else ctx.lineTo(pts[i].px, pts[i].py);
+            }
+            ctx.closePath();
+        }
+
+        function computeConvexHull(pts) {
+            if (!pts || pts.length < 3) return pts || [];
+            const sorted = pts.map(p => ({ px: p.px, py: p.py }))
+                .sort((a, b) => (a.px !== b.px ? a.px - b.px : a.py - b.py));
+            const cross = (o, a, b) => (a.px - o.px) * (b.py - o.py) - (a.py - o.py) * (b.px - o.px);
+            const lower = [];
+            for (const p of sorted) {
+                while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
+                lower.push(p);
+            }
+            const upper = [];
+            for (let i = sorted.length - 1; i >= 0; i--) {
+                const p = sorted[i];
+                while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
+                upper.push(p);
+            }
+            lower.pop();
+            upper.pop();
+            return lower.concat(upper);
+        }
+
+        // Architectural Studio Cyclorama & Clean Stone Pedestal Plane (Matches image_9656aeba.png look, zero floating spheres)
+        function drawStudioPedestalStage(ctx, w, h, theme = 'sage', pedestalYFrac = 0.78) {
+            const themes = {
+                sage:     { c0: '#3c8562', c1: '#23563d', c2: '#0f281c', beam: 'rgba(218, 255, 224, 0.24)', topPlinth: '#f6f3ee', frontPlinth: '#d9d3ca', edge: 'rgba(255,255,255,0.65)' },
+                warm:     { c0: '#fcf8f2', c1: '#ede3d5', c2: '#d9cab6', beam: 'rgba(255, 255, 255, 0.58)', topPlinth: '#ffffff', frontPlinth: '#e4dbd0', edge: 'rgba(255,255,255,0.88)' },
+                mint:     { c0: '#edf8e6', c1: '#cde5c0', c2: '#a4ca94', beam: 'rgba(255, 255, 255, 0.52)', topPlinth: '#faf8f4', frontPlinth: '#dbe3d5', edge: 'rgba(255,255,255,0.85)' },
+                honey:    { c0: '#fff2d6', c1: '#f7d894', c2: '#dba84b', beam: 'rgba(255, 255, 255, 0.48)', topPlinth: '#fffcf7', frontPlinth: '#e9dcc6', edge: 'rgba(255,255,255,0.82)' },
+                espresso: { c0: '#3d342d', c1: '#231e19', c2: '#110e0b', beam: 'rgba(243, 196, 113, 0.16)', topPlinth: '#f3ede5', frontPlinth: '#cfc6ba', edge: 'rgba(255,255,255,0.55)' },
+            };
+            const t = themes[theme] || themes.sage;
+
+            ctx.save();
+            // Radial cyclorama studio light
+            const bg = ctx.createRadialGradient(w * 0.58, h * 0.52, w * 0.03, w * 0.48, h * 0.45, Math.hypot(w, h) * 0.78);
+            bg.addColorStop(0, t.c0);
+            bg.addColorStop(0.48, t.c1);
+            bg.addColorStop(1, t.c2);
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, w, h);
+
+            // Soft diagonal softbox beam behind hardware
+            const beam = ctx.createLinearGradient(w * 0.85, 0, w * 0.25, h * 0.85);
+            beam.addColorStop(0, t.beam);
+            beam.addColorStop(0.5, 'rgba(255,255,255,0.03)');
+            beam.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = beam;
+            ctx.beginPath();
+            ctx.moveTo(w * 0.28, 0);
+            ctx.lineTo(w, 0);
+            ctx.lineTo(w, h * 0.72);
+            ctx.lineTo(w * 0.10, h * 0.90);
+            ctx.closePath();
+            ctx.fill();
+
+            // Clean architectural white-stone 3D pedestal block (like user studio reference)
+            const pY = h * pedestalYFrac;
+            const pBackY = pY - h * 0.085;
+
+            const topGrad = ctx.createLinearGradient(0, pBackY, 0, pY);
+            topGrad.addColorStop(0, '#ded7ce');
+            topGrad.addColorStop(0.55, t.topPlinth);
+            topGrad.addColorStop(1, '#fcfaf7');
+
+            ctx.beginPath();
+            ctx.moveTo(w * 0.06, pBackY);
+            ctx.lineTo(w * 0.94, pBackY);
+            ctx.lineTo(w, pY);
+            ctx.lineTo(0, pY);
+            ctx.closePath();
+            ctx.fillStyle = topGrad;
+            ctx.fill();
+
+            // Front pedestal riser face
+            const riserGrad = ctx.createLinearGradient(0, pY, 0, h);
+            riserGrad.addColorStop(0, t.frontPlinth);
+            riserGrad.addColorStop(1, '#c9c1b6');
+            ctx.fillStyle = riserGrad;
+            ctx.fillRect(0, pY, w, h - pY);
+
+            // Crisp architectural bevel highlight at pedestal lip
+            ctx.beginPath();
+            ctx.moveTo(0, pY);
+            ctx.lineTo(w, pY);
+            ctx.strokeStyle = t.edge;
+            ctx.lineWidth = Math.max(1.2, w * 0.0028);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Smooth Convex-Hull Brushed Titanium Smartphone Renderer (Natural bezel & clean side buttons)
+        function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 10.5) {
+            const W = 274 * sc;
+            const H = 588 * sc;
+            const R = 39 * sc;
+            const D = 10.8 * sc;
+            const focal = 2250 * sc;
+            const yaw = yawDeg * Math.PI / 180;
+            const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+
+            const proj = (x, y, z) => {
+                const rx = x * cosY + z * sinY;
+                const ry = y;
+                const rz = -x * sinY + z * cosY;
+                const ps = focal / (focal - rz);
+                return { px: rx * ps, py: ry * ps, rx, ry, rz };
+            };
+
+            const outerSamples = buildSquircleSamples(W, H, R, 76, 24);
+            const frontOuter = outerSamples.map(p => ({ ...p, ...proj(p.x, p.y, D / 2) }));
+            const backOuter = outerSamples.map(p => ({ ...p, ...proj(p.x, p.y, -D / 2) }));
+            const insetShadowOuter = outerSamples.map(p => proj(p.x * 0.945, p.y * 0.958, -D / 2));
+            const outerHull = computeConvexHull([...frontOuter, ...backOuter]);
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            if (rotZRad) ctx.rotate(rotZRad);
+
+            // Grounded contact shadow on stone pedestal
+            ctx.save();
+            const contactGrad = ctx.createRadialGradient(-4 * sc, H * 0.504, 4 * sc, -4 * sc, H * 0.504, W * 0.68);
+            contactGrad.addColorStop(0, 'rgba(12, 16, 14, 0.42)');
+            contactGrad.addColorStop(0.5, 'rgba(12, 16, 14, 0.16)');
+            contactGrad.addColorStop(1, 'rgba(12, 16, 14, 0)');
+            ctx.fillStyle = contactGrad;
+            ctx.beginPath();
+            ctx.ellipse(-4 * sc, H * 0.504, W * 0.62, 20 * sc, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // Soft diffused cast shadow
+            ctx.save();
+            ctx.shadowColor = 'rgba(12, 18, 15, 0.28)';
+            ctx.shadowBlur = 32 * sc;
+            ctx.shadowOffsetX = -8 * sc;
+            ctx.shadowOffsetY = 16 * sc;
+            traceProjectedPath(ctx, insetShadowOuter);
+            ctx.fillStyle = 'rgba(16, 20, 18, 0.36)';
+            ctx.fill();
+            ctx.restore();
+
+            // Smooth clipped convex hull titanium rail
+            ctx.save();
+            traceProjectedPath(ctx, outerHull);
+            ctx.clip();
+
+            const shellGrad = ctx.createLinearGradient(-W * 0.52, -H * 0.42, W * 0.45, H * 0.48);
+            shellGrad.addColorStop(0, '#c8d0d8');
+            shellGrad.addColorStop(0.24, '#f0f4f8');
+            shellGrad.addColorStop(0.52, '#aab3bd');
+            shellGrad.addColorStop(0.78, '#d4dce4');
+            shellGrad.addColorStop(1, '#98a1ab');
+            ctx.fillStyle = shellGrad;
+            ctx.fillRect(-W * 0.7, -H * 0.6, W * 1.4, H * 1.2);
+
+            const lx = -0.60, ly = -0.56, lz = 0.57;
+            const hx = lx, hy = ly, hz = lz + 1;
+            const hlen = Math.hypot(hx, hy, hz);
+            for (let i = 0; i < outerSamples.length; i++) {
+                const j = (i + 1) % outerSamples.length;
+                const s = outerSamples[i];
+                const nx3 = s.nx * cosY;
+                const ny3 = s.ny;
+                const nz3 = -s.nx * sinY;
+                const f = frontOuter[i], fn = frontOuter[j];
+                const b = backOuter[i], bn = backOuter[j];
+                if ((nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz)) <= 0) continue;
+
+                const ndotl = Math.max(0, nx3 * lx + ny3 * ly + nz3 * lz);
+                const spec = Math.pow(Math.max(0, (nx3 * hx + ny3 * hy + nz3 * hz) / hlen), 18);
+                const lit = Math.min(1, 0.58 + 0.34 * ndotl + 0.38 * spec);
+                const cFront = Math.round(176 + lit * 76);
+                const cBack = Math.round(126 + lit * 54);
+                const gSide = ctx.createLinearGradient(b.px, b.py, f.px, f.py);
+                gSide.addColorStop(0, `rgb(${cBack}, ${cBack + 3}, ${cBack + 6})`);
+                gSide.addColorStop(1, `rgb(${Math.min(252, cFront)}, ${Math.min(254, cFront + 2)}, ${Math.min(255, cFront + 4)})`);
+
+                ctx.beginPath();
+                ctx.moveTo(b.px, b.py);
+                ctx.lineTo(bn.px, bn.py);
+                ctx.lineTo(fn.px, fn.py);
+                ctx.lineTo(f.px, f.py);
+                ctx.closePath();
+                ctx.fillStyle = gSide;
+                ctx.fill();
+            }
+            ctx.restore();
+
+            traceProjectedPath(ctx, outerHull);
+            ctx.strokeStyle = 'rgba(38, 46, 54, 0.22)';
+            ctx.lineWidth = Math.max(0.75, 0.85 * sc);
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            // Side flush hardware button on visible metallic rail
+            const railSign = yawDeg >= 0 ? -1 : 1;
+            const drawFlushButton = (yTop, yBot) => {
+                const pTop = proj(railSign * (W / 2 + 0.3 * sc), yTop, -D * 0.06);
+                const pBot = proj(railSign * (W / 2 + 0.3 * sc), yBot, -D * 0.06);
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(pTop.px, pTop.py);
+                ctx.lineTo(pBot.px, pBot.py);
+                ctx.strokeStyle = 'rgba(72, 80, 90, 0.36)';
+                ctx.lineWidth = Math.max(1.2, 1.85 * sc);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(pTop.px - railSign * 0.25 * sc, pTop.py);
+                ctx.lineTo(pBot.px - railSign * 0.25 * sc, pBot.py);
+                ctx.strokeStyle = '#eef3f7';
+                ctx.lineWidth = Math.max(0.8, 1.15 * sc);
+                ctx.stroke();
+                ctx.restore();
+            };
+            drawFlushButton(-H * 0.215, -H * 0.148);
+            drawFlushButton(-H * 0.116, -H * 0.038);
+
+            // Front machined rim & black OLED frame
+            const rimGrad = ctx.createLinearGradient(-W * 0.48, -H * 0.45, W * 0.45, H * 0.48);
+            rimGrad.addColorStop(0, '#fcfdfe');
+            rimGrad.addColorStop(0.28, '#d4dbe2');
+            rimGrad.addColorStop(0.55, '#f4f7fa');
+            rimGrad.addColorStop(0.82, '#b9c1ca');
+            rimGrad.addColorStop(1, '#e6ebf0');
+            traceProjectedPath(ctx, frontOuter);
+            ctx.fillStyle = rimGrad;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(42, 50, 58, 0.22)';
+            ctx.lineWidth = Math.max(0.7, 0.8 * sc);
+            ctx.stroke();
+
+            const chamferInset = 1.9 * sc;
+            const oledSamples = buildSquircleSamples(W - chamferInset * 2, H - chamferInset * 2, R - chamferInset, 76, 24);
+            traceProjectedPath(ctx, oledSamples.map(p => proj(p.x, p.y, D / 2)));
+            ctx.fillStyle = '#0c0e10';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.56)';
+            ctx.lineWidth = Math.max(0.6, 0.72 * sc);
+            ctx.stroke();
+
+            // Display viewport
+            const frameTotal = 6.3 * sc;
+            const scrW = W - frameTotal * 2;
+            const scrH = H - frameTotal * 2;
+            const scrR = R - frameTotal;
+            const scrPoly = buildSquircleSamples(scrW, scrH, scrR, 76, 24).map(p => proj(p.x, p.y, D / 2));
+
+            ctx.save();
+            traceProjectedPath(ctx, scrPoly);
+            ctx.clip();
+
+            ctx.fillStyle = '#faf7f2';
+            const fTL = proj(-scrW / 2, -scrH / 2, D / 2);
+            const fBR = proj(scrW / 2, scrH / 2, D / 2);
+            ctx.fillRect(fTL.px - 20 * sc, fTL.py - 20 * sc, (fBR.px - fTL.px) + 40 * sc, (fBR.py - fTL.py) + 40 * sc);
+
+            if (imgEl && imgEl.naturalWidth) {
+                const SLICES = 112;
+                const topSafeFrac = 0.026;
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                for (let s = 0; s < SLICES; s++) {
+                    const u0 = s / SLICES;
+                    const u1 = (s + 1) / SLICES;
+                    const um = (u0 + u1) * 0.5;
+                    const xL = -scrW / 2 + scrW * um;
+                    const x0 = -scrW / 2 + scrW * u0;
+                    const x1 = -scrW / 2 + scrW * u1;
+
+                    const pTop0 = proj(x0, -scrH / 2, D / 2);
+                    const pTop1 = proj(x1, -scrH / 2, D / 2);
+                    const pBotMid = proj(xL, scrH / 2, D / 2);
+                    const pTopMid = proj(xL, -scrH / 2, D / 2);
+
+                    const dx = pTop0.px;
+                    const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.6);
+                    const totalColH = pBotMid.py - pTopMid.py;
+                    const dy = pTopMid.py + totalColH * topSafeFrac;
+                    const dh = totalColH * (1 - topSafeFrac);
+
+                    const sx = u0 * imgEl.naturalWidth;
+                    const sw = Math.max(1, (u1 - u0) * imgEl.naturalWidth);
+                    ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, dx, dy, dw, dh);
+                }
+            }
+
+            // Minimal centered Selfie Punch-Hole Camera
+            const camP = proj(0, -scrH / 2 + 8.6 * sc, D / 2);
+            const camR = 2.65 * sc;
+            ctx.beginPath();
+            ctx.ellipse(camP.px, camP.py, camR, camR, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#090b0d';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(camP.px - camR * 0.25, camP.py - camR * 0.25, camR * 0.36, camR * 0.36, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#3b6d8e';
+            ctx.fill();
+
+            // Subtle glass sheen
+            const sheen = ctx.createLinearGradient(fTL.px, fTL.py, fBR.px * 0.72, fBR.py * 0.65);
+            sheen.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
+            sheen.addColorStop(0.32, 'rgba(255, 255, 255, 0.04)');
+            sheen.addColorStop(0.54, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = sheen;
+            ctx.fillRect(fTL.px - 20 * sc, fTL.py - 20 * sc, (fBR.px - fTL.px) + 40 * sc, (fBR.py - fTL.py) + 40 * sc);
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        // Photorealistic 3D Brushed-Aluminum MacBook Pro Renderer (Natural 4.2° Studio Portrait Angle)
+        function drawStudio3DMacBook(ctx, cx, cy, wFrame, imgEl, yawDeg = 4.2) {
+            const sc = wFrame / 430;
+            const W = wFrame;
+            const H = W / 1.6 + 11 * sc;
+            const R = 13.0 * sc;
+            const D = 5.4 * sc;
+            const focal = 2900 * sc;
+            const yaw = yawDeg * Math.PI / 180;
+            const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+
+            const proj = (x, y, z) => {
+                const rx = x * cosY + z * sinY;
+                const ry = y;
+                const rz = -x * sinY + z * cosY;
+                const ps = focal / (focal - rz);
+                return { px: rx * ps, py: ry * ps, rx, ry, rz };
+            };
+
+            const lidSamples = buildSquircleSamples(W, H, R, 48, 20);
+            const frontLid = lidSamples.map(p => ({ ...p, ...proj(p.x, p.y, D / 2) }));
+            const backLid = lidSamples.map(p => ({ ...p, ...proj(p.x, p.y, -D / 2) }));
+            const insetLidShadow = lidSamples.map(p => proj(p.x * 0.955, p.y * 0.96, -D / 2));
+            const lidHull = computeConvexHull([...frontLid, ...backLid]);
+
+            const hingeY = H / 2 + 1.2 * sc;
+            const deckDropY = hingeY + 22 * sc;
+            const deckDepthZ = 66 * sc;
+            const lipH = 5.2 * sc;
+
+            const dBL = proj(-W * 0.502, hingeY, -D * 0.3);
+            const dBR = proj(W * 0.502, hingeY, -D * 0.3);
+            const dFL = proj(-W * 0.528, deckDropY, deckDepthZ);
+            const dFR = proj(W * 0.528, deckDropY, deckDepthZ);
+            const dFLBot = { px: dFL.px, py: dFL.py + lipH };
+            const dFRBot = { px: dFR.px, py: dFR.py + lipH };
+
+            ctx.save();
+            ctx.translate(cx, cy - 3 * sc);
+
+            // Grounded studio contact shadow
+            ctx.save();
+            const deckCenterX = (dFLBot.px + dFRBot.px) * 0.5;
+            const deckCenterY = (dFLBot.py + dFRBot.py) * 0.5 + 3.5 * sc;
+            const macGround = ctx.createRadialGradient(deckCenterX, deckCenterY, 10 * sc, deckCenterX, deckCenterY, W * 0.66);
+            macGround.addColorStop(0, 'rgba(12, 16, 14, 0.38)');
+            macGround.addColorStop(0.55, 'rgba(12, 16, 14, 0.14)');
+            macGround.addColorStop(1, 'rgba(12, 16, 14, 0)');
+            ctx.fillStyle = macGround;
+            ctx.beginPath();
+            ctx.ellipse(deckCenterX, deckCenterY, W * 0.62, 18 * sc, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            ctx.shadowColor = 'rgba(14, 18, 15, 0.24)';
+            ctx.shadowBlur = 28 * sc;
+            ctx.shadowOffsetX = -5 * sc;
+            ctx.shadowOffsetY = 12 * sc;
+            traceProjectedPath(ctx, insetLidShadow);
+            ctx.fillStyle = 'rgba(18, 22, 20, 0.35)';
+            ctx.fill();
+            ctx.restore();
+
+            // Extruded aluminum lid
+            ctx.save();
+            traceProjectedPath(ctx, lidHull);
+            ctx.clip();
+            const shellG = ctx.createLinearGradient(-W * 0.5, -H * 0.4, W * 0.5, H * 0.4);
+            shellG.addColorStop(0, '#c8d0d8');
+            shellG.addColorStop(0.45, '#e8edf2');
+            shellG.addColorStop(1, '#9fa8b2');
+            ctx.fillStyle = shellG;
+            ctx.fillRect(-W * 0.7, -H * 0.7, W * 1.4, H * 1.4);
+
+            for (let i = 0; i < lidSamples.length; i++) {
+                const j = (i + 1) % lidSamples.length;
+                const s = lidSamples[i];
+                const nx3 = s.nx * cosY;
+                const ny3 = s.ny;
+                const nz3 = -s.nx * sinY;
+                const f = frontLid[i], fn = frontLid[j];
+                const b = backLid[i], bn = backLid[j];
+                if ((nx3 * (-b.rx) + ny3 * (-b.ry) + nz3 * (focal - b.rz)) <= 0) continue;
+
+                const ndotl = Math.max(0, nx3 * -0.60 + ny3 * -0.56 + nz3 * 0.57);
+                const cVal = Math.round(150 + ndotl * 94);
+                const gEdge = ctx.createLinearGradient(b.px, b.py, f.px, f.py);
+                gEdge.addColorStop(0, `rgb(${cVal - 20}, ${cVal - 17}, ${cVal - 13})`);
+                gEdge.addColorStop(1, `rgb(${Math.min(252, cVal + 14)}, ${Math.min(254, cVal + 16)}, ${Math.min(255, cVal + 18)})`);
+                ctx.beginPath();
+                ctx.moveTo(b.px, b.py);
+                ctx.lineTo(bn.px, bn.py);
+                ctx.lineTo(fn.px, fn.py);
+                ctx.lineTo(f.px, f.py);
+                ctx.closePath();
+                ctx.fillStyle = gEdge;
+                ctx.fill();
+            }
+            ctx.restore();
+
+            traceProjectedPath(ctx, lidHull);
+            ctx.strokeStyle = 'rgba(42, 50, 58, 0.22)';
+            ctx.lineWidth = Math.max(0.7, 0.8 * sc);
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            const rimG = ctx.createLinearGradient(-W * 0.45, -H * 0.45, W * 0.45, H * 0.45);
+            rimG.addColorStop(0, '#f8fafc');
+            rimG.addColorStop(0.5, '#d5dce3');
+            rimG.addColorStop(1, '#b6bec7');
+            traceProjectedPath(ctx, frontLid);
+            ctx.fillStyle = rimG;
+            ctx.fill();
+
+            const bezInset = 1.6 * sc;
+            const bezSamples = buildSquircleSamples(W - bezInset * 2, H - bezInset * 2, R - bezInset, 48, 20);
+            traceProjectedPath(ctx, bezSamples.map(p => proj(p.x, p.y, D / 2)));
+            ctx.fillStyle = '#0e1012';
+            ctx.fill();
+
+            const scrLeft = 7.4 * sc, scrTop = 8.8 * sc, scrBot = 7.4 * sc;
+            const scrW = W - scrLeft * 2;
+            const scrH = H - scrTop - scrBot;
+            const scrCenterY = (scrTop - scrBot) * 0.5;
+            const scrSamples = buildSquircleSamples(scrW, scrH, 6.2 * sc, 36, 16)
+                .map(p => proj(p.x, p.y + scrCenterY, D / 2));
+
+            ctx.save();
+            traceProjectedPath(ctx, scrSamples);
+            ctx.clip();
+
+            ctx.fillStyle = '#faf7f2';
+            const mTL = proj(-scrW / 2, -scrH / 2 + scrCenterY, D / 2);
+            const mBR = proj(scrW / 2, scrH / 2 + scrCenterY, D / 2);
+            ctx.fillRect(mTL.px - 16 * sc, mTL.py - 16 * sc, (mBR.px - mTL.px) + 32 * sc, (mBR.py - mTL.py) + 32 * sc);
+
+            if (imgEl && imgEl.naturalWidth) {
+                const SLICES = 112;
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                for (let s = 0; s < SLICES; s++) {
+                    const u0 = s / SLICES;
+                    const u1 = (s + 1) / SLICES;
+                    const um = (u0 + u1) * 0.5;
+                    const x0 = -scrW / 2 + scrW * u0;
+                    const x1 = -scrW / 2 + scrW * u1;
+                    const xL = -scrW / 2 + scrW * um;
+                    const pTop0 = proj(x0, -scrH / 2 + scrCenterY, D / 2);
+                    const pTop1 = proj(x1, -scrH / 2 + scrCenterY, D / 2);
+                    const pTopMid = proj(xL, -scrH / 2 + scrCenterY, D / 2);
+                    const pBotMid = proj(xL, scrH / 2 + scrCenterY, D / 2);
+                    const dx = pTop0.px;
+                    const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.65);
+                    const dy = pTopMid.py;
+                    const dh = pBotMid.py - pTopMid.py;
+                    const sx = u0 * imgEl.naturalWidth;
+                    const sw = Math.max(1, (u1 - u0) * imgEl.naturalWidth);
+                    ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, dx, dy, dw, dh);
+                }
+            }
+
+            const mGloss = ctx.createLinearGradient(mTL.px, mTL.py, mBR.px * 0.72, mBR.py * 0.72);
+            mGloss.addColorStop(0, 'rgba(255, 255, 255, 0.11)');
+            mGloss.addColorStop(0.38, 'rgba(255, 255, 255, 0.02)');
+            mGloss.addColorStop(0.58, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = mGloss;
+            ctx.fillRect(mTL.px - 16 * sc, mTL.py - 16 * sc, (mBR.px - mTL.px) + 32 * sc, (mBR.py - mTL.py) + 32 * sc);
+            ctx.restore();
+
+            const mCam = proj(0, -H / 2 + 4.8 * sc, D / 2);
+            ctx.beginPath();
+            ctx.ellipse(mCam.px, mCam.py, 1.95 * sc, 1.95 * sc, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#2d5169';
+            ctx.fill();
+
+            const hL = proj(-W * 0.37, hingeY - 1.2 * sc, 0);
+            const hR = proj(W * 0.37, hingeY - 1.2 * sc, 0);
+            ctx.beginPath();
+            ctx.moveTo(hL.px, hL.py);
+            ctx.lineTo(hR.px, hR.py);
+            ctx.strokeStyle = '#17191b';
+            ctx.lineWidth = Math.max(2, 3.2 * sc);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            const deckGrad = ctx.createLinearGradient(0, dBL.py, 0, dFL.py);
+            deckGrad.addColorStop(0, '#c6ced6');
+            deckGrad.addColorStop(0.45, '#e6ebf0');
+            deckGrad.addColorStop(1, '#f4f7fa');
+            ctx.beginPath();
+            ctx.moveTo(dBL.px, dBL.py);
+            ctx.lineTo(dBR.px, dBR.py);
+            ctx.lineTo(dFR.px, dFR.py);
+            ctx.lineTo(dFL.px, dFL.py);
+            ctx.closePath();
+            ctx.fillStyle = deckGrad;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.70)';
+            ctx.lineWidth = Math.max(0.6, 0.8 * sc);
+            ctx.stroke();
+
+            const drawSpeakerGrille = (xStart, xEnd) => {
+                ctx.save();
+                ctx.fillStyle = 'rgba(42, 48, 54, 0.42)';
+                for (let r = 0; r < 6; r++) {
+                    const tz = (r + 0.5) / 6;
+                    const yPos = hingeY + (3.8 + tz * 7.6) * sc;
+                    const zPos = (9 + tz * 22) * sc;
+                    for (let c = 0; c < 4; c++) {
+                        const tx = (c + 0.5) / 4;
+                        const xPos = xStart + (xEnd - xStart) * tx;
+                        const gp = proj(xPos, yPos, zPos);
+                        ctx.beginPath();
+                        ctx.ellipse(gp.px, gp.py, Math.max(0.55, 0.8 * sc), Math.max(0.32, 0.42 * sc), 0, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.restore();
+            };
+            drawSpeakerGrille(-W * 0.475, -W * 0.405);
+            drawSpeakerGrille(W * 0.405, W * 0.475);
+
+            const kbBL = proj(-W * 0.378, hingeY + 3.4 * sc, 8.5 * sc);
+            const kbBR = proj(W * 0.378, hingeY + 3.4 * sc, 8.5 * sc);
+            const kbFL = proj(-W * 0.392, hingeY + 11.4 * sc, 31.5 * sc);
+            const kbFR = proj(W * 0.392, hingeY + 11.4 * sc, 31.5 * sc);
+            ctx.beginPath();
+            ctx.moveTo(kbBL.px, kbBL.py);
+            ctx.lineTo(kbBR.px, kbBR.py);
+            ctx.lineTo(kbFR.px, kbFR.py);
+            ctx.lineTo(kbFL.px, kbFL.py);
+            ctx.closePath();
+            ctx.fillStyle = '#181a1d';
+            ctx.fill();
+
+            const rowWeights = [0.78, 1, 1, 1, 1, 1.15];
+            const wSum = rowWeights.reduce((a, b) => a + b, 0);
+            let accRow = 0;
+            for (let rowIdx = 0; rowIdx < rowWeights.length; rowIdx++) {
+                const v0 = (accRow + 0.14) / wSum;
+                const v1 = (accRow + rowWeights[rowIdx] - 0.14) / wSum;
+                accRow += rowWeights[rowIdx];
+
+                const yBack = hingeY + (3.4 + v0 * 8.0) * sc;
+                const zBack = (8.5 + v0 * 23.0) * sc;
+                const yFront = hingeY + (3.4 + v1 * 8.0) * sc;
+                const zFront = (8.5 + v1 * 23.0) * sc;
+                const halfSpanBack = W * (0.374 + v0 * 0.014);
+                const halfSpanFront = W * (0.374 + v1 * 0.014);
+                const cols = rowIdx === 5 ? [0, 1, 2, 3, 7, 8, 9, 10] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                const totalCols = rowIdx === 5 ? 11 : 13;
+
+                for (let ci = 0; ci < cols.length; ci++) {
+                    const colStart = cols[ci];
+                    const colEnd = (rowIdx === 5 && colStart === 3) ? 7 : colStart + 1;
+                    const u0 = (colStart + 0.09) / totalCols;
+                    const u1 = (colEnd - 0.09) / totalCols;
+                    const kBL = proj(-halfSpanBack + halfSpanBack * 2 * u0, yBack, zBack);
+                    const kBR = proj(-halfSpanBack + halfSpanBack * 2 * u1, yBack, zBack);
+                    const kFR = proj(-halfSpanFront + halfSpanFront * 2 * u1, yFront, zFront);
+                    const kFL = proj(-halfSpanFront + halfSpanFront * 2 * u0, yFront, zFront);
+
+                    ctx.beginPath();
+                    ctx.moveTo(kBL.px, kBL.py);
+                    ctx.lineTo(kBR.px, kBR.py);
+                    ctx.lineTo(kFR.px, kFR.py);
+                    ctx.lineTo(kFL.px, kFL.py);
+                    ctx.closePath();
+                    ctx.fillStyle = '#262a2f';
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(kBL.px, kBL.py);
+                    ctx.lineTo(kBR.px, kBR.py);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+                    ctx.lineWidth = Math.max(0.45, 0.55 * sc);
+                    ctx.stroke();
+                }
+            }
+
+            const tpBL = proj(-W * 0.155, hingeY + 13.6 * sc, 37 * sc);
+            const tpBR = proj(W * 0.155, hingeY + 13.6 * sc, 37 * sc);
+            const tpFL = proj(-W * 0.162, hingeY + 20.0 * sc, 59 * sc);
+            const tpFR = proj(W * 0.162, hingeY + 20.0 * sc, 59 * sc);
+            ctx.beginPath();
+            ctx.moveTo(tpBL.px, tpBL.py);
+            ctx.lineTo(tpBR.px, tpBR.py);
+            ctx.lineTo(tpFR.px, tpFR.py);
+            ctx.lineTo(tpFL.px, tpFL.py);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(220, 226, 232, 0.35)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(40, 46, 52, 0.28)';
+            ctx.lineWidth = Math.max(0.6, 0.8 * sc);
+            ctx.stroke();
+
+            const lipGrad = ctx.createLinearGradient(dFL.px, dFL.py, dFR.px, dFRBot.py);
+            lipGrad.addColorStop(0, '#a6aeb7');
+            lipGrad.addColorStop(0.28, '#e3e8ed');
+            lipGrad.addColorStop(0.55, '#c2cad2');
+            lipGrad.addColorStop(0.82, '#dfe4ea');
+            lipGrad.addColorStop(1, '#9ea6af');
+            ctx.beginPath();
+            ctx.moveTo(dFL.px, dFL.py);
+            ctx.lineTo(dFR.px, dFR.py);
+            ctx.lineTo(dFRBot.px, dFRBot.py);
+            ctx.quadraticCurveTo((dFLBot.px + dFRBot.px) * 0.5, dFRBot.py + 1.4 * sc, dFLBot.px, dFLBot.py);
+            ctx.closePath();
+            ctx.fillStyle = lipGrad;
+            ctx.fill();
+
+            for (const fx of [-W * 0.43, W * 0.43]) {
+                const rf = proj(fx, deckDropY, deckDepthZ * 0.92);
+                ctx.beginPath();
+                ctx.ellipse(rf.px, rf.py + lipH + 0.6 * sc, 11 * sc, 1.4 * sc, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(18, 22, 24, 0.52)';
+                ctx.fill();
+            }
+
+            const nL = proj(-26 * sc, deckDropY, deckDepthZ);
+            const nR = proj(26 * sc, deckDropY, deckDepthZ);
+            ctx.beginPath();
+            ctx.moveTo(nL.px, nL.py);
+            ctx.lineTo(nR.px, nR.py);
+            ctx.lineTo(nR.px - 2 * sc, nR.py + 2.6 * sc);
+            ctx.lineTo(nL.px + 2 * sc, nL.py + 2.6 * sc);
+            ctx.closePath();
+            ctx.fillStyle = '#363b40';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // Wait for all reference textures before rendering 3D stages
+        function waitForTextures() {
+            const imgs = Array.from(document.querySelectorAll('img[id^="tex-"]'));
+            return Promise.all(imgs.map(im => new Promise(resolve => {
+                if (im.complete && im.naturalWidth) return resolve(im);
+                im.addEventListener('load', () => resolve(im), { once: true });
+                im.addEventListener('error', () => resolve(im), { once: true });
+            })));
+        }
+
+        function sizeCanvas(cv, cssW, cssH, dpr = Math.min(2, window.devicePixelRatio || 1)) {
+            const targetW = Math.round(cssW * dpr);
+            const targetH = Math.round(cssH * dpr);
+            if (cv.width !== targetW || cv.height !== targetH) {
+                cv.width = targetW;
+                cv.height = targetH;
+            }
+            const ctx = cv.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            return ctx;
+        }
+
+        const STORY_CONFIG = [
+            {
+                theme: 'sage',
+                mode: 'phone',
+                kicker: '01 · Fächer & Gewichtung',
+                title: 'Notenübersicht & Gewichtungs-Engine auf dem Smartphone',
+                phoneTex: 'tex-faecher-mobile',
+                yaw: 11.0
+            },
+            {
+                theme: 'honey',
+                mode: 'phone',
+                kicker: '02 · Wunschnoten-Rechner',
+                title: 'Exakte Punktzahl vor jeder Klausur berechnen',
+                phoneTex: 'tex-wunschnote-mobile',
+                yaw: -10.5
+            },
+            {
+                theme: 'mint',
+                mode: 'duo',
+                kicker: '03 · Stundenplan & Kalender-Sync',
+                title: 'Klausurtermine synchron auf Laptop & Smartphone',
+                macTex: 'tex-kalender-laptop',
+                phoneTex: 'tex-kalender-mobile',
+                yaw: 9.5
+            },
+            {
+                theme: 'espresso',
+                mode: 'duo',
+                kicker: '04 · Oberstufe & Abitur-Check',
+                title: '40 Kurse, Block I & II + Bestehens-Kriterien',
+                macTex: 'tex-abi-laptop',
+                phoneTex: 'tex-abi-mobile',
+                yaw: 10.0
+            }
+        ];
+
+        (async function initLanding3D() {
+            await waitForTextures();
+
+            let heroMode = 'duo';
+            let heroScrollYawOffset = 0;
+            let activeStoryIdx = 0;
+            let bentoMode = 'phone';
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            const tex = (id) => document.getElementById(id);
+
+            const drawHero = () => {
+                const cv = document.getElementById('hero3dCanvas');
+                if (!cv) return;
+                const w = 640, h = 500;
+                const ctx = sizeCanvas(cv, w, h, 2);
+                drawStudioPedestalStage(ctx, w, h, 'sage', 0.80);
+
+                if (heroMode === 'duo') {
+                    const macYaw = 4.2 + heroScrollYawOffset * 0.45;
+                    const phoneYaw = 11.5 - heroScrollYawOffset;
+                    drawStudio3DMacBook(ctx, w * 0.56, h * 0.45, 360, tex('tex-dash-laptop'), macYaw);
+                    drawStudio3DPhone(ctx, w * 0.25, h * 0.52, 0.56, -0.04, tex('tex-dash-mobile'), phoneYaw);
+                } else if (heroMode === 'phone') {
+                    drawStudio3DPhone(ctx, w * 0.50, h * 0.49, 0.68, -0.02, tex('tex-dash-mobile'), 11.5 - heroScrollYawOffset);
+                } else {
+                    drawStudio3DMacBook(ctx, w * 0.50, h * 0.47, 415, tex('tex-dash-laptop'), 4.2 + heroScrollYawOffset * 0.5);
+                }
+            };
+
+            const drawStoryCanvas = (cv, cfg, scrollTilt = 0) => {
+                if (!cv) return;
+                const w = 600, h = 500;
+                const ctx = sizeCanvas(cv, w, h, 2);
+                drawStudioPedestalStage(ctx, w, h, cfg.theme, 0.80);
+                if (cfg.mode === 'duo') {
+                    drawStudio3DMacBook(ctx, w * 0.56, h * 0.43, 336, tex(cfg.macTex), 4.2 + scrollTilt * 0.35);
+                    drawStudio3DPhone(ctx, w * 0.23, h * 0.50, 0.50, -0.04, tex(cfg.phoneTex), cfg.yaw - scrollTilt * 0.6);
+                } else {
+                    drawStudio3DPhone(ctx, w * 0.50, h * 0.47, 0.62, -0.02, tex(cfg.phoneTex), cfg.yaw - scrollTilt * 0.6);
+                }
+            };
+
+            const drawStaticShowcaseCanvases = () => {
+                // Bento Multi-Device Sync Canvas
+                const syncCv = document.getElementById('bentoSyncCanvas');
+                if (syncCv) {
+                    const w = 640, h = 400;
+                    const ctx = sizeCanvas(syncCv, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'mint', 0.83);
+                    if (bentoMode === 'phone') {
+                        drawStudio3DPhone(ctx, w * 0.34, h * 0.51, 0.50, -0.04, tex('tex-charts-mobile'), 11);
+                        drawStudio3DMacBook(ctx, w * 0.67, h * 0.48, 290, tex('tex-charts-laptop'), 4.2);
+                    } else {
+                        drawStudio3DMacBook(ctx, w * 0.46, h * 0.46, 340, tex('tex-charts-laptop'), 4.2);
+                        drawStudio3DPhone(ctx, w * 0.77, h * 0.53, 0.44, 0.04, tex('tex-charts-mobile'), -10);
+                    }
+                }
+
+                // Bento PDF Canvas
+                const pdfCv = document.getElementById('bentoPdfCanvas');
+                if (pdfCv) {
+                    const w = 480, h = 360;
+                    const ctx = sizeCanvas(pdfCv, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'warm', 0.82);
+                    drawStudio3DPhone(ctx, w * 0.50, h * 0.49, 0.47, -0.03, tex('tex-pdf-mobile'), 10.5);
+                }
+
+                // Bento Abitur / PWA Canvas
+                const abiCv = document.getElementById('bentoAbiCanvas');
+                if (abiCv) {
+                    const w = 480, h = 360;
+                    const ctx = sizeCanvas(abiCv, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'espresso', 0.82);
+                    drawStudio3DPhone(ctx, w * 0.33, h * 0.52, 0.42, -0.05, tex('tex-aufgaben-mobile'), 11);
+                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.42, 0.05, tex('tex-insights-mobile'), -10.5);
+                }
+
+                // Final CTA Recap Canvas
+                const ctaCv = document.getElementById('ctaRecapCanvas');
+                if (ctaCv) {
+                    const w = 520, h = 390;
+                    const ctx = sizeCanvas(ctaCv, w, h, 2);
+                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.82);
+                    drawStudio3DPhone(ctx, w * 0.34, h * 0.52, 0.45, -0.05, tex('tex-recap-mobile'), 10.5);
+                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.45, 0.04, tex('tex-stundenplan-mobile'), -9.5);
+                }
+
+                // Render inline mobile story canvases (< lg)
+                document.querySelectorAll('canvas[data-story-canvas]').forEach(cv => {
+                    const idx = Number(cv.getAttribute('data-story-canvas')) || 0;
+                    drawStoryCanvas(cv, STORY_CONFIG[idx], 0);
+                });
+            };
+
+            const setActiveStory = (idx) => {
+                activeStoryIdx = idx;
+                document.querySelectorAll('.story-step').forEach(el => {
+                    const elIdx = Number(el.getAttribute('data-story-index'));
+                    el.classList.toggle('is-active', elIdx === idx);
+                });
+                const cfg = STORY_CONFIG[idx];
+                const kicker = document.getElementById('storyStageKicker');
+                const title = document.getElementById('storyStageTitle');
+                if (kicker) kicker.textContent = cfg.kicker;
+                if (title) title.textContent = cfg.title;
+                drawStoryCanvas(document.getElementById('storyStickyCanvas'), cfg, 0);
+            };
+
+            drawHero();
+            drawStaticShowcaseCanvases();
+            setActiveStory(0);
+
+            // Hero mode switcher buttons
+            document.querySelectorAll('.hero-mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    heroMode = btn.getAttribute('data-hero-mode') || 'duo';
+                    document.querySelectorAll('.hero-mode-btn').forEach(b => {
+                        const active = b === btn;
+                        b.classList.toggle('bg-white', active);
+                        b.classList.toggle('text-[#1f1b16]', active);
+                        b.classList.toggle('shadow-sm', active);
+                        b.classList.toggle('text-[#6e665e]', !active);
+                    });
+                    drawHero();
+                });
+            });
+
+            // Bento device switcher buttons
+            document.querySelectorAll('[data-bento-device]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    bentoMode = btn.getAttribute('data-bento-device') || 'phone';
+                    document.querySelectorAll('[data-bento-device]').forEach(b => {
+                        const active = b === btn;
+                        b.classList.toggle('bg-white', active);
+                        b.classList.toggle('text-[#1f1b16]', active);
+                        b.classList.toggle('shadow-sm', active);
+                        b.classList.toggle('text-[#6e665e]', !active);
+                    });
+                    drawStaticShowcaseCanvases();
+                });
+            });
+
+            // Click/Keyboard on story chapters
+            document.querySelectorAll('.story-step').forEach(card => {
+                const idx = Number(card.getAttribute('data-story-index')) || 0;
+                card.addEventListener('click', () => setActiveStory(idx));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setActiveStory(idx);
+                    }
+                });
+            });
+
+            // Mobile nav drawer toggle
+            const mobileBtn = document.getElementById('mobileNavBtn');
+            const mobileDrawer = document.getElementById('mobileNavDrawer');
+            if (mobileBtn && mobileDrawer) {
+                mobileBtn.addEventListener('click', () => {
+                    const isHidden = mobileDrawer.classList.toggle('hidden');
+                    mobileBtn.setAttribute('aria-expanded', String(!isHidden));
+                });
+                mobileDrawer.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileDrawer.classList.add('hidden');
+                        mobileBtn.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+
+            // IntersectionObserver for smooth scroll reveals + Desktop sticky 3D storyboard switching
+            if (!reducedMotion) {
+                const revealObs = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            revealObs.unobserve(entry.target);
+                        }
+                    }
+                }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
+
+                document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
+
+                const storyObs = new IntersectionObserver((entries) => {
+                    if (window.innerWidth < 1024) return;
+                    for (const entry of entries) {
+                        if (entry.isIntersecting) {
+                            const idx = Number(entry.target.getAttribute('data-story-index'));
+                            if (!Number.isNaN(idx) && idx !== activeStoryIdx) {
+                                setActiveStory(idx);
+                            }
+                        }
+                    }
+                }, { rootMargin: '-34% 0px -42% 0px', threshold: 0.1 });
+
+                document.querySelectorAll('.story-step').forEach(step => storyObs.observe(step));
+
+                // Smooth RAF-throttled scroll-driven 3D angle sweep on Hero & Sticky stages
+                let scrollTicking = false;
+                const onScroll = () => {
+                    if (scrollTicking) return;
+                    scrollTicking = true;
+                    requestAnimationFrame(() => {
+                        scrollTicking = false;
+                        const y = Math.min(720, Math.max(0, window.scrollY));
+                        const frac = y / 720;
+                        heroScrollYawOffset = frac * 14.0;
+                        drawHero();
+
+                        if (window.innerWidth >= 1024) {
+                            const storySec = document.getElementById('story');
+                            const stickyCv = document.getElementById('storyStickyCanvas');
+                            if (storySec && stickyCv) {
+                                const rect = storySec.getBoundingClientRect();
+                                const total = Math.max(1, storySec.offsetHeight - window.innerHeight);
+                                const p = Math.min(1, Math.max(0, -rect.top / total));
+                                drawStoryCanvas(stickyCv, STORY_CONFIG[activeStoryIdx], (p - 0.5) * 10);
+                            }
+                        }
+                    });
+                };
+                window.addEventListener('scroll', onScroll, { passive: true });
+            } else {
+                document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
+            }
+        })();
+    </script>
+</body>
+</html>

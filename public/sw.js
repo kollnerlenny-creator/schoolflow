@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v43';
+const CACHE_NAME = 'schooly-cache-v44';
 
 const PRECACHE_URLS = [
   '/',
@@ -80,10 +80,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Pitchdeck-, Social-Studio- & Vite-Dev-Interna niemals durch SW abfangen/cachen
+  // Pitchdeck-, Social-Studio-, API- & Vite-Dev-Interna niemals durch SW abfangen/cachen
   if (
     url.pathname.startsWith('/pitchdeck') ||
     url.pathname.startsWith('/social') ||
+    url.pathname.startsWith('/api/') ||
     url.pathname.startsWith('/@') ||
     url.pathname.includes('node_modules')
   ) {

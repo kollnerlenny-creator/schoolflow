@@ -512,12 +512,18 @@
         }
 
         .modal-drag-handle {
-            width: 44px;
-            height: 5px;
-            border-radius: 9999px;
-            background-color: #d8cebe !important;
-            margin: 0 auto 1.25rem auto;
+            width: 100%;
+            height: 32px;
+            background: transparent !important;
+            border: none !important;
+            margin: -4px 0 4px 0;
+            padding: 0 !important;
             cursor: grab;
+        }
+        @media (min-width: 768px) {
+            .modal-drag-handle {
+                display: none !important;
+            }
         }
 
         /* ── M3 TEXT CONTRAST MAPPINGS (LIGHT BEIGE MODE) ── */
@@ -813,29 +819,35 @@
             background: #818cf8;
         }
 
-        /* Swipe-down-to-close handle: sichtbarer Balken bleibt 6px hoch,
-           aber die tatsächliche Touch-Fläche ist deutlich größer (>=44px), damit
-           die Wischgeste zuverlässig greift statt nur auf einem 6px-Streifen. */
+        /* Swipe-down-to-close handle: nur ein schmaler zentrierter Strich ohne grauen Balken,
+           nur auf Mobile (<768px) sichtbar und aktiv */
         .modal-drag-handle {
             width: 100%;
-            height: 44px;
-            margin: -12px 0 8px;
+            height: 32px;
+            margin: -4px 0 6px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: transparent !important;
+            border: none !important;
             cursor: grab;
             touch-action: none;
         }
         .modal-drag-handle::after {
             content: '';
-            width: 48px;
-            height: 6px;
-            background: rgba(255,255,255,0.18);
+            width: 44px;
+            height: 5px;
+            background: #cfc5b8;
             border-radius: 9999px;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, width 0.2s ease;
         }
-        .modal-drag-handle:active::after { background: rgba(255,255,255,0.35); }
+        .modal-drag-handle:active::after { background: #b5aa9b; }
         .modal-dragging { transition: none !important; }
+        @media (min-width: 768px) {
+            .modal-drag-handle {
+                display: none !important;
+            }
+        }
 
         /* ── STAGGERED HOME KACHELN ── */
         @keyframes cardSlideUp {
@@ -887,7 +899,7 @@
 
         /* ── MODAL DRAG HANDLE PULSE ── */
         .modal-drag-handle:active::after {
-            transform: scaleX(1.2);
+            transform: scaleX(1.15);
         }
         .modal-drag-handle::after {
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
@@ -985,18 +997,18 @@
             animation: gradeItemIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
-        /* ── SMOOTH MODAL DRAG HANDLE (Touch-Fläche bleibt groß, nur der ::after-Balken animiert) ── */
+        /* ── SMOOTH MODAL DRAG HANDLE ── */
         .modal-drag-handle:active::after {
-            background: rgba(255,255,255,0.42);
-            width: 56px;
+            background: #b5aa9b;
+            width: 52px;
         }
         .modal-drag-handle::after {
             transition: background 0.2s ease, width 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .modal-dragging { transition: none !important; }
         .modal-dragging .modal-drag-handle::after {
-            background: rgba(255,255,255,0.38);
-            width: 60px;
+            background: #9f9384;
+            width: 56px;
         }
 
         /* ── SCROLL BOUNCE FEEDBACK ── */
@@ -2440,7 +2452,7 @@
                 <!-- 4. PLANER (Mit Touch-Swipe zum Wechseln der Tabs) -->
                 <div v-if="currentTab === 'planner' && !selectedSubject" 
                      class="space-y-6 animate-fade-in"
-                     :class="plannerTab === 'calendar' ? 'max-w-3xl md:max-w-[1040px] mx-auto w-full' : 'max-w-4xl md:max-w-[1040px] mx-auto w-full'"
+                     :class="plannerTab === 'calendar' ? 'max-w-3xl md:max-w-[1280px] xl:max-w-[1380px] mx-auto w-full' : 'max-w-4xl md:max-w-[1040px] mx-auto w-full'"
                      @touchstart="handlePlannerTouchStart"
                      @touchmove="handlePlannerTouchMove"
                      @touchend="handlePlannerTouchEnd">
@@ -2639,10 +2651,10 @@
                         </div>
                     </div>
 
-                    <div v-if="plannerTab === 'calendar'" class="no-tab-swipe pb-8 md:max-w-[1040px] mx-auto w-full">
+                    <div v-if="plannerTab === 'calendar'" class="no-tab-swipe pb-8 md:max-w-[1280px] xl:max-w-[1380px] mx-auto w-full">
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-7 items-start">
                         <!-- LEFT COLUMN: Selected Day Focus ("AUFGABEN AM [DATUM]") & Workload Strip -->
-                            <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 space-y-5 md:sticky md:top-20 order-2 md:order-1">
+                            <div class="md:col-span-4 lg:col-span-4 xl:col-span-4 space-y-5 md:sticky md:top-20 order-2 md:order-1">
                                 <!-- Day Focus Card Header & Tasks List -->
                                 <div class="bg-white rounded-[2rem] p-4 sm:p-5 md:p-6 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-4">
                                     
@@ -2693,7 +2705,7 @@
                                         <p class="text-xs text-[#6E665E] mt-0.5">Nutze den Tag zum Wiederholen oder Entspannen.</p>
                                         <button @click="openTaskModalWithDate(selectedCalendarDate)" class="mt-4 px-4 py-2.5 rounded-full bg-[#2d694c] hover:bg-[#23533c] !text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs">
                                             <i data-lucide="plus" class="w-4 h-4 !text-white"></i>
-                                            <span class="!text-white">+ Termin anlegen</span>
+                                            <span class="!text-white">Termin anlegen</span>
                                         </button>
                                     </div>
 
@@ -2811,7 +2823,7 @@
                             </div>
 
                         <!-- RIGHT COLUMN: Main Calendar Card (Grid + Legend) -->
-                            <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 space-y-5 order-1 md:order-2">
+                            <div class="md:col-span-8 lg:col-span-8 xl:col-span-8 space-y-5 order-1 md:order-2">
                                 <div class="bg-white rounded-[2rem] p-3.5 sm:p-5 md:p-6 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
                                     <!-- Card Header: Icon, Month/Year, MONAT/WOCHE Pill, Semester Badge, Nav Arrows -->
                                     <div class="flex justify-between items-center mb-5 gap-2 flex-wrap">
@@ -2874,7 +2886,7 @@
                                     <div class="grid grid-cols-7 gap-1 sm:gap-1.5">
                                         <div v-for="(day, idx) in (calendarViewMode === 'week' ? currentWeekDays : calendarDays)" :key="idx"
                                              @click="selectCalendarDay(day.date)"
-                                             class="flex flex-col items-start justify-start p-1 sm:p-2 relative rounded-2xl cursor-pointer transition-all border group min-h-[38px] sm:min-h-[75px] md:min-h-[88px]"
+                                             class="flex flex-col items-start justify-start p-1 sm:p-2 md:p-2.5 relative rounded-2xl cursor-pointer transition-all border group min-h-[38px] sm:min-h-[75px] md:min-h-[96px] lg:min-h-[104px]"
                                              :class="[
                                                  (calendarViewMode !== 'week' && !day.isCurrentMonth) ? 'bg-[#f7f2ea]/40 text-[#c4bbb1] border-[#f0e8df]/50 opacity-60' : 'bg-white text-[#1f1b16] border-[#f0e8df] hover:border-[#2d694c]/40 hover:shadow-xs',
                                                  selectedCalendarDate === day.date ? 'bg-[#fed8b1]/25 border-[#2d694c] ring-2 ring-[#2d694c] shadow-xs' : ''
@@ -4894,8 +4906,8 @@
         <!-- MODALS (Designtechnisch optimierte Bottom-Sheets für ein erstklassiges Mobile-Gefühl) -->
         <!-- Avatar / Profilbild Modal -->
         <div v-if="isAvatarModalOpen" data-modal="isAvatarModalOpen" @click.self="closeModal('isAvatarModalOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col overflow-hidden bg-[#faf7f2]/95 border-[#ede3d8]">
-                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md md:max-w-xl rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col overflow-hidden bg-[#faf7f2]/95 border-[#ede3d8]">
+                <div class="modal-drag-handle md:hidden shrink-0"
                      @touchstart.stop="modalDragStart($event, 'isAvatarModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
@@ -4967,7 +4979,7 @@
 
         <!-- Fach Modal -->
         <div v-if="isSubjectModalOpen" data-modal="isSubjectModalOpen" @click.self="closeModal('isSubjectModalOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg md:max-w-2xl rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[88vh] md:max-h-[90vh] overflow-y-auto no-scrollbar pb-12"
                  @touchstart="modalDragStart($event, 'isSubjectModalOpen')"
                  @touchmove="modalDragMove($event)"
                  @touchend="modalDragEnd($event)">
@@ -4979,7 +4991,7 @@
                 </button>
                 <h2 class="text-2xl font-black text-white mb-6 pr-10">{{ isSettingsModalOpen ? 'Fach bearbeiten' : 'Neues Fach' }}</h2>
                 
-                <form @submit.prevent="handleSaveSubject" class="space-y-6">
+                <form @submit.prevent="handleSaveSubject" novalidate class="space-y-6">
                     <div class="bg-black/20 p-5 rounded-3xl border border-white/5">
                         <label class="text-xs font-bold uppercase text-slate-400 ml-2">Fachname</label>
                         <input type="text" required v-model="subjectForm.name" class="w-full bg-transparent text-lg font-bold text-white outline-none ml-2 mt-2" />
@@ -5058,8 +5070,8 @@
 
         <!-- Noten Modal -->
         <div v-if="isGradeModalOpen" data-modal="isGradeModalOpen" @click.self="closeModal('isGradeModalOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col">
-                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg md:max-w-2xl rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col">
+                <div class="modal-drag-handle md:hidden shrink-0"
                      @touchstart.stop="modalDragStart($event, 'isGradeModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
@@ -5179,8 +5191,8 @@
 
         <!-- Klausurtermine im Block eintragen -->
         <div v-if="isBulkImportOpen" data-modal="isBulkImportOpen" @click.self="closeModal('isBulkImportOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col">
-                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg md:max-w-2xl rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col">
+                <div class="modal-drag-handle md:hidden shrink-0"
                      @touchstart.stop="modalDragStart($event, 'isBulkImportOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
@@ -5247,7 +5259,7 @@
 
         <!-- Zeugnis Modal -->
         <div v-if="isReportCardModalOpen" data-modal="isReportCardModalOpen" @click.self="closeModal('isReportCardModalOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg md:max-w-2xl rounded-t-[2.5rem] md:rounded-3xl p-6 sm:p-8 shadow-2xl relative pb-12"
                  @touchstart="modalDragStart($event, 'isReportCardModalOpen')"
                  @touchmove="modalDragMove($event)"
                  @touchend="modalDragEnd($event)">
@@ -5305,7 +5317,7 @@
 
         <!-- Aufgabe/Prüfung Modal -->
         <div v-if="isTaskModalOpen" data-modal="isTaskModalOpen" @click.self="closeModal('isTaskModalOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-lg md:max-w-2xl rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] md:max-h-[90vh] flex flex-col overflow-hidden">
                 <div class="modal-drag-handle md:hidden shrink-0"
                      @touchstart.stop="modalDragStart($event, 'isTaskModalOpen')"
                      @touchmove.stop="modalDragMove($event)"
@@ -5416,14 +5428,14 @@
         </div>
 
         <!-- WOCHENRÜCKBLICK STORY -->
-        <div v-if="isWeeklyRecapOpen" data-modal="isWeeklyRecapOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-[#1f1b16]/70 backdrop-blur-md p-2 sm:p-4">
-            <div class="w-full h-full sm:max-w-md sm:h-[88vh] sm:rounded-[2.5rem] bg-[#f7f3eb] border border-[#ede3d8] shadow-2xl relative overflow-hidden select-none flex flex-col"
+        <div v-if="isWeeklyRecapOpen" data-modal="isWeeklyRecapOpen" class="fixed inset-0 z-[200] flex items-center justify-center bg-[#f7f3eb] md:bg-[#1f1b16]/70 md:backdrop-blur-md p-0 md:p-6">
+            <div class="w-full h-[100dvh] rounded-none border-0 md:max-w-xl md:h-[86vh] md:max-h-[820px] md:rounded-[2.5rem] md:border md:border-[#ede3d8] bg-[#f7f3eb] shadow-2xl relative overflow-hidden select-none flex flex-col"
                  @touchstart="recapDragStart($event)"
                  @touchmove="recapDragMove($event)"
                  @touchend="recapDragEnd($event)">
                 
                 <!-- Fortschritts-Segmente oben -->
-                <div class="px-6 pt-5 pb-2 flex gap-1.5 z-20 shrink-0">
+                <div class="px-6 pt-[max(1.25rem,env(safe-area-inset-top))] pb-2 flex gap-1.5 z-20 shrink-0">
                     <div v-for="n in 4" :key="n" class="flex-1 h-1.5 rounded-full bg-[#ded5c7] overflow-hidden">
                         <div class="h-full bg-[#2d694c] rounded-full transition-all duration-150" :style="{ width: (n - 1) < weeklyRecapSlideIndex ? '100%' : (n - 1 === weeklyRecapSlideIndex ? recapProgressPercent + '%' : '0%') }"></div>
                     </div>
@@ -5534,7 +5546,7 @@
 
         <!-- PDF-EXPORT MODAL -->
         <div v-if="isPdfExportModalOpen" data-modal="isPdfExportModalOpen" @click.self="closeModal('isPdfExportModalOpen')" class="fixed inset-0 z-[110] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[85vh] flex flex-col overflow-hidden">
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md md:max-w-xl rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[85vh] flex flex-col overflow-hidden">
                 <div class="modal-drag-handle md:hidden shrink-0" @click="closeModal('isPdfExportModalOpen')"></div>
                 <button @click="closeModal('isPdfExportModalOpen')" class="absolute top-6 right-6 w-11 h-11 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 cursor-pointer z-10 modal-close-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -5576,7 +5588,7 @@
 
         <!-- APP-EINSTELLUNGEN MODAL -->
         <div v-if="isAppSettingsModalOpen" data-modal="isAppSettingsModalOpen" @click.self="closeModal('isAppSettingsModalOpen')" class="fixed inset-0 z-[110] flex items-end md:items-center justify-center bg-[#1f1b16]/60 backdrop-blur-sm p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter bg-[#fbf8f3] border-t md:border border-[#ede3d8] w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] p-5 sm:p-7 shadow-2xl relative max-h-[90vh] flex flex-col"
+            <div class="modal-enter bg-[#fbf8f3] border-t md:border border-[#ede3d8] w-full max-w-lg md:max-w-2xl rounded-t-[2.5rem] md:rounded-[2.5rem] p-5 sm:p-7 shadow-2xl relative max-h-[90vh] flex flex-col"
                  @touchstart="modalDragStart($event, 'isAppSettingsModalOpen')"
                  @touchmove="modalDragMove($event)"
                  @touchend="modalDragEnd($event)">
@@ -5783,7 +5795,7 @@
 
         <!-- APP INSTALLATION ANLEITUNG MODAL -->
         <div v-if="isInstallGuideModalOpen" data-modal="isInstallGuideModalOpen" @click.self="dismissInstallGuide" class="fixed inset-0 z-[120] flex items-end md:items-center justify-center bg-[#1f1b16]/70 backdrop-blur-sm p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter bg-[#fbf8f3] border-t md:border border-[#ede3d8] w-full max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-7 shadow-2xl relative max-h-[90vh] flex flex-col"
+            <div class="modal-enter bg-[#fbf8f3] border-t md:border border-[#ede3d8] w-full max-w-md md:max-w-xl rounded-t-[2.5rem] md:rounded-[2.5rem] p-6 sm:p-7 shadow-2xl relative max-h-[90vh] flex flex-col"
                  @touchstart="modalDragStart($event, 'isInstallGuideModalOpen')"
                  @touchmove="modalDragMove($event)"
                  @touchend="modalDragEnd($event)">
@@ -5916,8 +5928,8 @@
 
         <!-- BENACHRICHTIGUNGEN MODAL -->
         <div v-if="isNotificationsOpen" data-modal="isNotificationsOpen" @click.self="closeModal('isNotificationsOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] flex flex-col">
-                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md md:max-w-2xl rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] flex flex-col">
+                <div class="modal-drag-handle md:hidden shrink-0"
                      @touchstart.stop="modalDragStart($event, 'isNotificationsOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
@@ -6007,8 +6019,8 @@
 
         <!-- FREUNDE MODAL -->
         <div v-if="isFriendsOpen" data-modal="isFriendsOpen" @click.self="closeModal('isFriendsOpen')" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-950/70 backdrop-blur-md p-0 md:p-6 modal-overlay-enter">
-            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
-                <div class="modal-drag-handle md:hidden shrink-0 px-6 pt-6"
+            <div class="modal-enter liquid-glass-modal border-t md:border w-full max-w-md md:max-w-2xl rounded-t-[2.5rem] md:rounded-3xl shadow-2xl relative max-h-[88vh] flex flex-col overflow-hidden">
+                <div class="modal-drag-handle md:hidden shrink-0"
                      @touchstart.stop="modalDragStart($event, 'isFriendsOpen')"
                      @touchmove.stop="modalDragMove($event)"
                      @touchend.stop="modalDragEnd($event)"></div>
@@ -6369,7 +6381,7 @@
         <!-- ADMIN MODAL: EINLADUNGSCODES VERWALTEN -->
         <transition name="modal-bounce">
             <div v-if="isAdminModalOpen" class="fixed inset-0 z-[99990] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-                <div class="glass-card w-full max-w-lg p-6 sm:p-7 space-y-6 max-h-[90vh] overflow-y-auto relative animate-fade-in border border-[#ded3c2] shadow-2xl rounded-[2rem] bg-[#fbf8f3]">
+                <div class="glass-card w-full max-w-lg md:max-w-2xl p-6 sm:p-7 space-y-6 max-h-[90vh] overflow-y-auto relative animate-fade-in border border-[#ded3c2] shadow-2xl rounded-[2rem] bg-[#fbf8f3]">
                     <!-- Header -->
                     <div class="flex items-center justify-between border-b border-[#ede3d8] pb-4">
                         <div class="flex items-center gap-2.5">
@@ -6453,6 +6465,57 @@
                                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                                     </button>
                                     <button type="button" @click="deleteInviteCode(c.id)" title="Code löschen" 
+                                            class="w-8 h-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 flex items-center justify-center cursor-pointer active:scale-95">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- Mitgliederliste & Test-Profile verwalten -->
+                    <div class="space-y-3 pt-4 border-t border-[#ede3d8]">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xs font-black uppercase tracking-wider text-[#6E665E]">Nutzerliste &amp; Test-Profile ({{ adminMembersList.length }})</h3>
+                                <p class="text-[11px] text-[#6E665E]">Alte Admin-/Testprofile (z.B. ohne E-Mail) dauerhaft aus der Nutzerliste ausblenden oder entfernen.</p>
+                            </div>
+                            <button type="button" @click="fetchAdminMembers" class="text-xs font-bold text-[#2d694c] flex items-center gap-1 hover:underline cursor-pointer shrink-0">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                <span>Laden</span>
+                            </button>
+                        </div>
+
+                        <div v-if="adminMembersLoading && adminMembersList.length === 0" class="text-center py-4 text-xs font-bold text-[#6E665E]">
+                            Lade Profile...
+                        </div>
+                        <div v-else-if="adminMembersList.length === 0" class="text-center py-4 bg-white/70 rounded-2xl border border-[#ede3d8] text-xs font-bold text-[#6E665E]">
+                            Keine Profile gefunden.
+                        </div>
+                        <div v-else class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                            <div v-for="m in adminMembersList" :key="m.uid"
+                                 class="bg-white rounded-xl p-3 border border-[#ede3d8] flex items-center justify-between gap-3 shadow-2xs">
+                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                    <div class="w-9 h-9 rounded-full overflow-hidden bg-[#ede4dc] flex items-center justify-center shrink-0 text-xs font-black text-[#2d694c]">
+                                        <img v-if="getMemberAvatar(m) && isImageAvatar(getMemberAvatar(m))" :src="getMemberAvatar(m)" class="w-full h-full object-cover" />
+                                        <span v-else-if="getMemberAvatar(m)">{{ getMemberAvatar(m) }}</span>
+                                        <span v-else>{{ (m.displayName || 'SC').slice(0,2).toUpperCase() }}</span>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="font-black text-sm text-[#1f1b16] truncate">{{ m.displayName || 'Ohne Namen' }}</span>
+                                            <span v-if="m.currentClass" class="text-[10px] font-bold text-[#6E665E]">Kl. {{ m.currentClass }}</span>
+                                            <span v-if="isAdminProfile(m)" class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 uppercase">Ausgeblendet</span>
+                                        </div>
+                                        <p class="text-[10px] text-[#6E665E] font-mono truncate">{{ m.email || 'Keine E-Mail' }} · {{ m.uid }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button type="button" @click="toggleHideAdminMember(m)"
+                                            :title="hiddenMemberUids.has(m.uid) || m.isHiddenFromMembers ? 'Wieder einblenden' : 'Aus Nutzerliste ausblenden'"
+                                            class="px-2.5 py-1.5 rounded-lg text-[11px] font-black cursor-pointer active:scale-95 transition-all"
+                                            :class="hiddenMemberUids.has(m.uid) || m.isHiddenFromMembers ? 'bg-[#2d694c]/15 text-[#2d694c] hover:bg-[#2d694c]/25' : 'bg-amber-100 hover:bg-amber-200 text-amber-900'">
+                                        {{ hiddenMemberUids.has(m.uid) || m.isHiddenFromMembers ? 'Einblenden' : 'Ausblenden' }}
+                                    </button>
+                                    <button type="button" @click="deleteAdminMember(m)" title="Profil löschen"
                                             class="w-8 h-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 flex items-center justify-center cursor-pointer active:scale-95">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     </button>
@@ -7183,15 +7246,39 @@
                 const filteredAllMembers = computed(() => {
                     const q = memberSearchQuery.value.trim().toLowerCase();
                     return (allMembers.value || []).filter(m =>
-                        !isDemoProfile(m) && !isAdminProfile(m) && !knownAdminUids.has(m?.uid) && matchesMemberSearch(m, q)
+                        !isDemoProfile(m) && !isAdminProfile(m) && !knownAdminUids.has(m?.uid) && !hiddenMemberUids.value.has(m?.uid) && matchesMemberSearch(m, q)
                     );
                 });
                 const filteredFriends = computed(() => {
                     const q = memberSearchQuery.value.trim().toLowerCase();
-                    return (friends.value || []).filter(f => matchesMemberSearch(f, q));
+                    return (friends.value || []).filter(f => !isDemoProfile(f) && !isAdminProfile(f) && matchesMemberSearch(f, q));
                 });
 
                 const knownAdminUids = new Set();
+                const hiddenMemberUids = ref(new Set((() => {
+                    try {
+                        const raw = localStorage.getItem('sf_hidden_member_uids');
+                        return raw ? JSON.parse(raw) : [];
+                    } catch (_) { return []; }
+                })()));
+
+                const persistHiddenMemberUidsLocal = (uidSet) => {
+                    try { localStorage.setItem('sf_hidden_member_uids', JSON.stringify(Array.from(uidSet))); } catch (_) {}
+                };
+
+                const loadHiddenMemberUids = async () => {
+                    try {
+                        const { getDoc: gDoc, doc: docFn } = window.__firestoreModule || {};
+                        if (!gDoc || !docFn) return;
+                        const snap = await gDoc(docFn(db, 'inviteCodes', '__HIDDEN_PROFILES__'));
+                        if (snap && snap.exists()) {
+                            const data = snap.data() || {};
+                            const nextSet = new Set(Array.isArray(data.uids) ? data.uids : []);
+                            hiddenMemberUids.value = nextSet;
+                            persistHiddenMemberUidsLocal(nextSet);
+                        }
+                    } catch (_) {}
+                };
 
                 const isDemoProfile = (item) => {
                     if (!item || typeof item !== 'object') return false;
@@ -7205,7 +7292,8 @@
                     const uidStr = String(item.uid || item.id || '');
                     const emailStr = String(item.email || '').toLowerCase();
                     return Boolean(item.isAdmin)
-                        || (uidStr && knownAdminUids.has(uidStr))
+                        || Boolean(item.isHiddenFromMembers)
+                        || (uidStr && (knownAdminUids.has(uidStr) || hiddenMemberUids.value.has(uidStr)))
                         || emailStr.includes('kollnerlenny')
                         || emailStr.includes('koellnerlenny')
                         || emailStr.includes('admin');
@@ -7322,7 +7410,7 @@
                     const list = [];
                     const addedUids = new Set();
                     (friends.value || []).forEach(f => {
-                        if (!f || !f.uid || isDemoProfile(f)) return;
+                        if (!f || !f.uid || isDemoProfile(f) || isAdminProfile(f)) return;
                         const m = (allMembers.value || []).find(x => x.uid === f.uid);
                         const notif = (notifications.value || []).find(n => n.fromUid === f.uid && n.fromPhotoUrl);
                         let cached = '';
@@ -7508,6 +7596,8 @@
                     if (!uid && user.value && user.value.uid) uid = user.value.uid;
                     if (!uid) return;
                     if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
+
+                    await loadHiddenMemberUids();
 
                     const updateMembersState = (profiles, fromCacheOnly = false) => {
                         (profiles || []).forEach(p => {
@@ -8645,26 +8735,48 @@
                 const saveAppSettings = async () => {
                     if (!user.value) return;
                     const prevClass = currentClass.value;
-                    startYear.value = tempStartYear.value;
-                    currentClass.value = tempCurrentClass.value;
-                    gradeSystem.value = tempGradeSystem.value;
-                    weeklyRecapWeekday.value = tempWeeklyRecapWeekday.value;
+                    const nextStartYear = Number(tempStartYear.value) || new Date().getFullYear();
+                    const nextClass = Number(tempCurrentClass.value) || 11;
+                    const nextGradeSystem = tempGradeSystem.value || (nextClass >= 11 ? '15' : '6');
+                    const nextRecapDay = typeof tempWeeklyRecapWeekday.value === 'number' ? tempWeeklyRecapWeekday.value : 0;
+                    const nextDisplayName = (displayName.value || '').trim();
+
+                    startYear.value = nextStartYear;
+                    tempStartYear.value = nextStartYear;
+                    currentClass.value = nextClass;
+                    gradeSystem.value = nextGradeSystem;
+                    weeklyRecapWeekday.value = nextRecapDay;
+                    displayName.value = nextDisplayName;
                     abiturViewClass.value = currentClass.value >= 11 ? 'oberstufe' : currentClass.value;
-                    await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), {
-                        startYear: startYear.value,
-                        displayName: displayName.value,
-                        currentClass: currentClass.value,
-                        gradeSystem: gradeSystem.value,
-                        weeklyRecapWeekday: weeklyRecapWeekday.value,
-                        theme: activeTheme.value
-                    }, { merge: true });
-                    // Subjects-Listener neu starten wenn Klasse zwischen Unter-/Oberstufe wechselt
+
+                    const configPayload = {
+                        startYear: nextStartYear,
+                        displayName: nextDisplayName,
+                        currentClass: nextClass,
+                        gradeSystem: nextGradeSystem,
+                        weeklyRecapWeekday: nextRecapDay,
+                        theme: activeTheme.value || 'original'
+                    };
+
+                    try {
+                        localStorage.setItem('sf_user_config_' + user.value.uid, JSON.stringify(configPayload));
+                    } catch (_) {}
+
+                    // Modal sofort schließen und Subjects-Listener bei Stufenwechsel aktualisieren
+                    closeModal('isAppSettingsModalOpen');
+                    autoSetCurrentHalfYear();
                     const crossedBoundary = (prevClass >= 11) !== (currentClass.value >= 11);
                     if (crossedBoundary) {
                         listenToSubjects(user.value.uid);
                     }
-                    closeModal('isAppSettingsModalOpen');
-                    autoSetCurrentHalfYear();
+                    showToast('Einstellungen gespeichert ✓');
+
+                    try {
+                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), configPayload, { merge: true });
+                        await ensurePublicProfile(user.value.uid);
+                    } catch (err) {
+                        console.warn('saveAppSettings sync error:', err?.message || err);
+                    }
                 };
 
                 // Passwort vergessen
@@ -8847,8 +8959,10 @@
                 const modalDrag = ref({ active: false, startY: 0, currentY: 0, modalKey: null, el: null, velocity: 0, lastY: 0, lastTime: 0 });
 
                 const modalDragStart = (e, modalKey) => {
+                    if (typeof window !== 'undefined' && window.innerWidth >= 768) return;
+                    if (!e.touches || !e.touches[0]) return;
                     const touch = e.touches[0];
-                    const panel = e.currentTarget.closest('[class*="liquid-glass-modal"], [class*="modal-glass"]');
+                    const panel = e.currentTarget.closest('[class*="liquid-glass-modal"], [class*="modal-glass"], [data-modal-panel]');
                     if (!panel) return;
                     const backdrop = panel.closest('.fixed.inset-0');
                     // Scrollbaren Innenbereich merken: ist e.currentTarget selbst scrollbar (der Content-Wrapper),
@@ -12091,7 +12205,24 @@
                 });
 
                 const openAddSubjectModal = () => { isSettingsModalOpen.value=false; subjectForm.value={name:'', isLK:false, color:'#6366f1', examWeight:50, abiType:null, icon:'book-open'}; isSubjectModalOpen.value=true; refreshIcons(); };
-                const openSettingsModal = () => { isSettingsModalOpen.value=true; subjectForm.value={...selectedSubject.value}; isSubjectModalOpen.value=true; refreshIcons(); };
+                const openSettingsModal = () => {
+                    const s = selectedSubject.value || {};
+                    const resolvedWeight = typeof getExamWeightFor === 'function'
+                        ? getExamWeightFor(s, selectedHalfYear.value)
+                        : (Number.isFinite(Number(s.examWeight)) ? Number(s.examWeight) : 50);
+                    isSettingsModalOpen.value = true;
+                    subjectForm.value = {
+                        ...s,
+                        name: s.name || '',
+                        isLK: Boolean(s.isLK),
+                        color: s.color || '#6366f1',
+                        examWeight: resolvedWeight,
+                        abiType: s.abiType ?? null,
+                        icon: s.icon || 'book-open'
+                    };
+                    isSubjectModalOpen.value = true;
+                    refreshIcons();
+                };
                 const closeSubjectModal = () => { closeModal('isSubjectModalOpen'); };
                 const openAddGradeModal = () => { gradeForm.value={id:null, points: gradeSystem.value === '6' ? 3 : 10, type:'Klausur', label:'', date:new Date().toISOString().split('T')[0], pending:false}; gradeFormSourceTaskId.value = null; isGradeModalOpen.value=true; refreshIcons(); };
                 // Note direkt aus einer geplanten Klausur/Test heraus eintragen (statt nur die Aufgabe zu bearbeiten)
@@ -12135,23 +12266,71 @@
                 };
 
                 const handleSaveSubject = async () => {
-                    if (!user.value || !subjectForm.value.name) return;
+                    const cleanName = (subjectForm.value.name || '').trim();
+                    if (!user.value || !cleanName) return;
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                    const safeIsLK = Boolean(subjectForm.value.isLK);
+                    const safeColor = subjectForm.value.color || '#6366f1';
+                    const parsedWeight = parseInt(subjectForm.value.examWeight, 10);
+                    const safeExamWeight = Number.isFinite(parsedWeight) ? Math.min(100, Math.max(0, parsedWeight)) : 50;
+                    const safeAbiType = subjectForm.value.abiType ?? null;
+                    const safeIcon = subjectForm.value.icon || 'book-open';
+
                     if (isSettingsModalOpen.value) {
-                        // Nur Metadaten updaten - grades/semesterGrades NICHT anfassen!
-                        const { name, isLK, color, examWeight, abiType, icon } = subjectForm.value;
-                        // Klausurgewichtung gilt NUR für das aktuell ausgewählte Halbjahr — als
-                        // Übersteuerung in examWeightByHalfYear speichern, damit andere Halbjahre
-                        // (z.B. 11/2, wenn gerade 12/1 bearbeitet wird) unverändert bleiben.
-                        const existingOverrides = selectedSubject.value.examWeightByHalfYear || {};
-                        const examWeightByHalfYear = { ...existingOverrides, [selectedHalfYear.value]: examWeight };
-                        await updateDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id),
-                            { name, isLK, color, abiType, icon, examWeightByHalfYear });
-                        selectedSubject.value = { ...selectedSubject.value, name, isLK, color, abiType, icon, examWeightByHalfYear, examWeight };
+                        const targetId = selectedSubject.value?.id || subjectForm.value?.id;
+                        if (!targetId) return;
+                        const semKey = selectedHalfYear.value || '11/1';
+                        const existingOverrides = (selectedSubject.value?.examWeightByHalfYear && typeof selectedSubject.value.examWeightByHalfYear === 'object')
+                            ? selectedSubject.value.examWeightByHalfYear
+                            : {};
+                        const examWeightByHalfYear = { ...existingOverrides, [semKey]: safeExamWeight };
+                        const updatePayload = {
+                            name: cleanName,
+                            isLK: safeIsLK,
+                            color: safeColor,
+                            abiType: safeAbiType,
+                            icon: safeIcon,
+                            examWeight: safeExamWeight,
+                            examWeightByHalfYear
+                        };
+
+                        // Sofort lokales reaktives Update & Modal schließen
+                        selectedSubject.value = { ...(selectedSubject.value || {}), id: targetId, ...updatePayload };
+                        const sIdx = subjects.value.findIndex(s => s.id === targetId);
+                        if (sIdx !== -1) {
+                            subjects.value[sIdx] = { ...subjects.value[sIdx], ...updatePayload };
+                            subjects.value = [...subjects.value];
+                        }
+                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        closeSubjectModal();
+                        showToast('Fach gespeichert ✓');
+
+                        try {
+                            await setDoc(doc(db, 'users', user.value.uid, collName, targetId), updatePayload, { merge: true });
+                        } catch (err) {
+                            console.warn('handleSaveSubject update error:', err?.message || err);
+                        }
                     } else {
-                        await setDoc(doc(collection(db, 'users', user.value.uid, collName)), { ...subjectForm.value, grades: [], reportCardGrades: {}, examWeightByHalfYear: {} });
+                        const newDocRef = doc(collection(db, 'users', user.value.uid, collName));
+                        const newPayload = {
+                            name: cleanName,
+                            isLK: safeIsLK,
+                            color: safeColor,
+                            examWeight: safeExamWeight,
+                            abiType: safeAbiType,
+                            icon: safeIcon,
+                            grades: [],
+                            reportCardGrades: {},
+                            examWeightByHalfYear: {}
+                        };
+                        closeSubjectModal();
+                        showToast('Fach erstellt ✓');
+                        try {
+                            await setDoc(newDocRef, newPayload);
+                        } catch (err) {
+                            console.warn('handleSaveSubject create error:', err?.message || err);
+                        }
                     }
-                    closeSubjectModal();
                 };
 
                 const handleDeleteSubject = async () => {
@@ -12721,6 +12900,9 @@
                 const adminInviteLoading = ref(false);
                 const adminInviteMsg = ref('');
 
+                const adminMembersList = ref([]);
+                const adminMembersLoading = ref(false);
+
                 const fetchInviteCodes = async () => {
                     adminInviteLoading.value = true;
                     try {
@@ -12729,6 +12911,7 @@
                             const snap = await gd(col(db, 'inviteCodes'));
                             const list = [];
                             snap.forEach(docSnap => {
+                                if (docSnap.id === '__HIDDEN_PROFILES__') return;
                                 list.push({ id: docSnap.id, ...docSnap.data() });
                             });
                             adminInviteCodes.value = list.sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
@@ -12740,10 +12923,102 @@
                     }
                 };
 
+                const fetchAdminMembers = async () => {
+                    adminMembersLoading.value = true;
+                    try {
+                        await loadHiddenMemberUids();
+                        const { collection: col, getDocs: gd } = window.__firestoreModule || {};
+                        if (gd && col) {
+                            const snap = await gd(col(db, 'publicProfiles'));
+                            const list = [];
+                            snap.forEach(docSnap => {
+                                list.push({ ...docSnap.data(), uid: docSnap.id });
+                            });
+                            adminMembersList.value = list.sort((a, b) => String(a.displayName || '').localeCompare(String(b.displayName || '')));
+                        }
+                    } catch (err) {
+                        console.error('Fetch admin members error:', err);
+                    } finally {
+                        adminMembersLoading.value = false;
+                    }
+                };
+
+                const toggleHideAdminMember = async (member) => {
+                    if (!member || !member.uid) return;
+                    const nextSet = new Set(hiddenMemberUids.value);
+                    const currentlyHidden = nextSet.has(member.uid) || Boolean(member.isHiddenFromMembers);
+                    if (currentlyHidden) nextSet.delete(member.uid);
+                    else nextSet.add(member.uid);
+                    hiddenMemberUids.value = nextSet;
+                    persistHiddenMemberUidsLocal(nextSet);
+
+                    try {
+                        const { doc: d, setDoc: sd } = window.__firestoreModule || {};
+                        if (sd && d) {
+                            await sd(d(db, 'inviteCodes', '__HIDDEN_PROFILES__'), {
+                                uids: Array.from(nextSet),
+                                updatedAt: new Date().toISOString()
+                            }, { merge: true });
+                            try {
+                                await sd(d(db, 'publicProfiles', member.uid), {
+                                    isHiddenFromMembers: !currentlyHidden,
+                                    ...(currentlyHidden ? {} : { isAdmin: true })
+                                }, { merge: true });
+                            } catch (_) {}
+                        }
+                    } catch (err) {
+                        console.warn('toggleHideAdminMember error:', err);
+                    }
+
+                    if (!currentlyHidden) {
+                        knownAdminUids.add(member.uid);
+                        allMembers.value = (allMembers.value || []).filter(m => m.uid !== member.uid);
+                        friends.value = (friends.value || []).filter(f => f.uid !== member.uid);
+                        if (selectedFriend.value && selectedFriend.value.uid === member.uid) selectedFriend.value = null;
+                        try { localStorage.setItem('sf_cached_members', JSON.stringify(allMembers.value)); } catch (_) {}
+                        showToast(`"${member.displayName || member.uid}" aus Nutzerliste ausgeblendet ✓`);
+                    } else {
+                        knownAdminUids.delete(member.uid);
+                        showToast(`"${member.displayName || member.uid}" wieder sichtbar ✓`);
+                    }
+                    await fetchAdminMembers();
+                };
+
+                const deleteAdminMember = async (member) => {
+                    if (!member || !member.uid) return;
+                    const nextSet = new Set(hiddenMemberUids.value);
+                    nextSet.add(member.uid);
+                    hiddenMemberUids.value = nextSet;
+                    persistHiddenMemberUidsLocal(nextSet);
+                    knownAdminUids.add(member.uid);
+                    allMembers.value = (allMembers.value || []).filter(m => m.uid !== member.uid);
+                    friends.value = (friends.value || []).filter(f => f.uid !== member.uid);
+                    if (selectedFriend.value && selectedFriend.value.uid === member.uid) selectedFriend.value = null;
+                    try { localStorage.setItem('sf_cached_members', JSON.stringify(allMembers.value)); } catch (_) {}
+
+                    try {
+                        const { doc: d, setDoc: sd, deleteDoc: dd } = window.__firestoreModule || {};
+                        if (sd && d) {
+                            await sd(d(db, 'inviteCodes', '__HIDDEN_PROFILES__'), {
+                                uids: Array.from(nextSet),
+                                updatedAt: new Date().toISOString()
+                            }, { merge: true });
+                        }
+                        if (dd && d) {
+                            try { await dd(d(db, 'publicProfiles', member.uid)); } catch (_) {}
+                        }
+                    } catch (err) {
+                        console.warn('deleteAdminMember error:', err);
+                    }
+                    adminMembersList.value = adminMembersList.value.filter(m => m.uid !== member.uid);
+                    showToast(`"${member.displayName || member.uid}" aus Nutzerliste entfernt ✓`);
+                };
+
                 const openAdminModal = () => {
                     isAdminModalOpen.value = true;
                     newAdminInviteCode.value = 'SCHOOLY-' + Math.random().toString(36).substring(2, 7).toUpperCase();
                     fetchInviteCodes();
+                    fetchAdminMembers();
                     nextTick(refreshIcons);
                 };
 
@@ -12815,6 +13090,7 @@
 
                 return {
                     isAdmin, isAdminModalOpen, adminInviteCodes, newAdminInviteCode, adminInviteLoading, adminInviteMsg, openAdminModal, fetchInviteCodes, createInviteCode, deleteInviteCode, toggleInviteCodeStatus, copyCodeToClipboard,
+                    adminMembersList, adminMembersLoading, hiddenMemberUids, fetchAdminMembers, toggleHideAdminMember, deleteAdminMember, isAdminProfile,
                     getLkCount, getGkCount, pointsToGrade, getSubjectNameById, getSubjectColorById, getTotalGradesCount, getTypeGradesCount, getSubjectGradesCount, getBestGrade, getWorstGrade, getTypePercentage, getTypeAverage, getValidBulkImportCount, getFormattedTimetableDays, subjectDetailGradeTab, filteredSubjectGrades, getPointsTier, getGrade6Tier,
                     examScores, saxonSchoolType, saxonP3, saxonP4, saxonP5, saxonActiveSubTab, saxonMobileSection, activeSaxonMobileIndex, mobileTableMode, mobileSelectedSemester, activeMobileSemesterIndex, isLogoWinking, triggerLogoWink, triggerLogoPopWink, saxonSimulatedGrades, saxonSubjectCategories, saxonErsatzfaecher, saxonInputPayload, saxonAbiturResult, saveExamScores, setSimulatedGrade, stepSemesterPoints, presetAllGrades, autoProjectAllGrades, resetSimulatedGrades, syncRealGrades, getSubjectSemesterResolved, detectSubjectCategory, getCategoryLabel, calculateSaxonAbitur,
                     getSimulatedExamScore, autoProjectExamScores, setExamScoreToSimulation,
