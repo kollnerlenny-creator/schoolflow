@@ -36,6 +36,7 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             window.earlyDeferredPrompt = e;
+            try { localStorage.removeItem('pwa_installed'); } catch (_) {}
             if (window.setDeferredPrompt) {
                 window.setDeferredPrompt(e);
             }
@@ -52,7 +53,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v46';
+        const CURRENT_BUILD = 'schooly-v47';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -64,7 +65,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v45') {
+                        if (k !== 'schooly-cache-v47') {
                             caches.delete(k);
                         }
                     });
@@ -1195,13 +1196,25 @@
         }
         .title-enter { animation: titleIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-        /* ── INSTALL BUTTON PULSE ── */
-        @keyframes installPulse {
-            0%, 100% { box-shadow: 0 4px 18px var(--accent-glow-35), 0 0 0 0 var(--accent-glow-35); }
-            60%       { box-shadow: 0 4px 18px var(--accent-glow-35), 0 0 0 7px rgba(99, 102, 241, 0); }
+        /* ── INSTALL BUTTON BLINK (wenn im Browser noch nicht installiert) ── */
+        @keyframes installBlink {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 0 4px 16px rgba(45, 105, 76, 0.42), 0 0 0 0 rgba(45, 105, 76, 0.55);
+            }
+            50% {
+                opacity: 0.72;
+                transform: scale(1.04);
+                box-shadow: 0 6px 22px rgba(45, 105, 76, 0.55), 0 0 0 9px rgba(45, 105, 76, 0);
+            }
         }
         .install-btn {
-            animation: installPulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            animation: installBlink 1.35s ease-in-out infinite;
+        }
+        .install-btn:hover {
+            animation-play-state: paused;
+            opacity: 1;
         }
 
         /* ── SETTINGS SECTION STAGGER ── */
@@ -1756,9 +1769,13 @@
                         <i data-lucide="key" class="w-4 h-4 shrink-0 text-[#2d694c]"></i>
                         <span class="whitespace-nowrap">Admin 🔑</span>
                     </button>
-                    <button v-if="!isInstalled" @click="triggerInstall" title="App installieren" class="install-btn flex items-center justify-center gap-1.5 w-10 h-10 sm:w-auto sm:h-11 sm:px-3 sm:py-2 md:h-9 md:px-3.5 md:py-0 bg-[#f0e6df] hover:bg-[#e6dcd3] md:bg-[#e5ecf8] md:hover:bg-[#d8e3f5] rounded-full border border-[#ede3d8] md:border-[#d3def2] text-[#1f1b16] md:text-[#244476] font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-2xs md:shadow-none">
-                        <i data-lucide="download" class="w-4.5 h-4.5 sm:w-4 sm:h-4 shrink-0 text-[#2d694c] md:text-[#244476]"></i>
-                        <span class="whitespace-nowrap hidden sm:inline">Installieren</span>
+                    <button v-if="!isInstalled" @click="triggerInstall" title="App jetzt direkt installieren" class="install-btn relative flex items-center justify-center gap-1.5 h-9 sm:h-10 md:h-9 px-2.5 sm:px-3.5 bg-[#2d694c] hover:bg-[#23533c] rounded-full border border-[#23533c] text-white font-extrabold text-[11px] sm:text-xs transition-all cursor-pointer active:scale-95 shadow-sm">
+                        <span class="relative flex h-2 w-2 shrink-0">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffe6b9] opacity-90"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#f3c471]"></span>
+                        </span>
+                        <i data-lucide="download" class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-white"></i>
+                        <span class="whitespace-nowrap">Installieren</span>
                     </button>
                     <!-- Freunde Button -->
                     <button @click="isFriendsOpen = true" title="Freunde" class="w-10 h-10 sm:w-11 sm:h-11 md:w-9 md:h-9 rounded-full bg-[#f0e6df] md:bg-[#ece3d8]/75 border border-[#ede3d8] md:border-transparent flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] md:hover:bg-[#e2d6c7] active:scale-95 transition-all cursor-pointer shadow-xs md:shadow-none">
@@ -5828,7 +5845,21 @@
                         </div>
                     </div>
 
-                    <!-- iOS Safari Anleitung -->
+                    <!-- Eingebettete Vorschau (iFrame): Browser erlauben Direkt-Installation nur im eigenen Tab -->
+                    <div v-if="isInIframe" class="space-y-3 bg-[#2d694c]/8 p-4.5 rounded-2xl border border-[#2d694c]/25 shadow-2xs">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-[#2d694c] flex items-center gap-2">
+                            <span>🌐 Direkt-Installation im eigenen Browser-Tab</span>
+                        </h4>
+                        <p class="text-xs text-[#524d44] leading-relaxed">
+                            In dieser eingebetteten Vorschau blockiert der Browser das direkte Installationsfenster. Öffne Schooly direkt im eigenen Tab — dort öffnet „Installieren“ das Installationsfenster sofort per Klick.
+                        </p>
+                        <a :href="currentAppUrl" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-[#2d694c] hover:bg-[#23533c] text-white font-black text-xs flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            <span>Jetzt im eigenen Browser-Tab öffnen</span>
+                        </a>
+                    </div>
+
+                    <!-- iOS Safari Anleitung (Apple blockiert programmatisches Installationsfenster) -->
                     <div v-if="isIOS" class="space-y-3 bg-white p-4.5 rounded-2xl border border-[#ede3d8] shadow-2xs">
                         <h4 class="text-xs font-black uppercase tracking-wider text-[#2d694c] flex items-center gap-2">
                             <span>📱 iPhone / iPad (Safari)</span>
@@ -5849,23 +5880,19 @@
                         </ol>
                     </div>
 
-                    <!-- Android / Chrome Anleitung -->
+                    <!-- Android / Desktop Browser Anleitung -->
                     <div v-else class="space-y-3 bg-white p-4.5 rounded-2xl border border-[#ede3d8] shadow-2xs">
                         <h4 class="text-xs font-black uppercase tracking-wider text-[#2d694c] flex items-center gap-2">
-                            <span>🤖 Android / Mobile Chrome</span>
+                            <span>💻 Chrome / Edge / Android</span>
                         </h4>
                         <ol class="space-y-2.5 text-xs text-[#1f1b16] font-medium">
                             <li class="flex items-start gap-2.5">
                                 <span class="w-5 h-5 rounded-full bg-[#2d694c]/10 text-[#2d694c] font-black flex items-center justify-center shrink-0 text-[11px]">1</span>
-                                <span>Tippe oben rechts im Browser auf das <strong>Drei-Punkte-Menü (⋮)</strong>.</span>
+                                <span>Tippe oben in der Adressleiste auf das <strong>Installieren-Symbol</strong> oder öffne rechts das <strong>Menü (⋮)</strong>.</span>
                             </li>
                             <li class="flex items-start gap-2.5">
                                 <span class="w-5 h-5 rounded-full bg-[#2d694c]/10 text-[#2d694c] font-black flex items-center justify-center shrink-0 text-[11px]">2</span>
-                                <span>Wähle <strong>"App installieren"</strong> oder <strong>"Zum Startbildschirm hinzufügen"</strong>.</span>
-                            </li>
-                            <li class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-[#2d694c]/10 text-[#2d694c] font-black flex items-center justify-center shrink-0 text-[11px]">3</span>
-                                <span>Befolge die kurzen Schritte des Browsers — die App wird auf deinem Handy installiert!</span>
+                                <span>Wähle <strong>"Schooly installieren"</strong> bzw. <strong>"Zum Startbildschirm hinzufügen"</strong>.</span>
                             </li>
                         </ol>
                     </div>
@@ -7171,13 +7198,20 @@
                 const tasks = ref(initialTasks);
 
                 // PWA INSTALL TRIGGER STATE
-                const deferredPrompt = ref(null);
-                const isIOS = ref(/iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase()));
-                const isInstalled = ref(
+                const isStandaloneDisplay = () => (
                     window.matchMedia('(display-mode: standalone)').matches ||
-                    window.navigator.standalone === true ||
-                    localStorage.getItem('pwa_installed') === '1'
+                    window.matchMedia('(display-mode: fullscreen)').matches ||
+                    window.matchMedia('(display-mode: minimal-ui)').matches ||
+                    window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+                    window.navigator.standalone === true
                 );
+                const deferredPrompt = ref(window.earlyDeferredPrompt || null);
+                const isIOS = ref(/iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase()));
+                const isInIframe = ref((() => {
+                    try { return window.self !== window.top; } catch (_) { return true; }
+                })());
+                const currentAppUrl = ref(window.location.href);
+                const isInstalled = ref(isStandaloneDisplay());
 
                 // ── NEU: FREUNDE & BENACHRICHTIGUNGEN ──
                 const isFriendsOpen = ref(false);
@@ -8546,22 +8580,45 @@
                     // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
                     if (window.earlyDeferredPrompt) {
                         deferredPrompt.value = window.earlyDeferredPrompt;
+                        isInstalled.value = false;
                     }
                     // Falls das Event erst nach onMounted feuert, registrieren wir diese Funktion im globalen Scope
                     window.setDeferredPrompt = (e) => {
                         deferredPrompt.value = e;
+                        isInstalled.value = false;
                     };
 
                     window.addEventListener('appinstalled', () => {
                         isInstalled.value = true;
                         deferredPrompt.value = null;
-                        localStorage.setItem('pwa_installed', '1');
+                        window.earlyDeferredPrompt = null;
+                        try { localStorage.setItem('pwa_installed', '1'); } catch (_) {}
                     });
 
                     window.addEventListener('beforeinstallprompt', (e) => {
                         e.preventDefault();
+                        window.earlyDeferredPrompt = e;
                         deferredPrompt.value = e;
+                        isInstalled.value = false;
+                        try { localStorage.removeItem('pwa_installed'); } catch (_) {}
                     });
+
+                    try {
+                        const mql = window.matchMedia('(display-mode: standalone)');
+                        const onDisplayChange = (ev) => {
+                            if (ev.matches) isInstalled.value = true;
+                        };
+                        if (mql.addEventListener) mql.addEventListener('change', onDisplayChange);
+                        else if (mql.addListener) mql.addListener(onDisplayChange);
+                    } catch (_) {}
+
+                    if (!isInstalled.value && typeof navigator.getInstalledRelatedApps === 'function') {
+                        navigator.getInstalledRelatedApps().then((apps) => {
+                            if (Array.isArray(apps) && apps.length > 0 && !deferredPrompt.value && !window.earlyDeferredPrompt) {
+                                isInstalled.value = true;
+                            }
+                        }).catch(() => {});
+                    }
 
                     // Online/Offline-Status überwachen & Sozialdaten bei Reconnect neu laden
                     window.addEventListener('online', () => {
@@ -9464,23 +9521,24 @@
                 };
 
                 const triggerInstall = async () => {
-                    if (deferredPrompt.value) {
+                    const promptEvent = deferredPrompt.value || window.earlyDeferredPrompt;
+                    if (promptEvent) {
                         try {
-                            deferredPrompt.value.prompt();
-                            const { outcome } = await deferredPrompt.value.userChoice;
+                            await promptEvent.prompt();
+                            const { outcome } = await promptEvent.userChoice;
+                            deferredPrompt.value = null;
+                            window.earlyDeferredPrompt = null;
                             if (outcome === 'accepted') {
-                                deferredPrompt.value = null;
                                 isInstalled.value = true;
-                                localStorage.setItem('pwa_installed', '1');
-                            } else {
-                                isInstallGuideModalOpen.value = true;
+                                try { localStorage.setItem('pwa_installed', '1'); } catch (_) {}
                             }
+                            nextTick(refreshIcons);
+                            return;
                         } catch (e) {
-                            isInstallGuideModalOpen.value = true;
+                            console.warn('Direkt-Installationsfenster fehlgeschlagen:', e);
                         }
-                    } else {
-                        isInstallGuideModalOpen.value = true;
                     }
+                    isInstallGuideModalOpen.value = true;
                     nextTick(refreshIcons);
                 };
 
@@ -13257,7 +13315,7 @@
                     taskSelectionMode, selectedTaskIds, taskLongPressStart, taskLongPressMove, taskLongPressEnd, toggleTaskSelection, exitTaskSelectionMode, deleteSelectedTasks,
                     modalDragStart, modalDragMove, modalDragEnd,
                     getCalculatedSemesterPoints,
-                    isInstallGuideModalOpen, triggerInstall, dismissInstallGuide, isInstalled, isIOS, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings, handleForgotPassword, handleDeleteAccount,
+                    isInstallGuideModalOpen, triggerInstall, dismissInstallGuide, isInstalled, isIOS, isInIframe, currentAppUrl, isAppSettingsModalOpen, startYear, tempStartYear, saveAppSettings, handleForgotPassword, handleDeleteAccount,
                     displayName, welcomeMessage, selectedCalendarDate, selectedDayTasks, selectCalendarDay,
                     selectedDayFocusTasks, otherWeekUpcomingTasks, selectedDayFormattedLong, selectedDayFormattedShort, selectedDayTimetableLessons,
                     weekdayKeys, weekdayLabels, timetable, timetableEditDay, toggleTimetableSubject, timetableDaysForSubject, subjectOccursOnDate, datePickerRelevantSubjectId,

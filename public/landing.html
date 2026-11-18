@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" class="scroll-smooth">
+<html lang="de">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -8,7 +8,7 @@
     <meta property="og:title" content="schooly – All-in-One Schul-App für Handy &amp; Laptop" />
     <meta property="og:description" content="Noten, Wunschnote, Stundenplan, Kalender-Sync &amp; Abitur-Check an einem ruhigen Ort. Jetzt kostenlos auf schooly26.vercel.app starten." />
     <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg" />
-    <link rel="apple-touch-icon" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,29 +28,34 @@
         };
     </script>
 
+    <!-- GSAP + ScrollTrigger (Scroll Animations Skill) -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+
     <style>
         :root {
-            --bg-cream: #faf7f2;
-            --surface-warm: #f4ece4;
-            --border-hairline: #e5dcd0;
-            --ink-espresso: #1f1b16;
-            --ink-muted: #6e665e;
-            --sage: #2d694c;
-            --sage-dark: #23533c;
+            --bg-sage-deep: #153625;
+            --bg-sage-mid: #286145;
+            --bg-sage-glow: #397f5d;
+            --cream: #faf7f2;
             --mint: #e7f3de;
             --honey: #ffe6b9;
             --honey-ink: #7a4e00;
+            --espresso: #1f1b16;
+            --muted-espresso: #6e665e;
+            --sage: #2d694c;
         }
 
         html, body {
-            background-color: var(--bg-cream);
-            color: var(--ink-espresso);
+            background: radial-gradient(circle at 68% 18%, #357a58 0%, #245b3f 42%, #153625 100%);
+            background-color: var(--bg-sage-deep);
+            color: #ffffff;
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
             overflow-x: clip;
         }
 
-        h1, h2, h3, .font-epilogue {
+        h1, h2, h3, h4, .font-epilogue {
             font-family: 'Epilogue', sans-serif;
         }
 
@@ -58,157 +63,129 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* 3D Tactile App Surface Bevel */
-        .surface-3d {
-            background: linear-gradient(180deg, #ffffff 0%, #fcfaf6 100%);
-            border: 1px solid #e2d8c9;
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.95) inset,
-                0 5px 0 #e6dccf,
-                0 22px 44px -18px rgba(31, 27, 22, 0.12);
-            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .surface-3d-mint {
-            background: linear-gradient(165deg, #f3fae9 0%, #e7f3de 100%);
-            border: 1px solid #cce0be;
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.9) inset,
-                0 5px 0 #c6dbba,
-                0 22px 44px -18px rgba(45, 105, 76, 0.14);
-        }
-        .surface-3d-honey {
-            background: linear-gradient(165deg, #fff5df 0%, #ffe6b9 100%);
-            border: 1px solid #f0d095;
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.85) inset,
-                0 5px 0 #e5c384,
-                0 22px 44px -18px rgba(122, 78, 0, 0.14);
-        }
-        .surface-3d-sage {
-            background: linear-gradient(165deg, #357a59 0%, #2d694c 55%, #23533c 100%);
-            border: 1px solid #214e38;
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.24) inset,
-                0 6px 0 #193c2b,
-                0 26px 52px -18px rgba(24, 58, 41, 0.38);
-        }
-        .surface-3d-espresso {
-            background: linear-gradient(165deg, #2d2721 0%, #1f1b16 65%, #16130f 100%);
-            border: 1px solid #3c342c;
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.14) inset,
-                0 6px 0 #110e0b,
-                0 28px 56px -18px rgba(15, 12, 9, 0.45);
-        }
-
-        /* Primary & Secondary tactile 3D CTAs */
-        .cta-3d-sage {
-            background: linear-gradient(180deg, #347656 0%, #2d694c 100%);
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.28) inset,
-                0 4px 0 #1a432f,
-                0 14px 28px -10px rgba(45, 105, 76, 0.45);
-            transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .cta-3d-sage:hover {
-            transform: translateY(-2px);
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.32) inset,
-                0 5px 0 #1a432f,
-                0 18px 34px -10px rgba(45, 105, 76, 0.52);
-        }
-        .cta-3d-sage:active {
-            transform: translateY(2px);
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.2) inset,
-                0 1px 0 #1a432f;
-        }
-
-        .cta-3d-light {
-            background: linear-gradient(180deg, #ffffff 0%, #f7f2ea 100%);
-            border: 1px solid #dfd4c4;
-            box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.95) inset,
-                0 4px 0 #ddd1c0,
-                0 12px 24px -12px rgba(31, 27, 22, 0.14);
-            transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .cta-3d-light:hover {
-            transform: translateY(-2px);
-            border-color: #2d694c;
-        }
-        .cta-3d-light:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #ddd1c0;
-        }
-
-        /* Ultra-smooth GPU-composited scroll reveals */
-        [data-reveal] {
-            opacity: 0;
-            transform: translate3d(0, 20px, 0);
-            transition:
-                opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: opacity, transform;
-        }
-        [data-reveal].is-visible {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-        }
-
-        /* Hero & Sticky GPU Stage Motion Containers (0ms canvas redraw overhead during scroll) */
-        .gpu-stage-layer {
-            transform-style: preserve-3d;
-            will-change: transform;
-        }
-
-        /* Pre-rendered Storyboard Layers for butter-smooth crossfade */
-        .story-canvas-layer {
-            position: absolute;
+        /* Full-Website Studio Sage Cyclorama Canvas Backdrop (Matches Instagram Posts #4–#9) */
+        #siteStudioBg {
+            position: fixed;
             inset: 0;
             width: 100%;
             height: 100%;
-            opacity: 0;
-            transform: translate3d(0, 14px, 0) scale(0.985);
-            transition:
-                opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: opacity, transform;
             pointer-events: none;
-        }
-        .story-canvas-layer.is-current {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
+            z-index: 0;
         }
 
-        /* Story Chapter Cards */
-        .story-step {
-            border: 1px solid #e5dcd0;
-            background: rgba(255, 255, 255, 0.72);
-            transition:
-                transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-                background-color 0.32s ease,
-                border-color 0.32s ease,
-                box-shadow 0.32s ease;
+        /* Studio Cream Halo behind Hardware (Exact @schooly.app Post Halo) */
+        .studio-halo-cream {
+            background: radial-gradient(circle closest-side, rgba(250, 247, 242, 0.20) 0%, rgba(255, 230, 185, 0.08) 46%, rgba(250, 247, 242, 0) 92%);
         }
-        .story-step.is-active {
-            background: #ffffff;
-            border-color: #2d694c;
-            transform: translate3d(4px, -2px, 0);
+
+        /* Instagram-Post Tactile Card Surfaces over the Deep Green Studio Background */
+        .post-card-cream {
+            background: linear-gradient(175deg, #ffffff 0%, #faf7f2 68%, #f2eae0 100%);
+            color: var(--espresso);
+            border: 1px solid rgba(255, 255, 255, 0.65);
             box-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.9) inset,
-                0 5px 0 #cfe1d6,
-                0 22px 44px -18px rgba(45, 105, 76, 0.16);
+                0 1px 0 rgba(255, 255, 255, 0.95) inset,
+                0 24px 48px -14px rgba(8, 22, 15, 0.44);
         }
 
-        /* Top Scroll Progress Hairline */
-        #scrollProgressBar {
-            transform: scaleX(0);
-            transform-origin: left center;
-            will-change: transform;
+        .post-card-mint {
+            background: linear-gradient(165deg, #f5fcf2 0%, #e1f1d6 60%, #cbe2c1 100%);
+            color: var(--espresso);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.85) inset,
+                0 24px 48px -14px rgba(8, 22, 15, 0.42);
         }
 
-        /* Nav link underline */
+        .post-card-honey {
+            background: linear-gradient(165deg, #fff5df 0%, #ffe5b3 58%, #f1c46d 100%);
+            color: var(--espresso);
+            border: 1px solid rgba(255, 245, 220, 0.7);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.8) inset,
+                0 24px 48px -14px rgba(8, 22, 15, 0.42);
+        }
+
+        .post-card-sage-glass {
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.06) 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 24px 48px -16px rgba(6, 18, 12, 0.48);
+        }
+
+        .post-card-espresso {
+            background: linear-gradient(165deg, #332c25 0%, #1f1b16 62%, #13100d 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 230, 185, 0.22);
+            box-shadow: 0 24px 48px -14px rgba(6, 16, 10, 0.52);
+        }
+
+        /* Floating Foreground Editorial Callout (Exact .ig-fg-layer from Social Posts) */
+        .post-callout-float {
+            background: #faf7f2;
+            color: #1f1b16;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 22px 42px -12px rgba(8, 20, 14, 0.52);
+        }
+
+        /* Primary Cream / Honey & Secondary Glass CTAs on Green */
+        .cta-post-cream {
+            background: linear-gradient(180deg, #ffffff 0%, #faf5ec 100%);
+            color: #1f1b16;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 1) inset,
+                0 4px 0 #d9cebe,
+                0 18px 34px -10px rgba(7, 20, 13, 0.48);
+            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cta-post-cream:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 1) inset,
+                0 5px 0 #d9cebe,
+                0 22px 38px -10px rgba(7, 20, 13, 0.56);
+        }
+        .cta-post-cream:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #d9cebe;
+        }
+
+        .cta-post-glass {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            box-shadow: 0 14px 28px -12px rgba(7, 20, 13, 0.36);
+            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease, border-color 0.18s ease;
+        }
+        .cta-post-glass:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.20);
+            border-color: #ffe6b9;
+        }
+        .cta-post-glass:active {
+            transform: translateY(2px);
+        }
+
+        .cta-post-sage {
+            background: linear-gradient(180deg, #347656 0%, #2d694c 100%);
+            color: #ffffff;
+            box-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.26) inset,
+                0 4px 0 #183d2b,
+                0 16px 30px -10px rgba(24, 61, 43, 0.45);
+            transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cta-post-sage:hover {
+            transform: translateY(-2px);
+        }
+        .cta-post-sage:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #183d2b;
+        }
+
+        /* Nav link underline in Honey-Gold */
         .nav-link {
             position: relative;
         }
@@ -219,34 +196,101 @@
             right: 0;
             bottom: -4px;
             height: 2px;
-            background: #2d694c;
+            background: #ffe6b9;
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .nav-link:hover::after {
             transform: scaleX(1);
         }
 
+        /* Scroll Progress Line */
+        #scrollProgressBar {
+            transform: scaleX(0);
+            transform-origin: left center;
+            will-change: transform;
+        }
+
+        /* 3D Hardware Motion Layers */
+        .hw-actor {
+            will-change: transform, opacity;
+            transform-style: preserve-3d;
+        }
+
+        .screen-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+        .screen-layer.is-active {
+            opacity: 1;
+        }
+
+        /* Pinned Story Showcase Backdrop Frame (Translucent Emerald Studio Glass) */
+        .pinned-post-stage {
+            background: radial-gradient(circle at 64% 38%, rgba(63, 139, 102, 0.56) 0%, rgba(27, 71, 49, 0.78) 54%, rgba(16, 43, 29, 0.90) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 32px 68px -18px rgba(5, 16, 10, 0.62);
+        }
+
+        .studio-floor-shelf {
+            background: linear-gradient(180deg, rgba(255, 230, 185, 0.08) 0%, rgba(11, 32, 20, 0.35) 100%);
+            border-top: 1px solid rgba(255, 230, 185, 0.22);
+        }
+
+        /* Step Explanation Panels inside Pinned Stage */
+        .pin-explain-card {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        .pin-explain-card.is-interactive {
+            pointer-events: auto;
+        }
+
+        /* Bento Image Layer Crossfade */
+        .bento-canvas-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translate3d(0, 10px, 0) scale(0.98);
+            transition: opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1), transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+        .bento-canvas-layer.is-current {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+        }
+
+        /* Scroll-Based 3D Cards */
+        .scroll-3d-card {
+            will-change: transform, opacity;
+            transform-style: preserve-3d;
+        }
+
         @media (prefers-reduced-motion: reduce) {
-            html {
-                scroll-behavior: auto;
-            }
-            [data-reveal] {
-                opacity: 1 !important;
-                transform: none !important;
+            .screen-layer,
+            .bento-canvas-layer {
                 transition: none !important;
-            }
-            .story-step.is-active,
-            .story-canvas-layer.is-current {
-                transform: none !important;
             }
         }
     </style>
 </head>
-<body id="top" class="min-h-screen flex flex-col selection:bg-[#2d694c] selection:text-white">
+<body id="top" class="min-h-screen flex flex-col relative selection:bg-[#ffe6b9] selection:text-[#1f1b16]">
 
-    <!-- Hidden crisp texture bank -->
+    <!-- Full-Website Green Studio Cyclorama Canvas (Matches @schooly.app Instagram Beiträge Backdrop) -->
+    <canvas id="siteStudioBg" aria-hidden="true"></canvas>
+
+    <!-- Hidden Texture Bank (Official Schooly Screenshots) -->
     <div class="hidden" aria-hidden="true">
         <img id="tex-dash-mobile" src="/assets/screenshot_dashboard_mobile.png" alt="" />
         <img id="tex-dash-laptop" src="/assets/screenshot_dashboard.png" alt="" />
@@ -265,27 +309,29 @@
         <img id="tex-aufgaben-mobile" src="/assets/screenshot_aufgaben_mobile.png" alt="" />
     </div>
 
-    <!-- 3-ZONE TOP NAVIGATION BAR -->
-    <header class="sticky top-0 z-50 bg-[#faf7f2]/92 backdrop-blur-md border-b border-[#e5dcd0]">
+    <!-- 3-ZONE TOP NAVIGATION BAR (Frosted Deep Sage) -->
+    <header class="sticky top-0 z-50 bg-[#173b29]/88 backdrop-blur-md border-b border-white/15">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between gap-8">
-            <a href="#top" class="flex items-center gap-2.5 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#2d694c] rounded-lg">
-                <img src="/assets/aistudio/schooly_app_icon_7d45ac62.svg" alt="" width="28" height="28" class="w-7 h-7 object-contain" />
-                <span class="font-epilogue font-black text-xl tracking-tight text-[#1f1b16]">schooly</span>
+            <!-- Zone 1: Brand (White Wordmark like Sage Posts) -->
+            <a href="#top" class="flex items-center gap-2.5 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#ffe6b9] rounded-lg">
+                <img src="/assets/schooly_logo_light.png" alt="schooly" class="h-6 sm:h-7 w-auto object-contain" />
             </a>
 
-            <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-[#6e665e]" aria-label="Hauptnavigation">
-                <a href="#story" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Funktionen</a>
-                <a href="#geraete" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Handy &amp; Laptop</a>
-                <a href="#abitur" class="nav-link hover:text-[#1f1b16] transition-colors whitespace-nowrap shrink-0">Abitur-Check</a>
-                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="nav-link hover:text-[#2d694c] transition-colors whitespace-nowrap shrink-0">@schooly.app</a>
+            <!-- Zone 2: Concise Single-Line Links -->
+            <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-white/80" aria-label="Hauptnavigation">
+                <a href="#story" class="nav-link hover:text-[#ffe6b9] transition-colors whitespace-nowrap shrink-0">Scroll-Tour</a>
+                <a href="#geraete" class="nav-link hover:text-[#ffe6b9] transition-colors whitespace-nowrap shrink-0">Funktionen</a>
+                <a href="#kennzahlen" class="nav-link hover:text-[#ffe6b9] transition-colors whitespace-nowrap shrink-0">Überblick</a>
+                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="nav-link hover:text-[#ffe6b9] transition-colors whitespace-nowrap shrink-0">@schooly.app</a>
             </nav>
 
+            <!-- Zone 3: Primary Action -->
             <div class="flex items-center gap-2.5 shrink-0">
-                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-sage inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs sm:text-sm font-bold whitespace-nowrap shrink-0 min-h-[40px]">
+                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-post-cream inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold whitespace-nowrap shrink-0 min-h-[40px]">
                     <span>App öffnen</span>
                     <span aria-hidden="true">→</span>
                 </a>
-                <button id="mobileNavBtn" type="button" aria-expanded="false" aria-controls="mobileNavDrawer" aria-label="Menü öffnen" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-[#e5dcd0] bg-white text-[#1f1b16] cursor-pointer">
+                <button id="mobileNavBtn" type="button" aria-expanded="false" aria-controls="mobileNavDrawer" aria-label="Menü öffnen" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-white/20 bg-white/10 text-white cursor-pointer">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                         <line x1="4" y1="7" x2="20" y2="7"></line>
                         <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -294,49 +340,57 @@
                 </button>
             </div>
         </div>
-        <!-- Compositor-only scroll indicator -->
-        <div id="scrollProgressBar" class="h-[2px] w-full bg-[#2d694c]" aria-hidden="true"></div>
+        <div id="scrollProgressBar" class="h-[2.5px] w-full bg-[#ffe6b9]" aria-hidden="true"></div>
 
         <!-- Mobile Slide Drawer -->
-        <div id="mobileNavDrawer" class="hidden md:hidden border-t border-[#e5dcd0] bg-[#faf7f2] px-4 py-4 space-y-2">
-            <a href="#story" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-[#1f1b16] hover:bg-[#f4ece4]">Funktionen entdecken</a>
-            <a href="#geraete" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-[#1f1b16] hover:bg-[#f4ece4]">Handy &amp; Laptop Sync</a>
-            <a href="#abitur" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-[#1f1b16] hover:bg-[#f4ece4]">Abitur- &amp; Noten-Check</a>
-            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="mobile-nav-link flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-bold text-[#2d694c] hover:bg-[#e7f3de]">
+        <div id="mobileNavDrawer" class="hidden md:hidden border-t border-white/15 bg-[#163827] px-4 py-4 space-y-2">
+            <a href="#story" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-white hover:bg-white/10">Interaktive Scroll-Tour</a>
+            <a href="#geraete" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-white hover:bg-white/10">Alle Funktionen</a>
+            <a href="#kennzahlen" class="mobile-nav-link block py-2.5 px-3 rounded-xl text-sm font-bold text-white hover:bg-white/10">Auf einen Blick</a>
+            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="mobile-nav-link flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-bold text-[#ffe6b9] hover:bg-white/10">
                 <span>Instagram @schooly.app</span>
                 <span aria-hidden="true">↗</span>
             </a>
         </div>
     </header>
 
-    <main class="flex-1">
+    <!-- Progress-Based Section Navigator (Scroll Animations Skill Pattern) -->
+    <nav id="sectionNav" class="hidden xl:flex fixed right-5 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-3 p-2.5 rounded-2xl bg-[#153625]/75 backdrop-blur-md border border-white/20 shadow-lg" aria-label="Sektions-Fortschritt">
+        <button type="button" data-scroll-target="#top" title="Start" class="sec-dot w-2.5 h-2.5 rounded-full bg-[#ffe6b9] transition-transform cursor-pointer"></button>
+        <button type="button" data-scroll-target="#story" title="Scroll-Tour" class="sec-dot w-2.5 h-2.5 rounded-full bg-white/30 transition-transform cursor-pointer"></button>
+        <button type="button" data-scroll-target="#geraete" title="Funktionen" class="sec-dot w-2.5 h-2.5 rounded-full bg-white/30 transition-transform cursor-pointer"></button>
+        <button type="button" data-scroll-target="#kennzahlen" title="Überblick" class="sec-dot w-2.5 h-2.5 rounded-full bg-white/30 transition-transform cursor-pointer"></button>
+        <button type="button" data-scroll-target="#launch" title="Starten" class="sec-dot w-2.5 h-2.5 rounded-full bg-white/30 transition-transform cursor-pointer"></button>
+    </nav>
 
-        <!-- HERO SECTION -->
-        <section class="relative pt-8 pb-14 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 overflow-x-clip">
-            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+    <main class="flex-1 relative z-10">
 
-                <!-- Left Copy Column -->
-                <div class="lg:col-span-6 space-y-6">
-                    <div class="text-xs sm:text-sm font-bold text-[#2d694c] tracking-wide">
-                        All-in-One Schul-App · Kostenlos &amp; werbefrei
+        <!-- HERO SECTION: Full-Green Instagram Post Aesthetic + Open 3D Laptop & Phone Studio Stage -->
+        <section id="hero" class="relative pt-10 pb-14 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 overflow-x-clip">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
+
+                <!-- Left Copy Column (Styled like @schooly.app Sage Cover Slide) -->
+                <div class="lg:col-span-6 space-y-5 lg:space-y-6 relative z-20">
+                    <div class="hero-copy text-xs sm:text-sm font-extrabold text-[#ffe6b9] tracking-wide uppercase">
+                        ALL-IN-ONE SCHUL-APP · KOSTENLOS &amp; WERBEFREI
                     </div>
 
-                    <h1 class="font-epilogue font-black text-[#1f1b16] tracking-tight leading-[1.06]" style="font-size: clamp(2.25rem, 4.4vw, 3.85rem); text-wrap: balance;">
+                    <h1 class="hero-copy font-epilogue font-black text-white tracking-tight leading-[1.04]" style="font-size: clamp(2.35rem, 4.4vw, 4rem); text-wrap: balance;">
                         Dein Schulalltag. Ruhig sortiert in einer App.
                     </h1>
 
-                    <p class="text-[15px] sm:text-[17px] text-[#6e665e] leading-[1.65] max-w-xl">
-                        Schluss mit fünf verschiedenen Apps und Zettelchaos: <strong class="text-[#1f1b16] font-bold">schooly</strong> vereint Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und den kompletten Abitur-Check — nahtlos auf Smartphone und Laptop.
+                    <p class="hero-copy text-[15px] sm:text-[17px] text-[#d9eadf] leading-[1.65] max-w-xl font-medium">
+                        Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und der komplette Abitur-Check — nahtlos synchron zwischen <strong class="text-white font-bold">Smartphone und Laptop</strong>.
                     </p>
 
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-1">
-                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-sage inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
-                            <span>Web-App starten</span>
-                            <span class="text-[#e7f3de] font-semibold">· schooly26.vercel.app →</span>
+                    <div class="hero-copy flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-post-cream inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-extrabold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
+                            <span>schooly26.vercel.app öffnen</span>
+                            <span aria-hidden="true">→</span>
                         </a>
 
-                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="cta-3d-light inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl text-[#1f1b16] font-bold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
-                            <svg class="w-4 h-4 text-[#2d694c] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="cta-post-glass inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
+                            <svg class="w-4 h-4 text-[#ffe6b9] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                                 <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -345,248 +399,335 @@
                         </a>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-[#6e665e] pt-1">
-                        <span>Klasse 5 bis Abitur</span>
-                        <span aria-hidden="true">·</span>
-                        <span>1–15 Punkte &amp; Noten 1–6</span>
-                        <span aria-hidden="true">·</span>
-                        <span>Echtzeit Cloud-Sync</span>
+                    <!-- Clean Metadata Row + Quick View Mode Switcher -->
+                    <div class="hero-copy pt-2 space-y-3">
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-bold text-[#ffe6b9]/90">
+                            <span>Klasse 5 bis Abitur</span>
+                            <span aria-hidden="true">·</span>
+                            <span>0–15 Punkte &amp; Noten 1–6</span>
+                            <span aria-hidden="true">·</span>
+                            <span>Scrolle runter für die Tour</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Right Studio 3D Hardware Stage (Silky 120fps GPU Parallax + Genuine 3D Titanium Depth) -->
-                <div class="lg:col-span-6 space-y-4">
-                    <div id="heroStageCard" class="surface-3d rounded-[28px] p-2.5 sm:p-3 overflow-hidden relative gpu-stage-layer">
-                        <div class="relative rounded-[20px] overflow-hidden bg-[#1e4b35] aspect-[14/11]">
-                            <canvas id="heroCanvasDuo" class="story-canvas-layer is-current"></canvas>
-                            <canvas id="heroCanvasPhone" class="story-canvas-layer"></canvas>
-                            <canvas id="heroCanvasLaptop" class="story-canvas-layer"></canvas>
+                <!-- Right Open 3D Studio Stage (Directly on Green Cyclorama + Tilted Post Callout) -->
+                <div class="lg:col-span-6 space-y-4 relative z-10">
+                    <div id="heroStageWrap" class="relative overflow-visible aspect-[14/10.5] flex items-center justify-center">
+                        <!-- Studio Cream Halo from Sage Posts -->
+                        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] h-[92%] rounded-full studio-halo-cream"></div>
+
+                        <!-- Subtle Architectural Horizon Line underneath Hero Devices -->
+                        <div class="pointer-events-none absolute inset-x-[4%] bottom-[13%] h-px bg-gradient-to-r from-transparent via-[#ffe6b9]/40 to-transparent"></div>
+
+                        <!-- Independent 3D MacBook Actor -->
+                        <div id="heroMacActor" class="hw-actor absolute right-[0%] bottom-[12%] w-[78%] aspect-[480/355] pointer-events-none">
+                            <canvas id="heroMacCanvas" class="w-full h-full block"></canvas>
+                        </div>
+
+                        <!-- Independent 3D Titanium Smartphone Actor -->
+                        <div id="heroPhoneActor" class="hw-actor absolute left-[3%] bottom-[6%] w-[33%] aspect-[320/610] z-10 pointer-events-none">
+                            <canvas id="heroPhoneCanvas" class="w-full h-full block"></canvas>
+                        </div>
+
+                        <!-- Floating Tilted Callout Card (Exact .ig-fg-layer Aesthetic from Social Posts) -->
+                        <div id="heroFloatCard" class="post-callout-float hidden sm:block absolute left-[24%] bottom-[1%] z-20 rounded-2xl px-4 py-2.5 pointer-events-none" style="transform: rotate(-2.5deg);">
+                            <div class="text-[10.5px] font-extrabold text-[#2d694c] tracking-wide">ECHTZEIT CLOUD-SYNC</div>
+                            <div class="text-sm font-black text-[#1f1b16]">Handy &amp; Laptop live ✓</div>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-between gap-3 px-1">
-                        <div class="inline-flex items-center p-1 rounded-xl bg-[#efe7da] border border-[#e2d7c7]" role="tablist" aria-label="Geräteansicht wählen">
-                            <button type="button" data-hero-mode="duo" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                        <div class="inline-flex items-center p-1 rounded-xl bg-black/25 border border-white/15 backdrop-blur-md" role="tablist" aria-label="Geräteansicht wählen">
+                            <button type="button" data-hero-mode="duo" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold bg-[#faf7f2] text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
                                 Handy &amp; Laptop
                             </button>
-                            <button type="button" data-hero-mode="phone" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                            <button type="button" data-hero-mode="phone" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
                                 Smartphone 3D
                             </button>
-                            <button type="button" data-hero-mode="laptop" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
-                                Laptop Ansicht
+                            <button type="button" data-hero-mode="laptop" class="hero-mode-btn px-3.5 py-2 rounded-lg text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                                Laptop 3D
                             </button>
                         </div>
-                        <span class="text-xs font-semibold text-[#6e665e] hidden sm:inline">Echtes 3D-Gehäuse · Butterweich animiert</span>
+                        <a href="#story" class="text-xs font-extrabold text-[#ffe6b9] hover:underline whitespace-nowrap">
+                            Runterscrollen zum Erleben ↓
+                        </a>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <!-- HORIZONTAL DIVIDER -->
+        <!-- HORIZONTAL HAIRLINE DIVIDER (Exact Post Divider style: border-white/15) -->
         <div class="max-w-[1200px] mx-auto px-4 sm:px-8">
-            <div class="h-px bg-[#e5dcd0]"></div>
+            <div class="h-px bg-white/15"></div>
         </div>
 
-        <!-- SECTION 01: FLUID SCROLL-CHOREOGRAPHED STORYBOARD -->
-        <section id="story" class="py-16 sm:py-24">
-            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 space-y-12">
-
-                <div class="max-w-2xl space-y-3" data-reveal>
-                    <div class="text-xs font-bold text-[#2d694c]">01. So begleitet dich schooly durchs Schuljahr</div>
-                    <h2 class="font-epilogue font-black text-[#1f1b16] tracking-tight leading-tight" style="font-size: clamp(1.75rem, 3.2vw, 2.75rem); text-wrap: balance;">
-                        Vier Werkzeuge, die genau dann helfen, wenn es darauf ankommt.
+        <!-- ===================================================================== -->
+        <!-- SECTION 01: GSAP SCROLLTRIGGER PINNED HARDWARE CHOREOGRAPHY (#story)  -->
+        <!-- ===================================================================== -->
+        <section id="story" class="relative py-12 sm:py-16">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 mb-6 sm:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="max-w-2xl space-y-2">
+                    <div class="text-xs font-extrabold text-[#ffe6b9] tracking-wide uppercase">01. INTERAKTIVE SCROLL-TOUR · HANDY &amp; LAPTOP</div>
+                    <h2 class="font-epilogue font-black text-white tracking-tight leading-tight" style="font-size: clamp(1.75rem, 3.2vw, 2.8rem); text-wrap: balance;">
+                        Scrolle weiter — so greifen Handy und Laptop ineinander.
                     </h2>
-                    <p class="text-sm sm:text-base text-[#6e665e] leading-relaxed">
-                        Beim Runterscrollen gleitet rechts die echte 3D-Geräteansicht flüssig mit — vom mobilen Schnelleintrag bis zur großen Laptop-Planung.
-                    </p>
                 </div>
+                <div class="text-xs sm:text-sm font-semibold text-[#d9eadf]">
+                    Vier Kapitel · Durch Scrollen oder Antippen gesteuert
+                </div>
+            </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <!-- PINNED STAGE CONTAINER -->
+            <div id="scrollShowcasePin" class="relative w-full">
+                <div class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-2 pb-6">
+                    <div class="pinned-post-stage rounded-[30px] sm:rounded-[34px] overflow-hidden relative min-h-[590px] sm:min-h-[615px] lg:h-[630px] flex flex-col justify-between">
+                        <!-- Cream Studio Halo inside Stage -->
+                        <div class="pointer-events-none absolute left-[28%] top-[12%] w-[520px] h-[520px] rounded-full studio-halo-cream"></div>
 
-                    <!-- Left Column: 4 Interactive / Scroll-Driven Story Chapters -->
-                    <div class="lg:col-span-5 space-y-5">
-
-                        <!-- Chapter 1 -->
-                        <article class="story-step is-active rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="0" tabindex="0">
-                            <div class="flex items-center justify-between text-xs font-bold text-[#2d694c]">
-                                <span>01. Fächer &amp; Gewichtung</span>
-                                <span>Handy &amp; Laptop</span>
+                        <!-- Top Bar inside Pinned Showcase -->
+                        <div class="relative z-30 px-3 sm:px-8 pt-4 sm:pt-5 flex flex-wrap items-center justify-between gap-3">
+                            <div class="grid grid-cols-4 sm:inline-flex items-center gap-1 p-1 rounded-xl bg-black/25 border border-white/15 w-full sm:w-auto" role="tablist" aria-label="Tour-Schritte">
+                                <button type="button" data-pin-step="0" class="pin-step-btn px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold bg-[#faf7f2] text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[36px] text-center">
+                                    01 · Sync
+                                </button>
+                                <button type="button" data-pin-step="1" class="pin-step-btn px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[36px] text-center">
+                                    02 · Noten
+                                </button>
+                                <button type="button" data-pin-step="2" class="pin-step-btn px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[36px] text-center">
+                                    03 · Planer
+                                </button>
+                                <button type="button" data-pin-step="3" class="pin-step-btn px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[36px] text-center">
+                                    04 · Abitur
+                                </button>
                             </div>
-                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
-                                Jede Note zählt exakt so, wie dein Lehrer rechnet.
-                            </h3>
-                            <p class="text-sm text-[#6e665e] leading-relaxed">
-                                Ob 2:1, 1:1 oder individueller Klausur- und Sonstiges-Faktor — dein Schnitt wird für Grund- und Leistungskurse sofort ohne Taschenrechner aktualisiert.
-                            </p>
-                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#2b6649]">
-                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="0"></canvas>
-                            </div>
-                        </article>
 
-                        <!-- Chapter 2 -->
-                        <article class="story-step rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="1" tabindex="0">
-                            <div class="flex items-center justify-between text-xs font-bold text-[#7a4e00]">
-                                <span>02. Wunschnoten-Rechner</span>
-                                <span>Klausur-Strategie</span>
-                            </div>
-                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
-                                Vorher wissen, welche Punktzahl in der nächsten Arbeit reicht.
-                            </h3>
-                            <p class="text-sm text-[#6e665e] leading-relaxed">
-                                Zielnote festlegen — schooly berechnet dir live, wie viele Punkte du noch brauchst und berücksichtigt Gewichtungen sowie Halbjahresstand.
-                            </p>
-                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#f6e4be]">
-                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="1"></canvas>
-                            </div>
-                        </article>
-
-                        <!-- Chapter 3 -->
-                        <article class="story-step rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="2" tabindex="0">
-                            <div class="flex items-center justify-between text-xs font-bold text-[#2d694c]">
-                                <span>03. Stundenplan &amp; Kalender-Sync</span>
-                                <span>Google Kalender</span>
-                            </div>
-                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
-                                Wochenbelastung &amp; Klausuren im Blick statt böser Überraschungen.
-                            </h3>
-                            <p class="text-sm text-[#6e665e] leading-relaxed">
-                                Trage Klausuren, Tests und Hausaufgaben direkt im Stundenplan ein und synchronisiere wichtige Prüfungstermine per Knopfdruck mit deinem Google Kalender.
-                            </p>
-                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#dff0d5]">
-                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="2"></canvas>
-                            </div>
-                        </article>
-
-                        <!-- Chapter 4 -->
-                        <article class="story-step rounded-3xl p-6 space-y-4 cursor-pointer" data-story-index="3" tabindex="0">
-                            <div class="flex items-center justify-between text-xs font-bold text-[#6e665e]">
-                                <span>04. Oberstufe &amp; Abitur-Check</span>
-                                <span>40 Kurse · Block I &amp; II</span>
-                            </div>
-                            <h3 class="font-epilogue font-black text-xl text-[#1f1b16] leading-snug">
-                                Schluss mit fehleranfälligen Excel-Tabellen fürs Abi.
-                            </h3>
-                            <p class="text-sm text-[#6e665e] leading-relaxed">
-                                Automatische Streichungs-Logik für Block I, Prüfung der 5 Bestehens-Kriterien und Was-wäre-wenn-Simulation für deine Prüfungsfächer P1 bis P5.
-                            </p>
-                            <div class="lg:hidden rounded-2xl overflow-hidden bg-[#231e19]">
-                                <canvas class="mobile-story-canvas block w-full h-auto aspect-[4/3]" data-story-canvas="3"></canvas>
-                            </div>
-                        </article>
-
-                    </div>
-
-                    <!-- Right Column: Pre-Rendered Sticky 3D Canvas Stack (Butter-Smooth Crossfade + Continuous GPU Tilt) -->
-                    <div class="hidden lg:block lg:col-span-7 sticky top-24">
-                        <div id="storyStickyCard" class="surface-3d rounded-[30px] p-3 gpu-stage-layer">
-                            <div class="relative rounded-[22px] overflow-hidden aspect-[10/9] bg-[#1f1b16]">
-                                <canvas id="storyLayer0" class="story-canvas-layer is-current"></canvas>
-                                <canvas id="storyLayer1" class="story-canvas-layer"></canvas>
-                                <canvas id="storyLayer2" class="story-canvas-layer"></canvas>
-                                <canvas id="storyLayer3" class="story-canvas-layer"></canvas>
-
-                                <div class="absolute inset-x-4 bottom-4 z-20 rounded-2xl bg-[#1f1b16]/88 backdrop-blur-md text-white px-5 py-3.5 flex items-center justify-between gap-4 border border-white/10">
-                                    <div class="min-w-0">
-                                        <div id="storyStageKicker" class="text-[11px] font-bold text-[#e7f3de] truncate">01 · Fächer &amp; Gewichtung</div>
-                                        <div id="storyStageTitle" class="text-sm font-extrabold font-epilogue truncate">Notenübersicht &amp; Gewichtungs-Engine auf dem Smartphone</div>
-                                    </div>
-                                    <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-[#ffe6b9] hover:underline whitespace-nowrap shrink-0">
-                                        Live testen →
-                                    </a>
+                            <div class="hidden sm:flex items-center gap-3 text-xs font-extrabold text-[#ffe6b9] tabular-nums">
+                                <span id="pinStepCounter">Schritt 01 / 04</span>
+                                <div class="w-24 h-1.5 rounded-full bg-white/15 overflow-hidden">
+                                    <div id="pinProgressFill" class="h-full w-full bg-[#ffe6b9] origin-left" style="transform: scaleX(0.1);"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                        <!-- Main Split Stage inside Pin: Sliding 3D Hardware + Post-Styled Explanation Cards -->
+                        <div class="relative z-20 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-center px-4 sm:px-8 py-4 sm:py-6">
+
+                            <!-- Left/Top Stage: Independent 3D Laptop & 3D Smartphone Actors -->
+                            <div class="lg:col-span-7 relative h-[250px] sm:h-[330px] lg:h-[460px] flex items-center justify-center">
+                                <!-- 3D Laptop Actor -->
+                                <div id="pinMacActor" class="hw-actor absolute w-[78%] sm:w-[74%] lg:w-[82%] max-w-[500px] aspect-[480/355]" style="left: 14%; bottom: 12%;">
+                                    <canvas id="pinMacScreen0" class="screen-layer is-active"></canvas>
+                                    <canvas id="pinMacScreen1" class="screen-layer"></canvas>
+                                    <canvas id="pinMacScreen2" class="screen-layer"></canvas>
+                                </div>
+
+                                <!-- 3D Titanium Smartphone Actor -->
+                                <div id="pinPhoneActor" class="hw-actor absolute w-[32%] sm:w-[27%] lg:w-[33%] max-w-[205px] aspect-[320/610] z-20" style="left: 6%; bottom: 4%;">
+                                    <canvas id="pinPhoneScreen0" class="screen-layer is-active"></canvas>
+                                    <canvas id="pinPhoneScreen1" class="screen-layer"></canvas>
+                                    <canvas id="pinPhoneScreen2" class="screen-layer"></canvas>
+                                    <canvas id="pinPhoneScreen3" class="screen-layer"></canvas>
+                                    <canvas id="pinPhoneScreen4" class="screen-layer"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Right/Bottom Column: Sliding Carousel-Slide Explanation Cards -->
+                            <div class="lg:col-span-5 relative h-[268px] sm:h-[250px] lg:h-[360px]">
+
+                                <!-- Slide Card 0: Cream (#faf7f2) -->
+                                <div id="pinCard0" class="pin-explain-card is-interactive post-card-cream rounded-[26px] p-4 sm:p-7 flex flex-col justify-between">
+                                    <div class="space-y-2 sm:space-y-3">
+                                        <div class="flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#2d694c]">
+                                            <span>ECHTZEIT-SYNC</span>
+                                            <span class="tabular-nums">01 / 04</span>
+                                        </div>
+                                        <h3 class="font-epilogue font-black text-lg sm:text-2xl leading-[1.08] text-[#1f1b16]" style="text-wrap: balance;">
+                                            Ein Konto. Beide Geräte sofort synchron.
+                                        </h3>
+                                        <p class="text-xs sm:text-sm text-[#6e665e] font-semibold leading-relaxed">
+                                            Trage eine Note schnell auf dem Smartphone ein — und sieh denselben Schnitt, dieselben Aufgaben und deinen Wochenüberblick im selben Moment am Laptop.
+                                        </p>
+                                    </div>
+                                    <div class="pt-2.5 sm:pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#1f1b16]">
+                                        <span>Keine 5 Einzel-Apps mehr</span>
+                                        <span class="text-[#2d694c]">Cloud-Sync live ✓</span>
+                                    </div>
+                                </div>
+
+                                <!-- Slide Card 1: Honey-Gold (#ffe6b9) -->
+                                <div id="pinCard1" class="pin-explain-card post-card-honey rounded-[26px] p-4 sm:p-7 flex flex-col justify-between">
+                                    <div class="space-y-2 sm:space-y-3">
+                                        <div class="flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#7a4e00]">
+                                            <span>FÄCHER &amp; WUNSCHNOTE</span>
+                                            <span class="tabular-nums">02 / 04</span>
+                                        </div>
+                                        <h3 class="font-epilogue font-black text-lg sm:text-2xl leading-[1.08] text-[#1f1b16]" style="text-wrap: balance;">
+                                            Exakte Gewichtung &amp; Zielnote vor der Klausur.
+                                        </h3>
+                                        <p class="text-xs sm:text-sm text-[#573904] font-semibold leading-relaxed">
+                                            Leistungskurs, Grundkurs und Klausur-zu-Sonstiges-Faktor werden halbjahresgenau berechnet. Der Wunschnoten-Rechner zeigt exakt, welche Punktzahl noch fehlt.
+                                        </p>
+                                    </div>
+                                    <div class="pt-2.5 sm:pt-3 border-t border-[#7a4e00]/20 flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#7a4e00]">
+                                        <span>Pro Halbjahr anpassbar</span>
+                                        <span>0–15 Pkt. &amp; 1–6 ✓</span>
+                                    </div>
+                                </div>
+
+                                <!-- Slide Card 2: Mint (#e7f3de) -->
+                                <div id="pinCard2" class="pin-explain-card post-card-mint rounded-[26px] p-4 sm:p-7 flex flex-col justify-between">
+                                    <div class="space-y-2 sm:space-y-3">
+                                        <div class="flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#2d694c]">
+                                            <span>STUNDENPLAN &amp; KALENDER</span>
+                                            <span class="tabular-nums">03 / 04</span>
+                                        </div>
+                                        <h3 class="font-epilogue font-black text-lg sm:text-2xl leading-[1.08] text-[#1f1b16]" style="text-wrap: balance;">
+                                            Klausuren &amp; Hausaufgaben ohne Überraschungen.
+                                        </h3>
+                                        <p class="text-xs sm:text-sm text-[#39523d] font-semibold leading-relaxed">
+                                            Wochenbelastung im Blick behalten, offene Aufgaben abhaken und wichtige Prüfungstermine direkt per Knopfdruck mit deinem Google Kalender synchronisieren.
+                                        </p>
+                                    </div>
+                                    <div class="pt-2.5 sm:pt-3 border-t border-[#2d694c]/20 flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#2d694c]">
+                                        <span>Wochenansicht &amp; Termine</span>
+                                        <span>1-Klick Kalender-Sync ✓</span>
+                                    </div>
+                                </div>
+
+                                <!-- Slide Card 3: Cream (#faf7f2) -->
+                                <div id="pinCard3" class="pin-explain-card post-card-cream rounded-[26px] p-4 sm:p-7 flex flex-col justify-between">
+                                    <div class="space-y-2 sm:space-y-3">
+                                        <div class="flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#2d694c]">
+                                            <span>OBERSTUFE &amp; ABITUR-CHECK</span>
+                                            <span class="tabular-nums">04 / 04</span>
+                                        </div>
+                                        <h3 class="font-epilogue font-black text-lg sm:text-2xl leading-[1.08] text-[#1f1b16]" style="text-wrap: balance;">
+                                            Streichungen &amp; Abi-Simulation statt Excel-Chaos.
+                                        </h3>
+                                        <p class="text-xs sm:text-sm text-[#6e665e] font-semibold leading-relaxed">
+                                            Automatische Streichungs-Logik für Block I, Prüfung aller 5 Bestehens-Kriterien, P1–P5 Simulation und sauberer PDF-Notenspiegel für Zeugnis oder Bewerbung.
+                                        </p>
+                                    </div>
+                                    <div class="pt-2.5 sm:pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[11px] sm:text-xs font-extrabold text-[#1f1b16]">
+                                        <span>Inkl. PDF-Export</span>
+                                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#2d694c] hover:underline">Jetzt testen →</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Bottom Architectural Shelf Strip -->
+                        <div class="studio-floor-shelf relative z-10 px-4 sm:px-8 py-3 flex items-center justify-between text-[11px] sm:text-xs font-semibold text-[#d9eadf]">
+                            <span id="pinCaptionText">Szene 1 von 4 · Laptop &amp; Smartphone sliden beim Scrollen synchron ins Bild</span>
+                            <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#ffe6b9] font-extrabold hover:underline whitespace-nowrap shrink-0">
+                                schooly26.vercel.app →
+                            </a>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 02: HANDY & LAPTOP SYNC BENTO ARCHITECTURE -->
-        <section id="geraete" class="py-16 sm:py-24 bg-[#f4ece4]/60 border-y border-[#e5dcd0]">
+        <!-- HORIZONTAL HAIRLINE DIVIDER -->
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-8">
+            <div class="h-px bg-white/15"></div>
+        </div>
+
+        <!-- SECTION 02: SCROLL-BASED 3D BENTO GRID ON GREEN CYCLORAMA -->
+        <section id="geraete" class="py-16 sm:py-24">
             <div class="max-w-[1200px] mx-auto px-4 sm:px-8 space-y-10">
 
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6" data-reveal>
-                    <div class="max-w-2xl space-y-3">
-                        <div class="text-xs font-bold text-[#2d694c]">02. Angepasst für Handy &amp; Laptop</div>
-                        <h2 class="font-epilogue font-black text-[#1f1b16] tracking-tight leading-tight" style="font-size: clamp(1.75rem, 3.2vw, 2.75rem); text-wrap: balance;">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 scroll-reveal-head">
+                    <div class="max-w-2xl space-y-2.5">
+                        <div class="text-xs font-extrabold text-[#ffe6b9] tracking-wide uppercase">02. ALLE DETAILS FÜR HANDY, TABLET &amp; LAPTOP</div>
+                        <h2 class="font-epilogue font-black text-white tracking-tight leading-tight" style="font-size: clamp(1.75rem, 3.2vw, 2.8rem); text-wrap: balance;">
                             Unterwegs blitzschnell eintragen. Am Schreibtisch entspannt auswerten.
                         </h2>
                     </div>
-                    <div class="inline-flex items-center p-1 rounded-xl bg-[#e8dfd2] border border-[#dcd0c0] shrink-0 self-start md:self-auto">
-                        <button type="button" id="bentoBtnPhone" data-bento-device="phone" class="px-4 py-2 rounded-lg text-xs font-bold bg-white text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                    <div class="inline-flex items-center p-1 rounded-xl bg-black/25 border border-white/15 backdrop-blur-md shrink-0 self-start md:self-auto">
+                        <button type="button" id="bentoBtnPhone" data-bento-device="phone" class="px-4 py-2 rounded-lg text-xs font-bold bg-[#faf7f2] text-[#1f1b16] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
                             Smartphone Fokus
                         </button>
-                        <button type="button" id="bentoBtnLaptop" data-bento-device="laptop" class="px-4 py-2 rounded-lg text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
+                        <button type="button" id="bentoBtnLaptop" data-bento-device="laptop" class="px-4 py-2 rounded-lg text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[40px]">
                             Laptop Fokus
                         </button>
                     </div>
                 </div>
 
-                <!-- Asymmetric 3D Bento Grid -->
+                <!-- Asymmetric 3D Bento Grid styled directly after @schooly.app Carousel Slides -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                    <div class="lg:col-span-7 surface-3d-mint rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
+                    <!-- Card 1: Cream Card (#faf7f2) — Insights & Device Sync -->
+                    <div class="lg:col-span-7 post-card-cream rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6 scroll-3d-card">
                         <div class="space-y-2.5 max-w-lg">
-                            <div class="text-xs font-bold text-[#2d694c]">Echtzeit-Sync · Trends &amp; Insights</div>
+                            <div class="flex items-center justify-between text-xs font-extrabold text-[#2d694c]">
+                                <span>ECHTZEIT-SYNC · TRENDS &amp; INSIGHTS</span>
+                                <span>Handy &amp; Laptop</span>
+                            </div>
                             <h3 class="font-epilogue font-black text-2xl text-[#1f1b16] leading-tight">
-                                Siehst du deinen Fortschritt auf einen Blick — egal welches Gerät gerade offen ist.
+                                Siehst du deinen Fortschritt auf einen Blick — auf jedem Display.
                             </h3>
-                            <p class="text-sm text-[#435645] leading-relaxed">
-                                Notenverlauf, Fächervergleich und Zielerreichung passen sich automatisch an schmale Smartphone-Displays und breite Laptop-Bildschirme an.
+                            <p class="text-sm text-[#6e665e] font-medium leading-relaxed">
+                                Notenverlauf, Fächervergleich und Prüfungsstatistik passen sich automatisch an schmale Smartphone-Displays und breite Laptop-Bildschirme an.
                             </p>
                         </div>
-                        <div class="relative rounded-2xl overflow-hidden bg-[#e7f3de] border border-[#c6dbba] aspect-[16/10]">
-                            <canvas id="bentoSyncPhoneCanvas" class="story-canvas-layer is-current"></canvas>
-                            <canvas id="bentoSyncLaptopCanvas" class="story-canvas-layer"></canvas>
+                        <div class="relative rounded-2xl overflow-hidden bg-[#1a432f] border border-[#e5dcd0] aspect-[16/10]">
+                            <canvas id="bentoSyncPhoneCanvas" class="bento-canvas-layer is-current"></canvas>
+                            <canvas id="bentoSyncLaptopCanvas" class="bento-canvas-layer"></canvas>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-5 surface-3d rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
+                    <!-- Card 2: Mint Card (#e7f3de) — PDF Notenspiegel -->
+                    <div class="lg:col-span-5 post-card-mint rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6 scroll-3d-card">
                         <div class="space-y-2.5">
-                            <div class="text-xs font-bold text-[#6e665e]">Zeugnis &amp; Bewerbung</div>
+                            <div class="text-xs font-extrabold text-[#2d694c]">ZEUGNIS &amp; BEWERBUNG</div>
                             <h3 class="font-epilogue font-black text-2xl text-[#1f1b16] leading-tight">
                                 1-Klick PDF-Notenspiegel.
                             </h3>
-                            <p class="text-sm text-[#6e665e] leading-relaxed">
-                                Exportiere deinen kompletten Notenstand sauber formatiert als PDF — bereit für Elternabend, Praktikum oder Studienbewerbung.
+                            <p class="text-sm text-[#39523d] font-medium leading-relaxed">
+                                Exportiere deinen kompletten Notenstand sauber formatiert als PDF — direkt bereit für Elternabend, Praktikum oder Studienbewerbung.
                             </p>
                         </div>
-                        <div class="rounded-2xl overflow-hidden bg-[#f4ece4]">
+                        <div class="rounded-2xl overflow-hidden bg-[#235a3f] border border-[#2d694c]/20">
                             <canvas id="bentoPdfCanvas" class="block w-full h-auto aspect-[4/3]"></canvas>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-5 surface-3d-honey rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6" data-reveal>
+                    <!-- Card 3: Honey-Gold Card (#ffe6b9) — Freundes-Duell -->
+                    <div class="lg:col-span-5 post-card-honey rounded-[28px] p-6 sm:p-8 flex flex-col justify-between gap-6 scroll-3d-card">
                         <div class="space-y-2.5">
-                            <div class="text-xs font-bold text-[#7a4e00]">Optional &amp; privat per Code</div>
+                            <div class="text-xs font-extrabold text-[#7a4e00]">OPTIONAL &amp; PRIVAT PER CODE</div>
                             <h3 class="font-epilogue font-black text-2xl text-[#1f1b16] leading-tight">
                                 Freundes-Duell statt peinlicher Klassen-Rankings.
                             </h3>
-                            <p class="text-sm text-[#614210] leading-relaxed">
+                            <p class="text-sm text-[#573904] font-medium leading-relaxed">
                                 Vergleiche deinen Punkteschnitt nur mit engen Freunden über einen privaten Einladungscode — motivierend, fair und jederzeit abschaltbar.
                             </p>
                         </div>
-                        <div class="pt-2 border-t border-[#e8c682] flex items-center justify-between text-xs font-bold text-[#7a4e00]">
+                        <div class="pt-3 border-t border-[#7a4e00]/20 flex items-center justify-between text-xs font-extrabold text-[#7a4e00]">
                             <span>Kein öffentliches Profil nötig</span>
-                            <span class="tabular-nums">100 % freiwillig</span>
+                            <span class="tabular-nums">100 % freiwillig ✓</span>
                         </div>
                     </div>
 
-                    <div id="abitur" class="lg:col-span-7 surface-3d-espresso rounded-[28px] p-6 sm:p-8 text-white flex flex-col justify-between gap-6" data-reveal>
+                    <!-- Card 4: Espresso Card (#1f1b16) — PWA Homescreen Installation -->
+                    <div class="lg:col-span-7 post-card-espresso rounded-[28px] p-6 sm:p-8 text-white flex flex-col justify-between gap-6 scroll-3d-card">
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
                             <div class="sm:col-span-6 space-y-3">
-                                <div class="text-xs font-bold text-[#ffe6b9]">Als App auf dem Homescreen</div>
+                                <div class="text-xs font-extrabold text-[#ffe6b9]">ALS APP AUF DEM HOMESCREEN</div>
                                 <h3 class="font-epilogue font-black text-2xl leading-tight">
                                     In 10 Sekunden installiert — wie eine native App.
                                 </h3>
                                 <p class="text-sm text-[#d4cbc2] leading-relaxed">
-                                    Kein App-Store-Umweg nötig: Öffne <strong class="text-white">schooly26.vercel.app</strong> im Browser, füge schooly zum Home-Bildschirm hinzu und nutze alle Daten auch unterwegs.
+                                    Kein App-Store-Umweg nötig: Öffne <strong class="text-white">schooly26.vercel.app</strong> im Browser, füge schooly zum Home-Bildschirm hinzu und nutze alles im Vollbild.
                                 </p>
                             </div>
-                            <div class="sm:col-span-6 rounded-2xl overflow-hidden bg-[#15120f]">
-                                <canvas id="bentoAbiCanvas" class="block w-full h-auto aspect-[4/3]"></canvas>
+                            <div class="sm:col-span-6 rounded-2xl overflow-hidden bg-[#15120f] border border-white/10">
+                                <canvas id="bentoPwaCanvas" class="block w-full h-auto aspect-[4/3]"></canvas>
                             </div>
                         </div>
                     </div>
@@ -595,54 +736,54 @@
             </div>
         </section>
 
-        <!-- SECTION 03: QUANTITATIVE ECKDATEN -->
-        <section class="py-14 sm:py-16 border-b border-[#e5dcd0]">
-            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-8" data-reveal>
-                <div class="space-y-1">
-                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#2d694c] tabular-nums">0 €</div>
-                    <div class="text-sm font-bold text-[#1f1b16]">Dauerhaft kostenlos</div>
-                    <p class="text-xs text-[#6e665e]">Ohne Abo-Paywall und ohne Werbebanner.</p>
+        <!-- SECTION 03: QUANTITATIVE ECKDATEN (Styled like Slide 4 Grid inside Sage Posts) -->
+        <section id="kennzahlen" class="py-14 sm:py-16 border-y border-white/15 bg-black/10 backdrop-blur-[2px]">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="stat-item space-y-1.5">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#ffe6b9] tabular-nums">0 €</div>
+                    <div class="text-sm font-extrabold text-white">Dauerhaft kostenlos</div>
+                    <p class="text-xs text-[#d9eadf]">Ohne Abo-Paywall und ohne Werbebanner.</p>
                 </div>
-                <div class="space-y-1">
-                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#1f1b16] tabular-nums">1–15 Pkt.</div>
-                    <div class="text-sm font-bold text-[#1f1b16]">Beide Notensysteme</div>
-                    <p class="text-xs text-[#6e665e]">Sekundarstufe I (1–6) &amp; Oberstufe (0–15).</p>
+                <div class="stat-item space-y-1.5">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-white tabular-nums">1–15 Pkt.</div>
+                    <div class="text-sm font-extrabold text-white">Beide Notensysteme</div>
+                    <p class="text-xs text-[#d9eadf]">Sekundarstufe I (1–6) &amp; Oberstufe (0–15).</p>
                 </div>
-                <div class="space-y-1">
-                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#1f1b16] tabular-nums">40 Kurse</div>
-                    <div class="text-sm font-bold text-[#1f1b16]">Abitur-Vollcheck</div>
-                    <p class="text-xs text-[#6e665e]">Block I &amp; II samt Bestehens-Kriterien.</p>
+                <div class="stat-item space-y-1.5">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-white tabular-nums">40 Kurse</div>
+                    <div class="text-sm font-extrabold text-white">Abitur-Vollcheck</div>
+                    <p class="text-xs text-[#d9eadf]">Block I &amp; II samt Bestehens-Kriterien.</p>
                 </div>
-                <div class="space-y-1">
-                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#1f1b16] tabular-nums">100 %</div>
-                    <div class="text-sm font-bold text-[#1f1b16]">Responsive 3D-Sync</div>
-                    <p class="text-xs text-[#6e665e]">Handy, Tablet &amp; Laptop immer synchron.</p>
+                <div class="stat-item space-y-1.5">
+                    <div class="font-epilogue font-black text-3xl sm:text-4xl text-[#ffe6b9] tabular-nums">100 %</div>
+                    <div class="text-sm font-extrabold text-white">Echtzeit-Sync</div>
+                    <p class="text-xs text-[#d9eadf]">Handy, Tablet &amp; Laptop immer aktuell.</p>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 04: COMMUNITY & LAUNCH CTA -->
-        <section class="py-16 sm:py-24">
+        <!-- SECTION 04: COMMUNITY & LAUNCH CTA (Signature Cream Editorial Card over Deep Green) -->
+        <section id="launch" class="py-16 sm:py-24">
             <div class="max-w-[1200px] mx-auto px-4 sm:px-8">
-                <div class="surface-3d-sage rounded-[32px] p-7 sm:p-12 lg:p-14 text-white grid grid-cols-1 lg:grid-cols-12 gap-10 items-center overflow-hidden relative" data-reveal>
+                <div class="post-card-cream rounded-[32px] p-7 sm:p-12 lg:p-14 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center overflow-hidden relative scroll-3d-card">
 
                     <div class="lg:col-span-7 space-y-5 relative z-10">
-                        <div class="text-xs font-bold text-[#e7f3de]">Bereit für ruhigere Schulwochen</div>
-                        <h2 class="font-epilogue font-black tracking-tight leading-[1.08]" style="font-size: clamp(1.9rem, 3.6vw, 3rem); text-wrap: balance;">
+                        <div class="text-xs font-extrabold text-[#2d694c] tracking-wide uppercase">BEREIT FÜR RUHIGERE SCHULWOCHEN</div>
+                        <h2 class="font-epilogue font-black text-[#1f1b16] tracking-tight leading-[1.08]" style="font-size: clamp(1.9rem, 3.6vw, 3rem); text-wrap: balance;">
                             Jetzt direkt starten — oder auf @schooly.app alle Updates verfolgen.
                         </h2>
-                        <p class="text-sm sm:text-base text-[#d9eadf] leading-relaxed max-w-xl">
-                            Teste schooly sofort kostenlos auf deinem Handy oder Laptop über <strong class="text-white">schooly26.vercel.app</strong> und hol dir Tipps, Feature-Sneak-Peeks und Klausur-Hacks auf Instagram.
+                        <p class="text-sm sm:text-base text-[#6e665e] font-medium leading-relaxed max-w-xl">
+                            Teste schooly sofort kostenlos auf deinem Handy oder Laptop über <strong class="text-[#1f1b16] font-extrabold">schooly26.vercel.app</strong> und hol dir Tipps, Feature-Updates und Klausur-Hacks auf Instagram.
                         </p>
 
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-                            <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-3d-light inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-[#1f1b16] font-extrabold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
+                            <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="cta-post-sage inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-extrabold text-sm sm:text-base whitespace-nowrap min-h-[48px]">
                                 <span>schooly26.vercel.app öffnen</span>
                                 <span aria-hidden="true">→</span>
                             </a>
 
-                            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/14 hover:bg-white/22 border border-white/25 text-white font-bold text-sm sm:text-base transition-colors whitespace-nowrap min-h-[48px]">
-                                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-[#f4ece4] hover:bg-[#ebe0d3] border border-[#dfd3c2] text-[#1f1b16] font-bold text-sm sm:text-base transition-colors whitespace-nowrap min-h-[48px]">
+                                <svg class="w-4 h-4 text-[#2d694c] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -653,7 +794,7 @@
                     </div>
 
                     <div class="lg:col-span-5 relative z-10">
-                        <div class="rounded-2xl overflow-hidden bg-[#1e4b35] border border-white/15">
+                        <div class="rounded-2xl overflow-hidden bg-[#1e4b35] border border-[#2d694c]/25 shadow-lg">
                             <canvas id="ctaRecapCanvas" class="block w-full h-auto aspect-[4/3]"></canvas>
                         </div>
                     </div>
@@ -664,26 +805,143 @@
 
     </main>
 
-    <!-- QUIET EDITORIAL FOOTER -->
-    <footer class="border-t border-[#e5dcd0] bg-[#faf7f2] py-10">
+    <!-- QUIET EDITORIAL FOOTER (Matches @schooly.app Post Footer Line) -->
+    <footer class="relative z-10 border-t border-white/15 bg-[#122e1f]/80 backdrop-blur-sm py-10">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div class="flex items-center gap-2.5">
-                <img src="/assets/aistudio/schooly_app_icon_7d45ac62.svg" alt="" width="24" height="24" class="w-6 h-6 object-contain" />
-                <span class="font-epilogue font-black text-base text-[#1f1b16]">schooly</span>
-                <span class="text-xs text-[#6e665e] pl-2">· Gebaut für echte Schultage</span>
+                <img src="/assets/schooly_logo_light.png" alt="schooly" class="h-5 w-auto object-contain" />
+                <span class="text-xs font-semibold text-[#d9eadf] pl-2">· Gebaut für echte Schultage</span>
             </div>
 
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-[#6e665e]">
-                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#2d694c] font-bold hover:underline">schooly26.vercel.app</a>
-                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="hover:text-[#1f1b16] hover:underline">Instagram @schooly.app</a>
-                <a href="/pitchdeck.html" class="hover:text-[#1f1b16] hover:underline">Pitch Deck</a>
-                <a href="/social.html" class="hover:text-[#1f1b16] hover:underline">Social Hub</a>
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-[#d9eadf]">
+                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#ffe6b9] font-extrabold hover:underline">schooly26.vercel.app</a>
+                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="hover:text-white hover:underline">Instagram @schooly.app</a>
+                <a href="/pitchdeck.html" class="hover:text-white hover:underline">Pitch Deck</a>
+                <a href="/social.html" class="hover:text-white hover:underline">Social Hub</a>
             </div>
         </div>
     </footer>
 
-    <!-- GENUINE 3D PHYSICAL SMARTPHONE BODY (Clear Side Thickness + Tactile Side Rail + Chamfer + Pitch/Yaw) + 120FPS GPU SCROLL CHOREOGRAPHY -->
+    <!-- GENUINE 3D PHYSICAL HARDWARE ENGINE + FULL-SITE STUDIO BACKDROP + GSAP SCROLLTRIGGER -->
     <script>
+        // Exact Studio Sage Cyclorama Renderer from Social Hub (Volumetric Beams, Depth Orbits, Perspective Floor Grid — Zero Spheres)
+        function renderFullPageSageBackdrop() {
+            const cv = document.getElementById('siteStudioBg');
+            if (!cv) return;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            cv.width = Math.round(w * dpr);
+            cv.height = Math.round(h * dpr);
+            const ctx = cv.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            // 1. Base Studio Sage Cyclorama Radial Backdrop
+            const bgGrad = ctx.createRadialGradient(w * 0.68, h * 0.30, w * 0.04, w * 0.50, h * 0.48, Math.hypot(w, h) * 0.76);
+            bgGrad.addColorStop(0, '#3f8b66');
+            bgGrad.addColorStop(0.50, '#2b6649');
+            bgGrad.addColorStop(1, '#143323');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // 2. Dual Volumetric Softbox Light Beams
+            ctx.save();
+            const beamGrad = ctx.createLinearGradient(w * 0.94, -h * 0.06, w * 0.14, h * 0.80);
+            beamGrad.addColorStop(0, 'rgba(255, 246, 214, 0.15)');
+            beamGrad.addColorStop(0.55, 'rgba(255, 255, 255, 0.03)');
+            beamGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = beamGrad;
+            ctx.beginPath();
+            ctx.moveTo(w * 0.34, 0);
+            ctx.lineTo(w, 0);
+            ctx.lineTo(w, h * 0.58);
+            ctx.lineTo(w * 0.08, h * 0.90);
+            ctx.closePath();
+            ctx.fill();
+
+            const beam2 = ctx.createLinearGradient(w * 0.05, h * 0.12, w * 0.55, h * 0.85);
+            beam2.addColorStop(0, 'rgba(255, 246, 214, 0.12)');
+            beam2.addColorStop(0.55, 'rgba(255, 255, 255, 0)');
+            ctx.globalAlpha = 0.40;
+            ctx.fillStyle = beam2;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(w * 0.24, 0);
+            ctx.lineTo(w * 0.62, h * 0.72);
+            ctx.lineTo(0, h * 0.54);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // 3. Architectural Subtle Concentric Depth Orbits (From Sage Posts)
+            ctx.save();
+            const orbX = w * 0.72;
+            const orbY = h * 0.54;
+            [0.28, 0.44, 0.62].forEach((mult, idx) => {
+                ctx.beginPath();
+                ctx.ellipse(orbX, orbY, w * mult, w * mult * 0.74, -0.16, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 230, 185, 0.09)';
+                ctx.lineWidth = Math.max(1, 1.5 - idx * 0.25);
+                ctx.stroke();
+            });
+            ctx.restore();
+
+            // 4. Perspective Architectural Studio Horizon & Grid Plane
+            const horizonY = h * 0.74;
+            const vpY = horizonY - h * 0.26;
+            const vpX = w * 0.50;
+
+            const floorGrad = ctx.createLinearGradient(0, horizonY, 0, h);
+            floorGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            floorGrad.addColorStop(0.18, 'rgba(11, 32, 20, 0.40)');
+            floorGrad.addColorStop(1, 'rgba(10, 26, 17, 0.48)');
+            ctx.fillStyle = floorGrad;
+            ctx.fillRect(0, horizonY, w, h - horizonY);
+
+            const glowGrad = ctx.createRadialGradient(w * 0.50, horizonY, 0, w * 0.50, horizonY, w * 0.68);
+            glowGrad.addColorStop(0, 'rgba(255, 230, 185, 0.20)');
+            glowGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = glowGrad;
+            ctx.fillRect(0, horizonY - h * 0.08, w, h * 0.22);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, horizonY, w, h - horizonY);
+            ctx.clip();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.065)';
+            ctx.lineWidth = 1;
+            for (let k = -10; k <= 10; k++) {
+                const bx = vpX + k * (w * 0.13);
+                const tH = (horizonY - vpY) / (h - vpY);
+                const hx = vpX + (bx - vpX) * tH;
+                ctx.beginPath();
+                ctx.moveTo(hx, horizonY);
+                ctx.lineTo(bx, h + 4);
+                ctx.stroke();
+            }
+            for (let row = 0; row < 8; row++) {
+                const f = Math.pow((row + 0.5) / 8, 1.88);
+                const yy = horizonY + (h - horizonY) * f;
+                ctx.beginPath();
+                ctx.moveTo(0, yy);
+                ctx.lineTo(w, yy);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            const lineGrad = ctx.createLinearGradient(w * 0.05, 0, w * 0.95, 0);
+            lineGrad.addColorStop(0, 'rgba(255,255,255,0)');
+            lineGrad.addColorStop(0.5, 'rgba(255,230,185,0.22)');
+            lineGrad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.beginPath();
+            ctx.moveTo(w * 0.05, horizonY);
+            ctx.lineTo(w * 0.95, horizonY);
+            ctx.strokeStyle = lineGrad;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+        }
+
         function buildSquircleSamples(W, H, R, segArc = 68, segLine = 22) {
             const hw = W / 2;
             const hh = H / 2;
@@ -727,16 +985,6 @@
             if (pts.length > 2 && Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].y - pts[pts.length - 1].y) <= 1e-3) {
                 pts.pop();
             }
-            const n = pts.length;
-            for (let i = 0; i < n; i++) {
-                const a = pts[(i - 1 + n) % n];
-                const b = pts[(i + 1) % n];
-                const dx = b.x - a.x;
-                const dy = b.y - a.y;
-                const len = Math.hypot(dx, dy) || 1;
-                pts[i].nx = dy / len;
-                pts[i].ny = -dx / len;
-            }
             return pts;
         }
 
@@ -770,13 +1018,12 @@
             return lower.concat(upper);
         }
 
-        // Architectural Studio Cyclorama + Solid Stone Pedestal Block (Clean, no spheres)
+        // Architectural Studio Cyclorama + Stone Pedestal for Bento Cards
         function drawStudioPedestalStage(ctx, w, h, theme = 'sage', pedestalYFrac = 0.80) {
             const themes = {
-                sage:     { c0: '#499871', c1: '#235a3f', c2: '#0c2418', beam: 'rgba(220, 255, 228, 0.25)', topPlinth: '#f6f3ee', frontPlinth: '#dbd4cb', edge: 'rgba(255,255,255,0.75)' },
+                sage:     { c0: '#499871', c1: '#235a3f', c2: '#0c2418', beam: 'rgba(255, 246, 214, 0.20)', topPlinth: '#f6f3ee', frontPlinth: '#dbd4cb', edge: 'rgba(255,255,255,0.75)' },
                 warm:     { c0: '#fcf8f2', c1: '#eee4d6', c2: '#d5c5b0', beam: 'rgba(255, 255, 255, 0.62)', topPlinth: '#ffffff', frontPlinth: '#e4dbd0', edge: 'rgba(255,255,255,0.90)' },
-                mint:     { c0: '#edf8e6', c1: '#cae4bc', c2: '#9dc68c', beam: 'rgba(255, 255, 255, 0.56)', topPlinth: '#faf8f4', frontPlinth: '#dbe3d5', edge: 'rgba(255,255,255,0.88)' },
-                honey:    { c0: '#fff2d6', c1: '#f7d894', c2: '#d8a243', beam: 'rgba(255, 255, 255, 0.50)', topPlinth: '#fffcf7', frontPlinth: '#e9dcc6', edge: 'rgba(255,255,255,0.85)' },
+                mint:     { c0: '#3f8b66', c1: '#235a3f', c2: '#123322', beam: 'rgba(231, 243, 222, 0.22)', topPlinth: '#f5faf2', frontPlinth: '#d6e3cf', edge: 'rgba(255,255,255,0.85)' },
                 espresso: { c0: '#42382f', c1: '#231e19', c2: '#0f0c09', beam: 'rgba(243, 196, 113, 0.18)', topPlinth: '#f3ede5', frontPlinth: '#cfc6ba', edge: 'rgba(255,255,255,0.62)' },
             };
             const t = themes[theme] || themes.sage;
@@ -802,7 +1049,6 @@
             ctx.closePath();
             ctx.fill();
 
-            // Clean architectural white-stone 3D pedestal
             const pY = h * pedestalYFrac;
             const pBackY = pY - h * 0.10;
             const topGrad = ctx.createLinearGradient(0, pBackY, 0, pY);
@@ -835,12 +1081,11 @@
             ctx.restore();
         }
 
-        // True 3D Solid Aluminum/Titanium Smartphone Renderer (Clear 3D Thickness, Raised Hardware Buttons, Antenna Bands, Chamfer & Slight Pitch)
+        // True 3D Solid Aluminum/Titanium Smartphone Renderer (Real Chassis Thickness + Chamfer + Hardware Keys + Pitch/Yaw)
         function drawStudio3DPhone(ctx, cx, cy, sc, rotZRad, imgEl, yawDeg = 22.5, pitchDeg = -4.2) {
             const W = 274 * sc;
             const H = 588 * sc;
             const R = 39 * sc;
-            // Generous realistic physical 3D chassis thickness (~15px visible brushed side rail at 22°!)
             const D = 34 * sc;
             const focal = 1950 * sc;
             const yaw = yawDeg * Math.PI / 180;
@@ -849,11 +1094,9 @@
             const cosP = Math.cos(pitch), sinP = Math.sin(pitch);
 
             const proj = (x, y, z) => {
-                // Yaw around Y, then subtle camera pitch around X
                 const x1 = x * cosY + z * sinY;
                 const y1 = y;
                 const z1 = -x * sinY + z * cosY;
-
                 const rx = x1;
                 const ry = y1 * cosP - z1 * sinP;
                 const rz = y1 * sinP + z1 * cosP;
@@ -871,46 +1114,36 @@
             ctx.translate(cx, cy);
             if (rotZRad) ctx.rotate(rotZRad);
 
-            // 1. Grounded elliptical studio contact shadow directly under phone base on pedestal
+            // Contact shadow
             const baseMid = proj(0, H * 0.50, 0);
             ctx.save();
             const contactGrad = ctx.createRadialGradient(baseMid.px - 6 * sc, baseMid.py + 3 * sc, 4 * sc, baseMid.px - 6 * sc, baseMid.py + 3 * sc, W * 0.72);
-            contactGrad.addColorStop(0, 'rgba(10, 14, 12, 0.48)');
-            contactGrad.addColorStop(0.45, 'rgba(10, 14, 12, 0.18)');
-            contactGrad.addColorStop(1, 'rgba(10, 14, 12, 0)');
+            contactGrad.addColorStop(0, 'rgba(8, 14, 10, 0.48)');
+            contactGrad.addColorStop(0.45, 'rgba(8, 14, 10, 0.18)');
+            contactGrad.addColorStop(1, 'rgba(8, 14, 10, 0)');
             ctx.fillStyle = contactGrad;
             ctx.beginPath();
             ctx.ellipse(baseMid.px - 6 * sc, baseMid.py + 3 * sc, W * 0.66, 20 * sc, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
 
-            // 2. Soft diffused backdrop cast shadow
+            // Diffused drop shadow
             ctx.save();
-            ctx.shadowColor = 'rgba(10, 14, 12, 0.30)';
-            ctx.shadowBlur = 32 * sc;
-            ctx.shadowOffsetX = (yawDeg >= 0 ? -12 : 12) * sc;
-            ctx.shadowOffsetY = 16 * sc;
+            ctx.shadowColor = 'rgba(8, 14, 10, 0.32)';
+            ctx.shadowBlur = 28 * sc;
+            ctx.shadowOffsetX = (yawDeg >= 0 ? -10 : 10) * sc;
+            ctx.shadowOffsetY = 14 * sc;
             traceProjectedPath(ctx, insetShadowOuter);
-            ctx.fillStyle = 'rgba(16, 20, 18, 0.36)';
+            ctx.fillStyle = 'rgba(12, 18, 14, 0.36)';
             ctx.fill();
             ctx.restore();
 
-            // 3. Solid 3D Brushed-Aluminum Side Chassis Body (Distinct contrast between back edge, bright specular side band & chamfer!)
+            // Solid 3D Brushed-Titanium Side Body
             ctx.save();
             traceProjectedPath(ctx, outerHull);
             ctx.clip();
 
             const dir = yawDeg >= 0 ? -1 : 1;
-            const sideGrad = ctx.createLinearGradient(dir * W * 0.60, -H * 0.18, -dir * W * 0.45, H * 0.25);
-            sideGrad.addColorStop(0, '#9ba4ae');
-            sideGrad.addColorStop(0.14, '#e6ebf0');
-            sideGrad.addColorStop(0.28, '#cbd3dc');
-            sideGrad.addColorStop(0.60, '#9fa8b2');
-            sideGrad.addColorStop(1, '#79828c');
-            ctx.fillStyle = sideGrad;
-            ctx.fillRect(-W * 0.75, -H * 0.65, W * 1.5, H * 1.3);
-
-            // Vertical studio softbox highlight running straight down the flat aluminum side rail
             const railTop = proj(dir * W * 0.50, -H * 0.42, 0);
             const railBot = proj(dir * W * 0.50, H * 0.42, 0);
             const railBand = ctx.createLinearGradient(railTop.px - 6 * sc, railTop.py, railBot.px + 6 * sc, railBot.py);
@@ -922,13 +1155,11 @@
             ctx.fillStyle = railBand;
             ctx.fillRect(-W * 0.75, -H * 0.65, W * 1.5, H * 1.3);
 
-            // Back edge bevel shading along backOuter (gives instant 3D rounded rail curvature!)
             traceProjectedPath(ctx, backOuter);
             ctx.strokeStyle = 'rgba(42, 50, 58, 0.36)';
             ctx.lineWidth = Math.max(1.2, 2.2 * sc);
             ctx.stroke();
 
-            // Authentic Antenna Break Lines across the solid side rail
             for (const ay of [-H * 0.375, H * 0.375]) {
                 const aOut = proj(dir * (W * 0.50), ay, -D * 0.46);
                 const aIn  = proj(dir * (W * 0.50), ay,  D * 0.46);
@@ -941,23 +1172,20 @@
                 ctx.stroke();
             }
 
-            // Bottom speaker / USB-C shadow hint if visible under pitch
             const portCenter = proj(0, H * 0.50, 0);
             ctx.beginPath();
             ctx.ellipse(portCenter.px, portCenter.py, 11 * sc, 2.2 * sc, 0, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(28, 34, 40, 0.45)';
             ctx.fill();
-
             ctx.restore();
 
-            // Clean outer chassis hairline
             traceProjectedPath(ctx, outerHull);
             ctx.strokeStyle = 'rgba(32, 38, 46, 0.32)';
             ctx.lineWidth = Math.max(0.8, 1.0 * sc);
             ctx.lineJoin = 'round';
             ctx.stroke();
 
-            // 4. Sculpted 3D Raised Hardware Side Buttons (Power + Volume Keys clearly resting on the flat titanium rail)
+            // Raised Hardware Buttons
             const draw3DHardwareKey = (yTop, yBot) => {
                 const depthOut = 1.9 * sc;
                 const pB1 = proj(dir * (W / 2), yTop, -D * 0.14);
@@ -966,7 +1194,6 @@
                 const pT2 = proj(dir * (W / 2 + depthOut), yBot - 1 * sc, D * 0.10);
 
                 ctx.save();
-                // Dark machined button slot shadow
                 ctx.beginPath();
                 ctx.moveTo(pB1.px, pB1.py);
                 ctx.lineTo(pB2.px, pB2.py);
@@ -979,7 +1206,6 @@
                 ctx.lineWidth = Math.max(0.7, 0.9 * sc);
                 ctx.stroke();
 
-                // Bright specular crown on top edge of key
                 ctx.beginPath();
                 ctx.moveTo(pT1.px, pT1.py);
                 ctx.lineTo(pT2.px, pT2.py);
@@ -993,7 +1219,7 @@
             draw3DHardwareKey(-H * 0.11, -H * 0.025);
             draw3DHardwareKey(-H * 0.30, -H * 0.26);
 
-            // 5. Machined Front Aluminum Chamfer Rim + Recessed Black OLED Frame
+            // Machined Chamfer Rim + OLED Bezel
             const rimGrad = ctx.createLinearGradient(-W * 0.48, -H * 0.45, W * 0.45, H * 0.48);
             rimGrad.addColorStop(0, '#ffffff');
             rimGrad.addColorStop(0.28, '#dbe2e8');
@@ -1003,7 +1229,6 @@
             traceProjectedPath(ctx, frontOuter);
             ctx.fillStyle = rimGrad;
             ctx.fill();
-            // Subtle dark separating shadow between side wall and front metallic bezel
             ctx.strokeStyle = 'rgba(30, 36, 42, 0.34)';
             ctx.lineWidth = Math.max(0.9, 1.15 * sc);
             ctx.stroke();
@@ -1017,7 +1242,7 @@
             ctx.lineWidth = Math.max(0.65, 0.85 * sc);
             ctx.stroke();
 
-            // 6. Display Viewport (exact bilinear affine slices supporting both yaw & pitch cleanly)
+            // Display Viewport
             const frameTotal = 7.4 * sc;
             const scrW = W - frameTotal * 2;
             const scrH = H - frameTotal * 2;
@@ -1064,7 +1289,6 @@
                 }
             }
 
-            // Minimal centered Selfie Punch-Hole Camera (just like photo reference)
             const camP = proj(0, -scrH / 2 + 10 * sc, D / 2);
             const camR = 3.2 * sc;
             ctx.beginPath();
@@ -1076,7 +1300,6 @@
             ctx.fillStyle = '#3b6d8e';
             ctx.fill();
 
-            // Subtle glass sheen
             const sheen = ctx.createLinearGradient(fTL.px, fTL.py, fBR.px * 0.72, fBR.py * 0.65);
             sheen.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
             sheen.addColorStop(0.32, 'rgba(255, 255, 255, 0.04)');
@@ -1132,9 +1355,9 @@
             const deckCenterX = (dFLBot.px + dFRBot.px) * 0.5;
             const deckCenterY = (dFLBot.py + dFRBot.py) * 0.5 + 3.5 * sc;
             const macGround = ctx.createRadialGradient(deckCenterX, deckCenterY, 10 * sc, deckCenterX, deckCenterY, W * 0.66);
-            macGround.addColorStop(0, 'rgba(12, 16, 14, 0.40)');
-            macGround.addColorStop(0.55, 'rgba(12, 16, 14, 0.14)');
-            macGround.addColorStop(1, 'rgba(12, 16, 14, 0)');
+            macGround.addColorStop(0, 'rgba(8, 14, 10, 0.42)');
+            macGround.addColorStop(0.55, 'rgba(8, 14, 10, 0.16)');
+            macGround.addColorStop(1, 'rgba(8, 14, 10, 0)');
             ctx.fillStyle = macGround;
             ctx.beginPath();
             ctx.ellipse(deckCenterX, deckCenterY, W * 0.62, 18 * sc, 0, 0, Math.PI * 2);
@@ -1142,12 +1365,12 @@
             ctx.restore();
 
             ctx.save();
-            ctx.shadowColor = 'rgba(14, 18, 15, 0.24)';
-            ctx.shadowBlur = 28 * sc;
+            ctx.shadowColor = 'rgba(8, 14, 10, 0.28)';
+            ctx.shadowBlur = 24 * sc;
             ctx.shadowOffsetX = -5 * sc;
-            ctx.shadowOffsetY = 12 * sc;
+            ctx.shadowOffsetY = 11 * sc;
             traceProjectedPath(ctx, insetLidShadow);
-            ctx.fillStyle = 'rgba(18, 22, 20, 0.35)';
+            ctx.fillStyle = 'rgba(12, 18, 14, 0.35)';
             ctx.fill();
             ctx.restore();
 
@@ -1417,175 +1640,121 @@
             return ctx;
         }
 
-        const STORY_CONFIG = [
-            {
-                theme: 'sage',
-                mode: 'phone',
-                kicker: '01 · Fächer & Gewichtung',
-                title: 'Notenübersicht & Gewichtungs-Engine auf dem Smartphone',
-                phoneTex: 'tex-faecher-mobile',
-                yaw: 22.0
-            },
-            {
-                theme: 'honey',
-                mode: 'phone',
-                kicker: '02 · Wunschnoten-Rechner',
-                title: 'Exakte Punktzahl vor jeder Klausur berechnen',
-                phoneTex: 'tex-wunschnote-mobile',
-                yaw: 21.5
-            },
-            {
-                theme: 'mint',
-                mode: 'duo',
-                kicker: '03 · Stundenplan & Kalender-Sync',
-                title: 'Klausurtermine synchron auf Laptop & Smartphone',
-                macTex: 'tex-kalender-laptop',
-                phoneTex: 'tex-kalender-mobile',
-                yaw: 21.0
-            },
-            {
-                theme: 'espresso',
-                mode: 'duo',
-                kicker: '04 · Oberstufe & Abitur-Check',
-                title: '40 Kurse, Block I & II + Bestehens-Kriterien',
-                macTex: 'tex-abi-laptop',
-                phoneTex: 'tex-abi-mobile',
-                yaw: 22.0
-            }
-        ];
-
-        (async function initLanding3D() {
-            await waitForTextures();
-
-            let activeStoryIdx = 0;
-            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            const tex = (id) => document.getElementById(id);
-
-            const drawStoryToCanvas = (cv, cfg) => {
-                if (!cv) return;
-                const w = 600, h = 500;
-                const ctx = sizeCanvas(cv, w, h, 2);
-                drawStudioPedestalStage(ctx, w, h, cfg.theme, 0.80);
-                if (cfg.mode === 'duo') {
-                    drawStudio3DMacBook(ctx, w * 0.56, h * 0.43, 336, tex(cfg.macTex), 5.0);
-                    drawStudio3DPhone(ctx, w * 0.23, h * 0.50, 0.50, -0.025, tex(cfg.phoneTex), cfg.yaw, -4.0);
-                } else {
-                    drawStudio3DPhone(ctx, w * 0.50, h * 0.47, 0.62, -0.015, tex(cfg.phoneTex), cfg.yaw, -4.2);
-                }
-            };
-
-            // Pre-render all Hero Modes once (0ms GPU switching & 120fps scroll motion!)
-            const renderAllStaticScenes = () => {
-                // Hero Duo
-                const cDuo = document.getElementById('heroCanvasDuo');
-                if (cDuo) {
-                    const w = 640, h = 500;
-                    const ctx = sizeCanvas(cDuo, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.80);
-                    drawStudio3DMacBook(ctx, w * 0.57, h * 0.45, 358, tex('tex-dash-laptop'), 5.5);
-                    drawStudio3DPhone(ctx, w * 0.24, h * 0.51, 0.56, -0.025, tex('tex-dash-mobile'), 22.5, -4.5);
-                }
-                // Hero Solo 3D Smartphone (looks unmistakably like photo reference with solid side rail & pedestal!)
-                const cPhone = document.getElementById('heroCanvasPhone');
-                if (cPhone) {
-                    const w = 640, h = 500;
-                    const ctx = sizeCanvas(cPhone, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.81);
-                    drawStudio3DPhone(ctx, w * 0.50, h * 0.48, 0.67, -0.015, tex('tex-dash-mobile'), 23.0, -4.5);
-                }
-                // Hero Laptop
-                const cLaptop = document.getElementById('heroCanvasLaptop');
-                if (cLaptop) {
-                    const w = 640, h = 500;
-                    const ctx = sizeCanvas(cLaptop, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.80);
-                    drawStudio3DMacBook(ctx, w * 0.50, h * 0.47, 415, tex('tex-dash-laptop'), 5.8);
-                }
-
-                // Pre-render all 4 Sticky Storyboard layers
-                STORY_CONFIG.forEach((cfg, idx) => {
-                    drawStoryToCanvas(document.getElementById(`storyLayer${idx}`), cfg);
-                });
-
-                // Inline Mobile Story Canvases
-                document.querySelectorAll('canvas[data-story-canvas]').forEach(cv => {
-                    const idx = Number(cv.getAttribute('data-story-canvas')) || 0;
-                    drawStoryToCanvas(cv, STORY_CONFIG[idx]);
-                });
-
-                // Bento Sync Phone Focus & Laptop Focus pre-rendered
-                const syncPhone = document.getElementById('bentoSyncPhoneCanvas');
-                if (syncPhone) {
-                    const w = 640, h = 400;
-                    const ctx = sizeCanvas(syncPhone, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'mint', 0.83);
-                    drawStudio3DPhone(ctx, w * 0.34, h * 0.50, 0.50, -0.025, tex('tex-charts-mobile'), 22.0, -4.0);
-                    drawStudio3DMacBook(ctx, w * 0.67, h * 0.48, 288, tex('tex-charts-laptop'), 5.2);
-                }
-                const syncLaptop = document.getElementById('bentoSyncLaptopCanvas');
-                if (syncLaptop) {
-                    const w = 640, h = 400;
-                    const ctx = sizeCanvas(syncLaptop, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'mint', 0.83);
-                    drawStudio3DMacBook(ctx, w * 0.45, h * 0.46, 338, tex('tex-charts-laptop'), 5.5);
-                    drawStudio3DPhone(ctx, w * 0.77, h * 0.52, 0.44, 0.025, tex('tex-charts-mobile'), -21.0, -4.0);
-                }
-
-                // Bento PDF Canvas
-                const pdfCv = document.getElementById('bentoPdfCanvas');
-                if (pdfCv) {
-                    const w = 480, h = 360;
-                    const ctx = sizeCanvas(pdfCv, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'warm', 0.82);
-                    drawStudio3DPhone(ctx, w * 0.50, h * 0.48, 0.47, -0.02, tex('tex-pdf-mobile'), 22.5, -4.2);
-                }
-
-                // Bento Abitur / PWA Canvas
-                const abiCv = document.getElementById('bentoAbiCanvas');
-                if (abiCv) {
-                    const w = 480, h = 360;
-                    const ctx = sizeCanvas(abiCv, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'espresso', 0.82);
-                    drawStudio3DPhone(ctx, w * 0.33, h * 0.51, 0.42, -0.03, tex('tex-aufgaben-mobile'), 22.0, -4.0);
-                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.42, 0.03, tex('tex-insights-mobile'), -21.0, -4.0);
-                }
-
-                // Final CTA Recap Canvas
-                const ctaCv = document.getElementById('ctaRecapCanvas');
-                if (ctaCv) {
-                    const w = 520, h = 390;
-                    const ctx = sizeCanvas(ctaCv, w, h, 2);
-                    drawStudioPedestalStage(ctx, w, h, 'sage', 0.82);
-                    drawStudio3DPhone(ctx, w * 0.34, h * 0.51, 0.45, -0.03, tex('tex-recap-mobile'), 22.0, -4.2);
-                    drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.45, 0.03, tex('tex-stundenplan-mobile'), -21.0, -4.2);
-                }
-            };
-
-            renderAllStaticScenes();
-
-            // Hero View Switcher (GPU instant crossfade)
-            const heroLayers = {
-                duo: document.getElementById('heroCanvasDuo'),
-                phone: document.getElementById('heroCanvasPhone'),
-                laptop: document.getElementById('heroCanvasLaptop'),
-            };
-            document.querySelectorAll('.hero-mode-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const mode = btn.getAttribute('data-hero-mode') || 'duo';
-                    Object.entries(heroLayers).forEach(([k, el]) => {
-                        if (el) el.classList.toggle('is-current', k === mode);
-                    });
-                    document.querySelectorAll('.hero-mode-btn').forEach(b => {
-                        const active = b === btn;
-                        b.classList.toggle('bg-white', active);
-                        b.classList.toggle('text-[#1f1b16]', active);
-                        b.classList.toggle('shadow-sm', active);
-                        b.classList.toggle('text-[#6e665e]', !active);
-                    });
-                });
+        (async function initSchoolyScrollLanding() {
+            renderFullPageSageBackdrop();
+            let resizeTimer = null;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(renderFullPageSageBackdrop, 120);
             });
 
-            // Bento Device Switcher
+            await waitForTextures();
+            const tex = (id) => document.getElementById(id);
+
+            // 1. Pre-render Transparent 3D Hardware Actors (rendered ONCE -> zero scroll redraw cost!)
+            const renderTransparentPhone = (canvasId, imgId, yaw = 22.0, rotZ = -0.02) => {
+                const cv = document.getElementById(canvasId);
+                if (!cv) return;
+                const w = 320, h = 610;
+                const ctx = sizeCanvas(cv, w, h, 2);
+                ctx.clearRect(0, 0, w, h);
+                drawStudio3DPhone(ctx, w * 0.50, h * 0.49, 0.90, rotZ, tex(imgId), yaw, -4.2);
+            };
+
+            const renderTransparentMac = (canvasId, imgId, yaw = 5.4) => {
+                const cv = document.getElementById(canvasId);
+                if (!cv) return;
+                const w = 480, h = 355;
+                const ctx = sizeCanvas(cv, w, h, 2);
+                ctx.clearRect(0, 0, w, h);
+                drawStudio3DMacBook(ctx, w * 0.50, h * 0.45, 420, tex(imgId), yaw);
+            };
+
+            // Hero independent actors
+            renderTransparentMac('heroMacCanvas', 'tex-dash-laptop', 5.5);
+            renderTransparentPhone('heroPhoneCanvas', 'tex-dash-mobile', 22.5, -0.025);
+
+            // Pinned ScrollTrigger Storyboard Mac screens (0: Dashboard, 1: Kalender, 2: Abitur)
+            renderTransparentMac('pinMacScreen0', 'tex-dash-laptop', 5.4);
+            renderTransparentMac('pinMacScreen1', 'tex-kalender-laptop', 5.4);
+            renderTransparentMac('pinMacScreen2', 'tex-abi-laptop', 5.4);
+
+            // Pinned ScrollTrigger Storyboard Phone screens (0: Dash, 1: Faecher, 2: Wunschnote, 3: Kalender, 4: Abi)
+            renderTransparentPhone('pinPhoneScreen0', 'tex-dash-mobile', 22.0, -0.02);
+            renderTransparentPhone('pinPhoneScreen1', 'tex-faecher-mobile', 22.0, -0.02);
+            renderTransparentPhone('pinPhoneScreen2', 'tex-wunschnote-mobile', 22.0, -0.02);
+            renderTransparentPhone('pinPhoneScreen3', 'tex-kalender-mobile', 22.0, -0.02);
+            renderTransparentPhone('pinPhoneScreen4', 'tex-abi-mobile', 22.0, -0.02);
+
+            // Bento Cards
+            const syncPhone = document.getElementById('bentoSyncPhoneCanvas');
+            if (syncPhone) {
+                const w = 640, h = 400;
+                const ctx = sizeCanvas(syncPhone, w, h, 2);
+                drawStudioPedestalStage(ctx, w, h, 'sage', 0.83);
+                drawStudio3DPhone(ctx, w * 0.34, h * 0.50, 0.50, -0.025, tex('tex-charts-mobile'), 22.0, -4.0);
+                drawStudio3DMacBook(ctx, w * 0.67, h * 0.48, 288, tex('tex-charts-laptop'), 5.2);
+            }
+            const syncLaptop = document.getElementById('bentoSyncLaptopCanvas');
+            if (syncLaptop) {
+                const w = 640, h = 400;
+                const ctx = sizeCanvas(syncLaptop, w, h, 2);
+                drawStudioPedestalStage(ctx, w, h, 'sage', 0.83);
+                drawStudio3DMacBook(ctx, w * 0.45, h * 0.46, 338, tex('tex-charts-laptop'), 5.5);
+                drawStudio3DPhone(ctx, w * 0.77, h * 0.52, 0.44, 0.025, tex('tex-charts-mobile'), -21.0, -4.0);
+            }
+            const pdfCv = document.getElementById('bentoPdfCanvas');
+            if (pdfCv) {
+                const w = 480, h = 360;
+                const ctx = sizeCanvas(pdfCv, w, h, 2);
+                drawStudioPedestalStage(ctx, w, h, 'sage', 0.82);
+                drawStudio3DPhone(ctx, w * 0.50, h * 0.48, 0.47, -0.02, tex('tex-pdf-mobile'), 22.5, -4.2);
+            }
+            const pwaCv = document.getElementById('bentoPwaCanvas');
+            if (pwaCv) {
+                const w = 480, h = 360;
+                const ctx = sizeCanvas(pwaCv, w, h, 2);
+                drawStudioPedestalStage(ctx, w, h, 'espresso', 0.82);
+                drawStudio3DPhone(ctx, w * 0.33, h * 0.51, 0.42, -0.03, tex('tex-aufgaben-mobile'), 22.0, -4.0);
+                drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.42, 0.03, tex('tex-insights-mobile'), -21.0, -4.0);
+            }
+            const ctaCv = document.getElementById('ctaRecapCanvas');
+            if (ctaCv) {
+                const w = 520, h = 390;
+                const ctx = sizeCanvas(ctaCv, w, h, 2);
+                drawStudioPedestalStage(ctx, w, h, 'sage', 0.82);
+                drawStudio3DPhone(ctx, w * 0.34, h * 0.51, 0.45, -0.03, tex('tex-recap-mobile'), 22.0, -4.2);
+                drawStudio3DPhone(ctx, w * 0.67, h * 0.49, 0.45, 0.03, tex('tex-stundenplan-mobile'), -21.0, -4.2);
+            }
+
+            // 2. Hero Device Mode Switcher
+            const heroMac = document.getElementById('heroMacActor');
+            const heroPhone = document.getElementById('heroPhoneActor');
+            const setHeroMode = (mode) => {
+                document.querySelectorAll('.hero-mode-btn').forEach(b => {
+                    const active = b.getAttribute('data-hero-mode') === mode;
+                    b.classList.toggle('bg-[#faf7f2]', active);
+                    b.classList.toggle('text-[#1f1b16]', active);
+                    b.classList.toggle('shadow-sm', active);
+                    b.classList.toggle('text-white/80', !active);
+                });
+                if (typeof gsap === 'undefined') return;
+                if (mode === 'duo') {
+                    gsap.to(heroMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.45, ease: 'power3.out' });
+                    gsap.to(heroPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.45, ease: 'power3.out' });
+                } else if (mode === 'phone') {
+                    gsap.to(heroMac, { xPercent: 25, scale: 0.86, opacity: 0.14, duration: 0.45, ease: 'power3.out' });
+                    gsap.to(heroPhone, { xPercent: 88, scale: 1.18, opacity: 1, duration: 0.45, ease: 'power3.out' });
+                } else if (mode === 'laptop') {
+                    gsap.to(heroMac, { xPercent: -12, scale: 1.12, opacity: 1, duration: 0.45, ease: 'power3.out' });
+                    gsap.to(heroPhone, { xPercent: -45, scale: 0.85, opacity: 0.14, duration: 0.45, ease: 'power3.out' });
+                }
+            };
+            document.querySelectorAll('.hero-mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => setHeroMode(btn.getAttribute('data-hero-mode') || 'duo'));
+            });
+
+            // 3. Bento Device Switcher
             document.querySelectorAll('[data-bento-device]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const mode = btn.getAttribute('data-bento-device') || 'phone';
@@ -1595,45 +1764,15 @@
                     if (lEl) lEl.classList.toggle('is-current', mode === 'laptop');
                     document.querySelectorAll('[data-bento-device]').forEach(b => {
                         const active = b === btn;
-                        b.classList.toggle('bg-white', active);
+                        b.classList.toggle('bg-[#faf7f2]', active);
                         b.classList.toggle('text-[#1f1b16]', active);
                         b.classList.toggle('shadow-sm', active);
-                        b.classList.toggle('text-[#6e665e]', !active);
+                        b.classList.toggle('text-white/80', !active);
                     });
                 });
             });
 
-            // Storyboard Active Chapter Setter
-            const setActiveStory = (idx) => {
-                activeStoryIdx = idx;
-                document.querySelectorAll('.story-step').forEach(el => {
-                    const elIdx = Number(el.getAttribute('data-story-index'));
-                    el.classList.toggle('is-active', elIdx === idx);
-                });
-                STORY_CONFIG.forEach((_, i) => {
-                    const layer = document.getElementById(`storyLayer${i}`);
-                    if (layer) layer.classList.toggle('is-current', i === idx);
-                });
-                const cfg = STORY_CONFIG[idx];
-                const kicker = document.getElementById('storyStageKicker');
-                const title = document.getElementById('storyStageTitle');
-                if (kicker) kicker.textContent = cfg.kicker;
-                if (title) title.textContent = cfg.title;
-            };
-            setActiveStory(0);
-
-            document.querySelectorAll('.story-step').forEach(card => {
-                const idx = Number(card.getAttribute('data-story-index')) || 0;
-                card.addEventListener('click', () => setActiveStory(idx));
-                card.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setActiveStory(idx);
-                    }
-                });
-            });
-
-            // Mobile Nav Drawer
+            // 4. Mobile Nav Drawer
             const mobileBtn = document.getElementById('mobileNavBtn');
             const mobileDrawer = document.getElementById('mobileNavDrawer');
             if (mobileBtn && mobileDrawer) {
@@ -1649,90 +1788,272 @@
                 });
             }
 
-            // Silky Continuous Spring-Damped Scroll Choreography (100% GPU-Composited, 0ms Canvas Reflow!)
-            if (!reducedMotion) {
-                const revealObs = new IntersectionObserver((entries) => {
-                    for (const entry of entries) {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                            revealObs.unobserve(entry.target);
-                        }
+            // 5. Pinned Stage Screen & Card UI State Helpers
+            const pinCaptions = [
+                'Szene 1 von 4 · Laptop & Smartphone sliden beim Scrollen synchron ins Bild',
+                'Szene 2 von 4 · Smartphone rückt nach vorn: Fächer-Gewichtung & Wunschnote',
+                'Szene 3 von 4 · Laptop übernimmt den Fokus: Stundenplan & Google-Kalender-Sync',
+                'Szene 4 von 4 · Finale im Duo: 40-Kurse Abitur-Check & 1-Klick PDF-Notenspiegel'
+            ];
+
+            const setActivePinScreen = (macIdx, phoneIdx) => {
+                [0, 1, 2].forEach(i => {
+                    const el = document.getElementById(`pinMacScreen${i}`);
+                    if (el) el.classList.toggle('is-active', i === macIdx);
+                });
+                [0, 1, 2, 3, 4].forEach(i => {
+                    const el = document.getElementById(`pinPhoneScreen${i}`);
+                    if (el) el.classList.toggle('is-active', i === phoneIdx);
+                });
+            };
+
+            let lastActiveStep = -1;
+            const updateStepIndicators = (stepIdx) => {
+                if (stepIdx === lastActiveStep) return;
+                lastActiveStep = stepIdx;
+                document.querySelectorAll('.pin-step-btn').forEach(b => {
+                    const idx = Number(b.getAttribute('data-pin-step'));
+                    const active = idx === stepIdx;
+                    b.classList.toggle('bg-[#faf7f2]', active);
+                    b.classList.toggle('text-[#1f1b16]', active);
+                    b.classList.toggle('text-white/80', !active);
+                });
+                [0, 1, 2, 3].forEach(i => {
+                    const card = document.getElementById(`pinCard${i}`);
+                    if (card) card.classList.toggle('is-interactive', i === stepIdx);
+                });
+                const counter = document.getElementById('pinStepCounter');
+                const cap = document.getElementById('pinCaptionText');
+                if (counter) counter.textContent = `Schritt 0${stepIdx + 1} / 04`;
+                if (cap) cap.textContent = pinCaptions[stepIdx] || pinCaptions[0];
+            };
+
+            // 6. GSAP + ScrollTrigger Motion Choreography
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !reducedMotion) {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // 6A. Top Scrub Progress Bar
+                gsap.to('#scrollProgressBar', {
+                    scaleX: 1,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: document.body,
+                        start: 'top top',
+                        end: 'bottom bottom',
+                        scrub: true
                     }
-                }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+                });
 
-                document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
+                // 6B. Hero Entrance + Scroll Parallax Separation
+                gsap.from('.hero-copy', {
+                    y: 24,
+                    opacity: 0,
+                    duration: 0.75,
+                    stagger: 0.08,
+                    ease: 'power3.out'
+                });
+                gsap.from('#heroMacCanvas', {
+                    xPercent: 18,
+                    yPercent: 10,
+                    opacity: 0,
+                    scale: 0.92,
+                    duration: 0.85,
+                    ease: 'power3.out'
+                });
+                gsap.from('#heroPhoneCanvas', {
+                    xPercent: -22,
+                    yPercent: 18,
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: 0.9,
+                    delay: 0.12,
+                    ease: 'power3.out'
+                });
+                gsap.from('#heroFloatCard', {
+                    y: 16,
+                    opacity: 0,
+                    duration: 0.7,
+                    delay: 0.25,
+                    ease: 'power3.out'
+                });
 
-                const heroCard = document.getElementById('heroStageCard');
-                const storyCard = document.getElementById('storyStickyCard');
-                const progressBar = document.getElementById('scrollProgressBar');
-                const storySteps = Array.from(document.querySelectorAll('.story-step'));
-
-                let targetScrollY = window.scrollY;
-                let smoothScrollY = window.scrollY;
-                let rafId = null;
-
-                const updateVisuals = () => {
-                    smoothScrollY += (targetScrollY - smoothScrollY) * 0.14;
-
-                    // 1. Top Scroll Progress Line
-                    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-                    if (progressBar) {
-                        progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, smoothScrollY / maxScroll))})`;
+                gsap.to('#heroStageWrap', {
+                    y: -26,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: '#hero',
+                        start: 'top top',
+                        end: 'bottom top',
+                        scrub: true
                     }
+                });
 
-                    // 2. Hero Card GPU 3D Float & Subtle Perspective Rotation (never flattens to 0°!)
-                    if (heroCard) {
-                        const hp = Math.min(1, Math.max(0, smoothScrollY / 680));
-                        const rotY = (-1.5 + hp * 5.0).toFixed(3);
-                        const rotX = (1.2 - hp * 2.4).toFixed(3);
-                        const liftY = (-hp * 16).toFixed(2);
-                        heroCard.style.transform = `perspective(1400px) translate3d(0, ${liftY}px, 0) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
-                    }
+                // 6C. HERO-TO-STORY PINNED SCROLL CHOREOGRAPHY
+                const pinEl = document.getElementById('scrollShowcasePin');
+                const macEl = document.getElementById('pinMacActor');
+                const phoneEl = document.getElementById('pinPhoneActor');
+                const progressFill = document.getElementById('pinProgressFill');
 
-                    // 3. Desktop Sticky Storyboard Active Chapter + Subtle Continuous Depth Motion
-                    if (window.innerWidth >= 1024 && storySteps.length) {
-                        const viewMid = window.innerHeight * 0.44;
-                        let bestIdx = 0;
-                        let bestDist = Infinity;
-                        for (let i = 0; i < storySteps.length; i++) {
-                            const r = storySteps[i].getBoundingClientRect();
-                            const mid = (r.top + r.bottom) * 0.5;
-                            const dist = Math.abs(mid - viewMid);
-                            if (dist < bestDist) {
-                                bestDist = dist;
-                                bestIdx = i;
+                gsap.set(macEl, { xPercent: -52, yPercent: 16, scale: 0.82, opacity: 0, rotation: -3 });
+                gsap.set(phoneEl, { xPercent: 85, yPercent: 40, scale: 0.84, opacity: 0, rotation: 7 });
+                gsap.set(['#pinCard1', '#pinCard2', '#pinCard3'], { y: 36, opacity: 0, scale: 0.97 });
+                gsap.set('#pinCard0', { y: 20, opacity: 0 });
+
+                const storyTl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: pinEl,
+                        start: 'top 76px',
+                        end: '+=290%',
+                        pin: true,
+                        scrub: 0.9,
+                        anticipatePin: 1,
+                        onUpdate: (self) => {
+                            const p = self.progress;
+                            if (progressFill) {
+                                progressFill.style.transform = `scaleX(${Math.max(0.06, p)})`;
+                            }
+                            if (p < 0.27) {
+                                updateStepIndicators(0);
+                                setActivePinScreen(0, 0);
+                            } else if (p < 0.54) {
+                                updateStepIndicators(1);
+                                setActivePinScreen(0, p < 0.41 ? 1 : 2);
+                            } else if (p < 0.79) {
+                                updateStepIndicators(2);
+                                setActivePinScreen(1, 3);
+                            } else {
+                                updateStepIndicators(3);
+                                setActivePinScreen(2, 4);
                             }
                         }
-                        if (bestIdx !== activeStoryIdx) {
-                            setActiveStory(bestIdx);
-                        }
-
-                        if (storyCard) {
-                            const storySec = document.getElementById('story');
-                            const sr = storySec.getBoundingClientRect();
-                            const total = Math.max(1, storySec.offsetHeight - window.innerHeight);
-                            const sp = Math.min(1, Math.max(0, -sr.top / total));
-                            const sRotY = ((sp - 0.5) * 4.2).toFixed(3);
-                            const sLift = Math.sin(sp * Math.PI) * -6;
-                            storyCard.style.transform = `perspective(1500px) translate3d(0, ${sLift.toFixed(2)}px, 0) rotateY(${sRotY}deg)`;
-                        }
                     }
+                });
 
-                    if (Math.abs(targetScrollY - smoothScrollY) > 0.35) {
-                        rafId = requestAnimationFrame(updateVisuals);
-                    } else {
-                        smoothScrollY = targetScrollY;
-                        rafId = null;
+                storyTl
+                    .to(macEl, { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, rotation: 0, duration: 0.9, ease: 'power2.out' }, 0)
+                    .to(phoneEl, { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, rotation: 0, duration: 0.95, ease: 'power2.out' }, 0.12)
+                    .to('#pinCard0', { y: 0, opacity: 1, duration: 0.7, ease: 'power2.out' }, 0.15)
+                    .to({}, { duration: 0.45 })
+
+                    .to('#pinCard0', { y: -24, opacity: 0, scale: 0.97, duration: 0.55, ease: 'power2.inOut' }, 'step2')
+                    .to(macEl, { xPercent: -24, yPercent: -6, scale: 0.78, opacity: 0.24, rotation: -2, duration: 0.9, ease: 'power2.inOut' }, 'step2')
+                    .to(phoneEl, { xPercent: 68, yPercent: -2, scale: 1.15, opacity: 1, rotation: 1.5, duration: 0.9, ease: 'power2.inOut' }, 'step2')
+                    .to('#pinCard1', { y: 0, opacity: 1, scale: 1, duration: 0.65, ease: 'power2.out' }, 'step2+=0.22')
+                    .to({}, { duration: 0.65 })
+
+                    .to('#pinCard1', { y: -24, opacity: 0, scale: 0.97, duration: 0.55, ease: 'power2.inOut' }, 'step3')
+                    .to(macEl, { xPercent: -8, yPercent: 0, scale: 1.05, opacity: 1, rotation: 0.5, duration: 0.9, ease: 'power2.inOut' }, 'step3')
+                    .to(phoneEl, { xPercent: 185, yPercent: 6, scale: 0.88, opacity: 1, rotation: 3.5, duration: 0.9, ease: 'power2.inOut' }, 'step3')
+                    .to('#pinCard2', { y: 0, opacity: 1, scale: 1, duration: 0.65, ease: 'power2.out' }, 'step3+=0.22')
+                    .to({}, { duration: 0.55 })
+
+                    .to('#pinCard2', { y: -24, opacity: 0, scale: 0.97, duration: 0.55, ease: 'power2.inOut' }, 'step4')
+                    .to(macEl, { xPercent: 4, yPercent: -2, scale: 1.0, opacity: 1, rotation: 0, duration: 0.85, ease: 'power2.inOut' }, 'step4')
+                    .to(phoneEl, { xPercent: 4, yPercent: 2, scale: 0.98, opacity: 1, rotation: -1.5, duration: 0.85, ease: 'power2.inOut' }, 'step4')
+                    .to('#pinCard3', { y: 0, opacity: 1, scale: 1, duration: 0.65, ease: 'power2.out' }, 'step4+=0.22')
+                    .to({}, { duration: 0.45 });
+
+                const stepStops = [0.16, 0.40, 0.66, 0.92];
+                document.querySelectorAll('.pin-step-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = Number(btn.getAttribute('data-pin-step')) || 0;
+                        const st = storyTl.scrollTrigger;
+                        if (!st) return;
+                        const targetY = st.start + (st.end - st.start) * stepStops[idx];
+                        window.scrollTo({ top: targetY, behavior: 'smooth' });
+                    });
+                });
+
+                // 6D. Scroll-Based 3D Bento Cards
+                gsap.from('.scroll-reveal-head', {
+                    y: 32,
+                    opacity: 0,
+                    duration: 0.7,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: '.scroll-reveal-head',
+                        start: 'top 84%',
+                        toggleActions: 'play none none reverse'
                     }
+                });
+
+                document.querySelectorAll('.scroll-3d-card').forEach((card, idx) => {
+                    gsap.from(card, {
+                        rotateX: 14,
+                        y: 44,
+                        scale: 0.94,
+                        opacity: 0,
+                        transformPerspective: 1100,
+                        duration: 0.75,
+                        delay: (idx % 2) * 0.08,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 86%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                });
+
+                // 6E. Staggered Quantitative Stats Reveal
+                gsap.from('.stat-item', {
+                    y: 28,
+                    opacity: 0,
+                    duration: 0.65,
+                    stagger: 0.1,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: '#kennzahlen',
+                        start: 'top 82%',
+                        toggleActions: 'play none none reverse'
+                    }
+                });
+
+                // 6F. Section Navigator Dots Highlight + Click Scroll
+                const navIds = ['#top', '#story', '#geraete', '#kennzahlen', '#launch'];
+                const dots = Array.from(document.querySelectorAll('.sec-dot'));
+                const highlightDot = (activeIdx) => {
+                    dots.forEach((dot, i) => {
+                        const isActive = i === activeIdx;
+                        dot.classList.toggle('bg-[#ffe6b9]', isActive);
+                        dot.classList.toggle('scale-125', isActive);
+                        dot.classList.toggle('bg-white/30', !isActive);
+                    });
                 };
-
-                window.addEventListener('scroll', () => {
-                    targetScrollY = window.scrollY;
-                    if (!rafId) rafId = requestAnimationFrame(updateVisuals);
-                }, { passive: true });
-                updateVisuals();
+                navIds.forEach((sel, idx) => {
+                    const sec = document.querySelector(sel);
+                    if (!sec) return;
+                    ScrollTrigger.create({
+                        trigger: sec,
+                        start: 'top 52%',
+                        end: 'bottom 52%',
+                        onEnter: () => highlightDot(idx),
+                        onEnterBack: () => highlightDot(idx)
+                    });
+                });
+                dots.forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        const target = document.querySelector(dot.getAttribute('data-scroll-target'));
+                        if (target) target.scrollIntoView({ behavior: 'smooth' });
+                    });
+                });
             } else {
-                document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-visible'));
+                updateStepIndicators(0);
+                document.querySelectorAll('.pin-step-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = Number(btn.getAttribute('data-pin-step')) || 0;
+                        updateStepIndicators(idx);
+                        [0, 1, 2, 3].forEach(i => {
+                            const c = document.getElementById(`pinCard${i}`);
+                            if (c) c.style.opacity = i === idx ? '1' : '0';
+                        });
+                        if (idx === 0) setActivePinScreen(0, 0);
+                        else if (idx === 1) setActivePinScreen(0, 2);
+                        else if (idx === 2) setActivePinScreen(1, 3);
+                        else setActivePinScreen(2, 4);
+                    });
+                });
             }
         })();
     </script>
