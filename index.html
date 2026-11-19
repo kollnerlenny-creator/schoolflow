@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Schooly">
     <meta name="theme-color" content="#f7f3eb">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
     <link rel="shortcut icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
     <link rel="apple-touch-icon" href="/icon-192.png">
@@ -53,7 +53,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v47';
+        const CURRENT_BUILD = 'schooly-v48';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -65,7 +65,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v47') {
+                        if (k !== 'schooly-cache-v48') {
                             caches.delete(k);
                         }
                     });
@@ -254,8 +254,8 @@
             }
         }
 
-        /* Fächerliste & Aufgabenliste: Pixel Crisp White Containers */
-        .subject-card, .subject-list-item, .task-list-item {
+        /* Fächerliste: Pixel Crisp White Containers */
+        .subject-card, .subject-list-item {
             background: #ffffff !important;
             border: 1px solid #e8e2d8 !important;
             border-radius: 1.5rem !important; /* Clean 24px */
@@ -263,13 +263,35 @@
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease !important;
         }
         @media (hover: hover) {
-            .subject-card:hover, .subject-list-item:hover, .task-list-item:hover {
+            .subject-card:hover, .subject-list-item:hover {
                 background: #fdfbf7 !important;
                 border-color: rgba(45, 105, 76, 0.35) !important;
                 box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
             }
         }
-        .subject-card:active, .subject-list-item:active, .task-list-item:active {
+        .subject-card:active, .subject-list-item:active {
+            transform: scale(0.988);
+            background: #f7f1e7 !important;
+        }
+
+        /* Aufgabenliste Wrapper: transparent & rund ohne zweiten Außenrahmen */
+        .task-list-item {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 9999px !important;
+        }
+        .task-list-item .swipe-item {
+            transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
+        }
+        @media (hover: hover) {
+            .task-list-item .swipe-item:hover {
+                background: #fdfbf7 !important;
+                border-color: rgba(45, 105, 76, 0.35) !important;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+            }
+        }
+        .task-list-item .swipe-item:active {
             transform: scale(0.988);
             background: #f7f1e7 !important;
         }
@@ -1777,10 +1799,6 @@
                         <i data-lucide="download" class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-white"></i>
                         <span class="whitespace-nowrap">Installieren</span>
                     </button>
-                    <!-- Freunde Button -->
-                    <button @click="isFriendsOpen = true" title="Freunde" class="w-10 h-10 sm:w-11 sm:h-11 md:w-9 md:h-9 rounded-full bg-[#f0e6df] md:bg-[#ece3d8]/75 border border-[#ede3d8] md:border-transparent flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] md:hover:bg-[#e2d6c7] active:scale-95 transition-all cursor-pointer shadow-xs md:shadow-none">
-                        <i data-lucide="user-plus" class="w-5 h-5 md:w-4.5 md:h-4.5"></i>
-                    </button>
                     <!-- Einstellungen Button (Schlicht & einheitlich ohne Silber-Optik) -->
                     <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 md:w-9 md:h-9 rounded-full bg-[#f0e6df] md:bg-[#ece3d8]/75 border border-[#ede3d8] md:border-transparent flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] md:hover:bg-[#e2d6c7] active:scale-95 transition-all cursor-pointer shadow-xs md:shadow-none">
                         <i data-lucide="settings" class="w-5 h-5 md:w-4.5 md:h-4.5"></i>
@@ -1944,7 +1962,7 @@
                                     Aktuell keine Aufgaben! 🎉
                                 </div>
                                 <div v-else class="space-y-2.5">
-                                    <div v-for="(t, tIdx) in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3 bg-[#f4ece4] p-3 rounded-2xl border border-[#ede3d8]">
+                                    <div v-for="(t, tIdx) in upcomingTasks.slice(0,3)" :key="t.id" class="flex items-center gap-3 bg-[#f4ece4] px-3.5 py-2.5 rounded-full border border-[#ede3d8]">
                                         <button @click.stop="toggleTaskDone(t, $event)" 
                                                 class="shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer"
                                                 :class="t.done ? 'bg-[#2d694c] border-[#2d694c] text-white' : 'border-[#ded5c7] bg-white text-transparent'">
@@ -2097,29 +2115,29 @@
                         </button>
                     </div>
 
-                    <!-- Fächer Grid (Kompakt, platzsparend & responsive mit eleganten Rundungen) -->
-                    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-2.5 sm:gap-3">
+                    <!-- Fächer Grid (Kompakt, rund & platzsparend mit konzentrischer Pillen-Optik) -->
+                    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-2">
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="selectedSubject = s; scrollToTop()"
-                             class="bg-white rounded-[1.65rem] sm:rounded-[1.85rem] px-4 py-3 sm:px-5 sm:py-3.5 border border-[#ede3d8] flex items-center justify-between gap-3 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-[#2d694c]/35 transition-all cursor-pointer active:scale-[0.99] relative overflow-hidden"
+                             class="bg-white rounded-full px-3.5 py-2 sm:px-4 sm:py-2.5 border border-[#ede3d8] flex items-center justify-between gap-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-[#2d694c]/35 transition-all cursor-pointer active:scale-[0.99] relative overflow-hidden"
                              :style="{ animationDelay: (idx * 0.03) + 's' }">
                             
-                            <!-- Left side: Icon + Title + Category badges -->
-                            <div class="flex items-center gap-3.5 min-w-0 flex-1">
-                                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 relative shadow-2xs"
+                            <!-- Left side: Circular Icon + Title + Category badges -->
+                            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 relative shadow-2xs"
                                      :style="{ backgroundColor: (s.color || '#2d694c') + '18', color: s.color || '#2d694c' }">
-                                    <span class="flex items-center justify-center" v-html="getSubjectIconSvg(s.icon || 'book-open', 'w-5 h-5')"></span>
+                                    <span class="flex items-center justify-center" v-html="getSubjectIconSvg(s.icon || 'book-open', 'w-4 h-4 sm:w-4.5 sm:h-4.5')"></span>
                                 </div>
                                 <div class="overflow-hidden min-w-0 flex-1">
                                     <div class="flex items-center gap-1.5 min-w-0">
-                                        <h3 class="text-sm sm:text-base font-bold text-[#1f1b16] font-['Epilogue'] truncate leading-tight">
+                                        <h3 class="text-[13.5px] sm:text-[15px] font-bold text-[#1f1b16] font-['Epilogue'] truncate leading-tight">
                                             {{ s.name }}
                                         </h3>
-                                        <span v-if="gradeSystem !== '6'" class="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0"
+                                        <span v-if="gradeSystem !== '6'" class="text-[8.5px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0"
                                               :class="isLKSubject(s) ? 'bg-[#2d694c] text-white' : 'bg-[#ede4dc] text-[#524d44]'">
                                             {{ isLKSubject(s) ? 'LK' : 'GK' }}
                                         </span>
                                     </div>
-                                    <div class="flex items-center gap-2 text-[11px] text-[#6E665E] font-medium mt-0.5 truncate">
+                                    <div class="flex items-center gap-1.5 text-[10.5px] sm:text-[11px] text-[#6E665E] font-medium mt-0.5 truncate">
                                         <span>{{ s.semesterGrades ? s.semesterGrades.length : 0 }} {{ (s.semesterGrades && s.semesterGrades.length === 1) ? 'Note' : 'Noten' }}</span>
                                         <span class="text-[#c7bfb4]">•</span>
                                         <span>{{ s.examWeight }}% Klausur</span>
@@ -2127,30 +2145,30 @@
                                 </div>
                             </div>
                             
-                            <!-- Right side: Compact Grade Capsule with soft rounding -->
-                            <div class="flex items-center gap-2 shrink-0">
-                                <div class="bg-[#f7f2ea] rounded-2xl px-3 py-1.5 sm:px-3.5 sm:py-2 text-right border border-[#ede3d8] min-w-[62px] sm:min-w-[70px] flex flex-col items-center justify-center">
-                                    <div class="text-base sm:text-lg font-black text-[#1f1b16] font-['Epilogue'] leading-none">
+                            <!-- Right side: Compact Pill Grade Capsule -->
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <div class="bg-[#f7f2ea] rounded-full px-3.5 py-1 sm:px-4 sm:py-1.5 text-right border border-[#ede3d8] min-w-[58px] sm:min-w-[66px] flex flex-col items-center justify-center tabular-nums">
+                                    <div class="text-sm sm:text-base font-black text-[#1f1b16] font-['Epilogue'] leading-none">
                                         <span v-if="s.reportCardGrade !== null" class="flex items-center justify-center gap-1 text-[#b45309]">
-                                            <span v-html="getSubjectIconSvg('award', 'w-3.5 h-3.5 text-[#b45309]')"></span>
+                                            <span v-html="getSubjectIconSvg('award', 'w-3 h-3 text-[#b45309]')"></span>
                                             {{ s.reportCardGrade }}
                                         </span>
                                         <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '–' }}</span>
                                     </div>
-                                    <div class="text-[9.5px] font-black uppercase tracking-tight mt-0.5 text-center leading-none">
+                                    <div class="text-[9px] font-black uppercase tracking-tight mt-0.5 text-center leading-none">
                                         <span v-if="s.reportCardGrade !== null" class="text-[#857e72] font-bold">Zeugnis</span>
-                                        <span v-else-if="gradeSystem !== '6' && s.finalGrade" class="text-[#2d694c] font-black text-[10px]">{{ formatNumber(s.finalGrade) }}</span>
+                                        <span v-else-if="gradeSystem !== '6' && s.finalGrade" class="text-[#2d694c] font-black text-[9.5px]">{{ formatNumber(s.finalGrade) }}</span>
                                         <span v-else-if="s.finalPoints !== null" class="text-[#857e72] font-bold">{{ gradeSystem === '6' ? 'Schnitt' : 'Punkte' }}</span>
                                         <span v-else class="text-[#857e72] font-bold">Offen</span>
                                     </div>
                                 </div>
-                                <div class="w-6 h-6 rounded-full flex items-center justify-center text-[#9c9488] shrink-0">
-                                    <span v-html="getSubjectIconSvg('chevron-right', 'w-4 h-4')"></span>
+                                <div class="w-5 h-5 rounded-full flex items-center justify-center text-[#9c9488] shrink-0">
+                                    <span v-html="getSubjectIconSvg('chevron-right', 'w-3.5 h-3.5')"></span>
                                 </div>
                             </div>
 
-                            <!-- Sleek 2.5px bottom accent bar showing progress -->
-                            <div v-if="s.finalPoints !== null" class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#ede4dc]/60 overflow-hidden">
+                            <!-- Sleek 2px bottom accent bar showing progress -->
+                            <div v-if="s.finalPoints !== null" class="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ede4dc]/60 overflow-hidden">
                                 <div class="h-full transition-all duration-300"
                                      :style="{
                                          backgroundColor: s.color || '#2d694c',
@@ -2309,17 +2327,17 @@
 
                                 <!-- Noten-Elemente -->
                                 <div v-for="g in filteredSubjectGrades" :key="g.id" 
-                                     class="bg-white rounded-[1.65rem] p-4 sm:p-4.5 border border-[#ede3d8] flex items-center justify-between gap-3.5 shadow-2xs hover:shadow-xs hover:border-[#2d694c]/35 transition-all cursor-pointer group relative"
+                                     class="bg-white rounded-full px-4.5 py-3 sm:px-5 sm:py-3.5 border border-[#ede3d8] flex items-center justify-between gap-3.5 shadow-2xs hover:shadow-xs hover:border-[#2d694c]/35 transition-all cursor-pointer group relative"
                                      @click="g.isFromPlanner ? openGradeFromPlannerTask(g.id) : openEditGradeModal(g)">
                                     
                                     <!-- Delete Button (Removed) -->
 
                                     <div class="flex items-center gap-3.5 min-w-0 flex-1">
                                         <!-- Punktzahl / Icon Badge -->
-                                        <div v-if="g.isFromPlanner || g.pending" class="w-12 h-12 rounded-2xl bg-[#fef3c7] text-[#b45309] flex items-center justify-center border border-[#fde68a] shrink-0">
+                                        <div v-if="g.isFromPlanner || g.pending" class="w-11 h-11 rounded-full bg-[#fef3c7] text-[#b45309] flex items-center justify-center border border-[#fde68a] shrink-0">
                                             <i data-lucide="clock" class="w-5 h-5" :class="{ 'animate-pulse': g.isFromPlanner }"></i>
                                         </div>
-                                        <div v-else class="w-12 h-12 rounded-2xl flex items-center justify-center text-lg sm:text-xl font-black shrink-0 font-['Epilogue'] shadow-2xs"
+                                        <div v-else class="w-11 h-11 rounded-full flex items-center justify-center text-lg sm:text-xl font-black shrink-0 font-['Epilogue'] shadow-2xs"
                                              :style="{ backgroundColor: (selectedSubject.color || '#2d694c') + '20', color: selectedSubject.color || '#2d694c' }">
                                             {{ g.points }}
                                         </div>
@@ -2524,9 +2542,9 @@
 
                     <!-- Planer Filter-Pills -->
                     <div v-if="plannerTab === 'upcoming' || plannerTab === 'past'" class="flex gap-2.5 justify-center mt-2 px-2 flex-wrap">
-                        <button @click="plannerFilter = ['Test','Klausur']" :class="plannerFilter.length === 2 ? 'bg-[#2d694c] text-white font-black shadow-xs' : 'bg-[#f4ece4] text-[#6E665E] border border-[#ede3d8] font-bold hover:text-[#1f1b16]'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill transition-colors">Alle</button>
-                        <button @click="toggleFilterType('Test')" :class="plannerFilter.length !== 2 && plannerFilter.includes('Test') ? 'bg-[#2d694c] text-white font-black shadow-xs' : 'bg-[#f4ece4] text-[#6E665E] border border-[#ede3d8] font-bold hover:text-[#1f1b16]'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill transition-colors">Nur Tests</button>
-                        <button @click="toggleFilterType('Klausur')" :class="plannerFilter.length !== 2 && plannerFilter.includes('Klausur') ? 'bg-[#2d694c] text-white font-black shadow-xs' : 'bg-[#f4ece4] text-[#6E665E] border border-[#ede3d8] font-bold hover:text-[#1f1b16]'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill transition-colors">Klausuren</button>
+                        <button @click="plannerFilter = ['Test','Klausur']" :class="plannerFilter.length === 2 ? 'toggle-accent-on bg-[#2d694c] text-white font-black shadow-xs' : 'bg-[#f4ece4] text-[#6E665E] border border-[#ede3d8] font-bold hover:text-[#1f1b16]'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill transition-colors">Alle</button>
+                        <button @click="toggleFilterType('Test')" :class="plannerFilter.length !== 2 && plannerFilter.includes('Test') ? 'toggle-accent-on bg-[#2d694c] text-white font-black shadow-xs' : 'bg-[#f4ece4] text-[#6E665E] border border-[#ede3d8] font-bold hover:text-[#1f1b16]'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill transition-colors">Nur Tests</button>
+                        <button @click="toggleFilterType('Klausur')" :class="plannerFilter.length !== 2 && plannerFilter.includes('Klausur') ? 'toggle-accent-on bg-[#2d694c] text-white font-black shadow-xs' : 'bg-[#f4ece4] text-[#6E665E] border border-[#ede3d8] font-bold hover:text-[#1f1b16]'" class="px-4.5 py-2.5 rounded-full text-xs uppercase tracking-wider cursor-pointer filter-pill transition-colors">Klausuren</button>
                     </div>
 
                     <!-- Listenansichten -->
@@ -2544,22 +2562,24 @@
                             Keine Aufgaben in dieser Ansicht.
                         </p>
 
-                        <div class="space-y-3.5 relative px-1 py-1">
+                        <div class="space-y-2 relative px-0.5 py-0.5">
                         <div v-for="(t, tIdx) in (plannerTab === 'upcoming' ? filteredUpcomingTasks : filteredPastTasks)" :key="t.id" 
-                                 class="relative group rounded-3xl task-list-item"
+                                 class="relative group rounded-full task-list-item"
                                  :data-task-id="t.id"
-                                 :style="{ animationDelay: (tIdx * 0.045) + 's' }"
+                                 :style="{ animationDelay: (tIdx * 0.04) + 's' }"
                                  :class="leavingTasks.has(t.id) ? 'task-item-leaving' : (taskSwipeState.id === t.id ? 'overflow-hidden' : 'overflow-visible')">
-                                <div class="absolute inset-0 bg-rose-600 rounded-3xl flex items-center justify-end px-6 z-0 transition-opacity duration-150"
-                                     :style="taskSwipeState.id === t.id && taskSwipeState.currentX < -20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
-                                    <i data-lucide="trash-2" class="text-white w-6 h-6"></i>
+                                <div v-show="taskSwipeState.id === t.id && taskSwipeState.currentX < -10"
+                                     class="absolute inset-0 bg-rose-600 rounded-full flex items-center justify-end px-6 z-0 transition-opacity duration-150"
+                                     :style="taskSwipeState.currentX < -20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
+                                    <i data-lucide="trash-2" class="text-white w-5 h-5"></i>
                                 </div>
-                                <div class="absolute inset-0 bg-[#2d694c] rounded-3xl flex items-center justify-start px-6 z-0 transition-opacity duration-150"
-                                     :style="taskSwipeState.id === t.id && taskSwipeState.currentX > 20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
-                                    <i data-lucide="edit-2" class="text-white w-6 h-6"></i>
+                                <div v-show="taskSwipeState.id === t.id && taskSwipeState.currentX > 10"
+                                     class="absolute inset-0 bg-[#2d694c] rounded-full flex items-center justify-start px-6 z-0 transition-opacity duration-150"
+                                     :style="taskSwipeState.currentX > 20 ? 'opacity:1' : 'opacity:0; pointer-events:none'">
+                                    <i data-lucide="edit-2" class="text-white w-5 h-5"></i>
                                 </div>
                                 
-                                <div class="p-3.5 flex items-center justify-between relative z-10 swipe-item bg-white border border-[#ede3d8] rounded-3xl shadow-xs hover:shadow-md transition-all"
+                                <div class="px-4 sm:px-5 py-2.5 flex items-center justify-between gap-2.5 relative z-10 swipe-item bg-white border border-[#ede3d8] rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
                                      :class="[taskSelectionMode && selectedTaskIds.has(t.id) ? 'border-[#2d694c] bg-[#f0f8f4]' : '', t.isGoogleEvent ? 'border-[#4285F4]/30 bg-[#f4f8ff]' : '']"
                                      @touchstart.stop="(taskSelectionMode || t.isGoogleEvent) ? null : (startTaskSwipe($event, t.id), taskLongPressStart($event, t.id))"
                                      @touchmove.stop="(taskSelectionMode || t.isGoogleEvent) ? null : (moveTaskSwipe($event), taskLongPressMove($event))"
@@ -2571,40 +2591,46 @@
                                      :ref="el => { if(el) taskSwipeRefs[t.id] = el }"
                                      style="touch-action: pan-y;">
                                     
-                                    <div class="flex items-center gap-4 overflow-hidden">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
                                         <button v-if="taskSelectionMode" @click.stop="toggleTaskSelection(t.id)"
-                                                class="shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors"
+                                                class="shrink-0 w-7.5 h-7.5 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors"
                                                 :class="selectedTaskIds.has(t.id) ? 'bg-[#2d694c] border-[#2d694c]' : 'border-[#ded5c7] bg-white'">
-                                            <svg v-if="selectedTaskIds.has(t.id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-white"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <svg v-if="selectedTaskIds.has(t.id)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white"><polyline points="20 6 9 17 4 12"/></svg>
                                         </button>
-                                        <div v-else-if="t.isGoogleEvent" class="shrink-0 w-8.5 h-8.5 rounded-full flex items-center justify-center bg-[#4285F4]/15">
-                                            <i data-lucide="calendar" class="w-4 h-4 text-[#4285F4]"></i>
+                                        <div v-else-if="t.isGoogleEvent" class="shrink-0 w-7.5 h-7.5 rounded-full flex items-center justify-center bg-[#4285F4]/15">
+                                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#4285F4]"></i>
                                         </div>
                                         <button v-else @click.stop="toggleTaskDone(t, $event)" @mousedown.stop @touchstart.stop @touchend.stop
-                                                class="task-done-btn shrink-0 w-8.5 h-8.5 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
+                                                class="task-done-btn shrink-0 w-7.5 h-7.5 rounded-full border-2 flex items-center justify-center cursor-pointer relative"
                                                 :class="t.done ? 'bg-[#2d694c] border-[#2d694c]' : 'border-[#ded5c7] hover:border-[#2d694c] bg-white'">
-                                            <svg v-if="t.done" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="check-icon w-5 h-5 text-white"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <svg v-if="t.done" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="check-icon w-4 h-4 text-white"><polyline points="20 6 9 17 4 12"/></svg>
                                         </button>
-                                        <div class="overflow-hidden">
-                                            <div class="flex items-center gap-2 overflow-hidden">
-                                                <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
-                                                <span class="text-[11px] sm:text-xs font-bold uppercase text-[#6E665E] truncate pr-1">{{ t.subject.name }}</span>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center justify-between gap-2 min-w-0">
+                                                <h4 class="font-bold text-[#1f1b16] text-[13.5px] sm:text-sm leading-tight truncate flex items-center gap-1.5" :class="{'line-through text-[#857e72]': t.done}">
+                                                    <span class="truncate">{{ t.title }}</span>
+                                                    <i v-if="t.notes" data-lucide="sticky-note" class="w-3 h-3 text-[#2d694c] shrink-0" title="Hat Notizen"></i>
+                                                </h4>
+                                                <span class="text-[10.5px] sm:text-[11px] font-bold text-[#524d44] shrink-0 tabular-nums">{{ formatDate(t.date) }}</span>
                                             </div>
-                                            <h4 class="font-bold text-[#1f1b16] text-sm sm:text-base mt-0.5 leading-tight truncate pr-1" :class="{'line-through text-[#857e72]': t.done}">{{ t.title }}</h4>
-                                            <p class="text-[10px] sm:text-xs font-semibold text-[#6E665E] uppercase tracking-wider mt-0.5 flex items-center gap-1.5">
-                                                {{ t.type }} • {{ formatDate(t.date) }}
-                                                <i v-if="t.notes" data-lucide="sticky-note" class="w-3 h-3 text-[#2d694c] shrink-0" title="Hat Notizen"></i>
-                                            </p>
-                                            <div v-if="t.type !== 'Hausaufgabe' && t.studyProgress > 0" class="flex items-center gap-1.5 mt-1.5 pr-4">
-                                                <div class="flex-1 h-1.5 rounded-full bg-[#ede4dc] overflow-hidden max-w-[90px]">
-                                                    <div class="h-full rounded-full" :style="{ width: t.studyProgress + '%', backgroundColor: progressColor(t.studyProgress) }"></div>
+                                            <div class="flex items-center justify-between gap-2 mt-0.5 min-w-0">
+                                                <div class="flex items-center gap-1.5 min-w-0 truncate text-[10.5px] sm:text-[11px] font-semibold text-[#6E665E]">
+                                                    <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: t.subject.color }"></span>
+                                                    <span class="uppercase font-bold truncate">{{ t.subject.name }}</span>
+                                                    <span aria-hidden="true" class="text-[#c7bfb4] shrink-0">•</span>
+                                                    <span class="uppercase tracking-wider shrink-0">{{ t.type }}</span>
                                                 </div>
-                                                <span class="text-[9px] font-bold" :style="{ color: progressColor(t.studyProgress) }">{{ t.studyProgress }}%</span>
+                                                <div v-if="t.type !== 'Hausaufgabe' && t.studyProgress > 0" class="flex items-center gap-1.5 shrink-0">
+                                                    <div class="w-12 sm:w-16 h-1.5 rounded-full bg-[#ede4dc] overflow-hidden">
+                                                        <div class="h-full rounded-full" :style="{ width: t.studyProgress + '%', backgroundColor: progressColor(t.studyProgress) }"></div>
+                                                    </div>
+                                                    <span class="text-[9.5px] font-bold tabular-nums" :style="{ color: progressColor(t.studyProgress) }">{{ t.studyProgress }}%</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <a v-if="t.isGoogleEvent" :href="t.htmlLink" target="_blank" rel="noopener" @click.stop class="shrink-0 w-9 h-9 rounded-full bg-[#f4ece4] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] active:bg-[#ede3d8] transition-colors cursor-pointer">
-                                        <i data-lucide="external-link" class="w-4.5 h-4.5"></i>
+                                    <a v-if="t.isGoogleEvent" :href="t.htmlLink" target="_blank" rel="noopener" @click.stop class="shrink-0 w-8 h-8 rounded-full bg-[#f4ece4] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] active:bg-[#ede3d8] transition-colors cursor-pointer">
+                                        <i data-lucide="external-link" class="w-4 h-4"></i>
                                     </a>
                                 </div>
                             </div>
@@ -2666,26 +2692,26 @@
                     </div>
 
                     <div v-if="plannerTab === 'calendar'" class="no-tab-swipe pb-8 md:max-w-[1280px] xl:max-w-[1380px] mx-auto w-full">
-                        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-7 items-start">
-                        <!-- LEFT COLUMN: Selected Day Focus ("AUFGABEN AM [DATUM]") & Workload Strip -->
-                            <div class="md:col-span-4 lg:col-span-4 xl:col-span-4 space-y-5 md:sticky md:top-20 order-2 md:order-1">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 xl:gap-6 items-start">
+                        <!-- LEFT / BOTTOM COLUMN: Selected Day Focus ("AUFGABEN AM [DATUM]") & Workload Strip -->
+                            <div class="lg:col-span-5 xl:col-span-4 space-y-4 sm:space-y-5 lg:sticky lg:top-20 order-2 lg:order-1">
                                 <!-- Day Focus Card Header & Tasks List -->
-                                <div class="bg-white rounded-[2rem] p-4 sm:p-5 md:p-6 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-4">
+                                <div class="bg-white rounded-[2rem] p-4 sm:p-5 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-4">
                                     
                                     <!-- Day Focus Header -->
-                                    <div class="flex items-center justify-between gap-2 flex-wrap pb-3.5 border-b border-[#f4ede6]">
-                                        <div class="flex items-center gap-2.5">
-                                            <div class="w-9.5 h-9.5 rounded-2xl bg-[#fed8b1] text-[#825500] flex items-center justify-center font-bold shrink-0 shadow-2xs">
-                                                <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                                    <div class="flex items-center justify-between gap-2 flex-wrap pb-3 border-b border-[#f4ede6]">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <div class="w-9 h-9 rounded-2xl bg-[#fed8b1] text-[#825500] flex items-center justify-center font-bold shrink-0 shadow-2xs">
+                                                <i data-lucide="calendar-check" class="w-4.5 h-4.5"></i>
                                             </div>
-                                            <div>
-                                                <span class="text-[10px] font-black uppercase tracking-wider text-[#6E665E] block leading-none">AUFGABEN AM {{ selectedDayFormattedShort }}</span>
+                                            <div class="min-w-0">
+                                                <span class="text-[10px] font-black uppercase tracking-wider text-[#6E665E] block leading-none truncate">AUFGABEN AM {{ selectedDayFormattedShort }}</span>
                                                 <h3 class="text-base sm:text-lg font-black text-[#1f1b16] font-['Epilogue'] leading-tight mt-0.5">
                                                     {{ selectedDayFormattedLong }}
                                                 </h3>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-1.5">
+                                        <div class="flex items-center gap-1.5 shrink-0">
                                             <span v-if="isToday(selectedCalendarDate)" class="bg-[#2d694c] text-white px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider">
                                                 Heute
                                             </span>
@@ -2711,89 +2737,87 @@
                                     </div>
 
                                     <!-- Empty State if no tasks on this day -->
-                                    <div v-if="!selectedDayFocusTasks || selectedDayFocusTasks.length === 0" class="py-8 text-center bg-[#faf6f0] rounded-2xl border border-[#ede3d8]">
-                                        <div class="w-12 h-12 rounded-full bg-[#f4ece4] flex items-center justify-center mx-auto mb-2 text-[#6E665E]">
-                                            <i data-lucide="check-circle-2" class="w-6 h-6 text-[#2d694c]"></i>
+                                    <div v-if="!selectedDayFocusTasks || selectedDayFocusTasks.length === 0" class="py-7 text-center bg-[#faf6f0] rounded-2xl border border-[#ede3d8]">
+                                        <div class="w-11 h-11 rounded-full bg-[#f4ece4] flex items-center justify-center mx-auto mb-2 text-[#6E665E]">
+                                            <i data-lucide="check-circle-2" class="w-5.5 h-5.5 text-[#2d694c]"></i>
                                         </div>
                                         <p class="font-bold text-sm text-[#1f1b16]">Keine Aufgaben oder Prüfungen</p>
                                         <p class="text-xs text-[#6E665E] mt-0.5">Nutze den Tag zum Wiederholen oder Entspannen.</p>
-                                        <button @click="openTaskModalWithDate(selectedCalendarDate)" class="mt-4 px-4 py-2.5 rounded-full bg-[#2d694c] hover:bg-[#23533c] !text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs">
+                                        <button @click="openTaskModalWithDate(selectedCalendarDate)" class="mt-3.5 px-4 py-2 rounded-full bg-[#2d694c] hover:bg-[#23533c] !text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs">
                                             <i data-lucide="plus" class="w-4 h-4 !text-white"></i>
                                             <span class="!text-white">Termin anlegen</span>
                                         </button>
                                     </div>
 
-                                    <!-- Tasks List on Selected Day -->
-                                    <div v-else class="space-y-3">
+                                    <!-- Tasks List on Selected Day (Compact & Overflow-Safe on Narrow Panels) -->
+                                    <div v-else class="space-y-2.5">
                                         <div v-for="t in selectedDayFocusTasks" :key="t.id"
-                                             class="bg-[#faf6f0] hover:bg-white rounded-2xl p-3.5 border border-[#ede3d8] shadow-2xs flex items-center justify-between gap-3 transition-all hover:shadow-xs">
+                                             class="bg-[#faf6f0] hover:bg-white rounded-[1.75rem] px-3.5 py-3 border border-[#ede3d8] shadow-2xs flex items-start justify-between gap-2.5 transition-all hover:shadow-xs">
                                             
-                                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                            <div class="flex items-start gap-2.5 min-w-0 flex-1">
                                                 <button v-if="!t.isGoogleEvent" @click.stop="toggleTaskDone(t, $event)" 
-                                                        class="w-8 h-8 rounded-full border border-[#ded5c7] flex items-center justify-center cursor-pointer shrink-0 transition-colors"
+                                                        class="w-7.5 h-7.5 mt-0.5 rounded-full border border-[#ded5c7] flex items-center justify-center cursor-pointer shrink-0 transition-colors"
                                                         :class="t.done ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white text-[#524d44] hover:bg-[#eadecf]'">
                                                     <svg v-if="t.done" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg>
                                                 </button>
                                                 <div class="min-w-0 flex-1">
-                                                    <div class="flex items-center gap-1.5">
-                                                        <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: t.subject ? t.subject.color : '#2d694c' }"></span>
+                                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                                        <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: t.subject ? t.subject.color : '#2d694c' }"></span>
                                                         <span class="text-[10px] font-black uppercase tracking-wider text-[#6E665E] truncate">{{ t.subject ? t.subject.name : 'Allgemein' }}</span>
+                                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shrink-0"
+                                                              :class="t.type === 'Klausur' ? 'bg-rose-100 text-rose-800 border border-rose-200' : (t.type === 'Test' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 'bg-amber-100 text-amber-800 border border-amber-200')">
+                                                            {{ t.type }}
+                                                        </span>
                                                     </div>
-                                                    <h4 class="font-bold text-sm text-[#1f1b16] truncate mt-0.5 leading-tight font-['Epilogue']" :class="{'line-through text-[#857e72]': t.done}">
+                                                    <h4 class="font-bold text-sm text-[#1f1b16] truncate mt-1 leading-tight font-['Epilogue']" :class="{'line-through text-[#857e72]': t.done}">
                                                         {{ t.title }}
                                                     </h4>
                                                     <p v-if="t.notes" class="text-[11px] text-[#6E665E] truncate mt-0.5">{{ t.notes }}</p>
                                                 </div>
                                             </div>
 
-                                            <div class="flex items-center gap-2 shrink-0">
-                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-2xs"
-                                                      :class="t.type === 'Klausur' ? 'bg-rose-100 text-rose-800 border border-rose-200' : (t.type === 'Test' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 'bg-amber-100 text-amber-800 border border-amber-200')">
-                                                    {{ t.type }}
-                                                </span>
-                                                <button v-if="!t.isGoogleEvent" @click="openEditTaskModal(t)" title="Termin bearbeiten"
-                                                        class="w-8 h-8 rounded-full bg-[#f4ece4] hover:bg-[#eae0d5] flex items-center justify-center text-[#524d44] active:scale-95 transition-all cursor-pointer border border-[#ede3d8]">
-                                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                                                </button>
-                                            </div>
+                                            <button v-if="!t.isGoogleEvent" @click="openEditTaskModal(t)" title="Termin bearbeiten"
+                                                    class="w-7.5 h-7.5 rounded-full bg-[#f4ece4] hover:bg-[#eae0d5] flex items-center justify-center text-[#524d44] active:scale-95 transition-all cursor-pointer border border-[#ede3d8] shrink-0">
+                                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                            </button>
                                         </div>
                                     </div>
 
                                     <!-- Primary CTA -->
                                     <button @click="openTaskModalWithDate(selectedCalendarDate)"
-                                            class="w-full bg-[#2d694c] hover:bg-[#23533c] active:scale-98 !text-white rounded-full py-3.5 px-5 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-all mt-2">
+                                            class="w-full bg-[#2d694c] hover:bg-[#23533c] active:scale-98 !text-white rounded-full py-3 px-5 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-all mt-1.5">
                                         <i data-lucide="plus-circle" class="w-4.5 h-4.5 !text-white"></i>
                                         <span class="!text-white">Neuer Termin für {{ selectedDayFormattedShort }}</span>
                                     </button>
                                 </div>
 
                                 <!-- SMART INTEGRATED WORKLOAD STRIP (Unter Tagesfokus platziert für direkte Sichtbarkeit) -->
-                                <div class="bg-white rounded-[2rem] p-4 sm:p-5 md:p-6 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <div class="flex items-center gap-2">
-                                            <i data-lucide="bar-chart-2" class="w-4.5 h-4.5 text-[#2d694c]"></i>
-                                            <h4 class="font-bold text-xs sm:text-sm text-[#1f1b16]">Wochen-Arbeitslast & Prüfungsdruck</h4>
+                                <div class="bg-white rounded-[2rem] p-4 sm:p-5 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-3">
+                                    <div class="flex flex-wrap justify-between items-center gap-2">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <i data-lucide="bar-chart-2" class="w-4.5 h-4.5 text-[#2d694c] shrink-0"></i>
+                                            <h4 class="font-bold text-xs sm:text-sm text-[#1f1b16] truncate">Wochen-Arbeitslast &amp; Prüfungsdruck</h4>
                                         </div>
-                                        <span class="text-[11px] font-bold text-[#6E665E] bg-[#f4ece4] px-2.5 py-0.5 rounded-full">
+                                        <span class="text-[11px] font-bold text-[#6E665E] bg-[#f4ece4] px-2.5 py-0.5 rounded-full shrink-0">
                                             KW {{ currentKW }} • {{ weeklyWorkloadIntensityLabel }}
                                         </span>
                                     </div>
 
                                     <!-- 7 Interactive Day Workload Columns -->
-                                    <div class="grid grid-cols-7 gap-1.5 sm:gap-2">
+                                    <div class="grid grid-cols-7 gap-1 sm:gap-1.5">
                                         <div v-for="wd in currentWeekWorkloadDays" :key="wd.date"
                                              @click="selectCalendarDay(wd.date)"
-                                             class="flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-2xl cursor-pointer transition-all active:scale-95"
+                                             class="flex flex-col items-center justify-between p-1 sm:p-1.5 rounded-xl sm:rounded-2xl cursor-pointer transition-all active:scale-95"
                                              :class="selectedCalendarDate === wd.date ? 'bg-[#fed8b1]/35 shadow-xs ring-2 ring-[#e6a86c]' : 'bg-[#f7f2ea]/70 hover:bg-[#ede4dc]'">
                                             <!-- Battery Bar -->
-                                            <div class="w-full h-11 rounded-xl flex items-end p-0.5 overflow-hidden" :class="wd.intensityBg">
-                                                <div class="w-full rounded-lg transition-all duration-300" :class="wd.intensityFill" :style="{ height: wd.barHeight }"></div>
+                                            <div class="w-full h-10 rounded-lg sm:rounded-xl flex items-end p-0.5 overflow-hidden" :class="wd.intensityBg">
+                                                <div class="w-full rounded-md sm:rounded-lg transition-all duration-300" :class="wd.intensityFill" :style="{ height: wd.barHeight }"></div>
                                             </div>
                                             <!-- Day Label + Date Number -->
-                                            <span class="text-[10px] font-bold mt-1.5 leading-tight" :class="wd.isWeekend ? 'text-[#b45309]' : 'text-[#6E665E]'">
+                                            <span class="text-[9.5px] sm:text-[10px] font-bold mt-1.5 leading-tight" :class="wd.isWeekend ? 'text-[#b45309]' : 'text-[#6E665E]'">
                                                 {{ wd.dayLabel }}
                                             </span>
-                                            <span class="text-xs font-black leading-tight" :class="selectedCalendarDate === wd.date ? 'text-[#825500]' : 'text-[#1f1b16]'">
+                                            <span class="text-[11px] sm:text-xs font-black leading-tight tabular-nums" :class="selectedCalendarDate === wd.date ? 'text-[#825500]' : 'text-[#1f1b16]'">
                                                 {{ wd.day }}
                                             </span>
                                         </div>
@@ -2801,7 +2825,7 @@
                                 </div>
 
                                 <!-- Weitere anstehende Termine in der aktuellen Woche -->
-                                <div v-if="otherWeekUpcomingTasks && otherWeekUpcomingTasks.length > 0" class="bg-white rounded-[2rem] p-5 border border-[#f0e8df] shadow-xs space-y-3">
+                                <div v-if="otherWeekUpcomingTasks && otherWeekUpcomingTasks.length > 0" class="bg-white rounded-[2rem] p-4 sm:p-5 border border-[#f0e8df] shadow-xs space-y-2.5">
                                     <div class="flex justify-between items-center px-1">
                                         <h4 class="font-bold text-xs sm:text-sm text-[#1f1b16] font-['Epilogue'] flex items-center gap-1.5">
                                             <i data-lucide="calendar-days" class="w-4 h-4 text-[#2d694c]"></i>
@@ -2815,9 +2839,9 @@
                                     <div class="space-y-2">
                                         <div v-for="t in (otherWeekUpcomingTasks || [])" :key="t.id"
                                              @click="selectCalendarDay(t.date)"
-                                             class="bg-[#faf6f0] hover:bg-white rounded-2xl p-3 border border-[#ede3d8] flex items-center justify-between gap-3 cursor-pointer transition-all hover:shadow-2xs">
+                                             class="bg-[#faf6f0] hover:bg-white rounded-full px-3.5 py-2 border border-[#ede3d8] flex items-center justify-between gap-2.5 cursor-pointer transition-all hover:shadow-2xs">
                                             <div class="flex items-center gap-2.5 min-w-0">
-                                                <div class="w-8 h-8 rounded-xl flex flex-col items-center justify-center shrink-0 font-bold text-[9px]"
+                                                <div class="w-8 h-8 rounded-full flex flex-col items-center justify-center shrink-0 font-bold text-[9px]"
                                                      :class="t.type === 'Klausur' ? 'bg-[#fed8b1] text-[#825500]' : 'bg-[#ede4dc] text-[#524d44]'">
                                                     <span>{{ getWeekdayAbbr(t.date) }}</span>
                                                     <span class="font-black text-xs leading-none">{{ getDayOfMonth(t.date) }}</span>
@@ -2836,21 +2860,31 @@
                                 </div>
                             </div>
 
-                        <!-- RIGHT COLUMN: Main Calendar Card (Grid + Legend) -->
-                            <div class="md:col-span-8 lg:col-span-8 xl:col-span-8 space-y-5 order-1 md:order-2">
-                                <div class="bg-white rounded-[2rem] p-3.5 sm:p-5 md:p-6 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+                        <!-- RIGHT / TOP COLUMN: Main Calendar Card (Grid + Legend) -->
+                            <div class="lg:col-span-7 xl:col-span-8 space-y-5 order-1 lg:order-2">
+                                <div class="bg-white rounded-[2rem] p-3 sm:p-4 md:p-5 border border-[#f0e8df] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
                                     <!-- Card Header: Icon, Month/Year, MONAT/WOCHE Pill, Semester Badge, Nav Arrows -->
-                                    <div class="flex justify-between items-center mb-5 gap-2 flex-wrap">
-                                        <div class="flex items-center gap-2.5 min-w-0">
-                                            <div class="w-9 h-9 rounded-xl bg-[#2d694c]/10 flex items-center justify-center text-[#2d694c] shrink-0">
-                                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2.5">
+                                        <div class="flex items-center justify-between gap-2 min-w-0">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <div class="w-8.5 h-8.5 rounded-xl bg-[#2d694c]/10 flex items-center justify-center text-[#2d694c] shrink-0">
+                                                    <i data-lucide="calendar" class="w-4.5 h-4.5"></i>
+                                                </div>
+                                                <h3 class="font-extrabold text-base sm:text-lg md:text-xl text-[#1f1b16] tracking-tight truncate leading-tight font-['Epilogue']">
+                                                    {{ calendarViewMode === 'week' ? 'KW ' + currentKW + ' • ' : '' }}{{ monthNames[calMonth] }} {{ calYear }}
+                                                </h3>
                                             </div>
-                                            <h3 class="font-extrabold text-lg sm:text-xl text-[#1f1b16] tracking-tight truncate leading-tight font-['Epilogue']">
-                                                {{ calendarViewMode === 'week' ? 'KW ' + currentKW + ' • ' : '' }}{{ monthNames[calMonth] }} {{ calYear }}
-                                            </h3>
+                                            <div class="flex sm:hidden items-center gap-1.5 shrink-0">
+                                                <button @click="navigateCalendar(-1)" :title="calendarViewMode === 'week' ? 'Vorherige Woche' : 'Vorheriger Monat'" class="w-8 h-8 rounded-full bg-[#f3ebe3] hover:bg-[#eae0d5] flex items-center justify-center text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
+                                                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                                </button>
+                                                <button @click="navigateCalendar(1)" :title="calendarViewMode === 'week' ? 'Nächste Woche' : 'Nächster Monat'" class="w-8 h-8 rounded-full bg-[#f3ebe3] hover:bg-[#eae0d5] flex items-center justify-center text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
+                                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                         
-                                        <div class="flex items-center gap-2 shrink-0">
+                                        <div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">
                                             <!-- MONAT | WOCHE Pill Toggle mit Gleit-Indikator -->
                                             <div class="relative inline-flex glass-pill p-1 rounded-full select-none text-[11px] font-bold">
                                                 <div class="absolute top-1 bottom-1 bg-[#2d694c] rounded-full shadow-xs transition-all duration-450 ease-out pointer-events-none"
@@ -2859,83 +2893,94 @@
                                                          left: `calc(4px + ${calendarViewMode === 'month' ? 0 : 1} * ((100% - 8px) / 2))`
                                                      }"></div>
                                                 <button @click="calendarViewMode = 'month'"
-                                                        class="relative z-10 px-3 py-1 rounded-full transition-colors duration-200 cursor-pointer"
+                                                        class="relative z-10 px-3 py-1 rounded-full transition-colors duration-200 cursor-pointer whitespace-nowrap"
                                                         :class="calendarViewMode === 'month' ? 'text-white font-black' : 'text-[#6E665E] hover:text-[#1f1b16]'">
                                                     MONAT
                                                 </button>
                                                 <button @click="calendarViewMode = 'week'"
-                                                        class="relative z-10 px-3 py-1 rounded-full transition-colors duration-200 cursor-pointer"
+                                                        class="relative z-10 px-3 py-1 rounded-full transition-colors duration-200 cursor-pointer whitespace-nowrap"
                                                         :class="calendarViewMode === 'week' ? 'text-white font-black' : 'text-[#6E665E] hover:text-[#1f1b16]'">
                                                     WOCHE
                                                 </button>
                                             </div>
 
                                             <!-- Warm Peach Semester Badge -->
-                                            <span class="hidden sm:inline-block bg-[#fed8b1] text-[#825500] px-3 py-1.5 rounded-full text-xs font-black tracking-wide leading-tight">
+                                            <span class="inline-block sm:hidden md:inline-block bg-[#fed8b1] text-[#825500] px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-black tracking-wide leading-tight whitespace-nowrap">
                                                 {{ currentClass >= 11 ? ((selectedHalfYear || '').startsWith('11') ? 'Q1' : 'Q2') + ' Halbjahr' : 'Klasse ' + currentClass }}
                                             </span>
 
-                                            <!-- Circular Nav Arrows -->
-                                            <button @click="navigateCalendar(-1)" :title="calendarViewMode === 'week' ? 'Vorherige Woche' : 'Vorheriger Monat'" class="w-8.5 h-8.5 rounded-full bg-[#f3ebe3] hover:bg-[#eae0d5] flex items-center justify-center text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
-                                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                                            </button>
-                                            <button @click="navigateCalendar(1)" :title="calendarViewMode === 'week' ? 'Nächste Woche' : 'Nächster Monat'" class="w-8.5 h-8.5 rounded-full bg-[#f3ebe3] hover:bg-[#eae0d5] flex items-center justify-center text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
-                                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                                            </button>
+                                            <!-- Circular Nav Arrows (Desktop/Tablet) -->
+                                            <div class="hidden sm:flex items-center gap-1.5 shrink-0">
+                                                <button @click="navigateCalendar(-1)" :title="calendarViewMode === 'week' ? 'Vorherige Woche' : 'Vorheriger Monat'" class="w-8.5 h-8.5 rounded-full bg-[#f3ebe3] hover:bg-[#eae0d5] flex items-center justify-center text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
+                                                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                                </button>
+                                                <button @click="navigateCalendar(1)" :title="calendarViewMode === 'week' ? 'Nächste Woche' : 'Nächster Monat'" class="w-8.5 h-8.5 rounded-full bg-[#f3ebe3] hover:bg-[#eae0d5] flex items-center justify-center text-[#1f1b16] active:scale-95 transition-all cursor-pointer">
+                                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <!-- Weekday Headers (MO-FR in slate, SA-SO in terracotta) -->
-                                    <div class="grid grid-cols-7 gap-1 text-center mb-2.5">
-                                        <div class="text-xs font-bold text-[#6E665E] py-1">MO</div>
-                                        <div class="text-xs font-bold text-[#6E665E] py-1">DI</div>
-                                        <div class="text-xs font-bold text-[#6E665E] py-1">MI</div>
-                                        <div class="text-xs font-bold text-[#6E665E] py-1">DO</div>
-                                        <div class="text-xs font-bold text-[#6E665E] py-1">FR</div>
-                                        <div class="text-xs font-bold text-[#b45309] py-1">SA</div>
-                                        <div class="text-xs font-bold text-[#b45309] py-1">SO</div>
+                                    <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                                        <div class="text-[11px] sm:text-xs font-bold text-[#6E665E] py-1">MO</div>
+                                        <div class="text-[11px] sm:text-xs font-bold text-[#6E665E] py-1">DI</div>
+                                        <div class="text-[11px] sm:text-xs font-bold text-[#6E665E] py-1">MI</div>
+                                        <div class="text-[11px] sm:text-xs font-bold text-[#6E665E] py-1">DO</div>
+                                        <div class="text-[11px] sm:text-xs font-bold text-[#6E665E] py-1">FR</div>
+                                        <div class="text-[11px] sm:text-xs font-bold text-[#b45309] py-1">SA</div>
+                                        <div class="text-[11px] sm:text-xs font-bold text-[#b45309] py-1">SO</div>
                                     </div>
 
                                     <!-- Calendar Days Grid (Month or Week) -->
                                     <div class="grid grid-cols-7 gap-1 sm:gap-1.5">
                                         <div v-for="(day, idx) in (calendarViewMode === 'week' ? currentWeekDays : calendarDays)" :key="idx"
                                              @click="selectCalendarDay(day.date)"
-                                             class="flex flex-col items-start justify-start p-1 sm:p-2 md:p-2.5 relative rounded-2xl cursor-pointer transition-all border group min-h-[38px] sm:min-h-[75px] md:min-h-[96px] lg:min-h-[104px]"
+                                             class="flex flex-col items-center sm:items-start justify-start p-1 sm:p-1.5 lg:p-2 relative rounded-xl sm:rounded-2xl cursor-pointer transition-all border group overflow-hidden"
                                              :class="[
+                                                 calendarViewMode === 'week' ? 'min-h-[64px] sm:min-h-[104px] lg:min-h-[116px]' : 'min-h-[46px] sm:min-h-[78px] lg:min-h-[96px]',
                                                  (calendarViewMode !== 'week' && !day.isCurrentMonth) ? 'bg-[#f7f2ea]/40 text-[#c4bbb1] border-[#f0e8df]/50 opacity-60' : 'bg-white text-[#1f1b16] border-[#f0e8df] hover:border-[#2d694c]/40 hover:shadow-xs',
                                                  selectedCalendarDate === day.date ? 'bg-[#fed8b1]/25 border-[#2d694c] ring-2 ring-[#2d694c] shadow-xs' : ''
                                              ]">
                                             
-                                            <!-- Top Row: Day Number + Today Indicator -->
-                                            <div class="flex items-center justify-between w-full mb-1">
-                                                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all shrink-0"
+                                            <!-- Top Row: Day Number + Today Indicator (Overflow-safe) -->
+                                            <div class="flex items-center justify-center sm:justify-between w-full mb-0.5 sm:mb-1 gap-1 min-w-0">
+                                                <div class="w-6 h-6 sm:w-6.5 sm:h-6.5 lg:w-7 lg:h-7 rounded-full flex items-center justify-center text-[11px] sm:text-xs lg:text-sm font-semibold transition-all shrink-0 tabular-nums"
                                                      :class="selectedCalendarDate === day.date ? 'bg-[#2d694c] text-white font-black shadow-2xs' : (isToday(day.date) ? 'ring-2 ring-[#2d694c] font-bold text-[#2d694c] bg-[#2d694c]/10' : 'text-[#1f1b16] group-hover:bg-[#f5efe7]')">
                                                     {{ day.day }}
                                                 </div>
-                                                <span v-if="isToday(day.date)" class="hidden sm:inline-block text-[9px] font-black uppercase text-[#2d694c] tracking-wider">Heute</span>
+                                                <span v-if="isToday(day.date)" class="hidden xl:inline-block text-[9px] font-black uppercase text-[#2d694c] tracking-wide truncate">Heute</span>
                                             </div>
 
-                                            <!-- Rich Event Badges inside Cell (Desktop view) -->
-                                            <div v-if="day.tasks && day.tasks.length > 0" class="hidden sm:flex flex-col gap-1 w-full mt-0.5 overflow-hidden">
+                                            <!-- Rich Event Badges inside Cell (Tablet/Desktop >= sm) -->
+                                            <div v-if="day.tasks && day.tasks.length > 0" class="hidden sm:flex flex-col gap-1 w-full mt-0.5 min-w-0 overflow-hidden">
                                                 <div v-for="(t, i) in day.tasks.slice(0, 3)" :key="i"
-                                                     class="text-[10px] font-bold px-1.5 py-0.5 rounded-lg truncate flex items-center gap-1 w-full leading-tight shadow-2xs"
+                                                     class="text-[9.5px] lg:text-[10px] font-bold px-1 lg:px-1.5 py-0.5 rounded-lg flex items-center gap-1 w-full leading-tight shadow-2xs min-w-0 overflow-hidden"
                                                      :style="{
                                                          backgroundColor: t.type === 'Klausur' ? '#fee2e2' : (t.type === 'Test' ? '#dbeafe' : (t.type === 'Hausaufgabe' ? '#fef3c7' : '#d1fae5')),
                                                          color: t.type === 'Klausur' ? '#9f1239' : (t.type === 'Test' ? '#1e40af' : (t.type === 'Hausaufgabe' ? '#92400e' : '#065f46'))
                                                      }">
-                                                    <span class="w-3.5 h-3.5 rounded-md shrink-0 flex items-center justify-center text-[8.5px] font-black text-white"
+                                                    <span class="w-3.5 h-3.5 rounded-md shrink-0 flex items-center justify-center text-[8px] font-black text-white"
                                                           :class="t.type === 'Klausur' ? 'bg-[#dc2626]' : (t.type === 'Test' ? 'bg-[#2563eb]' : (t.type === 'Hausaufgabe' ? 'bg-[#d97706]' : 'bg-[#10b981]'))">
                                                         {{ t.type === 'Klausur' ? 'K' : (t.type === 'Test' ? 'T' : (t.type === 'Hausaufgabe' ? 'H' : 'L')) }}
                                                     </span>
-                                                    <span class="truncate">{{ t.subject ? t.subject.name : t.title }}</span>
+                                                    <span class="truncate min-w-0 flex-1">{{ t.subject ? t.subject.name : t.title }}</span>
                                                 </div>
-                                                <span v-if="day.tasks.length > 3" class="text-[9px] font-extrabold text-[#6E665E] pl-1 leading-none">
+                                                <span v-if="day.tasks.length > 3" class="text-[9px] font-extrabold text-[#6E665E] pl-0.5 leading-none truncate">
                                                     +{{ day.tasks.length - 3 }} weitere
                                                 </span>
                                             </div>
 
-                                            <!-- Mobile Compact Dots (Mobile view) -->
-                                            <div v-if="day.tasks && day.tasks.length > 0" class="sm:hidden flex gap-0.5 items-center justify-center w-full mt-1">
+                                            <!-- Mobile Compact Badges (Week View: K/T/H chips; Month View: Dots) -->
+                                            <div v-if="day.tasks && day.tasks.length > 0 && calendarViewMode === 'week'" class="sm:hidden flex flex-col gap-0.5 items-center w-full mt-1">
+                                                <span v-for="(t, i) in day.tasks.slice(0, 2)" :key="i"
+                                                      class="px-1.5 py-0.5 rounded-md text-[8px] font-black leading-none text-white w-full text-center truncate"
+                                                      :class="t.type === 'Klausur' ? 'bg-[#dc2626]' : (t.type === 'Test' ? 'bg-[#2563eb]' : (t.type === 'Hausaufgabe' ? 'bg-[#d97706]' : 'bg-[#10b981]'))">
+                                                    {{ t.type === 'Klausur' ? 'K' : (t.type === 'Test' ? 'T' : (t.type === 'Hausaufgabe' ? 'H' : 'L')) }}
+                                                </span>
+                                                <span v-if="day.tasks.length > 2" class="text-[8px] font-black text-[#6E665E] leading-none">+{{ day.tasks.length - 2 }}</span>
+                                            </div>
+                                            <div v-else-if="day.tasks && day.tasks.length > 0" class="sm:hidden flex gap-0.5 items-center justify-center w-full mt-1 flex-wrap">
                                                 <span v-for="(t, i) in day.tasks.slice(0, 3)" :key="i"
                                                       class="w-1.5 h-1.5 rounded-full shrink-0 shadow-2xs"
                                                       :class="t.type === 'Klausur' ? 'bg-[#dc2626]' : (t.type === 'Test' ? 'bg-[#3b82f6]' : (t.type === 'Hausaufgabe' ? 'bg-[#f59e0b]' : 'bg-[#10b981]'))">
@@ -4636,7 +4681,7 @@
                                     </div>
                                     <div v-for="(s, idx) in [...(processedData?.semesterSubjects || [])].filter(s=>s.finalPoints!==null).sort((a,b)=> gradeSystem==='6' ? a.finalPoints-b.finalPoints : b.finalPoints-a.finalPoints)"
                                          :key="s.id"
-                                         class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#f4ece4] border border-[#ede3d8]">
+                                         class="flex items-center gap-3 px-4 py-3 rounded-full bg-[#f4ece4] border border-[#ede3d8]">
                                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0"
                                               :class="idx===0?'bg-[#fed8b1] text-[#825500]':idx===1?'bg-[#e2dacd] text-[#524d44]':idx===2?'bg-[#fcd34d]/30 text-[#b45309]':'bg-white text-[#6E665E]'">
                                             {{ idx + 1 }}
@@ -4682,7 +4727,7 @@
                         </div>
                     </div>
 
-                    <!-- UNTERMENÜ 3: VERGLEICH (Freundes-Duell & Gemeinsame Fächer) -->
+                    <!-- UNTERMENÜ 3: VERGLEICH (Vollständiges Freundes-Duell, Fachbereichs-Dominanz & Gemeinsame Fächer) -->
                     <div v-else-if="insightsSubTab === 'compare'" class="space-y-6 animate-fade-in">
                         <div class="bg-white rounded-[2rem] p-5 sm:p-7 border border-[#ede3d8] shadow-xs stats-card-enter space-y-5" style="animation-delay:0.05s">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -4692,18 +4737,25 @@
                                     </div>
                                     <div>
                                         <h3 class="font-black text-[#1f1b16] text-base sm:text-lg font-['Epilogue']">Notenvergleich mit Freunden</h3>
-                                        <p class="text-xs text-[#6E665E] font-medium">Vergleiche deinen Schnitt & Noten direkt im Halbjahr {{ selectedHalfYear }}</p>
+                                        <p class="text-xs text-[#6E665E] font-medium">Direktes Duell & Fachbereiche im Halbjahr {{ selectedHalfYear }}</p>
                                     </div>
                                 </div>
-                                <button @click="isFriendsOpen = true; friendsTab = 'members'" class="text-xs font-bold text-[#2d694c] hover:underline flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
-                                    <i data-lucide="user-plus" class="w-4 h-4"></i> Freunde verwalten
-                                </button>
+                                <div class="flex items-center gap-3 self-start sm:self-auto">
+                                    <button type="button" @click="refreshSocialData()" :disabled="socialLoading" title="Daten aktualisieren"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#f4ece4] hover:bg-[#eae0d5] border border-[#ede3d8] rounded-full text-xs font-bold text-[#1f1b16] cursor-pointer transition-all disabled:opacity-50">
+                                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#2d694c]" :class="socialLoading ? 'animate-spin' : ''"></i>
+                                        <span class="hidden xs:inline">Aktualisieren</span>
+                                    </button>
+                                    <button @click="isFriendsOpen = true; friendsTab = 'members'" class="text-xs font-bold text-[#2d694c] hover:underline flex items-center gap-1.5 cursor-pointer">
+                                        <i data-lucide="user-plus" class="w-4 h-4"></i> Freunde verwalten
+                                    </button>
+                                </div>
                             </div>
 
-                            <!-- Freunde-Wahl Leiste -->
+                            <!-- Keine Freunde Zustand -->
                             <div v-if="!friends || friends.length === 0" class="text-center py-8 bg-[#f4ece4] rounded-2xl border border-[#ede3d8] space-y-2.5 px-4">
                                 <p class="text-sm font-bold text-[#1f1b16]">Noch keine Freunde verbunden</p>
-                                <p class="text-xs text-[#6E665E]">Verbinde dich mit Mitschülern über das Freunde-Symbol oben, um eure Schnitte zu vergleichen.</p>
+                                <p class="text-xs text-[#6E665E]">Verbinde dich über „Freunde finden“ mit Mitschülern, um eure Schnitte zu vergleichen.</p>
                                 <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
                                     <button @click="isFriendsOpen = true; friendsTab = 'members'" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
                                         <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
@@ -4714,7 +4766,7 @@
                                 </div>
                             </div>
 
-                            <div v-else class="space-y-4">
+                            <div v-else class="space-y-5">
                                 <!-- Freund-Auswahl Chips -->
                                 <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                                     <button v-for="f in friends" :key="f.uid"
@@ -4722,7 +4774,8 @@
                                             type="button"
                                             class="flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95"
                                             :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-[#2d694c] text-white border-[#23533c] shadow-xs' : 'bg-[#f4ece4] hover:bg-[#eae0d5] text-[#1f1b16] border-[#ede3d8]'">
-                                        <div class="w-5 h-5 rounded-full overflow-hidden bg-white/20 flex items-center justify-center text-[10px] shrink-0 font-black">
+                                        <div class="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-[10px] shrink-0 font-black"
+                                             :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-white/20 text-white' : 'bg-white text-[#2d694c]'">
                                             <img v-if="getMemberAvatar(f) && isImageAvatar(getMemberAvatar(f))" :src="getMemberAvatar(f)" class="w-full h-full object-cover" />
                                             <span v-else-if="getMemberAvatar(f)">{{ getMemberAvatar(f) }}</span>
                                             <span v-else>{{ f.displayName ? f.displayName[0].toUpperCase() : '?' }}</span>
@@ -4731,79 +4784,158 @@
                                     </button>
                                 </div>
 
-                                <!-- Head-to-Head Duell Widget -->
-                                <div v-if="selectedFriend" class="bg-gradient-to-br from-[#faf6ef] to-[#f2ece2] rounded-3xl p-5 sm:p-6 border border-[#ded3c2] space-y-4 shadow-xs">
-                                    <div class="grid grid-cols-7 gap-2 items-center">
-                                        <!-- Du / Ich -->
-                                        <div class="col-span-3 flex flex-col items-center text-center">
-                                            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#2d694c]/20">
-                                                <img v-if="userAvatar && (userAvatar.startsWith('data:') || userAvatar.startsWith('http'))" :src="userAvatar" class="w-full h-full object-cover" />
-                                                <span v-else-if="userAvatar" class="text-2xl">{{ userAvatar }}</span>
-                                                <span v-else class="font-extrabold text-[#2d694c] text-sm">{{ displayName ? displayName.slice(0,2).toUpperCase() : 'ICH' }}</span>
-                                            </div>
-                                            <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ displayName || 'Du' }}</h4>
-                                            <span class="text-[10px] text-[#6E665E]">Kl. {{ currentClass }}</span>
-                                            <div class="mt-2 text-2xl sm:text-3xl font-black text-[#2d694c] font-['Epilogue'] leading-none">
-                                                {{ comparisonSummary ? formatNumber(comparisonSummary.myOverall) : '-' }}
-                                            </div>
-                                            <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Dein Ø</span>
-                                        </div>
+                                <div v-if="!selectedFriend" class="text-center py-8 text-[#6E665E] text-sm font-bold bg-[#f4ece4] rounded-2xl border border-[#ede3d8]">
+                                    Wähle einen Freund aus
+                                </div>
 
-                                        <!-- VS Mitte -->
-                                        <div class="col-span-1 flex flex-col items-center justify-center text-center">
-                                            <span class="w-8 h-8 rounded-full bg-white border border-[#ded5c7] text-[#1f1b16] flex items-center justify-center text-xs font-black shadow-xs">
-                                                VS
+                                <div v-else class="space-y-5">
+                                    <!-- 1. HEAD-TO-HEAD DUELL CARD -->
+                                    <div class="bg-gradient-to-br from-[#faf6ef] to-[#f2ece2] rounded-3xl p-5 sm:p-6 border border-[#ded3c2] space-y-4 shadow-xs">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10.5px] font-black uppercase tracking-wider text-[#524d44] flex items-center gap-1.5">
+                                                <i data-lucide="swords" class="w-3.5 h-3.5 text-[#2d694c]"></i> Head-to-Head Duell
                                             </span>
-                                            <div v-if="comparisonSummary" class="text-[10px] font-black mt-2 text-[#6E665E] whitespace-nowrap">
-                                                {{ comparisonSummary.myWins }}:{{ comparisonSummary.friendWins }}
+                                            <span class="text-[10.5px] font-bold text-[#6E665E]">Halbjahr {{ selectedHalfYear }}</span>
+                                        </div>
+
+                                        <div class="grid grid-cols-7 gap-2 items-center">
+                                            <!-- Du / Ich -->
+                                            <div class="col-span-3 flex flex-col items-center text-center">
+                                                <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#2d694c]/20">
+                                                    <img v-if="userAvatar && (userAvatar.startsWith('data:') || userAvatar.startsWith('http'))" :src="userAvatar" class="w-full h-full object-cover" />
+                                                    <span v-else-if="userAvatar" class="text-2xl">{{ userAvatar }}</span>
+                                                    <span v-else class="font-extrabold text-[#2d694c] text-sm">{{ displayName ? displayName.slice(0,2).toUpperCase() : 'ICH' }}</span>
+                                                </div>
+                                                <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ displayName || 'Du' }}</h4>
+                                                <span class="text-[10px] text-[#6E665E]">Kl. {{ currentClass }}</span>
+                                                <div class="mt-2 text-2xl sm:text-3xl font-black text-[#1f1b16] font-['Epilogue'] leading-none tabular-nums">
+                                                    {{ comparisonSummary && comparisonSummary.myOverall !== null ? formatNumber(comparisonSummary.myOverall) : '–' }}
+                                                </div>
+                                                <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Dein Ø</span>
+                                            </div>
+
+                                            <!-- VS Mitte -->
+                                            <div class="col-span-1 flex flex-col items-center justify-center text-center">
+                                                <span class="w-8 h-8 rounded-full bg-white border border-[#ded5c7] text-[#1f1b16] flex items-center justify-center text-xs font-black shadow-xs">
+                                                    VS
+                                                </span>
+                                                <div v-if="comparisonSummary" class="text-[11px] font-black mt-2 text-[#524d44] whitespace-nowrap tabular-nums">
+                                                    {{ comparisonSummary.myWins }}:{{ comparisonSummary.friendWins }}
+                                                </div>
+                                            </div>
+
+                                            <!-- Freund -->
+                                            <div class="col-span-3 flex flex-col items-center text-center">
+                                                <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#825500]/20">
+                                                    <img v-if="getMemberAvatar(selectedFriend) && isImageAvatar(getMemberAvatar(selectedFriend))" :src="getMemberAvatar(selectedFriend)" class="w-full h-full object-cover" />
+                                                    <span v-else-if="getMemberAvatar(selectedFriend)" class="text-2xl">{{ getMemberAvatar(selectedFriend) }}</span>
+                                                    <span v-else class="font-extrabold text-[#825500] text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
+                                                </div>
+                                                <h4 class="font-black text-[#825500] text-xs sm:text-sm truncate max-w-[110px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
+                                                <span class="text-[10px] text-[#6E665E]">Kl. {{ selectedFriend.currentClass || '?' }}</span>
+                                                <div class="mt-2 text-2xl sm:text-3xl font-black text-[#825500] font-['Epilogue'] leading-none tabular-nums">
+                                                    {{ comparisonSummary && comparisonSummary.friendOverall !== null ? formatNumber(comparisonSummary.friendOverall) : '–' }}
+                                                </div>
+                                                <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Freund Ø</span>
                                             </div>
                                         </div>
 
-                                        <!-- Freund -->
-                                        <div class="col-span-3 flex flex-col items-center text-center">
-                                            <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-1.5 ring-2 ring-[#825500]/20">
-                                                <img v-if="getMemberAvatar(selectedFriend) && isImageAvatar(getMemberAvatar(selectedFriend))" :src="getMemberAvatar(selectedFriend)" class="w-full h-full object-cover" />
-                                                <span v-else-if="getMemberAvatar(selectedFriend)" class="text-2xl">{{ getMemberAvatar(selectedFriend) }}</span>
-                                                <span v-else class="font-extrabold text-[#825500] text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
-                                            </div>
-                                            <h4 class="font-black text-[#1f1b16] text-xs sm:text-sm truncate max-w-[110px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
-                                            <span class="text-[10px] text-[#6E665E]">Kl. {{ selectedFriend.currentClass || '?' }}</span>
-                                            <div class="mt-2 text-2xl sm:text-3xl font-black text-[#825500] font-['Epilogue'] leading-none">
-                                                {{ comparisonSummary ? formatNumber(comparisonSummary.friendOverall) : '-' }}
-                                            </div>
-                                            <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Freund Ø</span>
+                                        <!-- Lead Badge -->
+                                        <div v-if="comparisonSummary && comparisonSummary.myOverall !== null && comparisonSummary.friendOverall !== null" class="pt-3 border-t border-[#ded5c7] text-center">
+                                            <span v-if="comparisonSummary.diff > 0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                🏆 +{{ formatNumber(comparisonSummary.diff) }} Pkt Vorsprung für dich!
+                                            </span>
+                                            <span v-else-if="comparisonSummary.diff < -0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-rose-100 text-rose-800 border border-rose-200">
+                                                ⚡ {{ formatNumber(Math.abs(comparisonSummary.diff)) }} Pkt Rückstand — Aufholjagd gestartet!
+                                            </span>
+                                            <span v-else class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-white text-[#1f1b16] border border-[#ede3d8]">
+                                                🤝 Absoluter Gleichstand im Schnitt!
+                                            </span>
                                         </div>
                                     </div>
 
-                                    <!-- Lead Badge -->
-                                    <div v-if="comparisonSummary && comparisonSummary.myOverall !== null && comparisonSummary.friendOverall !== null" class="pt-3 border-t border-[#ded5c7] text-center">
-                                        <span v-if="comparisonSummary.diff > 0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                            🏆 +{{ formatNumber(comparisonSummary.diff) }} Pkt Vorsprung für dich!
-                                        </span>
-                                        <span v-else-if="comparisonSummary.diff < -0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-200">
-                                            ⚡ {{ formatNumber(Math.abs(comparisonSummary.diff)) }} Pkt Rückstand — Aufholjagd gestartet!
-                                        </span>
-                                        <span v-else class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-white text-[#1f1b16] border border-[#ede3d8]">
-                                            🤝 Absoluter Gleichstand im Schnitt!
-                                        </span>
+                                    <!-- 2. FACHBEREICHS-DOMINANZ -->
+                                    <div v-if="comparisonSummary && comparisonSummary.categories && comparisonSummary.categories.length > 0" class="bg-[#faf6ef] border border-[#ede3d8] rounded-3xl p-4.5 sm:p-5 space-y-3">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#524d44] flex items-center gap-1.5">
+                                                <i data-lucide="layers" class="w-3.5 h-3.5 text-[#2d694c]"></i> Fachbereichs-Dominanz
+                                            </h5>
+                                            <span class="text-[10.5px] text-[#825500] font-bold">Ausbau-Vorschlag ✨</span>
+                                        </div>
+                                        <div class="space-y-2.5">
+                                            <div v-for="cat in comparisonSummary.categories" :key="cat.label" class="bg-white rounded-2xl p-3 border border-[#ede3d8] shadow-2xs">
+                                                <div class="flex justify-between items-center text-xs mb-1.5 font-bold gap-2">
+                                                    <span class="text-[#1f1b16]">{{ cat.label }}</span>
+                                                    <span v-if="cat.myAvg !== null && cat.friendAvg !== null"
+                                                          :class="cat.myAvg > cat.friendAvg ? 'text-emerald-600' : (cat.friendAvg > cat.myAvg ? 'text-rose-600' : 'text-[#6E665E]')"
+                                                          class="text-[11px] font-extrabold shrink-0">
+                                                        {{ cat.myAvg > cat.friendAvg ? '▲ Du führst' : (cat.friendAvg > cat.myAvg ? '▼ ' + (selectedFriend.displayName || 'Freund') + ' führt' : '= Gleichstand') }}
+                                                    </span>
+                                                    <span v-else class="text-[11px] font-bold text-[#6E665E]">Nur einseitig benotet</span>
+                                                </div>
+                                                <div class="flex items-center gap-2.5 text-xs">
+                                                    <span class="font-black w-10 text-right font-['Epilogue'] tabular-nums"
+                                                          :class="cat.myAvg !== null && cat.friendAvg !== null ? (cat.myAvg > cat.friendAvg ? 'text-emerald-600' : (cat.myAvg < cat.friendAvg ? 'text-rose-600' : 'text-[#1f1b16]')) : 'text-[#1f1b16]'">
+                                                        {{ cat.myAvg !== null ? formatNumber(cat.myAvg) : '–' }}
+                                                    </span>
+                                                    <div class="flex-1 h-2 bg-[#eae3d7] rounded-full overflow-hidden flex">
+                                                        <div class="h-full bg-emerald-500 rounded-l-full transition-all"
+                                                             :style="{ width: (((cat.myAvg || 0) + (cat.friendAvg || 0)) > 0 ? ((cat.myAvg || 0) / ((cat.myAvg || 0) + (cat.friendAvg || 0)) * 100) : 50) + '%' }"></div>
+                                                        <div class="h-full bg-[#c27803] rounded-r-full transition-all"
+                                                             :style="{ width: (((cat.myAvg || 0) + (cat.friendAvg || 0)) > 0 ? ((cat.friendAvg || 0) / ((cat.myAvg || 0) + (cat.friendAvg || 0)) * 100) : 50) + '%' }"></div>
+                                                    </div>
+                                                    <span class="font-black w-10 font-['Epilogue'] tabular-nums"
+                                                          :class="cat.myAvg !== null && cat.friendAvg !== null ? (cat.friendAvg > cat.myAvg ? 'text-emerald-600' : (cat.friendAvg < cat.myAvg ? 'text-rose-600' : 'text-[#825500]')) : 'text-[#825500]'">
+                                                        {{ cat.friendAvg !== null ? formatNumber(cat.friendAvg) : '–' }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Gemeinsame Fächer Vergleichsliste -->
-                                    <div v-if="comparisonData && comparisonData.length > 0" class="space-y-2 pt-2">
-                                        <h5 class="text-xs font-bold uppercase tracking-wider text-[#6E665E] flex items-center justify-between">
-                                            <span>Gemeinsame Fächer</span>
-                                            <span>{{ comparisonData.length }} Fächer</span>
+                                    <!-- 3. GEMEINSAME FÄCHER IM DETAIL (Runde Pillen mit Grün/Rot + ▲ besser / ▼ schlechter) -->
+                                    <div class="space-y-2.5">
+                                        <h5 class="text-xs font-bold uppercase tracking-wider text-[#524d44] px-1 flex items-center justify-between">
+                                            <span>Gemeinsame Fächer im Detail</span>
+                                            <span>{{ (comparisonData || []).length }} Fächer</span>
                                         </h5>
-                                        <div v-for="row in comparisonData" :key="row.subjectName"
-                                             class="grid grid-cols-3 gap-3 items-center bg-white border border-[#ede3d8] rounded-2xl px-4 py-2.5">
-                                            <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.myAvg >= row.friendAvg ? 'text-[#2d694c]' : 'text-rose-600') : 'text-[#1f1b16]'">
-                                                {{ row.myAvg !== null ? formatNumber(row.myAvg) : '–' }}
-                                            </div>
-                                            <div class="text-center">
-                                                <span class="text-xs font-bold text-[#1f1b16] block truncate">{{ row.subjectName }}</span>
-                                            </div>
-                                            <div class="text-center font-black font-['Epilogue'] text-base" :class="row.myAvg !== null && row.friendAvg !== null ? (row.friendAvg >= row.myAvg ? 'text-[#825500]' : 'text-[#6E665E]') : 'text-[#1f1b16]'">
-                                                {{ row.friendAvg !== null ? formatNumber(row.friendAvg) : '–' }}
+
+                                        <div v-if="!comparisonData || comparisonData.length === 0" class="text-center py-6 text-[#6E665E] text-xs sm:text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8]">
+                                            Keine gemeinsamen Fächer oder noch keine Noten eingetragen.
+                                        </div>
+
+                                        <div v-else class="space-y-2">
+                                            <div v-for="row in comparisonData" :key="row.subjectName"
+                                                 class="grid grid-cols-3 gap-2 sm:gap-3 items-center bg-[#faf6ef] border border-[#ede3d8] hover:border-[#2d694c]/30 rounded-full px-4 sm:px-6 py-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-colors">
+                                                <!-- Mein Schnitt -->
+                                                <div class="text-center">
+                                                    <div class="text-xl sm:text-2xl font-black leading-none font-['Epilogue'] tabular-nums"
+                                                         :class="row.myAvg !== null && row.friendAvg !== null ? (row.myAvg > row.friendAvg ? 'text-emerald-600' : (row.myAvg < row.friendAvg ? 'text-rose-600' : 'text-[#1f1b16]')) : (row.myAvg !== null ? 'text-[#1f1b16]' : 'text-[#9c9488]')">
+                                                        {{ row.myAvg !== null ? formatNumber(row.myAvg) : '–' }}
+                                                    </div>
+                                                    <div v-if="row.myAvg !== null && row.friendAvg !== null" class="text-[10px] font-extrabold mt-1 leading-none"
+                                                         :class="row.myAvg > row.friendAvg ? 'text-emerald-600' : (row.friendAvg > row.myAvg ? 'text-rose-600' : 'text-[#6E665E]')">
+                                                        {{ row.myAvg > row.friendAvg ? '▲ besser' : (row.friendAvg > row.myAvg ? '▼ schlechter' : '= gleich') }}
+                                                    </div>
+                                                </div>
+
+                                                <!-- Fach in der Mitte mit Punkt -->
+                                                <div class="text-center min-w-0">
+                                                    <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full mx-auto mb-1 shadow-2xs" :style="{ backgroundColor: row.color || '#2d694c' }"></div>
+                                                    <p class="text-xs sm:text-[13px] font-bold text-[#1f1b16] leading-tight truncate">{{ row.subjectName }}</p>
+                                                </div>
+
+                                                <!-- Freund Schnitt -->
+                                                <div class="text-center">
+                                                    <div class="text-xl sm:text-2xl font-black leading-none font-['Epilogue'] tabular-nums"
+                                                         :class="row.friendAvg !== null && row.myAvg !== null ? (row.friendAvg > row.myAvg ? 'text-emerald-600' : (row.friendAvg < row.myAvg ? 'text-rose-600' : 'text-[#825500]')) : (row.friendAvg !== null ? 'text-[#825500]' : 'text-[#9c9488]')">
+                                                        {{ row.friendAvg !== null ? formatNumber(row.friendAvg) : '–' }}
+                                                    </div>
+                                                    <div v-if="row.friendAvg !== null && row.myAvg !== null" class="text-[10px] font-extrabold mt-1 leading-none"
+                                                         :class="row.friendAvg > row.myAvg ? 'text-emerald-600' : (row.myAvg > row.friendAvg ? 'text-rose-600' : 'text-[#6E665E]')">
+                                                        {{ row.friendAvg > row.myAvg ? '▲ besser' : (row.myAvg > row.friendAvg ? '▼ schlechter' : '= gleich') }}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -6239,14 +6371,14 @@
                     </div>
                 </div>
 
-                <!-- VERGLEICHS-ANSICHT -->
+                <!-- VERGLEICHS-ANSICHT (Freunde Modal — sauberer heller Contrast) -->
                 <div v-if="friendsTab === 'compare'">
                     <div v-if="!friends || friends.length === 0" class="text-center py-10 space-y-3">
-                        <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mx-auto empty-state-icon">
-                            <i data-lucide="lock" class="w-7 h-7 text-slate-600"></i>
+                        <div class="w-14 h-14 bg-[#f4ece4] border border-[#ede3d8] rounded-full flex items-center justify-center mx-auto">
+                            <i data-lucide="lock" class="w-7 h-7 text-[#857e72]"></i>
                         </div>
-                        <p class="text-slate-500 font-bold text-sm">{{ socialLoading ? 'Freunde werden geladen...' : 'Keine Freunde' }}</p>
-                        <p class="text-xs text-slate-600">Befreunde dich zuerst mit jemandem</p>
+                        <p class="text-[#1f1b16] font-bold text-sm">{{ socialLoading ? 'Freunde werden geladen...' : 'Keine Freunde' }}</p>
+                        <p class="text-xs text-[#6E665E]">Befreunde dich zuerst mit jemandem</p>
                         <button type="button" @click="refreshSocialData()" :disabled="socialLoading" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2d694c] text-white text-xs font-bold cursor-pointer hover:bg-[#23533c] active:scale-95 transition-all disabled:opacity-50">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" :class="socialLoading ? 'animate-spin' : ''"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                             Aktualisieren
@@ -6258,9 +6390,10 @@
                         <div class="flex gap-2 flex-wrap mb-4">
                             <button v-for="f in friends" :key="f.uid"
                                     @click="selectedFriend = f"
-                                    :class="selectedFriend && selectedFriend.uid === f.uid ? 'toggle-accent-on text-white border-accent shadow-lg shadow-black/30' : 'bg-black/20 text-slate-400 border-white/5'"
+                                    :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-[#2d694c] text-white border-[#23533c] shadow-xs' : 'bg-[#f4ece4] hover:bg-[#eae0d5] text-[#1f1b16] border-[#ede3d8]'"
                                     class="px-3.5 py-1.5 rounded-full text-xs font-bold border cursor-pointer transition-all active:scale-95 flex items-center gap-2">
-                                <div class="w-5 h-5 rounded-full overflow-hidden bg-white/10 flex items-center justify-center text-[10px]">
+                                <div class="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center text-[10px] font-black"
+                                     :class="selectedFriend && selectedFriend.uid === f.uid ? 'bg-white/20 text-white' : 'bg-white text-[#2d694c]'">
                                     <img v-if="getMemberAvatar(f) && isImageAvatar(getMemberAvatar(f))" :src="getMemberAvatar(f)" class="w-full h-full object-cover" />
                                     <span v-else-if="getMemberAvatar(f)">{{ getMemberAvatar(f) }}</span>
                                     <span v-else>{{ f.displayName ? f.displayName[0].toUpperCase() : '?' }}</span>
@@ -6269,97 +6402,108 @@
                             </button>
                         </div>
 
-                        <div v-if="!selectedFriend" class="text-center py-8 text-slate-500 text-sm font-bold">Wähle einen Freund aus</div>
+                        <div v-if="!selectedFriend" class="text-center py-8 text-[#6E665E] text-sm font-bold">Wähle einen Freund aus</div>
 
                         <div v-else class="space-y-4">
                             <!-- 1. HEAD-TO-HEAD DUELL CARD -->
-                            <div class="bg-gradient-to-b from-white/10 to-black/30 border border-white/10 rounded-3xl p-5 shadow-lg">
+                            <div class="bg-gradient-to-br from-[#faf6ef] to-[#f2ece2] border border-[#ded3c2] rounded-3xl p-5 shadow-xs">
                                 <div class="flex items-center justify-between mb-4">
-                                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                                        <i data-lucide="swords" class="w-3.5 h-3.5 text-accent"></i> Head-to-Head Duell
+                                    <span class="text-[10.5px] font-black uppercase tracking-wider text-[#524d44] flex items-center gap-1.5">
+                                        <i data-lucide="swords" class="w-3.5 h-3.5 text-[#2d694c]"></i> Head-to-Head Duell
                                     </span>
-                                    <span class="text-[10px] font-bold text-slate-400">Halbjahr {{ selectedHalfYear }}</span>
+                                    <span class="text-[10.5px] font-bold text-[#6E665E]">Halbjahr {{ selectedHalfYear }}</span>
                                 </div>
 
                                 <div class="grid grid-cols-7 gap-2 items-center">
                                     <!-- Ich (Left 3 cols) -->
                                     <div class="col-span-3 flex flex-col items-center text-center">
-                                        <div class="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 bg-accent-dim2 flex items-center justify-center shadow-md mb-2">
+                                        <div class="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-2 ring-2 ring-[#2d694c]/20">
                                             <img v-if="userAvatar && (userAvatar.startsWith('data:') || userAvatar.startsWith('http'))" :src="userAvatar" class="w-full h-full object-cover" />
                                             <span v-else-if="userAvatar" class="text-2xl">{{ userAvatar }}</span>
                                             <span v-else class="font-extrabold text-[#2d694c] text-sm">{{ displayName ? displayName.slice(0,2).toUpperCase() : 'ICH' }}</span>
                                         </div>
-                                        <h4 class="font-black text-white text-sm truncate max-w-[100px]">{{ displayName || 'Ich' }}</h4>
-                                        <span class="text-[10px] text-slate-400">Kl. {{ currentClass }}</span>
-                                        <div class="mt-2 text-2xl font-black text-white font-['Epilogue']">
-                                            {{ comparisonSummary ? formatNumber(comparisonSummary.myOverall) : '-' }}
+                                        <h4 class="font-black text-[#1f1b16] text-sm truncate max-w-[100px]">{{ displayName || 'Ich' }}</h4>
+                                        <span class="text-[10px] text-[#6E665E]">Kl. {{ currentClass }}</span>
+                                        <div class="mt-2 text-2xl font-black text-[#1f1b16] font-['Epilogue'] tabular-nums leading-none">
+                                            {{ comparisonSummary && comparisonSummary.myOverall !== null ? formatNumber(comparisonSummary.myOverall) : '–' }}
                                         </div>
-                                        <span class="text-[9px] text-slate-400 font-semibold uppercase">Dein Ø</span>
+                                        <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Dein Ø</span>
                                     </div>
 
                                     <!-- VS Mitte (1 col) -->
                                     <div class="col-span-1 flex flex-col items-center justify-center text-center">
-                                        <span class="w-8 h-8 rounded-full bg-white/10 border border-white/10 text-white flex items-center justify-center text-xs font-black shadow-inner">
+                                        <span class="w-8 h-8 rounded-full bg-white border border-[#ded5c7] text-[#1f1b16] flex items-center justify-center text-xs font-black shadow-xs">
                                             VS
                                         </span>
-                                        <div v-if="comparisonSummary" class="text-[10px] font-black mt-2 text-slate-400 whitespace-nowrap">
+                                        <div v-if="comparisonSummary" class="text-[11px] font-black mt-2 text-[#524d44] whitespace-nowrap tabular-nums">
                                             {{ comparisonSummary.myWins }}:{{ comparisonSummary.friendWins }}
                                         </div>
                                     </div>
 
                                     <!-- Freund (Right 3 cols) -->
                                     <div class="col-span-3 flex flex-col items-center text-center">
-                                        <div class="relative w-14 h-14 rounded-full overflow-hidden border-2 border-accent/40 bg-white/5 flex items-center justify-center shadow-md mb-2">
+                                        <div class="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white bg-[#f0e6df] flex items-center justify-center shadow-xs mb-2 ring-2 ring-[#825500]/20">
                                             <img v-if="getMemberAvatar(selectedFriend) && isImageAvatar(getMemberAvatar(selectedFriend))" :src="getMemberAvatar(selectedFriend)" class="w-full h-full object-cover" />
                                             <span v-else-if="getMemberAvatar(selectedFriend)" class="text-2xl">{{ getMemberAvatar(selectedFriend) }}</span>
-                                            <span v-else class="font-extrabold text-accent text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
+                                            <span v-else class="font-extrabold text-[#825500] text-sm">{{ selectedFriend.displayName ? selectedFriend.displayName.slice(0,2).toUpperCase() : '?' }}</span>
                                         </div>
-                                        <h4 class="font-black text-accent-light text-sm truncate max-w-[100px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
-                                        <span class="text-[10px] text-slate-400">Kl. {{ selectedFriend.currentClass || '?' }}</span>
-                                        <div class="mt-2 text-2xl font-black text-accent-light font-['Epilogue']">
-                                            {{ comparisonSummary ? formatNumber(comparisonSummary.friendOverall) : '-' }}
+                                        <h4 class="font-black text-[#825500] text-sm truncate max-w-[100px]">{{ selectedFriend.displayName || 'Freund' }}</h4>
+                                        <span class="text-[10px] text-[#6E665E]">Kl. {{ selectedFriend.currentClass || '?' }}</span>
+                                        <div class="mt-2 text-2xl font-black text-[#825500] font-['Epilogue'] tabular-nums leading-none">
+                                            {{ comparisonSummary && comparisonSummary.friendOverall !== null ? formatNumber(comparisonSummary.friendOverall) : '–' }}
                                         </div>
-                                        <span class="text-[9px] text-slate-400 font-semibold uppercase">Freund Ø</span>
+                                        <span class="text-[9px] text-[#6E665E] font-bold uppercase mt-1">Freund Ø</span>
                                     </div>
                                 </div>
 
                                 <!-- Lead Badge Indicator -->
-                                <div v-if="comparisonSummary && comparisonSummary.myOverall !== null && comparisonSummary.friendOverall !== null" class="mt-4 pt-3 border-t border-white/5 text-center">
-                                    <span v-if="comparisonSummary.diff > 0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                <div v-if="comparisonSummary && comparisonSummary.myOverall !== null && comparisonSummary.friendOverall !== null" class="mt-4 pt-3 border-t border-[#ded5c7] text-center">
+                                    <span v-if="comparisonSummary.diff > 0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
                                         🏆 +{{ formatNumber(comparisonSummary.diff) }} Pkt Vorsprung für dich!
                                     </span>
-                                    <span v-else-if="comparisonSummary.diff < -0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                                    <span v-else-if="comparisonSummary.diff < -0.05" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-rose-100 text-rose-800 border border-rose-200">
                                         ⚡ {{ formatNumber(Math.abs(comparisonSummary.diff)) }} Pkt Rückstand — Aufholjagd gestartet!
                                     </span>
-                                    <span v-else class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-white/10 text-slate-300 border border-white/10">
+                                    <span v-else class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black bg-white text-[#1f1b16] border border-[#ede3d8]">
                                         🤝 Absoluter Gleichstand im Schnitt!
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- 2. BEREICHS-ANALYSE (VORSCHLAG ZUM AUSBAUEN) -->
-                            <div v-if="comparisonSummary && comparisonSummary.categories && comparisonSummary.categories.length > 0" class="bg-black/20 border border-white/5 rounded-3xl p-4.5">
+                            <!-- 2. BEREICHS-ANALYSE -->
+                            <div v-if="comparisonSummary && comparisonSummary.categories && comparisonSummary.categories.length > 0" class="bg-[#faf6ef] border border-[#ede3d8] rounded-3xl p-4.5">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h5 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-accent"></i> Fachbereichs-Dominanz
+                                    <h5 class="text-xs font-bold uppercase tracking-wider text-[#524d44] flex items-center gap-1.5">
+                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-[#2d694c]"></i> Fachbereichs-Dominanz
                                     </h5>
-                                    <span class="text-[10px] text-accent font-semibold">Ausbau-Vorschlag ✨</span>
+                                    <span class="text-[10.5px] text-[#825500] font-bold">Ausbau-Vorschlag ✨</span>
                                 </div>
-                                <div class="space-y-3">
-                                    <div v-for="cat in comparisonSummary.categories" :key="cat.label" class="bg-white/5 rounded-2xl p-3 border border-white/5">
-                                        <div class="flex justify-between items-center text-xs mb-1.5 font-bold">
-                                            <span class="text-white">{{ cat.label }}</span>
-                                            <span :class="cat.myAvg > cat.friendAvg ? 'text-emerald-400' : (cat.friendAvg > cat.myAvg ? 'text-rose-400' : 'text-slate-400')" class="text-[11px]">
-                                                {{ cat.myAvg > cat.friendAvg ? 'Du führst' : (cat.friendAvg > cat.myAvg ? (selectedFriend.displayName || 'Freund') + ' führt' : 'Gleichstand') }}
+                                <div class="space-y-2.5">
+                                    <div v-for="cat in comparisonSummary.categories" :key="cat.label" class="bg-white rounded-2xl p-3 border border-[#ede3d8] shadow-2xs">
+                                        <div class="flex justify-between items-center text-xs mb-1.5 font-bold gap-2">
+                                            <span class="text-[#1f1b16]">{{ cat.label }}</span>
+                                            <span v-if="cat.myAvg !== null && cat.friendAvg !== null"
+                                                  :class="cat.myAvg > cat.friendAvg ? 'text-emerald-600' : (cat.friendAvg > cat.myAvg ? 'text-rose-600' : 'text-[#6E665E]')"
+                                                  class="text-[11px] font-extrabold shrink-0">
+                                                {{ cat.myAvg > cat.friendAvg ? '▲ Du führst' : (cat.friendAvg > cat.myAvg ? '▼ ' + (selectedFriend.displayName || 'Freund') + ' führt' : '= Gleichstand') }}
                                             </span>
+                                            <span v-else class="text-[11px] font-bold text-[#6E665E]">Nur einseitig benotet</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <span class="font-black text-white w-9 text-right font-['Epilogue']">{{ cat.myAvg !== null ? formatNumber(cat.myAvg) : '-' }}</span>
-                                            <div class="flex-1 h-2 bg-black/40 rounded-full overflow-hidden flex">
-                                                <div class="h-full bg-emerald-500 rounded-l-full transition-all" :style="{ width: ((cat.myAvg || 0) / ((cat.myAvg||0) + (cat.friendAvg||0.01)) * 100) + '%' }"></div>
-                                                <div class="h-full bg-accent rounded-r-full transition-all" :style="{ width: ((cat.friendAvg || 0) / ((cat.myAvg||0.01) + (cat.friendAvg||0)) * 100) + '%' }"></div>
+                                            <span class="font-black w-9 text-right font-['Epilogue'] tabular-nums"
+                                                  :class="cat.myAvg !== null && cat.friendAvg !== null ? (cat.myAvg > cat.friendAvg ? 'text-emerald-600' : (cat.myAvg < cat.friendAvg ? 'text-rose-600' : 'text-[#1f1b16]')) : 'text-[#1f1b16]'">
+                                                {{ cat.myAvg !== null ? formatNumber(cat.myAvg) : '–' }}
+                                            </span>
+                                            <div class="flex-1 h-2 bg-[#eae3d7] rounded-full overflow-hidden flex">
+                                                <div class="h-full bg-emerald-500 rounded-l-full transition-all"
+                                                     :style="{ width: (((cat.myAvg || 0) + (cat.friendAvg || 0)) > 0 ? ((cat.myAvg || 0) / ((cat.myAvg || 0) + (cat.friendAvg || 0)) * 100) : 50) + '%' }"></div>
+                                                <div class="h-full bg-[#c27803] rounded-r-full transition-all"
+                                                     :style="{ width: (((cat.myAvg || 0) + (cat.friendAvg || 0)) > 0 ? ((cat.friendAvg || 0) / ((cat.myAvg || 0) + (cat.friendAvg || 0)) * 100) : 50) + '%' }"></div>
                                             </div>
-                                            <span class="font-black text-accent-light w-9 font-['Epilogue']">{{ cat.friendAvg !== null ? formatNumber(cat.friendAvg) : '-' }}</span>
+                                            <span class="font-black w-9 font-['Epilogue'] tabular-nums"
+                                                  :class="cat.myAvg !== null && cat.friendAvg !== null ? (cat.friendAvg > cat.myAvg ? 'text-emerald-600' : (cat.friendAvg < cat.myAvg ? 'text-rose-600' : 'text-[#825500]')) : 'text-[#825500]'">
+                                                {{ cat.friendAvg !== null ? formatNumber(cat.friendAvg) : '–' }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -6367,50 +6511,48 @@
 
                             <!-- 3. EINZELNE FÄCHER DUELLE -->
                             <div class="space-y-2">
-                                <h5 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1 flex items-center justify-between">
+                                <h5 class="text-xs font-bold uppercase tracking-wider text-[#524d44] px-1 flex items-center justify-between">
                                     <span>Gemeinsame Fächer im Detail</span>
                                     <span>{{ (comparisonData || []).length }} Fächer</span>
                                 </h5>
 
-                                <div v-if="!comparisonData || comparisonData.length === 0" class="text-center py-6 text-slate-500 text-sm font-semibold bg-black/20 rounded-3xl border border-white/5">
+                                <div v-if="!comparisonData || comparisonData.length === 0" class="text-center py-6 text-[#6E665E] text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8]">
                                     Keine gemeinsamen Fächer oder noch keine Noten eingetragen.
                                 </div>
 
                                 <div v-for="row in comparisonData" :key="row.subjectName"
-                                     class="grid grid-cols-3 gap-3 items-center bg-black/20 border border-white/5 rounded-3xl px-4 py-3 hover:border-white/10 transition-colors">
+                                     class="grid grid-cols-3 gap-2 sm:gap-3 items-center bg-[#faf6ef] border border-[#ede3d8] rounded-full px-4 sm:px-5 py-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-colors">
                                     <!-- Mein Schnitt -->
                                     <div class="text-center">
-                                        <div class="text-2xl font-black leading-none font-['Epilogue']"
-                                             :class="row.myAvg !== null && row.friendAvg !== null ? (row.myAvg >= row.friendAvg ? 'text-emerald-400' : 'text-rose-400') : 'text-white'">
+                                        <div class="text-xl sm:text-2xl font-black leading-none font-['Epilogue'] tabular-nums"
+                                             :class="row.myAvg !== null && row.friendAvg !== null ? (row.myAvg > row.friendAvg ? 'text-emerald-600' : (row.myAvg < row.friendAvg ? 'text-rose-600' : 'text-[#1f1b16]')) : (row.myAvg !== null ? 'text-[#1f1b16]' : 'text-[#9c9488]')">
                                             {{ row.myAvg !== null ? formatNumber(row.myAvg) : '–' }}
                                         </div>
-                                        <div v-if="row.myAvg !== null && row.friendAvg !== null" class="text-[9px] font-bold mt-1"
-                                             :class="row.myAvg >= row.friendAvg ? 'text-emerald-500' : 'text-rose-500'">
+                                        <div v-if="row.myAvg !== null && row.friendAvg !== null" class="text-[10px] font-extrabold mt-1 leading-none"
+                                             :class="row.myAvg > row.friendAvg ? 'text-emerald-600' : (row.friendAvg > row.myAvg ? 'text-rose-600' : 'text-[#6E665E]')">
                                             {{ row.myAvg > row.friendAvg ? '▲ besser' : (row.friendAvg > row.myAvg ? '▼ schlechter' : '= gleich') }}
                                         </div>
                                     </div>
 
                                     <!-- Fach -->
-                                    <div class="text-center">
-                                        <div class="w-3 h-3 rounded-full mx-auto mb-1 shadow-sm" :style="{backgroundColor: row.color}"></div>
-                                        <p class="text-xs font-bold text-white leading-tight truncate">{{ row.subjectName }}</p>
+                                    <div class="text-center min-w-0">
+                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full mx-auto mb-1 shadow-2xs" :style="{ backgroundColor: row.color || '#2d694c' }"></div>
+                                        <p class="text-xs sm:text-[13px] font-bold text-[#1f1b16] leading-tight truncate">{{ row.subjectName }}</p>
                                     </div>
 
                                     <!-- Freund Schnitt -->
                                     <div class="text-center">
-                                        <div class="text-2xl font-black leading-none font-['Epilogue']"
-                                             :class="row.friendAvg !== null && row.myAvg !== null ? (row.friendAvg >= row.myAvg ? 'text-emerald-400' : 'text-rose-400') : 'text-accent-light'">
+                                        <div class="text-xl sm:text-2xl font-black leading-none font-['Epilogue'] tabular-nums"
+                                             :class="row.friendAvg !== null && row.myAvg !== null ? (row.friendAvg > row.myAvg ? 'text-emerald-600' : (row.friendAvg < row.myAvg ? 'text-rose-600' : 'text-[#825500]')) : (row.friendAvg !== null ? 'text-[#825500]' : 'text-[#9c9488]')">
                                             {{ row.friendAvg !== null ? formatNumber(row.friendAvg) : '–' }}
                                         </div>
-                                        <div v-if="row.friendAvg !== null && row.myAvg !== null" class="text-[9px] font-bold mt-1"
-                                             :class="row.friendAvg >= row.myAvg ? 'text-emerald-500' : 'text-rose-500'">
+                                        <div v-if="row.friendAvg !== null && row.myAvg !== null" class="text-[10px] font-extrabold mt-1 leading-none"
+                                             :class="row.friendAvg > row.myAvg ? 'text-emerald-600' : (row.myAvg > row.friendAvg ? 'text-rose-600' : 'text-[#6E665E]')">
                                             {{ row.friendAvg > row.myAvg ? '▲ besser' : (row.myAvg > row.friendAvg ? '▼ schlechter' : '= gleich') }}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            
                     </div>
                 </div>
                 </div>
@@ -6733,7 +6875,7 @@
                 }
             });
             const registerSW = () => {
-                navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
+                navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).then((reg) => {
                     console.log('Schooly PWA Service-Worker erfolgreich registriert.', reg.scope);
                     reg.update().catch(() => {});
                 }).catch((err) => {
@@ -7205,7 +7347,8 @@
                     window.matchMedia('(display-mode: window-controls-overlay)').matches ||
                     window.navigator.standalone === true
                 );
-                const deferredPrompt = ref(window.earlyDeferredPrompt || null);
+                let rawDeferredPrompt = window.earlyDeferredPrompt || null;
+                const deferredPrompt = ref(!!rawDeferredPrompt);
                 const isIOS = ref(/iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase()));
                 const isInIframe = ref((() => {
                     try { return window.self !== window.top; } catch (_) { return true; }
@@ -8579,18 +8722,21 @@
                     });
                     // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
                     if (window.earlyDeferredPrompt) {
-                        deferredPrompt.value = window.earlyDeferredPrompt;
+                        rawDeferredPrompt = window.earlyDeferredPrompt;
+                        deferredPrompt.value = true;
                         isInstalled.value = false;
                     }
                     // Falls das Event erst nach onMounted feuert, registrieren wir diese Funktion im globalen Scope
                     window.setDeferredPrompt = (e) => {
-                        deferredPrompt.value = e;
+                        rawDeferredPrompt = e;
+                        deferredPrompt.value = true;
                         isInstalled.value = false;
                     };
 
                     window.addEventListener('appinstalled', () => {
                         isInstalled.value = true;
-                        deferredPrompt.value = null;
+                        rawDeferredPrompt = null;
+                        deferredPrompt.value = false;
                         window.earlyDeferredPrompt = null;
                         try { localStorage.setItem('pwa_installed', '1'); } catch (_) {}
                     });
@@ -8598,7 +8744,8 @@
                     window.addEventListener('beforeinstallprompt', (e) => {
                         e.preventDefault();
                         window.earlyDeferredPrompt = e;
-                        deferredPrompt.value = e;
+                        rawDeferredPrompt = e;
+                        deferredPrompt.value = true;
                         isInstalled.value = false;
                         try { localStorage.removeItem('pwa_installed'); } catch (_) {}
                     });
@@ -8614,7 +8761,7 @@
 
                     if (!isInstalled.value && typeof navigator.getInstalledRelatedApps === 'function') {
                         navigator.getInstalledRelatedApps().then((apps) => {
-                            if (Array.isArray(apps) && apps.length > 0 && !deferredPrompt.value && !window.earlyDeferredPrompt) {
+                            if (Array.isArray(apps) && apps.length > 0 && !rawDeferredPrompt && !window.earlyDeferredPrompt) {
                                 isInstalled.value = true;
                             }
                         }).catch(() => {});
@@ -9001,7 +9148,11 @@
                     const collectionName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                     const q = collection(db, 'users', uid, collectionName);
                     unsubscribeSubjects = onSnapshot(q, (snapshot) => {
-                        subjects.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        const incoming = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        if (incoming.length === 0 && snapshot.metadata?.fromCache && (subjects.value || []).length > 0) {
+                            return;
+                        }
+                        subjects.value = incoming;
                         try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
                         refreshIcons();
                         triggerCharts();
@@ -9521,12 +9672,18 @@
                 };
 
                 const triggerInstall = async () => {
-                    const promptEvent = deferredPrompt.value || window.earlyDeferredPrompt;
-                    if (promptEvent) {
+                    let promptEvent = rawDeferredPrompt || window.earlyDeferredPrompt;
+                    if (!promptEvent && !isInIframe.value && !isIOS.value) {
+                        // Falls der Browser das Installations-Event gerade erst nach SW-Aktivierung feuert, kurz abwarten
+                        await new Promise((r) => setTimeout(r, 150));
+                        promptEvent = rawDeferredPrompt || window.earlyDeferredPrompt;
+                    }
+                    if (promptEvent && typeof promptEvent.prompt === 'function') {
                         try {
                             await promptEvent.prompt();
                             const { outcome } = await promptEvent.userChoice;
-                            deferredPrompt.value = null;
+                            rawDeferredPrompt = null;
+                            deferredPrompt.value = false;
                             window.earlyDeferredPrompt = null;
                             if (outcome === 'accepted') {
                                 isInstalled.value = true;
