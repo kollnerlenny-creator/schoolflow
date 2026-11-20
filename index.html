@@ -8,8 +8,9 @@
     <meta name="theme-color" content="#f7f3eb">
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg">
-    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=50">
+    <link rel="shortcut icon" href="/favicon.ico?v=50">
+    <link rel="apple-touch-icon" href="/icon-192.png?v=50">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Schooly</title>
@@ -53,7 +54,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v48';
+        const CURRENT_BUILD = 'schooly-v50';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -65,7 +66,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v48') {
+                        if (k !== 'schooly-cache-v50') {
                             caches.delete(k);
                         }
                     });
@@ -2371,7 +2372,7 @@
                                         <button v-else @click.stop="openEditGradeModal(g)" title="Note bearbeiten" class="w-9 h-9 rounded-full bg-[#f4ece4] hover:bg-[#ede3d8] flex items-center justify-center text-[#1f1b16] transition-colors cursor-pointer">
                                             <i data-lucide="edit-2" class="w-4 h-4"></i>
                                         </button>
-                                        <button @click.stop="handleDeleteGrade(g)" title="Note löschen" class="w-9 h-9 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 flex items-center justify-center transition-colors cursor-pointer active:scale-95">
+                                        <button @click.stop="requestDeleteGrade(g)" title="Note löschen" class="w-9 h-9 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 flex items-center justify-center transition-colors cursor-pointer active:scale-95">
                                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         </button>
                                     </div>
@@ -4752,10 +4753,10 @@
                                 </div>
                             </div>
 
-                            <!-- Keine Freunde Zustand -->
+                            <!-- Keine Freunde / Ladezustand -->
                             <div v-if="!friends || friends.length === 0" class="text-center py-8 bg-[#f4ece4] rounded-2xl border border-[#ede3d8] space-y-2.5 px-4">
-                                <p class="text-sm font-bold text-[#1f1b16]">Noch keine Freunde verbunden</p>
-                                <p class="text-xs text-[#6E665E]">Verbinde dich über „Freunde finden“ mit Mitschülern, um eure Schnitte zu vergleichen.</p>
+                                <p class="text-sm font-bold text-[#1f1b16]">{{ socialLoading ? 'Freunde werden geladen...' : 'Noch keine Freunde verbunden' }}</p>
+                                <p class="text-xs text-[#6E665E]">{{ socialLoading ? 'Einen Moment bitte, wir synchronisieren deine Freundesliste.' : 'Verbinde dich über „Freunde finden“ mit Mitschülern, um eure Schnitte zu vergleichen.' }}</p>
                                 <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
                                     <button @click="isFriendsOpen = true; friendsTab = 'members'" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
                                         <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
@@ -4900,7 +4901,12 @@
                                             <span>{{ (comparisonData || []).length }} Fächer</span>
                                         </h5>
 
-                                        <div v-if="!comparisonData || comparisonData.length === 0" class="text-center py-6 text-[#6E665E] text-xs sm:text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8]">
+                                        <div v-if="friendSubjectsLoading && (!comparisonData || comparisonData.length === 0)" class="text-center py-6 text-[#6E665E] text-xs sm:text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8] flex items-center justify-center gap-2">
+                                            <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-[#2d694c]"></i>
+                                            <span>Fächer &amp; Noten von {{ selectedFriend?.displayName || 'Freund' }} werden geladen...</span>
+                                        </div>
+
+                                        <div v-else-if="!comparisonData || comparisonData.length === 0" class="text-center py-6 text-[#6E665E] text-xs sm:text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8]">
                                             Keine gemeinsamen Fächer oder noch keine Noten eingetragen.
                                         </div>
 
@@ -5328,7 +5334,7 @@
                                 <i data-lucide="check" class="w-4.5 h-4.5"></i>
                                 <span>Speichern</span>
                             </button>
-                            <button v-if="gradeForm && (gradeForm.id || gradeFormSourceTaskId)" type="button" @click="handleDeleteGrade(gradeForm)" class="py-4 px-6 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 rounded-full font-black uppercase text-xs sm:text-sm cursor-pointer active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0">
+                            <button v-if="gradeForm && (gradeForm.id || gradeFormSourceTaskId)" type="button" @click="requestDeleteGrade(gradeForm)" class="py-4 px-6 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 rounded-full font-black uppercase text-xs sm:text-sm cursor-pointer active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0">
                                 <i data-lucide="trash-2" class="w-4.5 h-4.5"></i>
                                 <span>Note löschen</span>
                             </button>
@@ -6516,7 +6522,12 @@
                                     <span>{{ (comparisonData || []).length }} Fächer</span>
                                 </h5>
 
-                                <div v-if="!comparisonData || comparisonData.length === 0" class="text-center py-6 text-[#6E665E] text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8]">
+                                <div v-if="friendSubjectsLoading && (!comparisonData || comparisonData.length === 0)" class="text-center py-6 text-[#6E665E] text-xs sm:text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8] flex items-center justify-center gap-2">
+                                    <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-[#2d694c]"></i>
+                                    <span>Fächer &amp; Noten von {{ selectedFriend?.displayName || 'Freund' }} werden geladen...</span>
+                                </div>
+
+                                <div v-else-if="!comparisonData || comparisonData.length === 0" class="text-center py-6 text-[#6E665E] text-sm font-semibold bg-[#f4ece4] rounded-3xl border border-[#ede3d8]">
                                     Keine gemeinsamen Fächer oder noch keine Noten eingetragen.
                                 </div>
 
@@ -6654,6 +6665,7 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
                     <!-- Mitgliederliste & Test-Profile verwalten -->
                     <div class="space-y-3 pt-4 border-t border-[#ede3d8]">
                         <div class="flex items-center justify-between">
@@ -6710,6 +6722,34 @@
             </div>
         </transition>
 
+        <!-- NOTE LÖSCHEN BESTÄTIGUNGSDIALOG -->
+        <div v-if="pendingDeleteGrade" @click.self="cancelDeleteGrade" class="fixed inset-0 z-[99992] flex items-center justify-center p-4 bg-[#1f1b16]/60 backdrop-blur-sm modal-overlay-enter">
+            <div class="center-modal-enter w-full max-w-sm bg-[#fbf8f3] border border-[#ded3c2] rounded-[2rem] p-6 shadow-2xl space-y-4">
+                <div class="flex items-start gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-rose-500/12 border border-rose-500/25 text-rose-600 flex items-center justify-center shrink-0">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-lg font-black text-[#1f1b16] font-['Epilogue'] leading-snug">Note wirklich löschen?</h3>
+                        <p class="text-xs text-[#6E665E] font-medium mt-1 leading-relaxed">
+                            Möchtest du
+                            <span class="font-bold text-[#1f1b16]">„{{ pendingDeleteGrade.label || pendingDeleteGrade.type || 'diese Note' }}“</span>
+                            <span v-if="pendingDeleteGrade.points !== undefined && pendingDeleteGrade.points !== null"> ({{ pendingDeleteGrade.points }} {{ gradeSystem === '6' ? 'Note' : 'Pkt.' }})</span>
+                            unwiderruflich löschen?
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5 pt-1">
+                    <button type="button" @click="cancelDeleteGrade" class="flex-1 py-3 px-4 rounded-full bg-[#efe8dc] hover:bg-[#e5dccd] border border-[#ded5c7] text-[#1f1b16] font-bold text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all">
+                        Abbrechen
+                    </button>
+                    <button type="button" @click="confirmDeleteGrade" class="flex-1 py-3 px-4 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition-all shadow-xs">
+                        Ja, löschen
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- IN-APP TOAST & RÜCKGÄNGIG-BANNER -->
         <div v-if="toastState.visible" class="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 z-[99995] pointer-events-none px-4 w-full max-w-sm flex justify-center">
             <div class="pointer-events-auto bg-[#1f1b16] text-[#faf7f2] px-4 py-2.5 rounded-full shadow-xl border border-white/10 flex items-center gap-3 text-xs font-bold animate-fade-in">
@@ -6724,7 +6764,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, getDocsFromServer, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
@@ -6740,7 +6780,7 @@
             _origConsoleError.apply(console, args);
         };
         // Firestore-Modul global cachen fuer spaetere dynamische Nutzung
-        window.__firestoreModule = { onSnapshot, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc };
+        window.__firestoreModule = { onSnapshot, collection, doc, setDoc, getDoc, getDocs, getDocsFromServer, updateDoc, deleteDoc };
 
         // Globale Avatar-Hilfsfunktionen (immer global und fehlertolerant verfuegbar)
         window.getMemberAvatar = function(target) {
@@ -7644,13 +7684,22 @@
                     return list;
                 });
 
-                // Auto-Auswahl des ersten vergleichbaren Nutzers, falls noch keiner selektiert ist
-                watch(comparableUsers, (newUsers) => {
+                // Auto-Auswahl bevorzugt echte Freunde; wenn Freunde geladen sind, niemals bei Nicht-Freund hängen bleiben
+                watch([friends, comparableUsers], ([friendsList, newUsers]) => {
                     if (selectedFriend.value && isDemoProfile(selectedFriend.value)) {
                         selectedFriend.value = null;
                     }
-                    if (newUsers && newUsers.length > 0 && !selectedFriend.value) {
-                        selectedFriend.value = newUsers[0];
+                    const realFriends = (friendsList || []).filter(f => f && f.uid && !isDemoProfile(f) && !isAdminProfile(f));
+                    if (realFriends.length > 0) {
+                        const stillInFriends = selectedFriend.value && realFriends.some(f => f.uid === selectedFriend.value.uid);
+                        if (!stillInFriends) {
+                            selectedFriend.value = realFriends[0];
+                        }
+                        return;
+                    }
+                    if (!selectedFriend.value && newUsers && newUsers.length > 0) {
+                        const firstFriend = newUsers.find(u => u.isFriend);
+                        if (firstFriend) selectedFriend.value = firstFriend;
                     }
                 }, { immediate: true });
 
@@ -7795,7 +7844,7 @@
                     }
                 };
 
-                const waitForFirebaseAuth = async (timeoutMs = 1800) => {
+                const waitForFirebaseAuth = async (timeoutMs = 4000) => {
                     try {
                         if (auth && auth.currentUser) return auth.currentUser;
                         if (auth && typeof auth.authStateReady === 'function') {
@@ -7803,6 +7852,12 @@
                                 auth.authStateReady(),
                                 new Promise(resolve => setTimeout(resolve, timeoutMs))
                             ]);
+                        }
+                        if (auth && auth.currentUser) return auth.currentUser;
+                        // Fallback für PWA Kaltstart falls authStateReady vor IndexedDB-Token-Restore aufgelöst hat
+                        const deadline = Date.now() + Math.min(timeoutMs, 2000);
+                        while (Date.now() < deadline && (!auth || !auth.currentUser)) {
+                            await new Promise(resolve => setTimeout(resolve, 120));
                         }
                         return auth ? auth.currentUser : null;
                     } catch (_) {
@@ -8026,25 +8081,31 @@
                         if (unsubscribeDeclinedRequests) { unsubscribeDeclinedRequests(); unsubscribeDeclinedRequests = null; }
                         if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
 
-                        const { onSnapshot: onSnap, collection: col } = window.__firestoreModule || {};
+                        const { onSnapshot: onSnap, collection: col, getDocs: getD, getDocsFromServer: getDServer } = window.__firestoreModule || {};
                         if (!onSnap) return;
 
-                        // Freunde – Demo-Profile sowie frisch entfernte Freunde bereinigen und sentRequests bereinigen
-                        unsubscribeFriends = onSnap(col(db, 'users', uid, 'friends'), async snap => {
+                        const applyFriendsSnapshot = async (snap) => {
                             const now = Date.now();
                             const fromServerConfirmed = !snap.metadata?.fromCache && !snap.metadata?.hasPendingWrites;
                             const rawFriends = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
                             const demoFriends = rawFriends.filter(f => isDemoProfile(f));
-                            friends.value = rawFriends.filter(f => {
+                            const nextFriends = rawFriends.filter(f => {
                                 if (isDemoProfile(f)) return false;
                                 const removedUntil = pendingRemovedFriendsMap.get(f.uid);
                                 if (removedUntil && now < removedUntil) return false;
                                 if (fromServerConfirmed) pendingRemovedFriendsMap.delete(f.uid);
                                 return true;
                             });
+                            if (nextFriends.length === 0 && friends.value.length > 0 && !fromServerConfirmed) {
+                                return; // Offline-Cache darf geladene Freunde nicht leeren
+                            }
+                            friends.value = nextFriends;
                             try { localStorage.setItem('sf_cached_friends_' + uid, JSON.stringify(friends.value)); } catch (_) {}
                             if (selectedFriend.value && (isDemoProfile(selectedFriend.value) || pendingRemovedFriendsMap.has(selectedFriend.value.uid))) {
                                 selectedFriend.value = null;
+                            }
+                            if (friends.value.length > 0 && (!selectedFriend.value || !friends.value.some(f => f.uid === selectedFriend.value.uid))) {
+                                selectedFriend.value = friends.value[0];
                             }
                             // Eventuelle Demo- & Admin-Profile aus allMembers entfernen und echte Nicht-Admin-Freunde ergänzen
                             const baseMembers = (allMembers.value || []).filter(m => !isDemoProfile(m) && !isAdminProfile(m));
@@ -8066,7 +8127,6 @@
                             }
                             enrichFriendProfiles();
                             refreshIcons();
-                            // Für jeden Freund ohne Bild im Hintergrund Details nachladen
                             friends.value.forEach(f => {
                                 if (!f.photoUrl) {
                                     fetchFriendProfileDetails(f.uid);
@@ -8083,7 +8143,23 @@
                                 }
                             }
                             sentRequests.value = sentRequests.value.filter(id => !friends.value.some(f => f.uid === id));
-                        }, err => {
+                        };
+
+                        // Schneller Direkt-Abruf für PWA Kaltstart (umgeht verzögerten onSnapshot-Start)
+                        if (getD) {
+                            const directFetch = (getDServer && navigator.onLine)
+                                ? getDServer(col(db, 'users', uid, 'friends')).catch(() => getD(col(db, 'users', uid, 'friends')))
+                                : getD(col(db, 'users', uid, 'friends'));
+                            directFetch.then(snap => {
+                                if (epoch !== friendsLoadEpoch || !snap) return;
+                                if (!snap.empty || !snap.metadata?.fromCache) {
+                                    applyFriendsSnapshot(snap);
+                                }
+                            }).catch(() => {});
+                        }
+
+                        // Freunde – Demo-Profile sowie frisch entfernte Freunde bereinigen und sentRequests bereinigen
+                        unsubscribeFriends = onSnap(col(db, 'users', uid, 'friends'), applyFriendsSnapshot, err => {
                             if (err && err.code !== 'permission-denied') console.warn('friends listener:', err.code);
                         });
 
@@ -8316,26 +8392,103 @@
 
                 // Geladene Fächer des ausgewählten Freundes
                 const friendSubjectsLoaded = ref([]);
+                const friendSubjectsLoading = ref(false);
+                let friendSubjectsLoadEpoch = 0;
 
                 const loadSelectedFriendSubjects = async (friendUid, force = false) => {
                     if (!friendUid) {
                         friendSubjectsLoaded.value = [];
+                        friendSubjectsLoading.value = false;
                         return;
                     }
                     if (!force && friendSubjectsLoaded.value.length > 0 && selectedFriend.value?.uid === friendUid) {
                         return;
                     }
+                    const epoch = ++friendSubjectsLoadEpoch;
+
+                    // 1. Sofort aus lokalem Cache vorladen (0ms PWA-/Offline-Start)
+                    let hadLocalCache = false;
+                    try {
+                        const cachedSubs = localStorage.getItem('sf_friend_subjects_' + friendUid);
+                        if (cachedSubs) {
+                            const parsedSubs = JSON.parse(cachedSubs);
+                            if (Array.isArray(parsedSubs) && parsedSubs.length > 0 && selectedFriend.value?.uid === friendUid) {
+                                friendSubjectsLoaded.value = parsedSubs;
+                                hadLocalCache = true;
+                            }
+                        }
+                    } catch (_) {}
+
+                    friendSubjectsLoading.value = !hadLocalCache;
                     fetchFriendProfileDetails(friendUid);
                     try {
-                        await waitForFirebaseAuth();
-                        const { getDocs, collection: col } = window.__firestoreModule || {};
-                        if (!getDocs) return;
-                        let snap = await getDocs(col(db, 'users', friendUid, 'subjects'));
-                        if (!snap || snap.empty) snap = await getDocs(col(db, 'users', friendUid, 'subjects_lower'));
-                        if (selectedFriend.value?.uid === friendUid && snap && !snap.empty) {
-                            friendSubjectsLoaded.value = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                        const authedUser = await waitForFirebaseAuth(4000);
+                        if (epoch !== friendSubjectsLoadEpoch || selectedFriend.value?.uid !== friendUid) return;
+                        if (!authedUser && navigator.onLine) {
+                            // Auth noch nicht bereit in PWA -> onAuthStateChanged triggert erneutes Laden
+                            return;
                         }
-                    } catch (e) { console.warn('loadFriendSubjects:', e); }
+                        const { getDocs: getD, getDocsFromServer: getDServer, collection: col } = window.__firestoreModule || {};
+                        if (!getD || !col) return;
+
+                        const fetchCol = async (colKey) => {
+                            const refCol = col(db, 'users', friendUid, colKey);
+                            if (getDServer && navigator.onLine) {
+                                try {
+                                    return await getDServer(refCol);
+                                } catch (_) {}
+                            }
+                            const cachedOrNetSnap = await getD(refCol);
+                            if (cachedOrNetSnap && cachedOrNetSnap.empty && cachedOrNetSnap.metadata?.fromCache && getDServer && navigator.onLine) {
+                                try {
+                                    return await getDServer(refCol);
+                                } catch (_) {}
+                            }
+                            return cachedOrNetSnap;
+                        };
+
+                        const [upperRes, lowerRes] = await Promise.allSettled([
+                            fetchCol('subjects'),
+                            fetchCol('subjects_lower')
+                        ]);
+                        if (epoch !== friendSubjectsLoadEpoch || selectedFriend.value?.uid !== friendUid) return;
+
+                        const mergedMap = new Map();
+                        const addFromSnap = (snap, sourceCol) => {
+                            if (!snap || snap.empty) return;
+                            snap.docs.forEach(d => {
+                                const data = d.data() || {};
+                                const existing = mergedMap.get(d.id);
+                                const gradesCount = (data.grades || data.semesterGrades || []).length;
+                                const existingGradesCount = existing ? ((existing.grades || existing.semesterGrades || []).length) : -1;
+                                if (!existing || gradesCount > existingGradesCount) {
+                                    mergedMap.set(d.id, { id: d.id, ...data, _sourceCol: sourceCol });
+                                }
+                            });
+                        };
+                        if (upperRes.status === 'fulfilled') addFromSnap(upperRes.value, 'subjects');
+                        if (lowerRes.status === 'fulfilled') addFromSnap(lowerRes.value, 'subjects_lower');
+
+                        const mergedList = Array.from(mergedMap.values());
+                        if (mergedList.length > 0) {
+                            friendSubjectsLoaded.value = mergedList;
+                            try {
+                                const compactSubs = JSON.stringify(mergedList);
+                                if (compactSubs.length < 250000) {
+                                    localStorage.setItem('sf_friend_subjects_' + friendUid, compactSubs);
+                                }
+                            } catch (_) {}
+                        } else if (!hadLocalCache) {
+                            friendSubjectsLoaded.value = [];
+                        }
+                    } catch (e) {
+                        console.warn('loadFriendSubjects:', e);
+                    } finally {
+                        if (epoch === friendSubjectsLoadEpoch) {
+                            friendSubjectsLoading.value = false;
+                            refreshIcons();
+                        }
+                    }
                 };
 
                 const refreshSocialData = async ({ quiet = false } = {}) => {
@@ -8376,7 +8529,7 @@
                     await loadSelectedFriendSubjects(friendUid, true);
                 }, { immediate: true });
 
-                // Fächernamen-Matching: Aliase + Fuzzy
+                // Fächernamen-Matching: Aliase + Fuzzy + Äquivalente Wahlfächer (Religion <-> Ethik, Kunst <-> Musik)
                 const subjectAliases = [
                     ['mathe', 'mathematik', 'math'],
                     ['deutsch', 'deutsche sprache', 'deu'],
@@ -8390,11 +8543,11 @@
                     ['geschichte', 'gesch', 'history'],
                     ['geographie', 'geo', 'erdkunde', 'geogr', 'geography'],
                     ['informatik', 'info', 'it'],
-                    ['musik', 'mus'],
-                    ['kunst', 'bildende kunst', 'bk', 'bildkunst'],
+                    ['musik', 'mus', 'mu'],
+                    ['kunst', 'bildende kunst', 'bk', 'bildkunst', 'ku'],
                     ['sport', 'spo', 'sportkunde'],
-                    ['religion', 'reli', 'rel', 'religionslehre', 'ev. religion', 'kath. religion', 'evangelische religion', 'katholische religion'],
-                    ['ethik', 'eth', 'ethiklehre'],
+                    ['religion', 'reli', 'rel', 'religionslehre', 'ev. religion', 'kath. religion', 'evangelische religion', 'katholische religion', 'evangelische religionslehre', 'katholische religionslehre', 'ev religion', 'kath religion'],
+                    ['ethik', 'eth', 'ethiklehre', 'werte und normen'],
                     ['wirtschaft', 'wirt', 'wirtschaftslehre', 'grw', 'wirtschaft und recht'],
                     ['gemeinschaftskunde', 'gk', 'sozialkunde', 'sozi', 'gemeinschafts- und wirtschaftskunde'],
                     ['politik', 'politikwissenschaft', 'pol'],
@@ -8404,16 +8557,28 @@
                     ['psychologie', 'psy'],
                 ];
 
+                // Paarweise äquivalente Wahl-/Pflichtfächer für den Vergleich (Religion <-> Ethik, Kunst <-> Musik)
+                const equivalentSubjectPairs = [
+                    ['religion', 'ethik'],
+                    ['kunst', 'musik'],
+                ];
+
                 // Normalisiert einen Namen auf den ersten Eintrag seiner Alias-Gruppe
                 const normalizeSubjectName = (name) => {
-                    const n = name.toLowerCase().trim().replace(/\s+/g, ' ');
+                    const n = String(name || '').toLowerCase().trim().replace(/\s+/g, ' ');
                     const group = subjectAliases.find(g => g.some(alias => n === alias || n.startsWith(alias + ' ') || n.endsWith(' ' + alias)));
                     return group ? group[0] : n;
                 };
 
+                const findEquivalentPair = (name) => {
+                    const norm = normalizeSubjectName(name);
+                    return equivalentSubjectPairs.find(pair => pair.includes(norm)) || null;
+                };
+
                 const subjectNamesMatch = (a, b) => {
-                    const na = a.toLowerCase().trim().replace(/\s+/g, ' ');
-                    const nb = b.toLowerCase().trim().replace(/\s+/g, ' ');
+                    const na = String(a || '').toLowerCase().trim().replace(/\s+/g, ' ');
+                    const nb = String(b || '').toLowerCase().trim().replace(/\s+/g, ' ');
+                    if (!na || !nb) return false;
                     if (na === nb) return true;
                     // Alias-Gruppe prüfen (exakter Treffer in der Gruppe)
                     const group = subjectAliases.find(g => g.includes(na) && g.includes(nb));
@@ -8453,13 +8618,59 @@
                         return null;
                     };
 
-                    // Eigene Fächer aus processedData (finalPoints ist bereits korrekt berechnet)
-                    for (const s of (processedData.value?.semesterSubjects || [])) {
-                        // Freund-Fach per Name matchen
-                        const friendSubject = friendSubjectsLoaded.value.find(fs =>
-                            subjectNamesMatch(fs.name, s.name)
-                        );
+                    const mySubjects = processedData.value?.semesterSubjects || [];
+                    const friendSubjects = friendSubjectsLoaded.value || [];
+                    const usedFriendKeys = new Set();
+                    const friendKey = (fs, idx) => fs?.id ? `id:${fs.id}` : `idx:${idx}`;
+                    const matchedFriendBySubjIdx = new Map();
 
+                    // Hilfsfunktion: bestes passendes Freund-Fach auswählen (bevorzugt mit Noten im aktuellen Halbjahr)
+                    const pickBestFriendMatch = (predicate) => {
+                        let bestIdx = -1;
+                        let bestAvg = null;
+                        friendSubjects.forEach((fs, idx) => {
+                            if (usedFriendKeys.has(friendKey(fs, idx))) return;
+                            if (!predicate(fs)) return;
+                            const avg = calcFinalPoints(fs.grades || fs.semesterGrades || [], fs.examWeight);
+                            if (bestIdx === -1 || (bestAvg === null && avg !== null)) {
+                                bestIdx = idx;
+                                bestAvg = avg;
+                            }
+                        });
+                        return bestIdx;
+                    };
+
+                    // Durchgang 1: Direkte Namens- & Alias-Treffer zuerst zuordnen (z.B. Kunst<->Kunst vor Kunst<->Musik)
+                    mySubjects.forEach((s, idx) => {
+                        const fIdx = pickBestFriendMatch(fs => subjectNamesMatch(fs.name, s.name));
+                        if (fIdx !== -1) {
+                            const fs = friendSubjects[fIdx];
+                            usedFriendKeys.add(friendKey(fs, fIdx));
+                            matchedFriendBySubjIdx.set(idx, { fs, isCrossPair: false });
+                        }
+                    });
+
+                    // Durchgang 2: Äquivalente Wahlfächer (Religion <-> Ethik, Kunst <-> Musik)
+                    mySubjects.forEach((s, idx) => {
+                        if (matchedFriendBySubjIdx.has(idx)) return;
+                        const pair = findEquivalentPair(s.name);
+                        if (!pair) return;
+                        const myNorm = normalizeSubjectName(s.name);
+                        const fIdx = pickBestFriendMatch(fs => {
+                            const fNorm = normalizeSubjectName(fs.name);
+                            return pair.includes(fNorm) && fNorm !== myNorm;
+                        });
+                        if (fIdx !== -1) {
+                            const fs = friendSubjects[fIdx];
+                            usedFriendKeys.add(friendKey(fs, fIdx));
+                            matchedFriendBySubjIdx.set(idx, { fs, isCrossPair: true });
+                        }
+                    });
+
+                    // Eigene Fächer aus processedData auswerten (finalPoints ist bereits korrekt berechnet)
+                    mySubjects.forEach((s, idx) => {
+                        const match = matchedFriendBySubjIdx.get(idx);
+                        const friendSubject = match ? match.fs : null;
                         const myAvg = s.finalPoints; // bereits korrekt gewichtet für selectedHalfYear
 
                         // Freund: rohe grades aus Firestore mit gleicher Gewichtungs-Logik
@@ -8472,9 +8683,12 @@
 
                         // Zeile nur anzeigen wenn mindestens einer Noten hat
                         if (myAvg !== null || friendAvg !== null) {
-                            result.push({ subjectName: s.name, color: s.color, myAvg, friendAvg });
+                            const label = (match && match.isCrossPair && friendSubject?.name)
+                                ? `${s.name} / ${friendSubject.name}`
+                                : s.name;
+                            result.push({ subjectName: label, color: s.color, myAvg, friendAvg });
                         }
-                    }
+                    });
                     return result;
                 });
 
@@ -12744,6 +12958,30 @@
                     }
                 };
 
+                const pendingDeleteGrade = ref(null);
+                const requestDeleteGrade = (gradeOrId) => {
+                    if (!selectedSubject.value || !gradeOrId) return;
+                    let targetObj = null;
+                    if (typeof gradeOrId === 'object') {
+                        targetObj = { ...gradeOrId };
+                    } else {
+                        const found = (selectedSubject.value.grades || []).find(g => g.id === gradeOrId);
+                        targetObj = found ? { ...found } : { id: gradeOrId };
+                    }
+                    pendingDeleteGrade.value = targetObj;
+                    nextTick(refreshIcons);
+                };
+                const cancelDeleteGrade = () => {
+                    pendingDeleteGrade.value = null;
+                };
+                const confirmDeleteGrade = async () => {
+                    const target = pendingDeleteGrade.value;
+                    pendingDeleteGrade.value = null;
+                    if (target) {
+                        await handleDeleteGrade(target);
+                    }
+                };
+
                 const handleDeleteGrade = async (gradeOrId) => {
                     if (!selectedSubject.value) return;
 
@@ -12903,9 +13141,7 @@
                     if (el) {
                         el.classList.remove('dragging');
                         if (!forceReset && swipeState.value.currentX < -125) {
-                            if(confirm(`Möchtest du die Note "${grade.label || grade.type}" wirklich löschen?`)) {
-                                handleDeleteGrade(grade.id);
-                            }
+                            requestDeleteGrade(grade);
                         }
                         // Spring snap-back
                         el.style.transition = 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)';
@@ -13161,8 +13397,16 @@
                             requestAnimationFrame(scrollToTop);
                         }
                     });
-                    if (tab === 'stats' && insightsSubTab.value === 'charts') {
-                        setTimeout(() => triggerCharts(), 50);
+                    if (tab === 'stats') {
+                        if (insightsSubTab.value === 'charts') {
+                            setTimeout(() => triggerCharts(), 50);
+                        } else if (insightsSubTab.value === 'compare') {
+                            if (user.value?.uid && (!allMembers.value.length || !friends.value.length)) {
+                                refreshSocialData({ quiet: true });
+                            } else if (selectedFriend.value?.uid) {
+                                loadSelectedFriendSubjects(selectedFriend.value.uid, true);
+                            }
+                        }
                     }
                 });
                 watch(selectedSubject, () => {
@@ -13456,7 +13700,7 @@
                     subjectForm, gradeForm, taskForm, tempReportCardPoints, processedData, activeSubjectData, sortedGrades, yearTrendData, goalTargetPoints, goalCategory, goalCalculation,
                     sortedSubjectsList, subjects, formatNumber, formatDate, progressColor, taskTypeBadge, taskDotClass, isToday, handleAuth, handleLogout, adjustColor, getSubjectIconSvg,
                     openAddSubjectModal, openSettingsModal, closeSubjectModal, openAddGradeModal, openEditGradeModal, openReportCardModal, openGradeFromPlannerTask,
-                    handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, handleSaveReportCardGrade,
+                    handleSaveSubject, handleDeleteSubject, handleSaveGrade, handleDeleteGrade, pendingDeleteGrade, requestDeleteGrade, cancelDeleteGrade, confirmDeleteGrade, handleSaveReportCardGrade,
                     tasks, upcomingTasks, pastTasks, filteredUpcomingTasks, filteredPastTasks, nextExamCountdown, calendarDays, currentWeekDays, calendarViewMode, calMonth, calYear, monthNames,
                     currentKW, currentWeekWorkloadDays, weeklyWorkloadIntensityLabel, dateFocusRangeStr, displayFocusTasks, getWeekdayAbbr, getDayOfMonth, getDaysUntilStr,
                     todayOverview,
@@ -13486,7 +13730,7 @@
                     examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend, markAllNotificationsRead,
-                    comparisonData, comparisonSummary, ensurePublicProfile, friendSubjectsLoaded, refreshSocialData,
+                    comparisonData, comparisonSummary, ensurePublicProfile, friendSubjectsLoaded, friendSubjectsLoading, refreshSocialData,
                     getMemberAvatar, resolveAvatar, isImageAvatar,
                     activeNavIndex, userAvatar, isAvatarModalOpen, avatarFileInput, avatarPresets, setAvatarPreset, removeAvatar, handleAvatarFileUpload, refreshIcons, scrollToTop
                 };
