@@ -441,7 +441,7 @@ export default defineConfig({
           const batchId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
           const savedPaths: string[] = [];
 
-          const graphBase = igAccessToken.startsWith('IG')
+          let graphBase = igAccessToken.startsWith('IG')
             ? 'https://graph.instagram.com/v21.0'
             : 'https://graph.facebook.com/v21.0';
 
@@ -505,13 +505,37 @@ export default defineConfig({
                   throw new Error(meJson?.error?.message || 'Instagram Konto-ID konnte nicht automatisch aus dem Token ermittelt werden.');
                 }
               } else {
-                const accRes = await fetch(`${graphBase}/me/accounts?fields=instagram_business_account&access_token=${encodeURIComponent(igAccessToken)}`);
+                const accRes = await fetch(`${graphBase}/me/accounts?fields=id,name,instagram_business_account,connected_instagram_account&access_token=${encodeURIComponent(igAccessToken)}`);
                 const accJson: any = await accRes.json().catch(() => ({}));
                 const pages = Array.isArray(accJson?.data) ? accJson.data : [];
-                const foundPage = pages.find((p: any) => p?.instagram_business_account?.id);
-                igUserId = String(foundPage?.instagram_business_account?.id || '').trim();
+                const foundPage = pages.find((p: any) => p?.instagram_business_account?.id || p?.connected_instagram_account?.id);
+                igUserId = String(foundPage?.instagram_business_account?.id || foundPage?.connected_instagram_account?.id || '').trim();
+
                 if (!igUserId) {
-                  throw new Error(accJson?.error?.message || 'Kein verknüpftes Instagram Business-Konto gefunden. Bitte IG_USER_ID direkt setzen.');
+                  const fbMeRes = await fetch(`${graphBase}/me?fields=id,name,instagram_business_account,connected_instagram_account&access_token=${encodeURIComponent(igAccessToken)}`);
+                  const fbMeJson: any = await fbMeRes.json().catch(() => ({}));
+                  igUserId = String(fbMeJson?.instagram_business_account?.id || fbMeJson?.connected_instagram_account?.id || '').trim();
+                }
+
+                if (!igUserId) {
+                  const igMeRes = await fetch(`https://graph.instagram.com/v21.0/me?fields=user_id,id,username&access_token=${encodeURIComponent(igAccessToken)}`);
+                  const igMeJson: any = await igMeRes.json().catch(() => ({}));
+                  const probedId = String(igMeJson?.user_id || igMeJson?.id || '').trim();
+                  if (igMeRes.ok && probedId) {
+                    igUserId = probedId;
+                    graphBase = 'https://graph.instagram.com/v21.0';
+                  }
+                }
+
+                if (!igUserId) {
+                  if (accJson?.error?.message) {
+                    throw new Error(`Meta API Fehler: ${accJson.error.message}`);
+                  }
+                  if (pages.length > 0) {
+                    const pageNames = pages.map((p: any) => p.name || p.id).filter(Boolean).join(', ');
+                    throw new Error(`Facebook-Seite(n) gefunden (${pageNames}), aber @schooly.app ist noch mit keiner davon als Instagram Business-Konto verknüpft (oder IG_USER_ID in Vercel direkt setzen).`);
+                  }
+                  throw new Error('Dein Token liefert keine verknüpfte Facebook-Seite mit Instagram-Business-Konto zurück. Entweder IG_USER_ID in Vercel setzen, beim Token-Erstellen deine Seite + @schooly.app anhaken oder einen Instagram-Login-Token (startet mit IG...) unter „Instagram-API einrichten“ generieren.');
                 }
               }
             }
