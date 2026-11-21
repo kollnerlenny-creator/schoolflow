@@ -2284,6 +2284,80 @@ Mit schooly hast du alles kostenlos und werbefrei auf Handy, Tablet &amp; Laptop
             </div>
         </section>
 
+        <!-- BEITRÄGE STEUERLEISTE & UNTERMENÜ „GEPOSTETE BEITRÄGE“ -->
+        <section id="beitraege-uebersicht" class="space-y-5 pt-4 border-t border-[#e5dcd0]">
+            <div class="bg-white border border-[#e5dcd0] rounded-[2rem] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-extrabold text-[#2d694c]">04. Instagram-Beiträge</span>
+                        <span id="openPostsBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#f4f9f6] border border-[#cde3d5] text-[#2d694c] text-[11px] font-extrabold tabular-nums">
+                            20 offen
+                        </span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-[#1f1b16] font-epilogue">Beiträge abhaken &amp; verwalten</h2>
+                    <p class="text-xs text-[#6e665e] leading-relaxed">
+                        Hake veröffentlichte Beiträge mit <strong class="text-[#1f1b16]">„Als gepostet abhaken“</strong> ab — sie verschwinden dann aus der offenen Liste ins Untermenü.
+                    </p>
+                </div>
+
+                <button id="postedSubmenuToggleBtn" type="button" onclick="togglePostedSubmenu()" aria-expanded="false" class="inline-flex items-center justify-between sm:justify-center gap-2.5 px-4 py-2.5 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-extrabold text-[#1f1b16] transition-colors cursor-pointer shrink-0 whitespace-nowrap">
+                    <span class="inline-flex items-center gap-2">
+                        <i data-lucide="folder-check" class="w-4 h-4 text-[#2d694c]"></i>
+                        <span>Untermenü: Gepostet (<span id="postedPostsCount" class="tabular-nums">0</span>)</span>
+                    </span>
+                    <i id="postedSubmenuChevron" data-lucide="chevron-down" class="w-4 h-4 text-[#6e665e] transition-transform duration-200"></i>
+                </button>
+            </div>
+
+            <!-- Collapsible Submenu for Posted Posts -->
+            <div id="postedPostsSubmenu" class="hidden bg-[#f4ece4]/70 border border-[#e5dcd0] rounded-[2rem] p-5 sm:p-8 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#e5dcd0]">
+                    <div class="space-y-0.5">
+                        <div class="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2d694c]">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                            <span>Untermenü · Gepostete Beiträge</span>
+                        </div>
+                        <p class="text-xs text-[#6e665e]">
+                            Hier landen alle abgehakten Beiträge. Zum Zurückholen einfach wieder abwählen.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="restoreAllPostedBtn" type="button" onclick="restoreAllPostedPosts()" class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-[#faf7f2] border border-[#e5dcd0] text-xs font-bold text-[#6e665e] hover:text-[#1f1b16] transition-colors cursor-pointer">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            <span>Alle wieder öffnen</span>
+                        </button>
+                        <button type="button" onclick="togglePostedSubmenu(false)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-[#faf7f2] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] transition-colors cursor-pointer">
+                            <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+                            <span>Schließen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="postedPostsEmptyState" class="bg-white/80 border border-dashed border-[#d9cebf] rounded-3xl p-6 text-center text-xs text-[#6e665e] font-medium">
+                    Noch keine Beiträge abgehakt. Sobald du bei einem Beitrag auf <strong class="text-[#1f1b16]">„Als gepostet abhaken“</strong> klickst (oder direkt über die API postest), erscheint er hier.
+                </div>
+
+                <div id="postedPostsContainer" class="space-y-12"></div>
+            </div>
+
+            <div id="allPostsPostedNotice" class="hidden bg-[#f4f9f6] border border-[#cde3d5] rounded-[2rem] p-8 text-center space-y-3">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e7f3de] text-[#2d694c] text-xs font-extrabold">
+                    <i data-lucide="party-popper" class="w-3.5 h-3.5"></i>
+                    <span>Alle 20 Beiträge gepostet</span>
+                </div>
+                <h3 class="text-xl font-black text-[#1f1b16] font-epilogue">Keine offenen Beiträge mehr übrig!</h3>
+                <p class="text-xs text-[#6e665e] max-w-md mx-auto leading-relaxed">
+                    Du hast alle 20 Instagram-Beiträge als gepostet abgehakt. Über das Untermenü kannst du sie jederzeit wieder ansehen oder zurückholen.
+                </p>
+                <button type="button" onclick="togglePostedSubmenu(true)" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#2d694c] hover:bg-[#23533c] text-white text-xs font-extrabold transition-colors cursor-pointer">
+                    <i data-lucide="folder-check" class="w-4 h-4"></i>
+                    <span>Gepostete Beiträge öffnen</span>
+                </button>
+            </div>
+        </section>
+
+        <div id="activePostsContainer" class="space-y-16">
+
         <!-- =====================================================================
              BEITRAG 1: Launch: „5 Schul-Apps? Ab heute reicht eine.“ (4 SLIDES)
              ===================================================================== -->
@@ -6132,7 +6206,16 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             </div>
         </section>
 
+        </div>
+
     </main>
+
+    <!-- Floating Confirmation / Undo Toast when moving posts -->
+    <div id="postedActionToast" class="hidden fixed bottom-5 right-5 z-[9000] max-w-sm bg-[#1f1b16] text-white border border-white/15 rounded-2xl px-4 py-3 shadow-[0_18px_40px_-10px_rgba(16,13,10,0.45)] flex items-center gap-3 text-xs font-bold">
+        <span id="postedActionToastText" class="flex-1 leading-snug">Beitrag verschoben</span>
+        <button id="postedActionToastSubmenuBtn" type="button" onclick="openPostedSubmenuFromToast()" class="text-[#ffe6b9] hover:underline whitespace-nowrap cursor-pointer">Untermenü</button>
+        <button id="postedActionToastUndoBtn" type="button" onclick="undoLastPostedAction()" class="px-2.5 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white whitespace-nowrap cursor-pointer">Rückgängig</button>
+    </div>
 
     <footer class="bg-[#faf7f2] border-t border-[#e5dcd0] py-5 text-center text-xs font-semibold text-[#6e665e]">
         schooly Instagram Studio · @schooly.app · 4K Export (Feed 2160×2700 px · Stories 2160×3840 px)
@@ -7985,6 +8068,7 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                         return;
                     }
                     setPostPublishFeedback(postNum, `Beitrag #${postNum} erfolgreich auf @schooly.app veröffentlicht! (Media-ID: ${payload.id})`, false);
+                    setPostPostedState(postNum, true, { showToast: true, toastPrefix: `Beitrag #${postNum} gepostet & ins Untermenü verschoben` });
                     return;
                 }
 
@@ -8053,6 +8137,274 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             }, 2200);
         }
 
+        const IG_POSTED_STORAGE_KEY = 'schooly_social_posted_posts_v1';
+        let postedPostsMap = {};
+        let postedSubmenuOpen = false;
+        let lastPostedAction = null;
+        let postedToastTimer = null;
+
+        function loadPostedPostsMap() {
+            try {
+                const raw = localStorage.getItem(IG_POSTED_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : {};
+                return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {};
+            } catch (_) {
+                return {};
+            }
+        }
+
+        function savePostedPostsMap(map) {
+            try {
+                localStorage.setItem(IG_POSTED_STORAGE_KEY, JSON.stringify(map));
+            } catch (_) {}
+        }
+
+        function isPostPosted(postNum) {
+            return Boolean(postedPostsMap[String(postNum)]);
+        }
+
+        function hidePostedToast() {
+            const toast = document.getElementById('postedActionToast');
+            if (toast) toast.classList.add('hidden');
+            if (postedToastTimer) {
+                clearTimeout(postedToastTimer);
+                postedToastTimer = null;
+            }
+        }
+
+        function showPostedToast(text, showSubmenuLink) {
+            const toast = document.getElementById('postedActionToast');
+            const textEl = document.getElementById('postedActionToastText');
+            const subBtn = document.getElementById('postedActionToastSubmenuBtn');
+            if (!toast || !textEl) return;
+            textEl.textContent = text;
+            if (subBtn) subBtn.classList.toggle('hidden', !showSubmenuLink);
+            toast.classList.remove('hidden');
+            if (postedToastTimer) clearTimeout(postedToastTimer);
+            postedToastTimer = setTimeout(hidePostedToast, 5500);
+        }
+
+        function openPostedSubmenuFromToast() {
+            hidePostedToast();
+            togglePostedSubmenu(true);
+            const sub = document.getElementById('postedPostsSubmenu');
+            if (sub) sub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function undoLastPostedAction() {
+            if (!lastPostedAction) return;
+            const { postNum, prevState } = lastPostedAction;
+            lastPostedAction = null;
+            hidePostedToast();
+            setPostPostedState(postNum, prevState, { showToast: false, skipUndoSave: true });
+        }
+
+        function togglePostedSubmenu(forceState) {
+            const submenu = document.getElementById('postedPostsSubmenu');
+            const toggleBtn = document.getElementById('postedSubmenuToggleBtn');
+            const chevron = document.getElementById('postedSubmenuChevron');
+            if (!submenu) return;
+
+            postedSubmenuOpen = typeof forceState === 'boolean' ? forceState : submenu.classList.contains('hidden');
+            submenu.classList.toggle('hidden', !postedSubmenuOpen);
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', postedSubmenuOpen ? 'true' : 'false');
+            if (chevron) chevron.style.transform = postedSubmenuOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+
+            if (postedSubmenuOpen) {
+                requestAnimationFrame(() => {
+                    if (typeof scalePreviews === 'function') scalePreviews();
+                    if (typeof hydrateAll3DPhones === 'function') hydrateAll3DPhones();
+                });
+            }
+        }
+
+        function updatePostToggleButtonUi(postNum) {
+            const btn = document.querySelector(`[data-ig-posted-btn="${postNum}"]`);
+            if (!btn) return;
+            const checked = isPostPosted(postNum);
+            if (checked) {
+                btn.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e7f3de] hover:bg-[#d8ebd0] border border-[#b9d7b5] text-[#2d694c] text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap';
+                btn.innerHTML = '<i data-lucide="check-square" class="w-3.5 h-3.5"></i><span>Gepostet (zurückholen)</span>';
+            } else {
+                btn.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-[#f4f9f6] border border-[#e5dcd0] hover:border-[#2d694c] text-[#1f1b16] text-xs font-extrabold transition-colors cursor-pointer whitespace-nowrap';
+                btn.innerHTML = '<i data-lucide="square" class="w-3.5 h-3.5 text-[#6e665e]"></i><span>Als gepostet abhaken</span>';
+            }
+        }
+
+        function syncPostedIndicators() {
+            const activeContainer = document.getElementById('activePostsContainer');
+            const postedContainer = document.getElementById('postedPostsContainer');
+            const openBadge = document.getElementById('openPostsBadge');
+            const postedCountEl = document.getElementById('postedPostsCount');
+            const emptyState = document.getElementById('postedPostsEmptyState');
+            const allDoneNotice = document.getElementById('allPostsPostedNotice');
+            const restoreAllBtn = document.getElementById('restoreAllPostedBtn');
+
+            let postedCount = 0;
+            for (let n = 1; n <= 20; n++) {
+                const checked = isPostPosted(n);
+                if (checked) postedCount++;
+
+                const section = document.getElementById(`beitrag-${n}`);
+                if (section && activeContainer && postedContainer) {
+                    const targetParent = checked ? postedContainer : activeContainer;
+                    if (section.parentElement !== targetParent) {
+                        targetParent.appendChild(section);
+                    }
+                    section.classList.toggle('opacity-95', checked);
+                }
+
+                updatePostToggleButtonUi(n);
+
+                // Sync top navigation link
+                const navLink = document.querySelector(`header nav a[href="#beitrag-${n}"]`);
+                if (navLink) {
+                    if (!navLink.dataset.origLabel) navLink.dataset.origLabel = navLink.textContent.trim();
+                    navLink.textContent = checked ? `${navLink.dataset.origLabel} ✓` : navLink.dataset.origLabel;
+                    navLink.classList.toggle('opacity-50', checked);
+                }
+
+                // Sync Redaktionsplan card
+                const planCard = document.querySelector(`#plan a[href="#beitrag-${n}"]`);
+                if (planCard) {
+                    planCard.classList.toggle('opacity-65', checked);
+                    let badge = planCard.querySelector('[data-plan-posted-badge]');
+                    if (checked) {
+                        if (!badge) {
+                            badge = document.createElement('div');
+                            badge.setAttribute('data-plan-posted-badge', 'true');
+                            badge.className = 'inline-flex items-center gap-1 text-[10px] font-extrabold text-[#2d694c] bg-[#e7f3de] border border-[#b9d7b5] px-2 py-0.5 rounded-full mt-1';
+                            badge.innerHTML = '<span>✓ Gepostet</span>';
+                            planCard.appendChild(badge);
+                        }
+                    } else if (badge) {
+                        badge.remove();
+                    }
+                }
+
+                // Sync #profil 3er-Grid tile
+                const gridTile = document.querySelector(`#profil a[href="#beitrag-${n}"]`);
+                if (gridTile) {
+                    let tileBadge = gridTile.querySelector('[data-grid-posted-badge]');
+                    if (checked) {
+                        if (!tileBadge) {
+                            tileBadge = document.createElement('span');
+                            tileBadge.setAttribute('data-grid-posted-badge', 'true');
+                            if (gridTile.classList.contains('aspect-[4/5]')) {
+                                tileBadge.className = 'absolute top-1.5 right-1.5 z-20 inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#2d694c] text-white text-[10px] font-black shadow';
+                                tileBadge.textContent = '✓';
+                                if (getComputedStyle(gridTile).position === 'static') gridTile.style.position = 'relative';
+                            } else {
+                                tileBadge.className = 'inline-flex items-center px-2 py-0.5 rounded-full bg-white/20 text-white text-[9.5px] font-extrabold shrink-0 ml-2';
+                                tileBadge.textContent = '✓ Gepostet';
+                            }
+                            gridTile.appendChild(tileBadge);
+                        }
+                    } else if (tileBadge) {
+                        tileBadge.remove();
+                    }
+                }
+            }
+
+            // Keep posts inside each container ordered 1..20
+            if (activeContainer) {
+                for (let n = 1; n <= 20; n++) {
+                    if (!isPostPosted(n)) {
+                        const s = document.getElementById(`beitrag-${n}`);
+                        if (s) activeContainer.appendChild(s);
+                    }
+                }
+            }
+            if (postedContainer) {
+                for (let n = 1; n <= 20; n++) {
+                    if (isPostPosted(n)) {
+                        const s = document.getElementById(`beitrag-${n}`);
+                        if (s) postedContainer.appendChild(s);
+                    }
+                }
+            }
+
+            const openCount = 20 - postedCount;
+            if (openBadge) openBadge.textContent = `${openCount} offen`;
+            if (postedCountEl) postedCountEl.textContent = String(postedCount);
+            if (emptyState) emptyState.classList.toggle('hidden', postedCount > 0);
+            if (allDoneNotice) allDoneNotice.classList.toggle('hidden', openCount > 0);
+            if (restoreAllBtn) restoreAllBtn.classList.toggle('hidden', postedCount === 0);
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            requestAnimationFrame(() => {
+                if (typeof scalePreviews === 'function') scalePreviews();
+                if (typeof hydrateAll3DPhones === 'function') hydrateAll3DPhones();
+            });
+        }
+
+        function setPostPostedState(postNum, nextChecked, opts = {}) {
+            const key = String(postNum);
+            const prevState = Boolean(postedPostsMap[key]);
+            if (prevState === Boolean(nextChecked)) return;
+
+            if (!opts.skipUndoSave) {
+                lastPostedAction = { postNum, prevState };
+            }
+
+            if (nextChecked) {
+                postedPostsMap[key] = new Date().toISOString();
+            } else {
+                delete postedPostsMap[key];
+            }
+            savePostedPostsMap(postedPostsMap);
+            syncPostedIndicators();
+
+            if (opts.showToast !== false) {
+                if (nextChecked) {
+                    showPostedToast(
+                        opts.toastPrefix || `Beitrag #${postNum} ins Untermenü „Gepostet“ verschoben`,
+                        !postedSubmenuOpen
+                    );
+                } else {
+                    showPostedToast(`Beitrag #${postNum} wieder zu offenen Beiträgen verschoben`, false);
+                }
+            }
+        }
+
+        function togglePostPosted(postNum) {
+            const nextChecked = !isPostPosted(postNum);
+            setPostPostedState(postNum, nextChecked, { showToast: true });
+        }
+
+        function restoreAllPostedPosts() {
+            postedPostsMap = {};
+            lastPostedAction = null;
+            savePostedPostsMap(postedPostsMap);
+            syncPostedIndicators();
+            togglePostedSubmenu(false);
+            showPostedToast('Alle Beiträge wieder in die offene Liste verschoben', false);
+        }
+
+        function initPostedTracker() {
+            postedPostsMap = loadPostedPostsMap();
+
+            // Auto-expand submenu if user clicks a link to a post currently moved into the submenu
+            document.querySelectorAll('a[href^="#beitrag-"]').forEach((link) => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href') || '';
+                    const m = href.match(/^#beitrag-(\d+)$/);
+                    if (!m) return;
+                    const n = Number(m[1]);
+                    if (isPostPosted(n) && !postedSubmenuOpen) {
+                        e.preventDefault();
+                        togglePostedSubmenu(true);
+                        requestAnimationFrame(() => {
+                            const target = document.getElementById(`beitrag-${n}`);
+                            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        });
+                    }
+                });
+            });
+
+            syncPostedIndicators();
+        }
+
         function initInstagramPublishButtons() {
             for (let n = 1; n <= 20; n++) {
                 const section = document.getElementById(`beitrag-${n}`);
@@ -8062,6 +8414,13 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                 const wrap = document.createElement('div');
                 wrap.className = 'flex flex-wrap items-center gap-2';
                 dlBtn.parentNode.insertBefore(wrap, dlBtn);
+
+                const postedBtn = document.createElement('button');
+                postedBtn.type = 'button';
+                postedBtn.setAttribute('data-ig-posted-btn', String(n));
+                postedBtn.setAttribute('onclick', `togglePostPosted(${n})`);
+                wrap.appendChild(postedBtn);
+
                 wrap.appendChild(dlBtn);
 
                 const pubBtn = document.createElement('button');
@@ -8071,6 +8430,7 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                 pubBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i><span class="ig-pub-label">Auf Instagram posten</span>';
                 wrap.appendChild(pubBtn);
             }
+            initPostedTracker();
             if (typeof lucide !== 'undefined') lucide.createIcons();
             refreshInstagramPublishStatus();
         }
