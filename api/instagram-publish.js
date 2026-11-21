@@ -44,11 +44,56 @@ function findBlobToken() {
     return process.env.BLOB_READ_WRITE_TOKEN.trim();
   }
   for (const [k, v] of Object.entries(process.env)) {
-    if (/BLOB.*_READ_WRITE_TOKEN$/i.test(k) && typeof v === 'string' && v.trim()) {
-      return v.trim();
+    if (typeof v !== 'string') continue;
+    const trimmed = v.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('vercel_blob_rw_') || /_READ_WRITE_TOKEN$/i.test(k)) {
+      return trimmed;
     }
   }
   return '';
+}
+
+function hasBlobStoreConfigured() {
+  return Boolean(findBlobToken() || (process.env.BLOB_STORE_ID && process.env.BLOB_STORE_ID.trim()));
+}
+
+function signMediaPathname(pathname) {
+  const secret = (process.env.SOCIAL_ADMIN_SECRET || process.env.IG_ACCESS_TOKEN || '').trim();
+  return crypto.createHmac('sha256', secret).update(pathname).digest('hex');
+}
+
+function getRequestOrigin(req) {
+  const explicit = (process.env.IG_PUBLIC_BASE_URL || '').trim().replace(/\/+$/, '');
+  if (explicit) return explicit;
+  const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+  return host ? `${proto}://${host}` : '';
+}
+
+async function uploadTempSlideToBlob(req, blobPath, buffer, contentType, blobToken) {
+  const baseOpts = { contentType, addRandomSuffix: false };
+  if (blobToken) baseOpts.token = blobToken;
+
+  try {
+    const blob = await put(blobPath, buffer, { ...baseOpts, access: 'public' });
+    return { publicUrl: blob.url, deleteKey: blob.url };
+  } catch (publicErr) {
+    const msg = String(publicErr?.message || '');
+    if (!/private/i.test(msg)) {
+      throw publicErr;
+    }
+    const blob = await put(blobPath, buffer, { ...baseOpts, access: 'private' });
+    const origin = getRequestOrigin(req);
+    if (!origin || !/^https:\/\//i.test(origin)) {
+      throw new Error('Private Blob Store benötigt eine HTTPS-Origin für /api/ig-temp-media.');
+    }
+    const sig = signMediaPathname(blob.pathname);
+    return {
+      publicUrl: `${origin}/api/ig-temp-media?p=${encodeURIComponent(blob.pathname)}&sig=${sig}`,
+      deleteKey: blob.url || blob.pathname,
+    };
+  }
 }
 
 export default async function handler(req, res) {
@@ -56,7 +101,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Require SOCIAL_ADMIN_SECRET on public Vercel deployments so strangers cannot post to @schooly.app
   const adminSecret = (process.env.SOCIAL_ADMIN_SECRET || '').trim();
   if (!adminSecret) {
     return res.status(403).json({
@@ -69,8 +113,19 @@ export default async function handler(req, res) {
   if (!providedSecret || !constantTimeEquals(providedSecret, adminSecret)) {
     return res.status(401).json({
       error: 'UNAUTHORIZED',
-      message: 'Falsches oder fehlendes Admin-Passwort. Bitte oben im Status-Banner zuerst dein SOCIAL_ADMIN_SECRET eingeben.',
+      message: 'Falsches oder fehlendes Admin-Passwort. Bitte dein SOCIAL_ADMIN_SECRET eingeben.',
     });
+  }
+
+  let body = {};
+  try {
+    body = await parseJsonBody(req);
+  } catch {
+    return res.status(400).json({ error: 'Invalid JSON body' });
+  }
+
+  if (body.action === 'verify-secret') {
+    return res.status(200).json({ ok: true });
   }
 
   let igUserId = (process.env.IG_USER_ID || '').trim();
@@ -82,21 +137,15 @@ export default async function handler(req, res) {
     });
   }
 
-  let body = {};
-  try {
-    body = await parseJsonBody(req);
-  } catch {
-    return res.status(400).json({ error: 'Invalid JSON body' });
-  }
-
   const blobToken = findBlobToken();
+  const blobReady = hasBlobStoreConfigured();
 
-  // Stage 1: Upload a single rendered slide to Vercel Blob (avoids Vercel's 4.5 MB body limit)
+  // Stage 1: Upload a single rendered slide to Vercel Blob (supports both Public & Private Blob stores)
   if (body.action === 'stage-slide') {
-    if (!blobToken) {
+    if (!blobReady) {
       return res.status(400).json({
         error: 'VERCEL_BLOB_REQUIRED',
-        message: 'Auf Vercel fehlt noch Vercel Blob (BLOB_READ_WRITE_TOKEN). Öffne dein Projekt in Vercel → Storage → Create Database → Blob, verknüpfe es mit dem Projekt und deploye einmal neu.',
+        message: 'Auf Vercel fehlt noch die Verknüpfung zum Vercel Blob Store (BLOB_STORE_ID oder BLOB_READ_WRITE_TOKEN).',
       });
     }
 
@@ -114,13 +163,8 @@ export default async function handler(req, res) {
 
     try {
       const buffer = Buffer.from(match[2], 'base64');
-      const blob = await put(blobPath, buffer, {
-        access: 'public',
-        contentType,
-        addRandomSuffix: false,
-        token: blobToken,
-      });
-      return res.status(200).json({ ok: true, url: blob.url });
+      const uploaded = await uploadTempSlideToBlob(req, blobPath, buffer, contentType, blobToken);
+      return res.status(200).json({ ok: true, url: uploaded.publicUrl });
     } catch (err) {
       return res.status(502).json({
         error: 'BLOB_UPLOAD_FAILED',
@@ -134,7 +178,7 @@ export default async function handler(req, res) {
   const rawMediaUrls = Array.isArray(body.mediaUrls) ? body.mediaUrls : [];
   const rawSlides = Array.isArray(body.slides) ? body.slides : [];
 
-  const uploadedBlobUrls = [];
+  const blobsToDelete = [];
   let mediaUrls = [];
 
   const graphBase = igAccessToken.startsWith('IG')
@@ -163,19 +207,28 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Maximal 10 Slides pro Beitrag erlaubt.' });
       }
       for (const u of rawMediaUrls) {
-        if (!isSafeHttpsUrl(u)) {
+        const urlStr = String(u || '');
+        if (!isSafeHttpsUrl(urlStr)) {
           return res.status(400).json({ error: 'Ungültige oder unsichere Medien-URL.' });
         }
-        mediaUrls.push(String(u));
-        if (/\.blob\.vercel-storage\.com\//i.test(String(u))) {
-          uploadedBlobUrls.push(String(u));
+        mediaUrls.push(urlStr);
+        if (/\.blob\.vercel-storage\.com\//i.test(urlStr)) {
+          blobsToDelete.push(urlStr);
+        } else {
+          try {
+            const parsed = new URL(urlStr);
+            const p = parsed.searchParams.get('p');
+            if (parsed.pathname.endsWith('/api/ig-temp-media') && p) {
+              blobsToDelete.push(p);
+            }
+          } catch {}
         }
       }
     } else if (rawSlides.length > 0) {
-      if (!blobToken) {
+      if (!blobReady) {
         return res.status(400).json({
           error: 'VERCEL_BLOB_REQUIRED',
-          message: 'Auf Vercel fehlt noch Vercel Blob (BLOB_READ_WRITE_TOKEN). Öffne Vercel → Storage → Create Database → Blob und verknüpfe es mit dem Projekt.',
+          message: 'Auf Vercel fehlt noch die Verknüpfung zum Vercel Blob Store (BLOB_STORE_ID oder BLOB_READ_WRITE_TOKEN).',
         });
       }
       if (rawSlides.length > 10) {
@@ -189,14 +242,9 @@ export default async function handler(req, res) {
         const ext = match[1] === 'png' ? 'png' : 'jpg';
         const contentType = ext === 'png' ? 'image/png' : 'image/jpeg';
         const blobPath = `schooly-ig-temp/${Date.now()}_${i}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-        const blob = await put(blobPath, Buffer.from(match[2], 'base64'), {
-          access: 'public',
-          contentType,
-          addRandomSuffix: false,
-          token: blobToken,
-        });
-        mediaUrls.push(blob.url);
-        uploadedBlobUrls.push(blob.url);
+        const uploaded = await uploadTempSlideToBlob(req, blobPath, Buffer.from(match[2], 'base64'), contentType, blobToken);
+        mediaUrls.push(uploaded.publicUrl);
+        blobsToDelete.push(uploaded.deleteKey);
       }
     } else {
       return res.status(400).json({ error: 'Keine Slides oder Medien-URLs übergeben.' });
@@ -289,8 +337,8 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(502).json({ error: err?.message || 'Instagram-Veröffentlichung fehlgeschlagen.' });
   } finally {
-    if (blobToken && uploadedBlobUrls.length > 0) {
-      await del(uploadedBlobUrls, { token: blobToken }).catch(() => {});
+    if (blobReady && blobsToDelete.length > 0) {
+      await del(blobsToDelete, blobToken ? { token: blobToken } : undefined).catch(() => {});
     }
   }
 }

@@ -3,11 +3,20 @@ function findBlobToken() {
     return process.env.BLOB_READ_WRITE_TOKEN.trim();
   }
   for (const [k, v] of Object.entries(process.env)) {
-    if (/BLOB.*_READ_WRITE_TOKEN$/i.test(k) && typeof v === 'string' && v.trim()) {
-      return v.trim();
+    if (typeof v !== 'string') continue;
+    const trimmed = v.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('vercel_blob_rw_') || /_READ_WRITE_TOKEN$/i.test(k)) {
+      return trimmed;
     }
   }
   return '';
+}
+
+function hasBlobStoreConfigured() {
+  if (findBlobToken()) return true;
+  if (process.env.BLOB_STORE_ID && process.env.BLOB_STORE_ID.trim()) return true;
+  return false;
 }
 
 export default function handler(req, res) {
@@ -17,14 +26,14 @@ export default function handler(req, res) {
   }
 
   const hasToken = Boolean(process.env.IG_ACCESS_TOKEN && process.env.IG_ACCESS_TOKEN.trim());
-  const hasBlobToken = Boolean(findBlobToken());
+  const hasBlob = hasBlobStoreConfigured();
   const hasPublicUrl = Boolean(process.env.IG_PUBLIC_BASE_URL && process.env.IG_PUBLIC_BASE_URL.trim());
   const hasAdminSecret = Boolean(process.env.SOCIAL_ADMIN_SECRET && process.env.SOCIAL_ADMIN_SECRET.trim());
 
   return res.status(200).json({
     configured: hasToken,
-    blobConfigured: hasBlobToken,
-    publicBaseUrlConfigured: hasBlobToken || hasPublicUrl,
+    blobConfigured: hasBlob,
+    publicBaseUrlConfigured: hasBlob || hasPublicUrl,
     requiresAdminSecret: true,
     adminSecretConfigured: hasAdminSecret,
     runtime: 'vercel',

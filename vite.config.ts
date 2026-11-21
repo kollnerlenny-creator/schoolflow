@@ -303,17 +303,6 @@ export default defineConfig({
             }
           }
 
-          let igUserId = (process.env.IG_USER_ID || '').trim();
-          const igAccessToken = (process.env.IG_ACCESS_TOKEN || '').trim();
-          if (!igAccessToken) {
-            res.statusCode = 503;
-            res.end(JSON.stringify({
-              error: 'IG_NOT_CONFIGURED',
-              message: 'Für automatisches Posten bitte IG_ACCESS_TOKEN (und optional IG_USER_ID) in den Server-Secrets hinterlegen.',
-            }));
-            return;
-          }
-
           let rawBody = '';
           let totalBytes = 0;
           const MAX_BYTES = 50 * 1024 * 1024;
@@ -334,6 +323,23 @@ export default defineConfig({
           } catch {
             res.statusCode = 400;
             res.end(JSON.stringify({ error: 'Invalid JSON body' }));
+            return;
+          }
+
+          if (body.action === 'verify-secret') {
+            res.statusCode = 200;
+            res.end(JSON.stringify({ ok: true }));
+            return;
+          }
+
+          let igUserId = (process.env.IG_USER_ID || '').trim();
+          const igAccessToken = (process.env.IG_ACCESS_TOKEN || '').trim();
+          if (!igAccessToken) {
+            res.statusCode = 503;
+            res.end(JSON.stringify({
+              error: 'IG_NOT_CONFIGURED',
+              message: 'Für automatisches Posten bitte IG_ACCESS_TOKEN (und optional IG_USER_ID) in den Server-Secrets hinterlegen.',
+            }));
             return;
           }
 
