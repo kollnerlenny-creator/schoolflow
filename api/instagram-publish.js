@@ -1,4 +1,5 @@
 import { put, del } from '@vercel/blob';
+import crypto from 'node:crypto';
 
 async function parseJsonBody(req) {
   if (req.body && typeof req.body === 'object') return req.body;
@@ -8,6 +9,13 @@ async function parseJsonBody(req) {
     raw += Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
   }
   return raw.trim() ? JSON.parse(raw) : {};
+}
+
+function constantTimeEquals(a, b) {
+  const bufA = Buffer.from(String(a), 'utf8');
+  const bufB = Buffer.from(String(b), 'utf8');
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
 }
 
 function isSafeHttpsUrl(rawUrl) {
@@ -31,9 +39,38 @@ function isSafeHttpsUrl(rawUrl) {
   }
 }
 
+function findBlobToken() {
+  if (process.env.BLOB_READ_WRITE_TOKEN && process.env.BLOB_READ_WRITE_TOKEN.trim()) {
+    return process.env.BLOB_READ_WRITE_TOKEN.trim();
+  }
+  for (const [k, v] of Object.entries(process.env)) {
+    if (/BLOB.*_READ_WRITE_TOKEN$/i.test(k) && typeof v === 'string' && v.trim()) {
+      return v.trim();
+    }
+  }
+  return '';
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Require SOCIAL_ADMIN_SECRET on public Vercel deployments so strangers cannot post to @schooly.app
+  const adminSecret = (process.env.SOCIAL_ADMIN_SECRET || '').trim();
+  if (!adminSecret) {
+    return res.status(403).json({
+      error: 'ADMIN_SECRET_NOT_CONFIGURED',
+      message: 'Sicherheits-Schutz aktiv: Bitte zuerst SOCIAL_ADMIN_SECRET (ein eigenes Passwort) in den Vercel Environment Variables festlegen, damit niemand sonst auf @schooly.app posten kann.',
+    });
+  }
+
+  const providedSecret = String(req.headers['x-social-secret'] || '').trim();
+  if (!providedSecret || !constantTimeEquals(providedSecret, adminSecret)) {
+    return res.status(401).json({
+      error: 'UNAUTHORIZED',
+      message: 'Falsches oder fehlendes Admin-Passwort. Bitte oben im Status-Banner zuerst dein SOCIAL_ADMIN_SECRET eingeben.',
+    });
   }
 
   let igUserId = (process.env.IG_USER_ID || '').trim();
@@ -52,7 +89,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
-  const blobToken = (process.env.BLOB_READ_WRITE_TOKEN || '').trim();
+  const blobToken = findBlobToken();
 
   // Stage 1: Upload a single rendered slide to Vercel Blob (avoids Vercel's 4.5 MB body limit)
   if (body.action === 'stage-slide') {

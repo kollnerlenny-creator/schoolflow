@@ -761,8 +761,14 @@
                         <span class="text-xs font-extrabold text-[#1f1b16]">@schooly.app · 1-Klick Export &amp; Publish</span>
                     </div>
                     <p id="igPublishStatusDesc" class="text-xs text-[#6e665e] leading-relaxed">
-                        Jeder Beitrag (#1–#20) besitzt jetzt einen <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong>-Button: Slides werden in 4K gerendert, die Caption automatisch kopiert und per Teilen-Menü oder direkt über die Meta Graph API (sobald <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> &amp; eine öffentlich ohne Login erreichbare <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_PUBLIC_BASE_URL</code> in den Server-Secrets hinterlegt sind) veröffentlicht.
+                        Jeder Beitrag (#1–#20) besitzt jetzt einen <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong>-Button: Slides werden in 4K gerendert, die Caption automatisch kopiert und per Teilen-Menü oder direkt über die Meta Graph API (sobald <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code>, <code class="px-1 py-0.5 bg-[#faf7f2] rounded">BLOB_READ_WRITE_TOKEN</code> &amp; <code class="px-1 py-0.5 bg-[#faf7f2] rounded">SOCIAL_ADMIN_SECRET</code> auf Vercel hinterlegt sind) veröffentlicht.
                     </p>
+                    <div id="igAdminAuthBox" class="hidden pt-2 flex flex-wrap items-center gap-2">
+                        <input id="igAdminSecretInput" type="password" autocomplete="current-password" placeholder="Admin-Passwort eingeben..." class="px-3.5 py-1.5 rounded-full bg-[#faf7f2] border border-[#e5dcd0] text-xs font-semibold text-[#1f1b16] focus:outline-none focus:border-[#2d694c] min-w-[210px]" onkeydown="if(event.key==='Enter'){event.preventDefault();saveSocialAdminSecret();}" />
+                        <button id="igAdminSaveBtn" type="button" onclick="saveSocialAdminSecret()" class="px-3.5 py-1.5 rounded-full bg-[#2d694c] hover:bg-[#23543d] text-white text-xs font-bold transition-colors cursor-pointer">Freischalten</button>
+                        <button id="igAdminClearBtn" type="button" onclick="clearSocialAdminSecret()" class="hidden px-3 py-1.5 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-[#6e665e] text-xs font-bold transition-colors cursor-pointer">Sperren</button>
+                        <span id="igAdminLockState" class="text-[11px] font-bold text-[#9b2c2c]"></span>
+                    </div>
                 </div>
                 <button onclick="refreshInstagramPublishStatus(this)" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] transition-colors cursor-pointer shrink-0 whitespace-nowrap">
                     <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#2d694c]"></i>
@@ -7553,7 +7559,54 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
         // =====================================================================
         // INSTAGRAM DIRECT PUBLISHING & 1-CLICK SHARE ENGINE (@schooly.app)
         // =====================================================================
-        let igApiStatus = { configured: false, publicBaseUrlConfigured: false, accountHandle: '@schooly.app' };
+        let igApiStatus = { configured: false, publicBaseUrlConfigured: false, requiresAdminSecret: false, adminSecretConfigured: false, accountHandle: '@schooly.app' };
+        const IG_ADMIN_SECRET_STORAGE_KEY = 'schooly_social_admin_secret';
+
+        function getSocialAdminSecret() {
+            try { return sessionStorage.getItem(IG_ADMIN_SECRET_STORAGE_KEY) || ''; } catch (_) { return ''; }
+        }
+
+        function updateAdminAuthUi() {
+            const box = document.getElementById('igAdminAuthBox');
+            const input = document.getElementById('igAdminSecretInput');
+            const saveBtn = document.getElementById('igAdminSaveBtn');
+            const clearBtn = document.getElementById('igAdminClearBtn');
+            const lockState = document.getElementById('igAdminLockState');
+            if (!box || !input || !saveBtn || !clearBtn || !lockState) return;
+
+            const showBox = Boolean(igApiStatus.requiresAdminSecret && igApiStatus.configured);
+            box.classList.toggle('hidden', !showBox);
+            if (!showBox) return;
+
+            const hasSaved = Boolean(getSocialAdminSecret());
+            if (hasSaved) {
+                input.classList.add('hidden');
+                saveBtn.classList.add('hidden');
+                clearBtn.classList.remove('hidden');
+                lockState.className = 'text-[11px] font-bold text-[#2d694c]';
+                lockState.textContent = 'Admin-Zugang für diese Browser-Sitzung entsperrt';
+            } else {
+                input.classList.remove('hidden');
+                saveBtn.classList.remove('hidden');
+                clearBtn.classList.add('hidden');
+                lockState.className = 'text-[11px] font-bold text-[#9b2c2c]';
+                lockState.textContent = 'Geschützt: Passwort nötig zum Posten';
+            }
+        }
+
+        function saveSocialAdminSecret() {
+            const input = document.getElementById('igAdminSecretInput');
+            const val = input ? input.value.trim() : '';
+            if (!val) return;
+            try { sessionStorage.setItem(IG_ADMIN_SECRET_STORAGE_KEY, val); } catch (_) {}
+            if (input) input.value = '';
+            updateAdminAuthUi();
+        }
+
+        function clearSocialAdminSecret() {
+            try { sessionStorage.removeItem(IG_ADMIN_SECRET_STORAGE_KEY); } catch (_) {}
+            updateAdminAuthUi();
+        }
 
         async function refreshInstagramPublishStatus(btn) {
             const badge = document.getElementById('igPublishStatusBadge');
@@ -7561,28 +7614,34 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             const desc = document.getElementById('igPublishStatusDesc');
             if (btn) btn.disabled = true;
             try {
-                const res = await fetch('/api/instagram-status');
+                const res = await fetch('/api/instagram-status', { cache: 'no-store' });
                 const ct = (res.headers.get('content-type') || '').toLowerCase();
                 if (res.ok && ct.includes('application/json')) {
                     igApiStatus = await res.json();
                 } else {
-                    igApiStatus = { configured: false, publicBaseUrlConfigured: false, accountHandle: '@schooly.app' };
+                    igApiStatus = { configured: false, publicBaseUrlConfigured: false, requiresAdminSecret: false, adminSecretConfigured: false, accountHandle: '@schooly.app' };
                 }
             } catch (_) {
-                igApiStatus = { configured: false, publicBaseUrlConfigured: false, accountHandle: '@schooly.app' };
+                igApiStatus = { configured: false, publicBaseUrlConfigured: false, requiresAdminSecret: false, adminSecretConfigured: false, accountHandle: '@schooly.app' };
             } finally {
                 if (btn) btn.disabled = false;
             }
 
             if (badge && badgeText && desc) {
                 const isPrivatePreviewHost = /^ais-dev-/.test(window.location.hostname || '');
-                if (igApiStatus.runtime === 'vercel' && igApiStatus.configured && !igApiStatus.blobConfigured) {
+                if (igApiStatus.runtime === 'vercel' && igApiStatus.configured && !igApiStatus.adminSecretConfigured) {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fdf2f2] text-[#9b2c2c] text-[11px] font-extrabold';
+                    badgeText.textContent = 'Schutz aktiv — SOCIAL_ADMIN_SECRET fehlt';
+                    desc.innerHTML = 'Damit Fremde nicht über diesen Link auf <strong class="text-[#1f1b16]">@schooly.app</strong> posten können, ist das Direkt-Posten gesperrt, bis du in Vercel unter Environment Variables ein Passwort als <code class="px-1 py-0.5 bg-[#faf7f2] rounded">SOCIAL_ADMIN_SECRET</code> einträgst und neu deployst.';
+                } else if (igApiStatus.runtime === 'vercel' && igApiStatus.configured && !igApiStatus.blobConfigured) {
                     badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[11px] font-extrabold';
                     badgeText.textContent = 'Token aktiv — Vercel Blob (Storage) fehlt noch';
                     desc.innerHTML = 'Dein <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> ist auf Vercel aktiv. Damit Instagram die 4K-Slides abrufen kann, verknüpfe einmalig unter <strong class="text-[#1f1b16]">Vercel → Storage → Create Database → Blob</strong> einen Blob Store (setzt <code class="px-1 py-0.5 bg-[#faf7f2] rounded">BLOB_READ_WRITE_TOKEN</code>) und deploye neu.';
                 } else if (igApiStatus.configured && (igApiStatus.blobConfigured || igApiStatus.publicBaseUrlConfigured || !isPrivatePreviewHost)) {
                     badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e7f3de] text-[#2d694c] text-[11px] font-extrabold';
-                    badgeText.textContent = 'Meta Graph API aktiv — Direkt-Posten bereit';
+                    badgeText.textContent = igApiStatus.requiresAdminSecret
+                        ? 'Meta Graph API aktiv (Passwort-geschützt)'
+                        : 'Meta Graph API aktiv — Direkt-Posten bereit';
                     desc.innerHTML = 'Die Verbindung zu <strong class="text-[#1f1b16]">@schooly.app</strong> über die Meta Graph API ist aktiv. Ein Klick auf <strong class="text-[#1f1b16]">„Direkt auf Instagram posten“</strong> rendert alle 4K-Slides (als JPEG für die Instagram-API) und veröffentlicht den Beitrag inkl. Caption direkt.';
                 } else if (igApiStatus.configured) {
                     badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[11px] font-extrabold';
@@ -7591,9 +7650,10 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                 } else {
                     badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[11px] font-extrabold';
                     badgeText.textContent = '1-Klick Share & Export bereit (Graph API optional)';
-                    desc.innerHTML = 'Mit <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong> bei jedem Beitrag (#1–#20) werden alle 4K-Slides gerendert, die Caption automatisch kopiert und direkt an das Teilen-Menü (Instagram-App) bzw. als Download-Paket übergeben. Für vollautomatisches Direkt-Posten auf Vercel einfach <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> hinterlegen und <strong class="text-[#1f1b16]">Vercel Blob</strong> verknüpfen.';
+                    desc.innerHTML = 'Mit <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong> bei jedem Beitrag (#1–#20) werden alle 4K-Slides gerendert, die Caption automatisch kopiert und direkt an das Teilen-Menü (Instagram-App) bzw. als Download-Paket übergeben. Für vollautomatisches Direkt-Posten auf Vercel einfach <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> + <code class="px-1 py-0.5 bg-[#faf7f2] rounded">SOCIAL_ADMIN_SECRET</code> hinterlegen und <strong class="text-[#1f1b16]">Vercel Blob</strong> verknüpfen.';
                 }
             }
+            updateAdminAuthUi();
             updatePublishButtonLabels();
         }
 
@@ -7689,16 +7749,34 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                 }
 
                 if (igApiStatus.configured) {
+                    if (igApiStatus.requiresAdminSecret && !igApiStatus.adminSecretConfigured) {
+                        setPostPublishFeedback(postNum, 'Sicherheits-Schutz: Bitte erst SOCIAL_ADMIN_SECRET in deinen Vercel Environment Variables hinterlegen, damit Fremde nicht posten können.', true);
+                        return;
+                    }
+                    const adminSecret = getSocialAdminSecret();
+                    if (igApiStatus.requiresAdminSecret && !adminSecret) {
+                        setPostPublishFeedback(postNum, 'Bitte ganz oben im Status-Banner zuerst dein Admin-Passwort (SOCIAL_ADMIN_SECRET) eingeben und „Freischalten“ klicken.', true);
+                        const bridge = document.getElementById('igPublishBridgeCard');
+                        const inp = document.getElementById('igAdminSecretInput');
+                        if (bridge) bridge.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (inp) setTimeout(() => inp.focus(), 250);
+                        return;
+                    }
+
+                    const apiHeaders = { 'Content-Type': 'application/json' };
+                    if (adminSecret) apiHeaders['x-social-secret'] = adminSecret;
+
                     const stagedMediaUrls = [];
                     for (let i = 0; i < dataUrls.length; i++) {
                         btn.innerHTML = `<span>Lade Slide ${i + 1}/${dataUrls.length} hoch...</span>`;
                         const stageRes = await fetch('/api/instagram-publish', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: apiHeaders,
                             body: JSON.stringify({ action: 'stage-slide', slide: dataUrls[i], index: i }),
                         });
                         const { payload: stagePayload, rawText: stageRaw } = await parseIgApiResponse(stageRes);
                         if (!stageRes.ok || !stagePayload || stagePayload.ok !== true || !stagePayload.url) {
+                            if (stageRes.status === 401) clearSocialAdminSecret();
                             setPostPublishFeedback(postNum, extractIgApiError(stageRes, stagePayload, stageRaw), true);
                             return;
                         }
@@ -7708,11 +7786,12 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                     btn.innerHTML = '<span>Veröffentliche auf Instagram...</span>';
                     const res = await fetch('/api/instagram-publish', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: apiHeaders,
                         body: JSON.stringify({ mediaUrls: stagedMediaUrls, caption }),
                     });
                     const { payload, rawText } = await parseIgApiResponse(res);
                     if (!res.ok || !payload || payload.ok !== true || !payload.id) {
+                        if (res.status === 401) clearSocialAdminSecret();
                         setPostPublishFeedback(postNum, extractIgApiError(res, payload, rawText), true);
                         return;
                     }

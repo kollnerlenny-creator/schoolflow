@@ -3,6 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -239,11 +240,14 @@ export default defineConfig({
           }
           const hasToken = Boolean(process.env.IG_ACCESS_TOKEN && process.env.IG_ACCESS_TOKEN.trim());
           const hasPublicUrl = Boolean(process.env.IG_PUBLIC_BASE_URL && process.env.IG_PUBLIC_BASE_URL.trim());
+          const hasAdminSecret = Boolean(process.env.SOCIAL_ADMIN_SECRET && process.env.SOCIAL_ADMIN_SECRET.trim());
           res.statusCode = 200;
           res.end(JSON.stringify({
             configured: hasToken,
             blobConfigured: true,
             publicBaseUrlConfigured: hasPublicUrl,
+            requiresAdminSecret: hasAdminSecret,
+            adminSecretConfigured: hasAdminSecret,
             runtime: 'dev',
             accountHandle: '@schooly.app',
           }));
@@ -282,6 +286,21 @@ export default defineConfig({
             res.statusCode = 405;
             res.end(JSON.stringify({ error: 'Method not allowed' }));
             return;
+          }
+
+          const adminSecret = (process.env.SOCIAL_ADMIN_SECRET || '').trim();
+          if (adminSecret) {
+            const provided = String(req.headers['x-social-secret'] || '').trim();
+            const bufA = Buffer.from(provided, 'utf8');
+            const bufB = Buffer.from(adminSecret, 'utf8');
+            if (!provided || bufA.length !== bufB.length || !crypto.timingSafeEqual(bufA, bufB)) {
+              res.statusCode = 401;
+              res.end(JSON.stringify({
+                error: 'UNAUTHORIZED',
+                message: 'Falsches oder fehlendes Admin-Passwort (SOCIAL_ADMIN_SECRET).',
+              }));
+              return;
+            }
           }
 
           let igUserId = (process.env.IG_USER_ID || '').trim();
