@@ -65,7 +65,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v53';
+        const CURRENT_BUILD = 'schooly-v55';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -77,7 +77,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v53') {
+                        if (k !== 'schooly-cache-v55') {
                             caches.delete(k);
                         }
                     });
@@ -209,7 +209,7 @@
             --accent-glow-80: rgba(45, 105, 76, 0.75);
         }
 
-        @media (display-mode: standalone) {
+        @media (display-mode: standalone), (display-mode: fullscreen) {
             :root {
                 --nav-bar-height: env(safe-area-inset-bottom, 0px);
             }
@@ -1479,27 +1479,37 @@
         html.dark .bg-\[\#f4ede4\],
         html.dark .bg-\[\#f3ebe3\],
         html.dark .bg-\[\#f6f0e8\]\/95,
-        html.dark .md\:bg-\[\#f6f0e8\]\/95,
         html.dark .bg-\[\#f0e6df\],
-        html.dark .bg-\[\#efe8dc\],
-        html.dark .lg\:bg-\[\#f4ece4\] {
+        html.dark .bg-\[\#efe8dc\] {
             background-color: #222824 !important;
         }
         html.dark .bg-\[\#ede4dc\],
         html.dark .bg-\[\#ede4dc\]\/80,
         html.dark .bg-\[\#eae3d7\],
         html.dark .bg-\[\#ece3d8\]\/75,
-        html.dark .md\:bg-\[\#ece3d8\]\/75,
         html.dark .bg-\[\#ebe4d8\],
         html.dark .bg-\[\#ded5c7\],
         html.dark .bg-\[\#e2dacd\] {
             background-color: #29312c !important;
         }
-        html.dark .lg\:bg-white {
-            background-color: #1a1f1c !important;
+        @media (min-width: 768px) {
+            html.dark .md\:bg-\[\#f6f0e8\]\/95 {
+                background-color: #222824 !important;
+            }
+            html.dark .md\:bg-\[\#ece3d8\]\/75 {
+                background-color: #29312c !important;
+            }
+            html.dark .md\:border-\[\#ded5c7\] {
+                border-color: #2e3731 !important;
+            }
         }
-        html.dark .md\:border-\[\#ded5c7\] {
-            border-color: #2e3731 !important;
+        @media (min-width: 1024px) {
+            html.dark .lg\:bg-\[\#f4ece4\] {
+                background-color: #222824 !important;
+            }
+            html.dark .lg\:bg-white {
+                background-color: #1a1f1c !important;
+            }
         }
         @media (hover: hover) {
             html.dark .md\:hover\:bg-\[\#e2d6c7\]:hover {
@@ -2238,14 +2248,14 @@
                     </div>
                 </div>
                 
-                <!-- Right Actions: Auf Handy unverändert, am Laptop in einer sauberen Sammel-Leiste zusammengefasst -->
-                <div class="flex items-center gap-2 sm:gap-2.5 md:gap-1.5 shrink-0 md:bg-[#f6f0e8]/95 md:border md:border-[#ded5c7] md:rounded-full md:p-1.5 md:shadow-xs">
+                <!-- Right Actions: Schlichte runde Buttons ohne äußeren Kasten -->
+                <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
                     <!-- Admin Panel Button (Für Admin/Entwickler) -->
-                    <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11 md:h-9 md:px-3 md:py-0 shadow-2xs md:shadow-none">
+                    <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11 shadow-2xs">
                         <i data-lucide="key" class="w-4 h-4 shrink-0 text-[#2d694c]"></i>
                         <span class="whitespace-nowrap">Admin 🔑</span>
                     </button>
-                    <button v-if="!isInstalled" @click="triggerInstall" title="App jetzt direkt installieren" class="install-btn relative flex items-center justify-center gap-1.5 h-9 sm:h-10 md:h-9 px-2.5 sm:px-3.5 bg-[#2d694c] hover:bg-[#23533c] rounded-full border border-[#23533c] text-white font-extrabold text-[11px] sm:text-xs transition-all cursor-pointer active:scale-95 shadow-sm">
+                    <button v-if="!isInstalled" @click="triggerInstall" title="App jetzt direkt installieren" class="install-btn relative flex items-center justify-center gap-1.5 h-9 sm:h-10 px-2.5 sm:px-3.5 bg-[#2d694c] hover:bg-[#23533c] rounded-full border border-[#23533c] text-white font-extrabold text-[11px] sm:text-xs transition-all cursor-pointer active:scale-95 shadow-sm">
                         <span class="relative flex h-2 w-2 shrink-0">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffe6b9] opacity-90"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-[#f3c471]"></span>
@@ -2254,13 +2264,13 @@
                         <span class="whitespace-nowrap">Installieren</span>
                     </button>
                     <!-- Dark Mode Toggle Button -->
-                    <button @click="toggleDarkMode" :title="isDarkMode ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'" :aria-label="isDarkMode ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'" class="w-10 h-10 sm:w-11 sm:h-11 md:w-9 md:h-9 rounded-full bg-[#f0e6df] md:bg-[#ece3d8]/75 border border-[#ede3d8] md:border-transparent flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] md:hover:bg-[#e2d6c7] active:scale-95 transition-all cursor-pointer shadow-xs md:shadow-none">
+                    <button @click="toggleDarkMode" :title="isDarkMode ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'" :aria-label="isDarkMode ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
                         <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#f3c471]"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
                         <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                     </button>
-                    <!-- Einstellungen Button (Schlicht & einheitlich ohne Silber-Optik) -->
-                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; tempFederalState = federalState; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 md:w-9 md:h-9 rounded-full bg-[#f0e6df] md:bg-[#ece3d8]/75 border border-[#ede3d8] md:border-transparent flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] md:hover:bg-[#e2d6c7] active:scale-95 transition-all cursor-pointer shadow-xs md:shadow-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 md:w-4.5 md:h-4.5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <!-- Einstellungen Button (Schlicht & einheitlich ohne äußeren Kasten) -->
+                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; tempFederalState = federalState; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
                 </div>
             </header>
@@ -15333,6 +15343,7 @@
 
                 [
                     ['isSubjectModalOpen', isSubjectModalOpen],
+                    ['isSettingsModalOpen', isSettingsModalOpen],
                     ['isGradeModalOpen', isGradeModalOpen],
                     ['isReportCardModalOpen', isReportCardModalOpen],
                     ['isTaskModalOpen', isTaskModalOpen],
@@ -15343,7 +15354,8 @@
                     ['isPdfExportModalOpen', isPdfExportModalOpen],
                     ['isBulkImportOpen', isBulkImportOpen],
                     ['isAvatarModalOpen', isAvatarModalOpen],
-                    ['isInstallGuideModalOpen', isInstallGuideModalOpen]
+                    ['isInstallGuideModalOpen', isInstallGuideModalOpen],
+                    ['isWeeklyRecapOpen', isWeeklyRecapOpen]
                 ].forEach(([key, r]) => {
                     watch(r, (isOpen) => {
                         if (isOpen) {
@@ -15352,6 +15364,171 @@
                         }
                     });
                 });
+
+                // ── IN-APP BACK-NAVIGATION (System-Navigationspfeile / Wisch-Zurück bleibt in der App) ──
+                const navHistoryStack = [];
+                let isRestoringFromHistory = false;
+                let hasSeededRootHistory = false;
+
+                const pushAppHistoryEntry = (prevSnapshot) => {
+                    if (isRestoringFromHistory || typeof window === 'undefined' || !window.history) return;
+                    if (!user.value || isOnboarding.value) return;
+                    try {
+                        if (!hasSeededRootHistory) {
+                            hasSeededRootHistory = true;
+                            window.history.replaceState({ schoolyRoot: true }, '');
+                        }
+                        if (prevSnapshot) {
+                            const last = navHistoryStack[navHistoryStack.length - 1];
+                            if (!last || prevSnapshot.isModal || last.tab !== prevSnapshot.tab || last.plannerTab !== prevSnapshot.plannerTab || last.subjectId !== prevSnapshot.subjectId) {
+                                navHistoryStack.push(prevSnapshot);
+                                if (navHistoryStack.length > 50) navHistoryStack.shift();
+                            }
+                        }
+                        window.history.pushState({ schoolyNav: true, depth: navHistoryStack.length }, '');
+                    } catch (_) {}
+                };
+
+                watch([currentTab, plannerTab], ([newTab, newPlannerTab], [oldTab, oldPlannerTab]) => {
+                    if (newTab === oldTab && newPlannerTab === oldPlannerTab) return;
+                    pushAppHistoryEntry({
+                        tab: oldTab || 'home',
+                        plannerTab: oldPlannerTab || 'upcoming',
+                        subjectId: null
+                    });
+                });
+
+                watch(selectedSubject, (newSub, oldSub) => {
+                    if (newSub && !oldSub) {
+                        pushAppHistoryEntry({
+                            tab: currentTab.value,
+                            plannerTab: plannerTab.value,
+                            subjectId: null
+                        });
+                    }
+                });
+
+                [
+                    isDatePickerOpen,
+                    isInstallGuideModalOpen,
+                    isBulkImportOpen,
+                    isPdfExportModalOpen,
+                    isAvatarModalOpen,
+                    isNotificationsOpen,
+                    isFriendsOpen,
+                    isReportCardModalOpen,
+                    isGradeModalOpen,
+                    isTaskModalOpen,
+                    isSettingsModalOpen,
+                    isSubjectModalOpen,
+                    isAppSettingsModalOpen,
+                    isAdminModalOpen,
+                    isWeeklyRecapOpen
+                ].forEach((modalRef) => {
+                    watch(modalRef, (isOpen, wasOpen) => {
+                        if (isOpen && !wasOpen) {
+                            pushAppHistoryEntry({ isModal: true });
+                        }
+                    });
+                });
+
+                if (typeof window !== 'undefined') {
+                    window.addEventListener('popstate', () => {
+                        if (!user.value || isOnboarding.value) return;
+                        isRestoringFromHistory = true;
+                        const releaseLock = () => setTimeout(() => { isRestoringFromHistory = false; }, 60);
+
+                        // 1. Offene Dropdowns schließen
+                        if (activeCustomDropdown.value || isCalendarStateDropdownOpen.value || isSettingsStateDropdownOpen.value || isSettingsRecapDropdownOpen.value) {
+                            activeCustomDropdown.value = null;
+                            isCalendarStateDropdownOpen.value = false;
+                            isSettingsStateDropdownOpen.value = false;
+                            isSettingsRecapDropdownOpen.value = false;
+                            pushAppHistoryEntry(null);
+                            releaseLock();
+                            return;
+                        }
+
+                        // 2. Oberstes offenes Modal / Sheet schließen
+                        const modalPriority = [
+                            ['isDatePickerOpen', isDatePickerOpen],
+                            ['isInstallGuideModalOpen', isInstallGuideModalOpen],
+                            ['isBulkImportOpen', isBulkImportOpen],
+                            ['isPdfExportModalOpen', isPdfExportModalOpen],
+                            ['isAvatarModalOpen', isAvatarModalOpen],
+                            ['isNotificationsOpen', isNotificationsOpen],
+                            ['isFriendsOpen', isFriendsOpen],
+                            ['isReportCardModalOpen', isReportCardModalOpen],
+                            ['isGradeModalOpen', isGradeModalOpen],
+                            ['isTaskModalOpen', isTaskModalOpen],
+                            ['isSettingsModalOpen', isSettingsModalOpen],
+                            ['isSubjectModalOpen', isSubjectModalOpen],
+                            ['isAppSettingsModalOpen', isAppSettingsModalOpen],
+                            ['isAdminModalOpen', isAdminModalOpen],
+                            ['isWeeklyRecapOpen', isWeeklyRecapOpen]
+                        ];
+                        for (const [mKey, mRef] of modalPriority) {
+                            if (mRef.value) {
+                                // Entferne zugehörigen Modal-Marker aus dem internen Stack
+                                for (let idx = navHistoryStack.length - 1; idx >= 0; idx--) {
+                                    if (navHistoryStack[idx]?.isModal) {
+                                        navHistoryStack.splice(idx, 1);
+                                        break;
+                                    }
+                                }
+                                if (mKey === 'isWeeklyRecapOpen') {
+                                    closeWeeklyRecap();
+                                } else if (mKey === 'isAdminModalOpen') {
+                                    isAdminModalOpen.value = false;
+                                } else {
+                                    closeModal(mKey);
+                                }
+                                releaseLock();
+                                return;
+                            }
+                        }
+
+                        // 3. Fach-Detailansicht schließen & zur vorherigen Ansicht zurückkehren
+                        if (selectedSubject.value) {
+                            for (let idx = navHistoryStack.length - 1; idx >= 0; idx--) {
+                                if (!navHistoryStack[idx]?.isModal) {
+                                    navHistoryStack.splice(idx, 1);
+                                    break;
+                                }
+                            }
+                            closeSubject();
+                            nextTick(() => { refreshIcons(); triggerCharts(); });
+                            releaseLock();
+                            return;
+                        }
+
+                        // 4. Zum vorherigen Tab innerhalb der App zurückkehren
+                        while (navHistoryStack.length > 0 && navHistoryStack[navHistoryStack.length - 1]?.isModal) {
+                            navHistoryStack.pop();
+                        }
+                        if (navHistoryStack.length > 0) {
+                            const prev = navHistoryStack.pop();
+                            if (prev && prev.tab) currentTab.value = prev.tab;
+                            if (prev && prev.plannerTab) plannerTab.value = prev.plannerTab;
+                            scrollToTop();
+                            nextTick(() => { refreshIcons(); triggerCharts(); });
+                            releaseLock();
+                            return;
+                        }
+
+                        // 5. Fallback: Wenn nicht auf Dashboard, immer zuerst zum Dashboard zurückkehren
+                        if (currentTab.value !== 'home') {
+                            currentTab.value = 'home';
+                            scrollToTop();
+                            nextTick(() => { refreshIcons(); triggerCharts(); });
+                            try { window.history.pushState({ schoolyNav: true, depth: 0 }, ''); } catch (_) {}
+                            releaseLock();
+                            return;
+                        }
+
+                        releaseLock();
+                    });
+                }
 
                 return {
                     isAdmin, isAdminModalOpen, adminInviteCodes, newAdminInviteCode, adminInviteLoading, adminInviteMsg, openAdminModal, fetchInviteCodes, createInviteCode, deleteInviteCode, toggleInviteCodeStatus, copyCodeToClipboard,

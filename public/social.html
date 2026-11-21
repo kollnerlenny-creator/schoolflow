@@ -761,7 +761,7 @@
                         <span class="text-xs font-extrabold text-[#1f1b16]">@schooly.app · 1-Klick Export &amp; Publish</span>
                     </div>
                     <p id="igPublishStatusDesc" class="text-xs text-[#6e665e] leading-relaxed">
-                        Jeder Beitrag (#1–#19) besitzt jetzt einen <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong>-Button: Slides werden in 4K gerendert, die Caption automatisch kopiert und per Teilen-Menü oder direkt über die Meta Graph API (sobald <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_USER_ID</code>, <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> &amp; <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_PUBLIC_BASE_URL</code> in den Server-Secrets hinterlegt sind) veröffentlicht.
+                        Jeder Beitrag (#1–#20) besitzt jetzt einen <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong>-Button: Slides werden in 4K gerendert, die Caption automatisch kopiert und per Teilen-Menü oder direkt über die Meta Graph API (sobald <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> &amp; eine öffentlich ohne Login erreichbare <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_PUBLIC_BASE_URL</code> in den Server-Secrets hinterlegt sind) veröffentlicht.
                     </p>
                 </div>
                 <button onclick="refreshInstagramPublishStatus(this)" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#faf7f2] hover:bg-[#f4ece4] border border-[#e5dcd0] text-xs font-bold text-[#1f1b16] transition-colors cursor-pointer shrink-0 whitespace-nowrap">
@@ -5781,10 +5781,10 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                <!-- Slide 1: Cover (Editorial Sage + Angled Dark-Mode iPhone UI Showcase) -->
+                <!-- Slide 1: Cover (1:1 Real Dark Mode Mobile Dashboard inside Angled iPhone) -->
                 <div class="flex flex-col items-center gap-3">
                     <div class="ig-slide-viewport">
-                        <div class="ig-canvas ig-canvas-espresso relative px-10 pt-[54px] pb-0" data-post="20" data-filename="schooly_beitrag20_slide1_cover.png">
+                        <div class="ig-canvas ig-canvas-espresso relative px-10 pt-[52px] pb-0" data-post="20" data-filename="schooly_beitrag20_slide1_cover.png">
                             <div class="pointer-events-none absolute right-[-50px] bottom-[-40px] w-[440px] h-[440px] rounded-full studio-halo-sage"></div>
 
                             <div class="flex items-center justify-between gap-3 relative z-10">
@@ -5796,7 +5796,7 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                                 Drei neue Upgrades.<br>Jetzt live in schooly.
                             </h3>
 
-                            <!-- Angled iPhone Showcase showing live Dark Mode + Ferien + Wunsch-Abi UI -->
+                            <!-- Angled 3D Titanium iPhone Showcase: Real Dark Mode Mobile Dashboard Screenshot -->
                             <div class="relative flex-1 flex items-end justify-end pt-3 z-10">
                                 <div class="mr-[-14px]">
                                     <div class="iphone-stage" style="--ps: 0.9643; transform: rotate(-4deg); margin-bottom: -148px;">
@@ -5807,37 +5807,9 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                                             <div class="iphone-btn-right"></div>
                                             <div class="iphone-bezel">
                                                 <div class="iphone-island"><div class="iphone-lens"></div></div>
-                                                <div class="iphone-screen" style="background: linear-gradient(180deg, #161b18 0%, #111412 100%); padding: 44px 16px 24px; display: flex; flex-direction: column; gap: 10px;">
-                                                    <!-- Mini Dark Header inside iPhone -->
-                                                    <div style="display:flex; align-items:center; justify-content:space-between;">
-                                                        <img src="/assets/schooly_logo_light.png" alt="" style="height: 18px; width: auto; display: block;" />
-                                                        <div style="display:flex; gap:5px; background:#222824; border:1px solid #2e3731; padding:3px; border-radius:999px;">
-                                                            <span style="width:18px; height:18px; border-radius:999px; background:#2d694c; display:flex; align-items:center; justify-content:center; color:#f3c471; font-size:10px; font-weight:900;">☀</span>
-                                                            <span style="width:18px; height:18px; border-radius:999px; background:#29312c; display:block;"></span>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Mini Dark Hero Card -->
-                                                    <div style="background:#1a1f1c; border:1px solid #2e3731; border-radius:18px; padding:12px 13px;">
-                                                        <div style="font-size:9px; font-weight:800; color:#5ec28f; letter-spacing:0.06em;">DARK MODE AKTIV</div>
-                                                        <div style="display:flex; align-items:baseline; justify-content:space-between; margin-top:4px;">
-                                                            <span style="font-size:24px; font-weight:900; color:#f2efe9; font-family:'Epilogue',sans-serif;">12,4 Pkt</span>
-                                                            <span style="font-size:10px; font-weight:800; color:#f3c471; background:rgba(243,196,113,0.14); padding:3px 7px; border-radius:999px;">Ziel 1,5</span>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Mini Calendar Holiday Pill Card -->
-                                                    <div style="background:#1a1f1c; border:1px solid #2e3731; border-radius:16px; padding:11px 13px;">
-                                                        <div style="font-size:9px; font-weight:800; color:#5eead4;">KALENDER · SACHSEN</div>
-                                                        <div style="font-size:12px; font-weight:800; color:#f2efe9; margin-top:3px;">Herbstferien &amp; Feiertage</div>
-                                                        <div style="display:flex; gap:6px; margin-top:6px;">
-                                                            <span style="font-size:9px; font-weight:800; color:#ddd6fe; background:rgba(124,58,237,0.28); padding:3px 7px; border-radius:7px;">Feiertag</span>
-                                                            <span style="font-size:9px; font-weight:800; color:#5eead4; background:rgba(13,148,136,0.28); padding:3px 7px; border-radius:7px;">Schulferien</span>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Mini Abitur Back-Calc Card -->
-                                                    <div style="background:#1a1f1c; border:1px solid #2e3731; border-radius:16px; padding:11px 13px;">
-                                                        <div style="font-size:9px; font-weight:800; color:#f3c471;">WUNSCH-ABITUR 1,5</div>
-                                                        <div style="font-size:12px; font-weight:800; color:#f2efe9; margin-top:3px;">Noch 11,4 Pkt. im Schnitt</div>
-                                                    </div>
+                                                <div class="iphone-screen">
+                                                    <div class="iphone-glass"></div>
+                                                    <img src="/assets/screenshot_dashboard_dark_mobile.png" alt="schooly Dark Mode Dashboard Screenshot" class="screenshot-img" />
                                                 </div>
                                             </div>
                                         </div>
@@ -5854,154 +5826,181 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                     <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 1 als 4K PNG</button>
                 </div>
 
-                <!-- Slide 2: Feature 1 – Dark Mode (Crisp Full-Height Day vs Night Architecture) -->
+                <!-- Slide 2: Feature 1 – Real Light Screenshot vs. Real Dark Screenshot Side-by-Side -->
                 <div class="flex flex-col items-center gap-3">
                     <div class="ig-slide-viewport">
-                        <div class="ig-canvas ig-canvas-white relative px-9 py-9" data-post="20" data-filename="schooly_beitrag20_slide2_darkmode.png">
-                            <div class="space-y-2.5">
+                        <div class="ig-canvas ig-canvas-white relative px-8 pt-9 pb-0" data-post="20" data-filename="schooly_beitrag20_slide2_darkmode.png">
+                            <div class="space-y-2 relative z-10">
                                 <div class="flex items-center justify-between text-[13px] font-extrabold text-[#2d694c]">
                                     <span>01 · DARK MODE</span>
                                     <span class="tabular-nums">02 / 04</span>
                                 </div>
                                 <h4 class="text-[28px] font-black font-epilogue text-[#1f1b16] leading-[1.06]" style="text-wrap: balance;">
-                                    Tiefes Anthrazit. Sanft für deine Augen.
+                                    Warm Cream am Tag. Anthrazit am Abend.
                                 </h4>
+                                <p class="text-[13px] font-semibold text-[#6E665E] leading-snug">
+                                    Direkt oben im Dashboard mit einem Klick umschaltbar.
+                                </p>
                             </div>
 
-                            <!-- Layered Day -> Night Split Cards filling vertical space harmoniously -->
-                            <div class="flex-1 flex flex-col justify-center gap-3.5 py-2">
-                                <!-- Light Mode Card -->
-                                <div class="rounded-3xl bg-[#faf7f2] border border-[#e5dcd0] p-5 space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[11.5px] font-extrabold text-[#6E665E] tracking-wide">TAGSÜBER · WARM CREAM</span>
-                                        <span class="px-2.5 py-0.5 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[10.5px] font-black">Hell</span>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-2.5">
-                                        <div class="rounded-2xl bg-white border border-[#ede3d8] px-3.5 py-2.5 flex items-center justify-between">
-                                            <span class="text-[12.5px] font-extrabold text-[#1f1b16]">Mathe LK</span>
-                                            <span class="text-[13px] font-black text-[#2d694c] tabular-nums">13,0</span>
-                                        </div>
-                                        <div class="rounded-2xl bg-white border border-[#ede3d8] px-3.5 py-2.5 flex items-center justify-between">
-                                            <span class="text-[12.5px] font-extrabold text-[#1f1b16]">Deutsch</span>
-                                            <span class="text-[13px] font-black text-[#2d694c] tabular-nums">12,5</span>
+                            <!-- Dual 3D Titanium Smartphone Comparison (Light vs Dark real app screenshots) -->
+                            <div class="flex-1 flex items-end justify-center gap-3.5 pt-4 relative z-10" style="margin-bottom: -78px;">
+                                <!-- Left Phone: Real Light Mode Screenshot -->
+                                <div class="iphone-stage" style="--ps: 0.70; transform: rotate(-2.5deg);">
+                                    <div class="iphone-chassis">
+                                        <div class="iphone-btn-left-1"></div>
+                                        <div class="iphone-btn-left-2"></div>
+                                        <div class="iphone-btn-left-3"></div>
+                                        <div class="iphone-btn-right"></div>
+                                        <div class="iphone-bezel">
+                                            <div class="iphone-island"><div class="iphone-lens"></div></div>
+                                            <div class="iphone-screen">
+                                                <div class="iphone-glass"></div>
+                                                <img src="/assets/screenshot_dashboard_mobile.png" alt="schooly Light Mode Screenshot" class="screenshot-img" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- 1-Tap Switch Pill Connector -->
-                                <div class="flex items-center justify-center">
-                                    <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#2d694c] text-white text-[12px] font-extrabold shadow-[0_12px_24px_rgba(45,105,76,0.28)]">
-                                        <span>1-Tap oben rechts umschaltbar</span>
-                                        <span class="w-2 h-2 rounded-full bg-[#f3c471]"></span>
-                                    </div>
-                                </div>
-
-                                <!-- Dark Mode Card -->
-                                <div class="rounded-3xl bg-[#141815] border border-[#2e3731] p-5 space-y-3 text-white">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[11.5px] font-extrabold text-[#5ec28f] tracking-wide">ABENDS · ANTHRAZIT &amp; WALDGRÜN</span>
-                                        <span class="px-2.5 py-0.5 rounded-full bg-[#2d694c] text-white text-[10.5px] font-black">Dunkel</span>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-2.5">
-                                        <div class="rounded-2xl bg-[#1e2521] border border-[#2e3731] px-3.5 py-2.5 flex items-center justify-between">
-                                            <span class="text-[12.5px] font-extrabold text-[#f2efe9]">Mathe LK</span>
-                                            <span class="text-[13px] font-black text-[#5ec28f] tabular-nums">13,0</span>
-                                        </div>
-                                        <div class="rounded-2xl bg-[#1e2521] border border-[#2e3731] px-3.5 py-2.5 flex items-center justify-between">
-                                            <span class="text-[12.5px] font-extrabold text-[#f2efe9]">Deutsch</span>
-                                            <span class="text-[13px] font-black text-[#5ec28f] tabular-nums">12,5</span>
+                                <!-- Right Phone: Real Dark Mode Screenshot -->
+                                <div class="iphone-stage" style="--ps: 0.70; transform: rotate(2.5deg);">
+                                    <div class="iphone-chassis">
+                                        <div class="iphone-btn-left-1"></div>
+                                        <div class="iphone-btn-left-2"></div>
+                                        <div class="iphone-btn-left-3"></div>
+                                        <div class="iphone-btn-right"></div>
+                                        <div class="iphone-bezel">
+                                            <div class="iphone-island"><div class="iphone-lens"></div></div>
+                                            <div class="iphone-screen">
+                                                <div class="iphone-glass"></div>
+                                                <img src="/assets/screenshot_dashboard_dark_mobile.png" alt="schooly Dark Mode Screenshot" class="screenshot-img" />
+                                            </div>
                                         </div>
                                     </div>
-                                    <p class="text-[12.5px] font-semibold text-white/75 leading-snug pt-0.5">
-                                        Kalender, Noten, Modals &amp; Charts passen sich nahtlos an — synchron auf allen Geräten.
-                                    </p>
                                 </div>
                             </div>
 
-                            <div class="pt-3.5 border-t border-[#e5dcd0] flex items-center justify-between text-[13px] font-extrabold text-[#1f1b16]">
-                                <span>Angenehm beim Lernen am Abend</span>
-                                <span class="text-[#2d694c]">@schooly.app</span>
+                            <div class="ig-fg-layer absolute left-8 bottom-[20px] bg-[#1f1b16] text-white rounded-2xl px-4 py-2.5 z-20 flex items-center gap-2.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#f3c471]"></span>
+                                <span class="text-[12px] font-extrabold">Echte App-Ansicht · Hell &amp; Dunkel</span>
                             </div>
                         </div>
                     </div>
                     <button onclick="downloadSingleSlide(this)" class="text-xs font-bold text-[#2d694c] hover:underline cursor-pointer">Slide 2 als 4K PNG</button>
                 </div>
 
-                <!-- Slide 3: Feature 2 & 3 – Ferien/Feiertage + Wunschschnitt rückwärts -->
+                <!-- Slide 3: Feature 2 & 3 – Exact Real Calendar Holiday Card + Exact Real Wunschschnitt-Rechner -->
                 <div class="flex flex-col items-center gap-3">
                     <div class="ig-slide-viewport">
-                        <div class="ig-canvas ig-canvas-warm relative px-9 py-9" data-post="20" data-filename="schooly_beitrag20_slide3_ferien_abi.png">
+                        <div class="ig-canvas ig-canvas-warm relative px-8 py-8" data-post="20" data-filename="schooly_beitrag20_slide3_ferien_abi.png">
                             <div class="pointer-events-none absolute right-[-60px] bottom-[-40px] w-[380px] h-[380px] rounded-full studio-halo-sage"></div>
 
-                            <div class="space-y-2.5 relative z-10">
+                            <div class="space-y-2 relative z-10">
                                 <div class="flex items-center justify-between text-[13px] font-extrabold text-[#2d694c]">
-                                    <span>02 &amp; 03 · KALENDER &amp; ABITUR</span>
+                                    <span>02 &amp; 03 · KALENDER &amp; ABI</span>
                                     <span class="tabular-nums">03 / 04</span>
                                 </div>
-                                <h4 class="text-[27px] font-black font-epilogue text-[#1f1b16] leading-[1.06]" style="text-wrap: balance;">
+                                <h4 class="text-[26px] font-black font-epilogue text-[#1f1b16] leading-[1.06]" style="text-wrap: balance;">
                                     Ferien automatisch. Wunsch-Abi rückwärts.
                                 </h4>
                             </div>
 
-                            <div class="flex-1 flex flex-col justify-center gap-4 py-2 relative z-10">
-                                <!-- Feature 2 Card: Ferien & Feiertage mit Mini-Wochenleiste -->
-                                <div class="bg-white border border-[#e5dcd0] rounded-3xl p-5 space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[11px] font-extrabold text-[#2d694c] tracking-wide">02 · 16 BUNDESLÄNDER</span>
-                                        <span class="px-2.5 py-0.5 rounded-full bg-[#e7f3de] text-[#2d694c] text-[10.5px] font-black">Sachsen (SN)</span>
-                                    </div>
-                                    <div class="text-[16px] font-black font-epilogue text-[#1f1b16]">Ferien &amp; Feiertage im Kalender</div>
-                                    <!-- Visual Mini-Calendar Strip -->
-                                    <div class="grid grid-cols-5 gap-1.5 text-center">
-                                        <div class="rounded-xl bg-[#faf7f2] border border-[#ede3d8] py-2">
-                                            <div class="text-[9.5px] font-bold text-[#857e72]">MO</div>
-                                            <div class="text-[13px] font-black text-[#1f1b16]">29</div>
+                            <div class="flex-1 flex flex-col justify-center gap-3.5 py-2 relative z-10">
+                                <!-- Feature 2 Card: Exact Real Kalender UI from index.html -->
+                                <div class="bg-white border border-[#ede3d8] rounded-[24px] p-4 space-y-2.5">
+                                    <!-- Exact Calendar Header Bar -->
+                                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[14px] font-black font-epilogue text-[#1f1b16]">Oktober 2026</span>
                                         </div>
-                                        <div class="rounded-xl bg-[#faf7f2] border border-[#ede3d8] py-2">
-                                            <div class="text-[9.5px] font-bold text-[#857e72]">DI</div>
-                                            <div class="text-[13px] font-black text-[#1f1b16]">30</div>
-                                        </div>
-                                        <div class="rounded-xl bg-[#f5f3ff] border border-[#c4b5fd] py-2">
-                                            <div class="text-[9.5px] font-black text-[#6d28d9]">MI</div>
-                                            <div class="text-[13px] font-black text-[#5b21b6]">31</div>
-                                        </div>
-                                        <div class="rounded-xl bg-[#f0fdfa] border border-[#5eead4] py-2">
-                                            <div class="text-[9.5px] font-black text-[#0f766e]">DO</div>
-                                            <div class="text-[13px] font-black text-[#115e59]">01</div>
-                                        </div>
-                                        <div class="rounded-xl bg-[#f0fdfa] border border-[#5eead4] py-2">
-                                            <div class="text-[9.5px] font-black text-[#0f766e]">FR</div>
-                                            <div class="text-[13px] font-black text-[#115e59]">02</div>
+                                        <div class="flex items-center gap-1.5">
+                                            <div class="bg-[#ede4dc] p-0.5 rounded-full inline-flex text-[9px] font-black">
+                                                <span class="bg-[#2d694c] text-white px-2 py-0.5 rounded-full">MONAT</span>
+                                                <span class="text-[#6E665E] px-2 py-0.5">WOCHE</span>
+                                            </div>
+                                            <span class="bg-[#f4ece4] border border-[#ded5c7] text-[#1f1b16] rounded-full px-2.5 py-0.5 text-[9.5px] font-bold inline-flex items-center gap-1">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-[#2d694c]"></span>
+                                                <span>Sachsen</span>
+                                            </span>
                                         </div>
                                     </div>
-                                    <p class="text-[12px] font-semibold text-[#6E665E]">Einmal Bundesland wählen — Monat &amp; Woche automatisch markiert.</p>
+                                    <!-- Exact Weekday Header Row -->
+                                    <div class="grid grid-cols-7 gap-1 text-center text-[9px] font-bold">
+                                        <span class="text-[#6E665E]">MO</span><span class="text-[#6E665E]">DI</span><span class="text-[#6E665E]">MI</span><span class="text-[#6E665E]">DO</span><span class="text-[#6E665E]">FR</span><span class="text-[#b45309]">SA</span><span class="text-[#b45309]">SO</span>
+                                    </div>
+                                    <!-- Exact Month Grid Week Row (cal-cell-vacation & cal-cell-holiday) -->
+                                    <div class="grid grid-cols-7 gap-1">
+                                        <div class="rounded-xl p-1 min-h-[54px] border bg-white border-[#f0e8df] flex flex-col justify-between">
+                                            <span class="text-[10px] font-semibold text-[#1f1b16]">26</span>
+                                        </div>
+                                        <div class="rounded-xl p-1 min-h-[54px] border bg-white border-[#f0e8df] flex flex-col justify-between">
+                                            <span class="text-[10px] font-semibold text-[#1f1b16]">27</span>
+                                        </div>
+                                        <div class="rounded-xl p-1 min-h-[54px] border bg-[#f0fdfa] border-[#99f6e4] flex flex-col justify-between">
+                                            <div class="flex items-center justify-between"><span class="text-[10px] font-bold text-[#1f1b16]">28</span><span class="w-1.5 h-1.5 rounded-full bg-[#0d9488]"></span></div>
+                                            <span class="text-[7px] font-extrabold px-1 py-0.5 rounded bg-[#ccfbf1] text-[#115e59] border border-[#99f6e4] truncate">Herbstfer.</span>
+                                        </div>
+                                        <div class="rounded-xl p-1 min-h-[54px] border bg-[#f0fdfa] border-[#99f6e4] flex flex-col justify-between">
+                                            <div class="flex items-center justify-between"><span class="text-[10px] font-bold text-[#1f1b16]">29</span><span class="w-1.5 h-1.5 rounded-full bg-[#0d9488]"></span></div>
+                                            <span class="text-[7px] font-extrabold px-1 py-0.5 rounded bg-[#ccfbf1] text-[#115e59] border border-[#99f6e4] truncate">Herbstfer.</span>
+                                        </div>
+                                        <div class="rounded-xl p-1 min-h-[54px] border bg-[#f0fdfa] border-[#99f6e4] flex flex-col justify-between">
+                                            <div class="flex items-center justify-between"><span class="text-[10px] font-bold text-[#1f1b16]">30</span><span class="w-1.5 h-1.5 rounded-full bg-[#0d9488]"></span></div>
+                                            <span class="text-[7px] font-extrabold px-1 py-0.5 rounded bg-[#ccfbf1] text-[#115e59] border border-[#99f6e4] truncate">Herbstfer.</span>
+                                        </div>
+                                        <div class="rounded-xl p-1 min-h-[54px] border bg-[#f5f3ff] border-[#ddd6fe] ring-1 ring-[#2d694c] flex flex-col justify-between">
+                                            <div class="flex items-center justify-between"><span class="w-4 h-4 rounded-full bg-[#2d694c] text-white text-[9px] font-black flex items-center justify-center">31</span><span class="w-1.5 h-1.5 rounded-full bg-[#7c3aed]"></span></div>
+                                            <span class="text-[7px] font-extrabold px-1 py-0.5 rounded bg-[#ede9fe] text-[#5b21b6] border border-[#ddd6fe] truncate">Reforma.</span>
+                                        </div>
+                                        <div class="rounded-xl p-1 min-h-[54px] border bg-white border-[#f0e8df] flex flex-col justify-between">
+                                            <span class="text-[10px] font-semibold text-[#1f1b16]">1</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Feature 3 Card: Wunschschnitt rückwärts -->
-                                <div class="bg-[#1f1b16] rounded-3xl p-5 space-y-3 text-white">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[11px] font-extrabold text-[#f3c471] tracking-wide">03 · ABITUR RÜCKWÄRTS</span>
-                                        <span class="px-2.5 py-0.5 rounded-full bg-[#2d694c] text-white text-[11px] font-black tabular-nums">− &nbsp;1,5&nbsp; +</span>
+                                <!-- Feature 3 Card: Exact Real Wunschschnitt-Rechner from index.html -->
+                                <div class="bg-white border border-[#ede3d8] rounded-[24px] p-4 space-y-2.5">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-1.5">
+                                            <div class="w-6 h-6 rounded-lg bg-[#2d694c]/12 text-[#2d694c] flex items-center justify-center shrink-0">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                            </div>
+                                            <span class="text-[13.5px] font-black font-epilogue text-[#1f1b16]">Wunschschnitt-Rechner</span>
+                                            <span class="px-2 py-0.5 rounded-full bg-[#fed8b1] text-[#825500] text-[9px] font-black">Machbar</span>
+                                        </div>
+                                        <div class="inline-flex items-center gap-1 bg-[#f4ece4] border border-[#ded5c7] rounded-full p-0.5">
+                                            <span class="w-5 h-5 rounded-full bg-white text-[#1f1b16] text-[11px] font-black flex items-center justify-center">−</span>
+                                            <span class="px-1.5 text-[12px] font-black text-[#1f1b16] tabular-nums">1,5</span>
+                                            <span class="w-5 h-5 rounded-full bg-white text-[#1f1b16] text-[11px] font-black flex items-center justify-center">+</span>
+                                        </div>
                                     </div>
-                                    <div class="text-[16px] font-black font-epilogue text-white">Wie viele Punkte brauchst du noch?</div>
+                                    <!-- Exact Preset Pills -->
+                                    <div class="flex items-center gap-1">
+                                        <span class="px-2 py-0.5 rounded-full bg-[#faf7f2] border border-[#ede3d8] text-[#524d44] text-[10px] font-bold">1,0</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-[#faf7f2] border border-[#ede3d8] text-[#524d44] text-[10px] font-bold">1,3</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-[#2d694c] text-white text-[10px] font-black">1,5</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-[#faf7f2] border border-[#ede3d8] text-[#524d44] text-[10px] font-bold">2,0</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-[#faf7f2] border border-[#ede3d8] text-[#524d44] text-[10px] font-bold">2,5</span>
+                                    </div>
+                                    <!-- Exact 3 KPI Auswertungen -->
                                     <div class="grid grid-cols-3 gap-2 tabular-nums">
-                                        <div class="rounded-2xl bg-white/10 border border-white/12 p-2.5">
-                                            <div class="text-[9.5px] font-bold text-white/65">KOMBINIERT</div>
-                                            <div class="text-[15px] font-black text-[#5ec28f]">11,4 P.</div>
+                                        <div class="bg-[#faf7f2] border border-[#ede3d8] rounded-2xl p-2.5">
+                                            <div class="text-[8px] font-black text-[#6E665E] uppercase">KOMBINIERTER Ø</div>
+                                            <div class="text-[15px] font-black font-epilogue text-[#2d694c] mt-0.5">11,4 Pkt.</div>
                                         </div>
-                                        <div class="rounded-2xl bg-white/10 border border-white/12 p-2.5">
-                                            <div class="text-[9.5px] font-bold text-white/65">OFFENE HJ</div>
-                                            <div class="text-[15px] font-black text-white">11,6 P.</div>
+                                        <div class="bg-[#faf7f2] border border-[#ede3d8] rounded-2xl p-2.5">
+                                            <div class="text-[8px] font-black text-[#6E665E] uppercase">PRO OFFENEM HJ</div>
+                                            <div class="text-[15px] font-black font-epilogue text-[#1f1b16] mt-0.5">11,6 Pkt.</div>
                                         </div>
-                                        <div class="rounded-2xl bg-white/10 border border-white/12 p-2.5">
-                                            <div class="text-[9.5px] font-bold text-white/65">5 PRÜFUNGEN</div>
-                                            <div class="text-[15px] font-black text-white">11,0 P.</div>
+                                        <div class="bg-[#faf7f2] border border-[#ede3d8] rounded-2xl p-2.5">
+                                            <div class="text-[8px] font-black text-[#6E665E] uppercase">5 PRÜFUNGEN</div>
+                                            <div class="text-[15px] font-black font-epilogue text-[#1f1b16] mt-0.5">11,0 Pkt.</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="pt-3.5 border-t border-[#e5dcd0] flex items-center justify-between text-[13px] font-extrabold text-[#1f1b16] relative z-10">
+                            <div class="pt-3 border-t border-[#e5dcd0] flex items-center justify-between text-[13px] font-extrabold text-[#1f1b16] relative z-10">
                                 <span>Mit 1 Klick als Prognose testen</span>
                                 <span class="text-[#2d694c]">@schooly.app</span>
                             </div>
@@ -6608,7 +6607,21 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             traceProjectedPath(ctx, scrPoly);
             ctx.clip();
 
-            ctx.fillStyle = '#faf7f2';
+            let screenBaseFill = '#faf7f2';
+            if (imgEl && imgEl.naturalWidth) {
+                try {
+                    const scv = document.createElement('canvas');
+                    scv.width = 1;
+                    scv.height = 1;
+                    const sctx = scv.getContext('2d');
+                    sctx.drawImage(imgEl, 2, 2, 1, 1, 0, 0, 1, 1);
+                    const px = sctx.getImageData(0, 0, 1, 1).data;
+                    if (px && px[3] > 200) {
+                        screenBaseFill = `rgb(${px[0]}, ${px[1]}, ${px[2]})`;
+                    }
+                } catch (_) {}
+            }
+            ctx.fillStyle = screenBaseFill;
             const fTL = proj(-scrW / 2, -scrH / 2, D / 2);
             const fBR = proj(scrW / 2, scrH / 2, D / 2);
             ctx.fillRect(fTL.px - 20 * sc, fTL.py - 20 * sc, (fBR.px - fTL.px) + 40 * sc, (fBR.py - fTL.py) + 40 * sc);
@@ -6634,11 +6647,13 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                     const dx = pTop0.px;
                     const dw = Math.max(0.5, (pTop1.px - pTop0.px) + 0.6);
                     const totalColH = pBotMid.py - pTopMid.py;
-                    const dy = pTopMid.py + totalColH * topSafeFrac;
-                    const dh = totalColH * (1 - topSafeFrac);
+                    const safeH = totalColH * topSafeFrac;
+                    const dy = pTopMid.py + safeH;
+                    const dh = totalColH - safeH;
 
                     const sx = u0 * imgEl.naturalWidth;
                     const sw = Math.max(1, (u1 - u0) * imgEl.naturalWidth);
+                    ctx.drawImage(imgEl, sx, 0, sw, Math.min(6, imgEl.naturalHeight), dx, pTopMid.py - 1, dw, safeH + 2);
                     ctx.drawImage(imgEl, sx, 0, sw, imgEl.naturalHeight, dx, dy, dw, dh);
                 }
             }
@@ -7125,7 +7140,7 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
         const IG_EXPORT_SCALE = 4; // 540x675 * 4 = 2160x2700 (4K 4:5 Instagram PNG)
 
         // Exports an ig-canvas (4:5 -> 2160x2700) or ig-story-canvas (9:16 -> 2160x3840) at full 4K with 3D studio backdrops, 3D MacBooks & Titanium phones
-        async function renderIgSlidePng(canvasEl) {
+        async function renderIgSlidePng(canvasEl, options = {}) {
             if (document.fonts && document.fonts.ready) {
                 await document.fonts.ready;
             }
@@ -7438,6 +7453,10 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
                     }
                 }
 
+                if (options && options.forInstagramApi) {
+                    return finalCanvas.toDataURL('image/jpeg', 0.92);
+                }
+
                 return finalCanvas.toDataURL('image/png');
             } finally {
                 stage.remove();
@@ -7543,8 +7562,11 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             if (btn) btn.disabled = true;
             try {
                 const res = await fetch('/api/instagram-status');
-                if (res.ok) {
+                const ct = (res.headers.get('content-type') || '').toLowerCase();
+                if (res.ok && ct.includes('application/json')) {
                     igApiStatus = await res.json();
+                } else {
+                    igApiStatus = { configured: false, publicBaseUrlConfigured: false, accountHandle: '@schooly.app' };
                 }
             } catch (_) {
                 igApiStatus = { configured: false, publicBaseUrlConfigured: false, accountHandle: '@schooly.app' };
@@ -7553,16 +7575,23 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             }
 
             if (badge && badgeText && desc) {
-                if (igApiStatus.configured) {
+                const isPrivatePreviewHost = /^ais-dev-/.test(window.location.hostname || '');
+                if (igApiStatus.runtime === 'vercel' && igApiStatus.configured && !igApiStatus.blobConfigured) {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[11px] font-extrabold';
+                    badgeText.textContent = 'Token aktiv — Vercel Blob (Storage) fehlt noch';
+                    desc.innerHTML = 'Dein <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> ist auf Vercel aktiv. Damit Instagram die 4K-Slides abrufen kann, verknüpfe einmalig unter <strong class="text-[#1f1b16]">Vercel → Storage → Create Database → Blob</strong> einen Blob Store (setzt <code class="px-1 py-0.5 bg-[#faf7f2] rounded">BLOB_READ_WRITE_TOKEN</code>) und deploye neu.';
+                } else if (igApiStatus.configured && (igApiStatus.blobConfigured || igApiStatus.publicBaseUrlConfigured || !isPrivatePreviewHost)) {
                     badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e7f3de] text-[#2d694c] text-[11px] font-extrabold';
-                    badgeText.textContent = igApiStatus.publicBaseUrlConfigured
-                        ? 'Meta Graph API aktiv — Direkt-Posten bereit'
-                        : 'Meta Graph API Token aktiv (HTTPS-URL prüfen)';
-                    desc.innerHTML = 'Die Verbindung zu <strong class="text-[#1f1b16]">@schooly.app</strong> über die Meta Graph API ist aktiv. Ein Klick auf <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong> rendert alle 4K-Slides und veröffentlicht den Beitrag inkl. Caption direkt auf Instagram.';
+                    badgeText.textContent = 'Meta Graph API aktiv — Direkt-Posten bereit';
+                    desc.innerHTML = 'Die Verbindung zu <strong class="text-[#1f1b16]">@schooly.app</strong> über die Meta Graph API ist aktiv. Ein Klick auf <strong class="text-[#1f1b16]">„Direkt auf Instagram posten“</strong> rendert alle 4K-Slides (als JPEG für die Instagram-API) und veröffentlicht den Beitrag inkl. Caption direkt.';
+                } else if (igApiStatus.configured) {
+                    badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[11px] font-extrabold';
+                    badgeText.textContent = 'Token aktiv — öffentliche URL / Vercel nötig';
+                    desc.innerHTML = 'Dein <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> ist aktiv, aber diese Vorschau-URL ist durch den AI-Studio-Login geschützt (Meta kann keine Bilder abrufen). Auf deinem <strong class="text-[#1f1b16]">Vercel-Deployment</strong> mit <strong class="text-[#1f1b16]">Vercel Blob</strong> klappt der 1-Klick-Post direkt, oder hier über <strong class="text-[#1f1b16]">„4K PNGs laden“</strong>.';
                 } else {
                     badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffe6b9] text-[#7a4e00] text-[11px] font-extrabold';
                     badgeText.textContent = '1-Klick Share & Export bereit (Graph API optional)';
-                    desc.innerHTML = 'Mit <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong> bei jedem Beitrag (#1–#20) werden alle 4K-Slides gerendert, die Caption automatisch kopiert und direkt an das Teilen-Menü (Instagram-App) bzw. als Download-Paket übergeben. Für vollautomatisches Direkt-Posten einfach <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_USER_ID</code>, <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> und <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_PUBLIC_BASE_URL</code> in den Secrets hinterlegen.';
+                    desc.innerHTML = 'Mit <strong class="text-[#1f1b16]">„Auf Instagram posten“</strong> bei jedem Beitrag (#1–#20) werden alle 4K-Slides gerendert, die Caption automatisch kopiert und direkt an das Teilen-Menü (Instagram-App) bzw. als Download-Paket übergeben. Für vollautomatisches Direkt-Posten auf Vercel einfach <code class="px-1 py-0.5 bg-[#faf7f2] rounded">IG_ACCESS_TOKEN</code> hinterlegen und <strong class="text-[#1f1b16]">Vercel Blob</strong> verknüpfen.';
                 }
             }
             updatePublishButtonLabels();
@@ -7606,6 +7635,30 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             return new File([arr], filename, { type: 'image/png' });
         }
 
+        async function parseIgApiResponse(res) {
+            const contentType = (res.headers.get('content-type') || '').toLowerCase();
+            const rawText = await res.text().catch(() => '');
+            let payload = null;
+            if (contentType.includes('application/json') || rawText.trim().startsWith('{')) {
+                try {
+                    payload = JSON.parse(rawText);
+                } catch (_) {
+                    payload = null;
+                }
+            }
+            return { payload, rawText };
+        }
+
+        function extractIgApiError(res, payload, rawText) {
+            if (payload && (payload.message || payload.error)) {
+                return payload.message || payload.error;
+            }
+            if (rawText && /__cookie_check|<!doctype html|<html/i.test(rawText)) {
+                return 'Der Server hat statt einer API-Antwort eine HTML-Seite zurückgegeben (Login-Schutz der Vorschau oder fehlendes Server-Backend).';
+            }
+            return `Direkt-Upload über Meta Graph API fehlgeschlagen (HTTP ${res.status}).`;
+        }
+
         async function publishPostToInstagram(postNum, btn) {
             const origHtml = btn.innerHTML;
             btn.disabled = true;
@@ -7624,28 +7677,47 @@ Handschriftlich mit dem Stift auf dem iPad mitschreiben, am Laptop weitertippen 
             try {
                 const dataUrls = [];
                 const filenames = [];
+                const useApiJpeg = Boolean(igApiStatus.configured);
                 for (let i = 0; i < slides.length; i++) {
-                    btn.innerHTML = `<span>Rendere 4K (${i + 1}/${slides.length})...</span>`;
+                    btn.innerHTML = useApiJpeg
+                        ? `<span>Rendere 4K JPEG (${i + 1}/${slides.length})...</span>`
+                        : `<span>Rendere 4K (${i + 1}/${slides.length})...</span>`;
                     const filename = slides[i].getAttribute('data-filename') || `schooly_beitrag${postNum}_slide${i + 1}.png`;
-                    const png = await renderIgSlidePng(slides[i]);
-                    dataUrls.push(png);
+                    const imgData = await renderIgSlidePng(slides[i], { forInstagramApi: useApiJpeg });
+                    dataUrls.push(imgData);
                     filenames.push(filename);
                 }
 
                 if (igApiStatus.configured) {
-                    btn.innerHTML = '<span>Sende an Instagram...</span>';
+                    const stagedMediaUrls = [];
+                    for (let i = 0; i < dataUrls.length; i++) {
+                        btn.innerHTML = `<span>Lade Slide ${i + 1}/${dataUrls.length} hoch...</span>`;
+                        const stageRes = await fetch('/api/instagram-publish', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'stage-slide', slide: dataUrls[i], index: i }),
+                        });
+                        const { payload: stagePayload, rawText: stageRaw } = await parseIgApiResponse(stageRes);
+                        if (!stageRes.ok || !stagePayload || stagePayload.ok !== true || !stagePayload.url) {
+                            setPostPublishFeedback(postNum, extractIgApiError(stageRes, stagePayload, stageRaw), true);
+                            return;
+                        }
+                        stagedMediaUrls.push(stagePayload.url);
+                    }
+
+                    btn.innerHTML = '<span>Veröffentliche auf Instagram...</span>';
                     const res = await fetch('/api/instagram-publish', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ slides: dataUrls, caption }),
+                        body: JSON.stringify({ mediaUrls: stagedMediaUrls, caption }),
                     });
-                    const payload = await res.json().catch(() => ({}));
-                    if (!res.ok) {
-                        setPostPublishFeedback(postNum, payload.message || payload.error || 'Direkt-Upload über Meta Graph API fehlgeschlagen.', true);
-                    } else {
-                        setPostPublishFeedback(postNum, `Beitrag #${postNum} erfolgreich auf @schooly.app veröffentlicht! (Media-ID: ${payload.id})`, false);
+                    const { payload, rawText } = await parseIgApiResponse(res);
+                    if (!res.ok || !payload || payload.ok !== true || !payload.id) {
+                        setPostPublishFeedback(postNum, extractIgApiError(res, payload, rawText), true);
                         return;
                     }
+                    setPostPublishFeedback(postNum, `Beitrag #${postNum} erfolgreich auf @schooly.app veröffentlicht! (Media-ID: ${payload.id})`, false);
+                    return;
                 }
 
                 // 1-Click Native Share (Web Share API for Mobile/iPad/macOS -> Instagram)

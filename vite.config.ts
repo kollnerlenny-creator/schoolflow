@@ -237,29 +237,32 @@ export default defineConfig({
             res.end(JSON.stringify({ error: 'Method not allowed' }));
             return;
           }
-          const hasUserId = Boolean(process.env.IG_USER_ID && process.env.IG_USER_ID.trim());
           const hasToken = Boolean(process.env.IG_ACCESS_TOKEN && process.env.IG_ACCESS_TOKEN.trim());
           const hasPublicUrl = Boolean(process.env.IG_PUBLIC_BASE_URL && process.env.IG_PUBLIC_BASE_URL.trim());
           res.statusCode = 200;
           res.end(JSON.stringify({
-            configured: hasUserId && hasToken,
+            configured: hasToken,
+            blobConfigured: true,
             publicBaseUrlConfigured: hasPublicUrl,
+            runtime: 'dev',
             accountHandle: '@schooly.app',
           }));
         });
 
         server.middlewares.use('/api/ig-temp-media', async (req, res) => {
           const cleanName = (req.url || '').split('?')[0].replace(/^\/+/, '');
-          if (!/^[a-zA-Z0-9_-]+\.png$/.test(cleanName)) {
+          const nameMatch = cleanName.match(/^[a-zA-Z0-9_-]+\.(png|jpe?g)$/);
+          if (!nameMatch) {
             res.statusCode = 400;
             res.end('Invalid media filename');
             return;
           }
           const mediaPath = path.join(os.tmpdir(), 'schooly_ig_media', cleanName);
+          const contentType = nameMatch[1] === 'png' ? 'image/png' : 'image/jpeg';
           try {
             const buf = await fs.readFile(mediaPath);
             res.statusCode = 200;
-            res.setHeader('Content-Type', 'image/png');
+            res.setHeader('Content-Type', contentType);
             res.setHeader('Cache-Control', 'no-store');
             res.setHeader('Content-Length', String(buf.length));
             if (req.method === 'HEAD') {
@@ -281,13 +284,13 @@ export default defineConfig({
             return;
           }
 
-          const igUserId = (process.env.IG_USER_ID || '').trim();
+          let igUserId = (process.env.IG_USER_ID || '').trim();
           const igAccessToken = (process.env.IG_ACCESS_TOKEN || '').trim();
-          if (!igUserId || !igAccessToken) {
+          if (!igAccessToken) {
             res.statusCode = 503;
             res.end(JSON.stringify({
               error: 'IG_NOT_CONFIGURED',
-              message: 'Für automatisches Posten bitte IG_USER_ID und IG_ACCESS_TOKEN (Instagram Business + Meta Graph API) in den Server-Secrets hinterlegen.',
+              message: 'Für automatisches Posten bitte IG_ACCESS_TOKEN (und optional IG_USER_ID) in den Server-Secrets hinterlegen.',
             }));
             return;
           }
@@ -306,7 +309,7 @@ export default defineConfig({
             rawBody += str;
           }
 
-          let body: { slides?: string[]; caption?: string } = {};
+          let body: { action?: string; slide?: string; index?: number; mediaUrls?: string[]; slides?: string[]; caption?: string } = {};
           try {
             body = rawBody ? JSON.parse(rawBody) : {};
           } catch {
@@ -315,62 +318,180 @@ export default defineConfig({
             return;
           }
 
+          const forwardedProto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
+          const hostHeader = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+          const explicitPublicUrl = (process.env.IG_PUBLIC_BASE_URL || '').trim().replace(/\/+$/, '');
+          const publicBaseUrl = explicitPublicUrl || (hostHeader ? `${forwardedProto}://${hostHeader}` : '');
+
+          const mediaDir = path.join(os.tmpdir(), 'schooly_ig_media');
+          await fs.mkdir(mediaDir, { recursive: true });
+
+          const verifyPublicReachable = async (testUrl: string, tempFileToDeleteOnFail?: string) => {
+            try {
+              const probeRes = await fetch(testUrl, {
+                method: 'HEAD',
+                redirect: 'manual',
+                signal: AbortSignal.timeout(6000),
+              });
+              const probeContentType = (probeRes.headers.get('content-type') || '').toLowerCase();
+              const probeLocation = probeRes.headers.get('location') || '';
+              if (probeRes.status >= 300 && probeRes.status < 400) {
+                if (tempFileToDeleteOnFail) await fs.unlink(tempFileToDeleteOnFail).catch(() => {});
+                res.statusCode = 400;
+                res.end(JSON.stringify({
+                  error: 'PUBLIC_MEDIA_AUTH_BLOCKED',
+                  message: `Instagram kann die Slides unter ${publicBaseUrl} nicht abrufen, weil die Vorschau durch einen Login geschützt ist (HTTP ${probeRes.status}${probeLocation ? ` → ${probeLocation}` : ''}). Auf Vercel funktioniert das automatisch über Vercel Blob.`,
+                }));
+                return false;
+              }
+              if (!probeRes.ok || !probeContentType.startsWith('image/')) {
+                if (tempFileToDeleteOnFail) await fs.unlink(tempFileToDeleteOnFail).catch(() => {});
+                res.statusCode = 400;
+                res.end(JSON.stringify({
+                  error: 'PUBLIC_MEDIA_UNREACHABLE',
+                  message: `Die Ziel-URL (${publicBaseUrl}) liefert die temporären Bilder nicht öffentlich aus (HTTP ${probeRes.status}, Typ: ${probeContentType || 'unbekannt'}).`,
+                }));
+                return false;
+              }
+              return true;
+            } catch (probeErr: any) {
+              if (tempFileToDeleteOnFail) await fs.unlink(tempFileToDeleteOnFail).catch(() => {});
+              res.statusCode = 400;
+              res.end(JSON.stringify({
+                error: 'PUBLIC_MEDIA_PROBE_FAILED',
+                message: `Öffentliche Erreichbarkeit von ${publicBaseUrl} konnte nicht bestätigt werden (${probeErr?.message || 'Netzwerkfehler'}).`,
+              }));
+              return false;
+            }
+          };
+
+          // Stage 1: Single slide upload
+          if (body.action === 'stage-slide') {
+            if (!publicBaseUrl || !/^https:\/\//i.test(publicBaseUrl) || /localhost|127\.0\.0\.1|0\.0\.0\.0/.test(publicBaseUrl)) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({
+                error: 'PUBLIC_URL_REQUIRED',
+                message: 'Meta Graph API benötigt eine öffentlich erreichbare HTTPS-URL (IG_PUBLIC_BASE_URL) oder ein Vercel-Deployment mit Vercel Blob.',
+              }));
+              return;
+            }
+            const match = String(body.slide || '').match(/^data:image\/(jpeg|jpg|png);base64,([A-Za-z0-9+/=]+)$/);
+            if (!match) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ error: 'Ungültiges Bildformat (erwartet JPEG oder PNG).' }));
+              return;
+            }
+            const ext = match[1] === 'png' ? 'png' : 'jpg';
+            const idx = Number.isInteger(body.index) ? body.index : 0;
+            const filename = `${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            const filePath = path.join(mediaDir, filename);
+            await fs.writeFile(filePath, Buffer.from(match[2], 'base64'));
+            const mediaUrl = `${publicBaseUrl}/api/ig-temp-media/${filename}`;
+            const okProbe = await verifyPublicReachable(mediaUrl, filePath);
+            if (!okProbe) return;
+            res.statusCode = 200;
+            res.end(JSON.stringify({ ok: true, url: mediaUrl }));
+            return;
+          }
+
+          const rawMediaUrls = Array.isArray(body.mediaUrls) ? body.mediaUrls : [];
           const slides = Array.isArray(body.slides) ? body.slides : [];
           const caption = typeof body.caption === 'string' ? body.caption : '';
-          if (!slides.length || slides.length > 10) {
+
+          if (!rawMediaUrls.length && (!slides.length || slides.length > 10)) {
             res.statusCode = 400;
             res.end(JSON.stringify({ error: 'Slides müssen zwischen 1 und 10 Bildern enthalten.' }));
             return;
           }
 
-          const forwardedProto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
-          const hostHeader = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
-          const publicBaseUrl = (process.env.IG_PUBLIC_BASE_URL || '').trim().replace(/\/+$/, '') || (hostHeader ? `${forwardedProto}://${hostHeader}` : '');
-
-          if (!publicBaseUrl || /localhost|127\.0\.0\.1|0\.0\.0\.0/.test(publicBaseUrl)) {
+          if (!rawMediaUrls.length && (!publicBaseUrl || !/^https:\/\//i.test(publicBaseUrl) || /localhost|127\.0\.0\.1|0\.0\.0\.0/.test(publicBaseUrl))) {
             res.statusCode = 400;
             res.end(JSON.stringify({
               error: 'PUBLIC_URL_REQUIRED',
-              message: 'Meta Graph API benötigt eine öffentlich erreichbare HTTPS-URL (IG_PUBLIC_BASE_URL), um die gerenderten Slides abzurufen.',
+              message: 'Meta Graph API benötigt eine öffentlich erreichbare HTTPS-URL (IG_PUBLIC_BASE_URL), um die gerenderten Slides abzurufen. Ohne öffentliche Server-URL nutze bitte „4K PNGs laden“.',
             }));
             return;
           }
 
-          const mediaDir = path.join(os.tmpdir(), 'schooly_ig_media');
-          await fs.mkdir(mediaDir, { recursive: true });
           const batchId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
           const savedPaths: string[] = [];
 
+          const graphBase = igAccessToken.startsWith('IG')
+            ? 'https://graph.instagram.com/v21.0'
+            : 'https://graph.facebook.com/v21.0';
+
           const waitForContainerFinished = async (containerId: string) => {
-            for (let attempt = 0; attempt < 15; attempt++) {
-              const statusUrl = `https://graph.facebook.com/v21.0/${encodeURIComponent(containerId)}?fields=status_code&access_token=${encodeURIComponent(igAccessToken)}`;
+            for (let attempt = 0; attempt < 25; attempt++) {
+              const statusUrl = `${graphBase}/${encodeURIComponent(containerId)}?fields=status_code,status&access_token=${encodeURIComponent(igAccessToken)}`;
               const statusRes = await fetch(statusUrl);
               const statusJson: any = await statusRes.json().catch(() => ({}));
               const code = statusJson?.status_code;
               if (code === 'FINISHED' || code === 'PUBLISHED') return;
               if (code === 'ERROR' || code === 'EXPIRED') {
-                throw new Error(`Instagram Medien-Container Status: ${code}`);
+                const detail = statusJson?.status ? ` (${statusJson.status})` : '';
+                throw new Error(`Instagram Medien-Container Status: ${code}${detail}`);
               }
-              await new Promise((r) => setTimeout(r, 1000));
+              await new Promise((r) => setTimeout(r, 1200));
             }
+            throw new Error('Zeitüberschreitung beim Verarbeiten des Instagram Medien-Containers.');
           };
 
           try {
             const mediaUrls: string[] = [];
-            for (let i = 0; i < slides.length; i++) {
-              const dataUrl = String(slides[i] || '');
-              const match = dataUrl.match(/^data:image\/png;base64,([A-Za-z0-9+/=]+)$/);
-              if (!match) {
-                throw new Error(`Slide ${i + 1} ist kein gültiges PNG-Bild.`);
+            if (rawMediaUrls.length > 0) {
+              if (rawMediaUrls.length > 10) {
+                throw new Error('Maximal 10 Slides pro Beitrag erlaubt.');
               }
-              const filename = `${batchId}_${i}.png`;
-              const filePath = path.join(mediaDir, filename);
-              await fs.writeFile(filePath, Buffer.from(match[1], 'base64'));
-              savedPaths.push(filePath);
-              mediaUrls.push(`${publicBaseUrl}/api/ig-temp-media/${filename}`);
+              for (const u of rawMediaUrls) {
+                const urlStr = String(u || '');
+                if (!/^https:\/\//i.test(urlStr)) {
+                  throw new Error('Ungültige Medien-URL.');
+                }
+                mediaUrls.push(urlStr);
+                const tempMatch = urlStr.match(/\/api\/ig-temp-media\/([a-zA-Z0-9_-]+\.(?:png|jpe?g))$/);
+                if (tempMatch) {
+                  savedPaths.push(path.join(mediaDir, tempMatch[1]));
+                }
+              }
+            } else {
+              for (let i = 0; i < slides.length; i++) {
+                const dataUrl = String(slides[i] || '');
+                const match = dataUrl.match(/^data:image\/(jpeg|jpg|png);base64,([A-Za-z0-9+/=]+)$/);
+                if (!match) {
+                  throw new Error(`Slide ${i + 1} ist kein gültiges JPEG/PNG-Bild.`);
+                }
+                const ext = match[1] === 'png' ? 'png' : 'jpg';
+                const filename = `${batchId}_${i}.${ext}`;
+                const filePath = path.join(mediaDir, filename);
+                await fs.writeFile(filePath, Buffer.from(match[2], 'base64'));
+                savedPaths.push(filePath);
+                mediaUrls.push(`${publicBaseUrl}/api/ig-temp-media/${filename}`);
+              }
+              const okProbe = await verifyPublicReachable(mediaUrls[0]);
+              if (!okProbe) return;
             }
 
-            const graphCreateUrl = `https://graph.facebook.com/v21.0/${encodeURIComponent(igUserId)}/media`;
+            if (!igUserId || igUserId.toLowerCase() === 'me') {
+              if (igAccessToken.startsWith('IG')) {
+                const meRes = await fetch(`${graphBase}/me?fields=user_id,id,username&access_token=${encodeURIComponent(igAccessToken)}`);
+                const meJson: any = await meRes.json().catch(() => ({}));
+                igUserId = String(meJson?.user_id || meJson?.id || '').trim();
+                if (!igUserId) {
+                  throw new Error(meJson?.error?.message || 'Instagram Konto-ID konnte nicht automatisch aus dem Token ermittelt werden.');
+                }
+              } else {
+                const accRes = await fetch(`${graphBase}/me/accounts?fields=instagram_business_account&access_token=${encodeURIComponent(igAccessToken)}`);
+                const accJson: any = await accRes.json().catch(() => ({}));
+                const pages = Array.isArray(accJson?.data) ? accJson.data : [];
+                const foundPage = pages.find((p: any) => p?.instagram_business_account?.id);
+                igUserId = String(foundPage?.instagram_business_account?.id || '').trim();
+                if (!igUserId) {
+                  throw new Error(accJson?.error?.message || 'Kein verknüpftes Instagram Business-Konto gefunden. Bitte IG_USER_ID direkt setzen.');
+                }
+              }
+            }
+
+            const graphCreateUrl = `${graphBase}/${encodeURIComponent(igUserId)}/media`;
             let topCreationId = '';
 
             if (mediaUrls.length === 1) {
@@ -386,23 +507,22 @@ export default defineConfig({
               }
               topCreationId = j.id;
             } else {
-              const childIds: string[] = [];
-              for (const imageUrl of mediaUrls) {
-                const params = new URLSearchParams({
-                  image_url: imageUrl,
-                  is_carousel_item: 'true',
-                  access_token: igAccessToken,
-                });
-                const r = await fetch(graphCreateUrl, { method: 'POST', body: params });
-                const j: any = await r.json();
-                if (!r.ok || !j?.id) {
-                  throw new Error(j?.error?.message || 'Carousel-Slide konnte nicht hochgeladen werden.');
-                }
-                childIds.push(j.id);
-              }
-              for (const childId of childIds) {
-                await waitForContainerFinished(childId);
-              }
+              const childIds: string[] = await Promise.all(
+                mediaUrls.map(async (imageUrl) => {
+                  const params = new URLSearchParams({
+                    image_url: imageUrl,
+                    is_carousel_item: 'true',
+                    access_token: igAccessToken,
+                  });
+                  const r = await fetch(graphCreateUrl, { method: 'POST', body: params });
+                  const j: any = await r.json();
+                  if (!r.ok || !j?.id) {
+                    throw new Error(j?.error?.message || 'Carousel-Slide konnte nicht hochgeladen werden.');
+                  }
+                  return j.id;
+                })
+              );
+              await Promise.all(childIds.map((childId) => waitForContainerFinished(childId)));
               const carouselParams = new URLSearchParams({
                 media_type: 'CAROUSEL',
                 children: childIds.join(','),
@@ -423,7 +543,7 @@ export default defineConfig({
               creation_id: topCreationId,
               access_token: igAccessToken,
             });
-            const pubRes = await fetch(`https://graph.facebook.com/v21.0/${encodeURIComponent(igUserId)}/media_publish`, {
+            const pubRes = await fetch(`${graphBase}/${encodeURIComponent(igUserId)}/media_publish`, {
               method: 'POST',
               body: publishParams,
             });
