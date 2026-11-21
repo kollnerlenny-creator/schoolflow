@@ -185,18 +185,33 @@ export default async function handler(req, res) {
     ? 'https://graph.instagram.com/v21.0'
     : 'https://graph.facebook.com/v21.0';
 
-  const waitForContainerFinished = async (containerId) => {
-    for (let attempt = 0; attempt < 25; attempt++) {
+  const formatMetaError = (errObj, fallback) => {
+    const msg = String(errObj?.message || '');
+    const code = Number(errObj?.code);
+    if (code === 4 || code === 17 || code === 32 || /request limit/i.test(msg)) {
+      return 'Meta Rate-Limit erreicht („Application request limit reached“): Deine Meta-App hat das stündliche Test-Limit kurz überschritten. Bitte ca. 15–60 Minuten warten und dann noch einmal auf „Direkt auf Instagram posten“ klicken (der Beitrag wird nicht doppelt gepostet).';
+    }
+    return msg || fallback;
+  };
+
+  const waitForContainerFinished = async (containerId, initialDelayMs = 2500) => {
+    if (initialDelayMs > 0) {
+      await new Promise((r) => setTimeout(r, initialDelayMs));
+    }
+    for (let attempt = 0; attempt < 12; attempt++) {
       const statusUrl = `${graphBase}/${encodeURIComponent(containerId)}?fields=status_code,status&access_token=${encodeURIComponent(igAccessToken)}`;
       const statusRes = await fetch(statusUrl);
       const statusJson = await statusRes.json().catch(() => ({}));
+      if (statusJson?.error) {
+        throw new Error(formatMetaError(statusJson.error, 'Fehler beim Prüfen des Instagram-Medienstatus.'));
+      }
       const code = statusJson?.status_code;
       if (code === 'FINISHED' || code === 'PUBLISHED') return;
       if (code === 'ERROR' || code === 'EXPIRED') {
         const detail = statusJson?.status ? ` (${statusJson.status})` : '';
         throw new Error(`Instagram Medien-Container Status: ${code}${detail}`);
       }
-      await new Promise((r) => setTimeout(r, 1200));
+      await new Promise((r) => setTimeout(r, 2500));
     }
     throw new Error('Zeitüberschreitung beim Verarbeiten des Instagram Medien-Containers.');
   };
@@ -256,7 +271,7 @@ export default async function handler(req, res) {
         const meJson = await meRes.json().catch(() => ({}));
         igUserId = String(meJson?.user_id || meJson?.id || '').trim();
         if (!igUserId) {
-          throw new Error(meJson?.error?.message || 'Instagram Konto-ID konnte nicht automatisch aus dem Token ermittelt werden.');
+          throw new Error(formatMetaError(meJson?.error, 'Instagram Konto-ID konnte nicht automatisch aus dem Token ermittelt werden.'));
         }
       } else {
         // 1) Try Facebook User Token -> /me/accounts
@@ -285,8 +300,8 @@ export default async function handler(req, res) {
         }
 
         if (!igUserId) {
-          if (accJson?.error?.message) {
-            throw new Error(`Meta API Fehler: ${accJson.error.message}`);
+          if (accJson?.error) {
+            throw new Error(formatMetaError(accJson.error, 'Meta API Fehler bei Kontoabfrage.'));
           }
           if (pages.length > 0) {
             const pageNames = pages.map((p) => p.name || p.id).filter(Boolean).join(', ');
@@ -309,27 +324,31 @@ export default async function handler(req, res) {
       const r = await fetch(graphCreateUrl, { method: 'POST', body: params });
       const j = await r.json();
       if (!r.ok || !j?.id) {
-        throw new Error(j?.error?.message || 'Instagram Container konnte nicht erstellt werden.');
+        throw new Error(formatMetaError(j?.error, 'Instagram Container konnte nicht erstellt werden.'));
       }
       topCreationId = j.id;
+      await waitForContainerFinished(topCreationId, 2500);
     } else {
-      const childIds = await Promise.all(
-        mediaUrls.map(async (imageUrl) => {
-          const params = new URLSearchParams({
-            image_url: imageUrl,
-            is_carousel_item: 'true',
-            access_token: igAccessToken,
-          });
-          const r = await fetch(graphCreateUrl, { method: 'POST', body: params });
-          const j = await r.json();
-          if (!r.ok || !j?.id) {
-            throw new Error(j?.error?.message || 'Carousel-Slide konnte nicht hochgeladen werden.');
-          }
-          return j.id;
-        })
-      );
+      const childIds = [];
+      for (let i = 0; i < mediaUrls.length; i++) {
+        if (i > 0) await new Promise((r) => setTimeout(r, 180));
+        const params = new URLSearchParams({
+          image_url: mediaUrls[i],
+          is_carousel_item: 'true',
+          access_token: igAccessToken,
+        });
+        const r = await fetch(graphCreateUrl, { method: 'POST', body: params });
+        const j = await r.json();
+        if (!r.ok || !j?.id) {
+          throw new Error(formatMetaError(j?.error, 'Carousel-Slide konnte nicht hochgeladen werden.'));
+        }
+        childIds.push(j.id);
+      }
 
-      await Promise.all(childIds.map((childId) => waitForContainerFinished(childId)));
+      await new Promise((r) => setTimeout(r, 2500));
+      for (const childId of childIds) {
+        await waitForContainerFinished(childId, 0);
+      }
 
       const carouselParams = new URLSearchParams({
         media_type: 'CAROUSEL',
@@ -340,12 +359,11 @@ export default async function handler(req, res) {
       const cr = await fetch(graphCreateUrl, { method: 'POST', body: carouselParams });
       const cj = await cr.json();
       if (!cr.ok || !cj?.id) {
-        throw new Error(cj?.error?.message || 'Instagram Carousel-Container fehlgeschlagen.');
+        throw new Error(formatMetaError(cj?.error, 'Instagram Carousel-Container fehlgeschlagen.'));
       }
       topCreationId = cj.id;
+      await waitForContainerFinished(topCreationId, 2000);
     }
-
-    await waitForContainerFinished(topCreationId);
 
     const publishParams = new URLSearchParams({
       creation_id: topCreationId,
@@ -357,7 +375,7 @@ export default async function handler(req, res) {
     });
     const pubJson = await pubRes.json();
     if (!pubRes.ok || !pubJson?.id) {
-      throw new Error(pubJson?.error?.message || 'Veröffentlichung über media_publish fehlgeschlagen.');
+      throw new Error(formatMetaError(pubJson?.error, 'Veröffentlichung über media_publish fehlgeschlagen.'));
     }
 
     return res.status(200).json({ ok: true, id: pubJson.id });
