@@ -530,15 +530,15 @@
             </div>
         </section>
 
-        <!-- 02 · LIVE-EINBLICK (#tour) — PINNED DESKTOP STAGE + MOBILE SWITCHER -->
+        <!-- 02 · LIVE-EINBLICK (#tour) — UNIFIED PINNED SCROLL STAGE (MOBILE & DESKTOP) -->
         <section id="tour" class="scroll-mt-0 relative bg-[#0f281c] text-[#f7f2e8] border-t border-white/[0.08] overflow-x-clip">
-            <div id="tourPinWrap" class="lg:min-h-[100svh] w-full flex flex-col justify-between pt-[88px] pb-12 sm:pt-[98px] sm:pb-14 lg:pt-[86px] lg:pb-6 space-y-5 lg:space-y-3">
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-3 relative z-30">
+            <div id="tourPinWrap" class="min-h-[100svh] w-full flex flex-col justify-between pt-[76px] pb-4 sm:pt-[94px] sm:pb-6 lg:pt-[86px] lg:pb-6 space-y-2.5 sm:space-y-4 lg:space-y-3">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-2.5 sm:space-y-3 relative z-30">
                     <div class="flex items-center justify-between gap-4">
                         <span class="text-xs sm:text-[13px] font-bold tracking-[0.02em] text-[#ff9e2c]">02 · Live-Einblick</span>
-                        <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
+                        <div class="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
                             <span id="tourStepCounter">Kapitel 01 / 04</span>
-                            <div class="w-24 h-1 rounded-full bg-white/15 overflow-hidden">
+                            <div class="w-16 sm:w-24 h-1 rounded-full bg-white/15 overflow-hidden">
                                 <div id="tourProgressFill" class="h-full w-full bg-[#ff9e2c] origin-left" style="transform: scaleX(0.08);"></div>
                             </div>
                         </div>
@@ -560,8 +560,8 @@
                     </div>
                 </div>
 
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center py-1 relative z-20">
-                    <div id="tourStageTouch" class="lg:col-span-7 relative w-full h-[clamp(230px,35svh,305px)] sm:h-[clamp(300px,42svh,380px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-8 items-center py-0.5 relative z-20">
+                    <div id="tourStageTouch" class="lg:col-span-7 relative w-full h-[clamp(198px,30svh,290px)] sm:h-[clamp(285px,39svh,375px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
                         <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-square rounded-full border border-white/[0.08]"></div>
                         <div class="pointer-events-none absolute inset-x-[4%] bottom-[8%] h-px bg-white/15"></div>
 
@@ -581,57 +581,57 @@
                     </div>
 
                     <div class="lg:col-span-5 grid grid-cols-1 items-center">
-                        <div id="tourCopy0" class="tour-copy-block is-active flex flex-col justify-center space-y-3 py-1">
+                        <div id="tourCopy0" class="tour-copy-block is-active flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">01 / 04 · Live-Sync</div>
-                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 Ein Konto. Handy und Laptop immer synchron.
                             </h3>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 Trage eine Note unterwegs in Sekunden ein — und sieh denselben Schnitt, alle Aufgaben und deinen Wochenplan sofort am Laptop.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>Smartphone · Tablet · Laptop</span>
                                 <span class="text-[#ff9e2c]">Live-Abgleich</span>
                             </div>
                         </div>
 
-                        <div id="tourCopy1" class="tour-copy-block flex flex-col justify-center space-y-3 py-1">
+                        <div id="tourCopy1" class="tour-copy-block flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">02 / 04 · Fächer &amp; Wunschnote</div>
-                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 Jede Gewichtung exakt. Zielnote vor der Klausur.
                             </h3>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 Schriftliche und mündliche Anteile sowie der LK-Faktor greifen halbjahresgenau. Der Wunschnoten-Rechner zeigt dir vorab, welche Punktzahl du brauchst.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>LK / GK &amp; Prozentanteile</span>
                                 <span class="text-[#ff9e2c]">0–15 Pkt. &amp; 1–6</span>
                             </div>
                         </div>
 
-                        <div id="tourCopy2" class="tour-copy-block flex flex-col justify-center space-y-3 py-1">
+                        <div id="tourCopy2" class="tour-copy-block flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">03 / 04 · Stundenplan &amp; Kalender</div>
-                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 Termine, Wochenplan &amp; Google Kalender vereint.
                             </h3>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 Behalte Hausaufgaben, Klausuren und die Schulferien aller 16 Bundesländer im Blick — inklusive 1-Klick-Sync in deinen Google Kalender.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>Alle 16 Bundesländer Ferien</span>
                                 <span class="text-[#ff9e2c]">Google-Sync</span>
                             </div>
                         </div>
 
-                        <div id="tourCopy3" class="tour-copy-block flex flex-col justify-center space-y-3 py-1">
+                        <div id="tourCopy3" class="tour-copy-block flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">04 / 04 · Abitur &amp; PDF-Export</div>
-                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 40 Kurse, Streichungen &amp; Bestehens-Check ohne Excel.
                             </h3>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 Automatische Einbringungs-Logik für Block I, P1–P5 Simulation, Prüfung aller 5 Abitur-Kriterien und fertiger PDF-Notenspiegel per Klick.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>Inkl. 1-Klick PDF-Notenspiegel</span>
                                 <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#ff9e2c] hover:underline">Jetzt ansehen →</a>
                             </div>
@@ -639,33 +639,23 @@
                     </div>
                 </div>
 
-                <!-- Mobile Prev/Next controls -->
-                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-5 pt-2 flex items-center justify-between gap-3">
-                    <button type="button" id="tourMobilePrev" class="btn-surface px-4 py-2.5 rounded-xl text-xs font-bold min-h-[44px] cursor-pointer active:scale-95">
-                        ← Vorheriges
-                    </button>
-                    <span id="tourMobileCount" class="text-xs font-bold text-[#ff9e2c] tabular-nums">01 / 04</span>
-                    <button type="button" id="tourMobileNext" class="btn-amber px-4 py-2.5 rounded-xl text-xs font-extrabold min-h-[44px] cursor-pointer active:scale-95">
-                        Nächstes →
-                    </button>
-                </div>
-
-                <div class="hidden lg:block border-t border-white/[0.08]">
-                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-3 flex items-center justify-between gap-4 text-xs font-semibold text-[#f7f2e8]/65">
-                        <span id="tourCaptionText">01 / 04 · Echtzeit-Sync zwischen Smartphone und Laptop</span>
-                        <span class="text-[#ff9e2c] font-bold">schooly · Handy &amp; Laptop</span>
+                <div class="border-t border-white/[0.08]">
+                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
+                        <span id="tourCaptionText" class="truncate">01 / 04 · Echtzeit-Sync zwischen Smartphone und Laptop</span>
+                        <span class="lg:hidden text-[#ff9e2c] font-bold shrink-0">Scrollen ↓</span>
+                        <span class="hidden lg:inline text-[#ff9e2c] font-bold shrink-0">schooly · Handy &amp; Laptop</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 03 · ALLE ANSICHTEN (#funktionen) — UNIFIED HORIZONTAL GALLERY -->
+        <!-- 03 · ALLE ANSICHTEN (#funktionen) — UNIFIED HORIZONTAL SCROLL GALLERY -->
         <section id="funktionen" class="scroll-mt-0 relative bg-[#133122] text-[#f7f2e8] border-t border-white/[0.08] overflow-x-clip">
-            <div id="funktionenPinWrap" class="lg:min-h-[100svh] flex flex-col justify-center pt-[88px] pb-12 sm:pt-[98px] sm:pb-16 lg:pt-[86px] lg:pb-8">
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 mb-6 lg:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <div class="max-w-2xl space-y-2 reveal-up">
+            <div id="funktionenPinWrap" class="min-h-[100svh] flex flex-col justify-center pt-[76px] pb-6 sm:pt-[94px] sm:pb-10 lg:pt-[86px] lg:pb-8">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 mb-5 lg:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-3.5 sm:gap-4">
+                    <div class="max-w-2xl space-y-1.5 sm:space-y-2 reveal-up">
                         <div class="text-xs sm:text-[13px] font-bold tracking-[0.02em] text-[#ff9e2c]">03 · Alle Ansichten</div>
-                        <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.08]" style="font-size: clamp(1.5rem, 3.1vw, 2.65rem); text-wrap: balance;">
+                        <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.08]" style="font-size: clamp(1.42rem, 3.1vw, 2.65rem); text-wrap: balance;">
                             Jedes Werkzeug genau dann, wenn du es <span class="text-[#ff9e2c]">brauchst.</span>
                         </h2>
                     </div>
@@ -683,17 +673,17 @@
                             </button>
                         </div>
 
-                        <div class="hidden lg:flex items-center gap-2.5 text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
+                        <div class="flex items-center gap-2.5 text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
                             <span id="galleryProgressLabel">01 / 09</span>
-                            <div class="w-24 h-1 rounded-full bg-white/15 overflow-hidden">
+                            <div class="w-16 sm:w-24 h-1 rounded-full bg-white/15 overflow-hidden">
                                 <div id="galleryProgressFill" class="h-full w-full bg-[#ff9e2c] origin-left" style="transform: scaleX(0.11);"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Unified Studio Bays (exact 1280px left rail alignment on desktop) -->
-                <div id="galleryViewport" class="w-full overflow-x-auto lg:overflow-hidden snap-x snap-mandatory lg:snap-none no-scrollbar">
+                <!-- Unified Studio Bays (scroll-driven across both Mobile & Desktop) -->
+                <div id="galleryViewport" class="w-full overflow-hidden touch-pan-y">
                     <div id="galleryTrack" class="flex items-stretch gap-5 sm:gap-6 w-max px-5 sm:px-8 lg:px-[max(2rem,calc((100vw-1280px)/2+2rem))] pb-2">
                         <figure data-device="mobile" class="gallery-card snap-start w-[min(70vw,258px)] sm:w-[272px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-3">
                             <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 overflow-hidden">
@@ -787,16 +777,10 @@
                     </div>
                 </div>
 
-                <!-- Mobile Swipe Controls -->
-                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-5 pt-4 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-2 text-xs font-bold text-[#f7f2e8]/75">
-                        <span id="galleryMobileCount" class="text-[#ff9e2c] tabular-nums">01 / 09</span>
-                        <span>· Seitlich wischen</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" id="galleryPrevBtn" aria-label="Vorherige Ansicht" class="btn-surface w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold cursor-pointer active:scale-95">←</button>
-                        <button type="button" id="galleryNextBtn" aria-label="Nächste Ansicht" class="btn-amber w-11 h-11 rounded-xl flex items-center justify-center text-sm font-extrabold cursor-pointer active:scale-95">→</button>
-                    </div>
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 pt-4 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
+                    <span class="lg:hidden">Alle 9 Ansichten · Handy &amp; Laptop</span>
+                    <span class="hidden lg:inline">Alle 9 Ansichten im Live-Überblick</span>
+                    <span class="lg:hidden text-[#ff9e2c] font-bold">Scrollen ↓</span>
                 </div>
             </div>
         </section>
@@ -843,18 +827,18 @@
             </div>
         </section>
 
-        <!-- 05 · OBERSTUFE & ABITUR (#abitur) — MATCHED SISTER SCROLL STAGE -->
+        <!-- 05 · OBERSTUFE & ABITUR (#abitur) — MATCHED SISTER SCROLL STAGE (MOBILE & DESKTOP) -->
         <section id="abitur" class="scroll-mt-0 relative bg-[#153626] text-[#f7f2e8] overflow-x-clip border-t border-white/[0.08]">
-            <div id="abiPinWrap" class="relative lg:min-h-[100svh] flex flex-col justify-between pt-[88px] pb-12 sm:pt-[98px] sm:pb-14 lg:pt-[86px] lg:pb-6 space-y-5 lg:space-y-3">
+            <div id="abiPinWrap" class="relative min-h-[100svh] w-full flex flex-col justify-between pt-[76px] pb-4 sm:pt-[94px] sm:pb-6 lg:pt-[86px] lg:pb-6 space-y-2.5 sm:space-y-4 lg:space-y-3">
                 <div id="abiGridLayer" class="abi-grid-bg pointer-events-none absolute -inset-y-20 inset-x-0" aria-hidden="true"></div>
 
                 <!-- Top Section Label + Chapter Controls (Identical symmetry to 02 · Live-Einblick) -->
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-3 relative z-30">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-2.5 sm:space-y-3 relative z-30">
                     <div class="flex items-center justify-between gap-4">
                         <span class="text-xs sm:text-[13px] font-bold tracking-[0.02em] text-[#ff9e2c]">05 · Oberstufe &amp; Abitur</span>
-                        <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
+                        <div class="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
                             <span id="abiStepCounter">Schritt 01 / 04</span>
-                            <div class="w-24 h-1 rounded-full bg-white/15 overflow-hidden">
+                            <div class="w-16 sm:w-24 h-1 rounded-full bg-white/15 overflow-hidden">
                                 <div id="abiProgressFill" class="h-full w-full bg-[#ff9e2c] origin-left" style="transform: scaleX(0.08);"></div>
                             </div>
                         </div>
@@ -877,8 +861,8 @@
                 </div>
 
                 <!-- Main Choreographed 3D Hardware + Abitur Editorial Copy -->
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center py-1 relative z-20">
-                    <div id="abiStageTouch" class="lg:col-span-7 relative w-full h-[clamp(230px,35svh,305px)] sm:h-[clamp(300px,42svh,380px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-8 items-center py-0.5 relative z-20">
+                    <div id="abiStageTouch" class="lg:col-span-7 relative w-full h-[clamp(198px,30svh,290px)] sm:h-[clamp(285px,39svh,375px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
                         <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-square rounded-full border border-white/[0.08]"></div>
                         <div class="pointer-events-none absolute inset-x-[4%] bottom-[8%] h-px bg-white/15"></div>
 
@@ -894,57 +878,57 @@
                     </div>
 
                     <div class="lg:col-span-5 grid grid-cols-1 items-center">
-                        <div id="abiCopy0" class="abi-copy-block is-active flex flex-col justify-center space-y-3 py-1">
+                        <div id="abiCopy0" class="abi-copy-block is-active flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">01 / 04 · Block I &amp; II im Überblick</div>
-                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 Alle 40 Halbjahreskurse automatisch gesammelt.
                             </h2>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 schooly führt deine 11/1 bis 12/2 Punkte zusammen, zählt Leistungskurse doppelt und trennt Block I sauber von den Prüfungen in Block II.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>40 Kurse · LK doppelt gewichtet</span>
                                 <span class="text-[#ff9e2c]">Block I &amp; II</span>
                             </div>
                         </div>
 
-                        <div id="abiCopy1" class="abi-copy-block flex flex-col justify-center space-y-3 py-1">
+                        <div id="abiCopy1" class="abi-copy-block flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">02 / 04 · Streichungen &amp; Unterkurse</div>
-                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 Bestmögliche Einbringung auf einen Blick.
                             </h2>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 Pflichtkurse bleiben fest, schwächere Grundkurse werden automatisch geklammert — inklusive sofortiger Warnung bei Unterkursen unter 5 Punkten.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>Unterkurs-Warnung &lt; 5 Pkt.</span>
                                 <span class="text-[#ff9e2c]">Streichung automatisch</span>
                             </div>
                         </div>
 
-                        <div id="abiCopy2" class="abi-copy-block flex flex-col justify-center space-y-3 py-1">
+                        <div id="abiCopy2" class="abi-copy-block flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">03 / 04 · P1–P5 Simulation</div>
-                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 Alle 5 Bestehens-Kriterien live geprüft.
                             </h2>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 Simuliere deine Prüfungsergebnisse (P1–P5) vorab — vom 200-Punkte-Minimum in Block I über 100 Punkte in Block II bis zu deinem Gesamtschnitt.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>200 / 100 Pkt. · P1–P5 live</span>
                                 <span class="text-[#ff9e2c]">5 Kriterien geprüft</span>
                             </div>
                         </div>
 
-                        <div id="abiCopy3" class="abi-copy-block flex flex-col justify-center space-y-3 py-1">
+                        <div id="abiCopy3" class="abi-copy-block flex flex-col justify-center space-y-2 sm:space-y-3 py-0.5">
                             <div class="text-xs font-bold tracking-[0.02em] text-[#ff9e2c] tabular-nums">04 / 04 · PDF-Export</div>
-                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.35rem, 2.3vw, 2.1rem); text-wrap: balance;">
+                            <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.22rem, 2.3vw, 2.1rem); text-wrap: balance;">
                                 Sauberer Notenspiegel mit einem Klick.
                             </h2>
-                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
                                 Erstelle jederzeit ein übersichtliches PDF mit allen Fächern, Punkten und deinem aktuellen Schnitt — ideal für Bewerbungen oder Praktika.
                             </p>
-                            <div class="pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
+                            <div class="pt-2.5 sm:pt-3 border-t border-white/12 flex items-center justify-between text-xs font-semibold text-[#f7f2e8]/75">
                                 <span>Alle Fächer &amp; Punkte · 1 Klick</span>
                                 <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#ff9e2c] hover:underline">Jetzt testen →</a>
                             </div>
@@ -952,21 +936,11 @@
                     </div>
                 </div>
 
-                <!-- Mobile Prev/Next controls -->
-                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-5 pt-2 flex items-center justify-between gap-3 relative z-20">
-                    <button type="button" id="abiMobilePrev" class="btn-surface px-4 py-2.5 rounded-xl text-xs font-bold min-h-[44px] cursor-pointer active:scale-95">
-                        ← Vorheriges
-                    </button>
-                    <span id="abiMobileCount" class="text-xs font-bold text-[#ff9e2c] tabular-nums">01 / 04</span>
-                    <button type="button" id="abiMobileNext" class="btn-amber px-4 py-2.5 rounded-xl text-xs font-extrabold min-h-[44px] cursor-pointer active:scale-95">
-                        Nächstes →
-                    </button>
-                </div>
-
-                <div class="hidden lg:block border-t border-white/[0.08] relative z-20">
-                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-3 flex items-center justify-between gap-4 text-xs font-semibold text-[#f7f2e8]/65">
-                        <span id="abiCaptionText">01 / 04 · Abitur-Übersicht &amp; Punktekonto</span>
-                        <span class="text-[#ff9e2c] font-bold">schooly · Oberstufe &amp; Abitur</span>
+                <div class="border-t border-white/[0.08] relative z-20">
+                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
+                        <span id="abiCaptionText" class="truncate">01 / 04 · Abitur-Übersicht &amp; Punktekonto</span>
+                        <span class="lg:hidden text-[#ff9e2c] font-bold shrink-0">Scrollen ↓</span>
+                        <span class="hidden lg:inline text-[#ff9e2c] font-bold shrink-0">schooly · Oberstufe &amp; Abitur</span>
                     </div>
                 </div>
             </div>
@@ -1277,67 +1251,28 @@
                     document.getElementById(`tourCopy${i}`)?.classList.toggle('is-active', i === state.chapterIndex);
                 });
                 const cnt = document.getElementById('tourStepCounter');
-                const mCnt = document.getElementById('tourMobileCount');
                 const cap = document.getElementById('tourCaptionText');
                 if (cnt) cnt.textContent = state.counterLabel;
-                if (mCnt) mCnt.textContent = `0${state.chapterIndex + 1} / 04`;
                 if (cap) cap.textContent = state.caption;
             };
 
-            const setMobileTourChapter = (idx) => {
+            const setStaticTourChapter = (idx) => {
                 const safeIdx = ((idx % 4) + 4) % 4;
                 const progressStops = [0.05, 0.42, 0.62, 0.90];
                 const state = resolveTourChapter(progressStops[safeIdx]);
                 updateTourUI(state, true);
                 [0, 1, 2, 3].forEach(i => {
                     const c = document.getElementById(`tourCopy${i}`);
-                    if (!c) return;
-                    if (typeof gsap !== 'undefined') {
-                        gsap.to(c, { opacity: i === safeIdx ? 1 : 0, y: i === safeIdx ? 0 : 10, duration: 0.45, ease: 'power2.inOut' });
-                    } else {
-                        c.style.opacity = i === safeIdx ? '1' : '0';
-                    }
+                    if (c) c.style.opacity = i === safeIdx ? '1' : '0';
                 });
-                const tourMac = document.getElementById('tourMacActor');
-                const tourPhone = document.getElementById('tourPhoneActor');
-                if (typeof gsap !== 'undefined' && tourMac && tourPhone) {
-                    if (safeIdx === 1) {
-                        gsap.to(tourMac, { xPercent: -8, scale: 0.86, opacity: 0.38, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(tourPhone, { xPercent: 48, scale: 1.06, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    } else if (safeIdx === 2) {
-                        gsap.to(tourMac, { xPercent: -4, scale: 1.03, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(tourPhone, { xPercent: 78, scale: 0.90, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    } else if (safeIdx === 3) {
-                        gsap.to(tourMac, { xPercent: 2, scale: 0.98, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(tourPhone, { xPercent: 0, scale: 1.02, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    } else {
-                        gsap.to(tourMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(tourPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    }
-                }
             };
-            document.getElementById('tourMobilePrev')?.addEventListener('click', () => setMobileTourChapter(activeTourIdx - 1));
-            document.getElementById('tourMobileNext')?.addEventListener('click', () => setMobileTourChapter(activeTourIdx + 1));
 
-            const tourStageTouch = document.getElementById('tourStageTouch');
-            if (tourStageTouch) {
-                let touchStartX = 0;
-                tourStageTouch.addEventListener('touchstart', (e) => {
-                    touchStartX = e.changedTouches[0]?.clientX || 0;
-                }, { passive: true });
-                tourStageTouch.addEventListener('touchend', (e) => {
-                    if (window.innerWidth >= 1024) return;
-                    const dx = (e.changedTouches[0]?.clientX || 0) - touchStartX;
-                    if (Math.abs(dx) > 42) setMobileTourChapter(activeTourIdx + (dx < 0 ? 1 : -1));
-                }, { passive: true });
-            }
-
-            // Gallery Filter & Mobile Carousel Buttons
+            // Gallery Filter & Pinned Horizontal Scrub Setup
             const galleryViewport = document.getElementById('galleryViewport');
             const galleryTrack = document.getElementById('galleryTrack');
             const galleryCards = Array.from(document.querySelectorAll('#galleryTrack .gallery-card'));
             let activeGalleryFilter = 'all';
-            let desktopGalleryTween = null;
+            let activeGalleryTween = null;
 
             const updateGalleryProgressLabel = (prog) => {
                 const visibleCards = galleryCards.filter(c => !c.classList.contains('hidden'));
@@ -1345,19 +1280,10 @@
                 const idx = Math.min(total, Math.max(1, Math.round(prog * (total - 1)) + 1));
                 const labelText = `${String(idx).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
                 const lbl = document.getElementById('galleryProgressLabel');
-                const mLbl = document.getElementById('galleryMobileCount');
                 const fill = document.getElementById('galleryProgressFill');
                 if (lbl) lbl.textContent = labelText;
-                if (mLbl) mLbl.textContent = labelText;
                 if (fill) fill.style.transform = `scaleX(${Math.max(1 / total, prog)})`;
             };
-
-            galleryViewport?.addEventListener('scroll', () => {
-                const maxScroll = Math.max(1, galleryViewport.scrollWidth - galleryViewport.clientWidth);
-                if (window.innerWidth < 1024 && maxScroll > 10) {
-                    updateGalleryProgressLabel(galleryViewport.scrollLeft / maxScroll);
-                }
-            }, { passive: true });
 
             document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1373,27 +1299,17 @@
                         const match = activeGalleryFilter === 'all' || c.getAttribute('data-device') === activeGalleryFilter;
                         c.classList.toggle('hidden', !match);
                     });
-                    if (galleryViewport) galleryViewport.scrollTo({ left: 0, behavior: 'smooth' });
                     if (typeof gsap !== 'undefined') gsap.set('#galleryTrack', { x: 0 });
-                    if (desktopGalleryTween?.scrollTrigger) {
-                        const st = desktopGalleryTween.scrollTrigger;
+                    if (activeGalleryTween?.scrollTrigger) {
+                        const st = activeGalleryTween.scrollTrigger;
                         if (window.scrollY > st.start && window.scrollY < st.end) {
                             window.scrollTo({ top: st.start + 1, behavior: 'auto' });
                         }
-                        desktopGalleryTween.progress(0).invalidate();
+                        activeGalleryTween.progress(0).invalidate();
                     }
                     updateGalleryProgressLabel(0);
                     if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
                 });
-            });
-
-            document.getElementById('galleryPrevBtn')?.addEventListener('click', () => {
-                const step = Math.max(260, Math.round((galleryViewport?.clientWidth || 360) * 0.75));
-                galleryViewport?.scrollBy({ left: -step, behavior: 'smooth' });
-            });
-            document.getElementById('galleryNextBtn')?.addEventListener('click', () => {
-                const step = Math.max(260, Math.round((galleryViewport?.clientWidth || 360) * 0.75));
-                galleryViewport?.scrollBy({ left: step, behavior: 'smooth' });
             });
 
             // Abitur Pinned Stage Switcher
@@ -1414,60 +1330,21 @@
                     document.getElementById(`abiCopy${i}`)?.classList.toggle('is-active', i === state.chapterIndex);
                 });
                 const cnt = document.getElementById('abiStepCounter');
-                const mCnt = document.getElementById('abiMobileCount');
                 const cap = document.getElementById('abiCaptionText');
                 if (cnt) cnt.textContent = state.counterLabel;
-                if (mCnt) mCnt.textContent = `0${state.chapterIndex + 1} / 04`;
                 if (cap) cap.textContent = state.caption;
             };
 
-            const setMobileAbiChapter = (idx) => {
+            const setStaticAbiChapter = (idx) => {
                 const safeIdx = ((idx % 4) + 4) % 4;
                 const progressStops = [0.06, 0.34, 0.62, 0.88];
                 const state = resolveAbiChapter(progressStops[safeIdx]);
                 updateAbiUI(state, true);
                 [0, 1, 2, 3].forEach(i => {
                     const c = document.getElementById(`abiCopy${i}`);
-                    if (!c) return;
-                    if (typeof gsap !== 'undefined') {
-                        gsap.to(c, { opacity: i === safeIdx ? 1 : 0, y: i === safeIdx ? 0 : 10, duration: 0.45, ease: 'power2.inOut' });
-                    } else {
-                        c.style.opacity = i === safeIdx ? '1' : '0';
-                    }
+                    if (c) c.style.opacity = i === safeIdx ? '1' : '0';
                 });
-                const abiMac = document.getElementById('abiMacActor');
-                const abiPhone = document.getElementById('abiPhoneActor');
-                if (typeof gsap !== 'undefined' && abiMac && abiPhone) {
-                    if (safeIdx === 1) {
-                        gsap.to(abiMac, { xPercent: -8, scale: 0.87, opacity: 0.34, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(abiPhone, { xPercent: 52, scale: 1.07, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    } else if (safeIdx === 2) {
-                        gsap.to(abiMac, { xPercent: -4, scale: 1.03, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(abiPhone, { xPercent: 80, scale: 0.90, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    } else if (safeIdx === 3) {
-                        gsap.to(abiMac, { xPercent: -9, scale: 0.85, opacity: 0.30, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(abiPhone, { xPercent: 56, scale: 1.08, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    } else {
-                        gsap.to(abiMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                        gsap.to(abiPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.68, ease: 'power2.inOut' });
-                    }
-                }
             };
-            document.getElementById('abiMobilePrev')?.addEventListener('click', () => setMobileAbiChapter(activeAbiIdx - 1));
-            document.getElementById('abiMobileNext')?.addEventListener('click', () => setMobileAbiChapter(activeAbiIdx + 1));
-
-            const abiStageTouch = document.getElementById('abiStageTouch');
-            if (abiStageTouch) {
-                let abiTouchStartX = 0;
-                abiStageTouch.addEventListener('touchstart', (e) => {
-                    abiTouchStartX = e.changedTouches[0]?.clientX || 0;
-                }, { passive: true });
-                abiStageTouch.addEventListener('touchend', (e) => {
-                    if (window.innerWidth >= 1024) return;
-                    const dx = (e.changedTouches[0]?.clientX || 0) - abiTouchStartX;
-                    if (Math.abs(dx) > 42) setMobileAbiChapter(activeAbiIdx + (dx < 0 ? 1 : -1));
-                }, { passive: true });
-            }
 
             // Liquid Glass Nav Glider State & Physics
             const glassNav = document.getElementById('landingGlassNav');
@@ -1531,7 +1408,7 @@
                 if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
             });
 
-            // SITE-WIDE GSAP + SCROLLTRIGGER CHOREOGRAPHY
+            // SITE-WIDE GSAP + SCROLLTRIGGER CHOREOGRAPHY (DESKTOP & MOBILE)
             if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !reducedMotion) {
                 gsap.registerPlugin(ScrollTrigger);
                 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -1541,7 +1418,7 @@
                 gsap.from('#heroPhoneActor', { xPercent: -6, yPercent: 5, opacity: 0, scale: 0.96, duration: 1.08, delay: 0.16, ease: 'power2.out' });
 
                 const heroScrollTl = gsap.timeline({
-                    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.6 }
+                    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 }
                 });
                 heroScrollTl
                     .to('#heroGridLayer', { yPercent: 14, ease: 'none' }, 0)
@@ -1555,7 +1432,7 @@
                         trigger: '#manifesto',
                         start: 'top 88%',
                         end: 'top 30%',
-                        scrub: 1.4,
+                        scrub: 1.0,
                         onUpdate: (self) => {
                             const ops = computeWordRevealOpacities(self.progress, manifestoWords.length, 0.28);
                             for (let i = 0; i < manifestoWords.length; i++) {
@@ -1568,7 +1445,7 @@
                 gsap.to('#manifestoLine', {
                     scaleX: 1,
                     ease: 'sine.inOut',
-                    scrollTrigger: { trigger: '#manifesto', start: 'top 76%', end: 'bottom 60%', scrub: 1.5 }
+                    scrollTrigger: { trigger: '#manifesto', start: 'top 76%', end: 'bottom 60%', scrub: 1.1 }
                 });
 
                 gsap.fromTo('.manifesto-pillar',
@@ -1585,7 +1462,16 @@
 
                 const mm = gsap.matchMedia();
 
-                mm.add('(min-width: 1024px)', () => {
+                mm.add({
+                    isDesktop: '(min-width: 1024px)',
+                    isMobile: '(max-width: 1023px)'
+                }, (context) => {
+                    const { isMobile } = context.conditions;
+                    const stageScrub = isMobile ? 0.65 : 1.85;
+                    const galleryScrub = isMobile ? 0.6 : 1.8;
+                    const tourPinDist = isMobile ? '+=260%' : '+=420%';
+                    const abiPinDist = isMobile ? '+=260%' : '+=410%';
+
                     const tourMac = document.getElementById('tourMacActor');
                     const tourPhone = document.getElementById('tourPhoneActor');
                     const tourProgressFill = document.getElementById('tourProgressFill');
@@ -1599,9 +1485,9 @@
                         scrollTrigger: {
                             trigger: '#tour',
                             start: 'top top',
-                            end: '+=420%',
+                            end: tourPinDist,
                             pin: '#tourPinWrap',
-                            scrub: 1.85,
+                            scrub: stageScrub,
                             anticipatePin: 1,
                             invalidateOnRefresh: true,
                             onUpdate: (self) => {
@@ -1616,12 +1502,12 @@
                         .to(tourPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
                         .to('#tourCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
                         .to(tourMac, { xPercent: -7, yPercent: -2, scale: 0.88, opacity: 0.44, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
-                        .to(tourPhone, { xPercent: 48, yPercent: -1.8, scale: 1.06, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                        .to(tourPhone, { xPercent: isMobile ? 42 : 48, yPercent: -1.8, scale: 1.06, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
                         .to('#tourCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
                         .to(tourPhone, { yPercent: -3.0, rotation: 0.4, duration: 0.12, ease: 'sine.inOut' }, 0.32)
                         .to('#tourCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
                         .to(tourMac, { xPercent: -3, yPercent: 0, scale: 1.04, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
-                        .to(tourPhone, { xPercent: 84, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.4, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                        .to(tourPhone, { xPercent: isMobile ? 74 : 84, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.4, duration: 0.17, ease: 'sine.inOut' }, 0.42)
                         .to('#tourCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
                         .to(tourMac, { scale: 1.055, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
                         .to('#tourCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
@@ -1631,26 +1517,31 @@
                         .to(tourPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
 
                     const chapterJumpStops = [0.05, 0.36, 0.64, 0.90];
-                    const onStepClick = (e) => {
-                        const idx = Number(e.currentTarget.getAttribute('data-tour-step')) || 0;
+                    const jumpToTourChapter = (idx) => {
+                        const safe = Math.max(0, Math.min(3, idx));
                         const st = tourTl.scrollTrigger;
                         if (!st) return;
-                        window.scrollTo({ top: st.start + (st.end - st.start) * chapterJumpStops[idx], behavior: 'smooth' });
+                        window.scrollTo({ top: st.start + (st.end - st.start) * chapterJumpStops[safe], behavior: 'smooth' });
+                    };
+                    const onStepClick = (e) => {
+                        jumpToTourChapter(Number(e.currentTarget.getAttribute('data-tour-step')) || 0);
                     };
                     document.querySelectorAll('.tour-step-btn').forEach(btn => btn.addEventListener('click', onStepClick));
 
                     const getGalleryMaxShift = () => {
                         if (!galleryTrack || !galleryViewport) return 0;
-                        return Math.max(0, galleryTrack.scrollWidth - galleryViewport.clientWidth + 48);
+                        return Math.max(0, galleryTrack.scrollWidth - galleryViewport.clientWidth + (isMobile ? 20 : 48));
                     };
 
-                    desktopGalleryTween = gsap.timeline({
+                    activeGalleryTween = gsap.timeline({
                         scrollTrigger: {
                             trigger: '#funktionen',
                             start: 'top top',
-                            end: () => `+=${Math.max(960, getGalleryMaxShift() * 1.85 + 700)}`,
+                            end: () => isMobile
+                                ? `+=${Math.max(760, getGalleryMaxShift() * 0.92 + 240)}`
+                                : `+=${Math.max(960, getGalleryMaxShift() * 1.85 + 700)}`,
                             pin: '#funktionenPinWrap',
-                            scrub: 1.8,
+                            scrub: galleryScrub,
                             anticipatePin: 1,
                             invalidateOnRefresh: true,
                             onUpdate: (self) => {
@@ -1659,7 +1550,7 @@
                             }
                         }
                     });
-                    desktopGalleryTween
+                    activeGalleryTween
                         .fromTo('#galleryTrack', { y: 8, opacity: 0.96 }, { y: 0, opacity: 1, duration: 0.08, ease: 'sine.out' }, 0)
                         .fromTo('#galleryTrack', { x: 0 }, { x: () => -getGalleryMaxShift(), duration: 0.86, ease: 'sine.inOut' }, 0.07)
                         .to({}, { duration: 0.07 }, 0.93);
@@ -1677,9 +1568,9 @@
                         scrollTrigger: {
                             trigger: '#abitur',
                             start: 'top top',
-                            end: '+=410%',
+                            end: abiPinDist,
                             pin: '#abiPinWrap',
-                            scrub: 1.85,
+                            scrub: stageScrub,
                             anticipatePin: 1,
                             invalidateOnRefresh: true,
                             onUpdate: (self) => {
@@ -1695,101 +1586,86 @@
                         .to(abiPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
                         .to('#abiCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
                         .to(abiMac, { xPercent: -7, yPercent: -1.8, scale: 0.88, opacity: 0.36, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
-                        .to(abiPhone, { xPercent: 50, yPercent: -1.6, scale: 1.07, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                        .to(abiPhone, { xPercent: isMobile ? 44 : 50, yPercent: -1.6, scale: 1.07, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
                         .to('#abiCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
                         .to(abiPhone, { yPercent: -2.8, rotation: 0.3, duration: 0.12, ease: 'sine.inOut' }, 0.32)
                         .to('#abiCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
                         .to(abiMac, { xPercent: -2.5, yPercent: 0, scale: 1.035, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
-                        .to(abiPhone, { xPercent: 82, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                        .to(abiPhone, { xPercent: isMobile ? 74 : 82, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
                         .to('#abiCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
                         .to(abiMac, { scale: 1.05, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
                         .to('#abiCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
                         .to(abiMac, { xPercent: -8, yPercent: -1.4, scale: 0.86, opacity: 0.32, rotation: -1.1, duration: 0.17, ease: 'sine.inOut' }, 0.69)
-                        .to(abiPhone, { xPercent: 52, yPercent: -1.2, scale: 1.08, opacity: 1, rotation: -0.8, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                        .to(abiPhone, { xPercent: isMobile ? 46 : 52, yPercent: -1.2, scale: 1.08, opacity: 1, rotation: -0.8, duration: 0.17, ease: 'sine.inOut' }, 0.69)
                         .to('#abiCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
                         .to(abiPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
 
                     const abiJumpStops = [0.05, 0.36, 0.64, 0.90];
-                    const onAbiStepClick = (e) => {
-                        const idx = Number(e.currentTarget.getAttribute('data-abi-step')) || 0;
+                    const jumpToAbiChapter = (idx) => {
+                        const safe = Math.max(0, Math.min(3, idx));
                         const st = abiTl.scrollTrigger;
                         if (!st) return;
-                        window.scrollTo({ top: st.start + (st.end - st.start) * abiJumpStops[idx], behavior: 'smooth' });
+                        window.scrollTo({ top: st.start + (st.end - st.start) * abiJumpStops[safe], behavior: 'smooth' });
+                    };
+                    const onAbiStepClick = (e) => {
+                        jumpToAbiChapter(Number(e.currentTarget.getAttribute('data-abi-step')) || 0);
                     };
                     document.querySelectorAll('.abi-step-btn').forEach(btn => btn.addEventListener('click', onAbiStepClick));
 
+                    // Touch horizontal swipe gesture also scrubs/advances pinned stages harmoniously on mobile
+                    const tourStageTouch = document.getElementById('tourStageTouch');
+                    let tourStartX = 0;
+                    const onTourTouchStart = (e) => { tourStartX = e.changedTouches[0]?.clientX || 0; };
+                    const onTourTouchEnd = (e) => {
+                        const dx = (e.changedTouches[0]?.clientX || 0) - tourStartX;
+                        if (Math.abs(dx) > 42) jumpToTourChapter(activeTourIdx + (dx < 0 ? 1 : -1));
+                    };
+                    tourStageTouch?.addEventListener('touchstart', onTourTouchStart, { passive: true });
+                    tourStageTouch?.addEventListener('touchend', onTourTouchEnd, { passive: true });
+
+                    const abiStageTouch = document.getElementById('abiStageTouch');
+                    let abiStartX = 0;
+                    const onAbiTouchStart = (e) => { abiStartX = e.changedTouches[0]?.clientX || 0; };
+                    const onAbiTouchEnd = (e) => {
+                        const dx = (e.changedTouches[0]?.clientX || 0) - abiStartX;
+                        if (Math.abs(dx) > 42) jumpToAbiChapter(activeAbiIdx + (dx < 0 ? 1 : -1));
+                    };
+                    abiStageTouch?.addEventListener('touchstart', onAbiTouchStart, { passive: true });
+                    abiStageTouch?.addEventListener('touchend', onAbiTouchEnd, { passive: true });
+
+                    let galStartX = 0;
+                    const onGalTouchStart = (e) => { galStartX = e.changedTouches[0]?.clientX || 0; };
+                    const onGalTouchEnd = (e) => {
+                        const dx = (e.changedTouches[0]?.clientX || 0) - galStartX;
+                        const st = activeGalleryTween?.scrollTrigger;
+                        if (!st || Math.abs(dx) < 38) return;
+                        const delta = (dx < 0 ? 1 : -1) * Math.max(180, (st.end - st.start) * 0.22);
+                        const nextY = Math.max(st.start, Math.min(st.end, window.scrollY + delta));
+                        window.scrollTo({ top: nextY, behavior: 'smooth' });
+                    };
+                    galleryViewport?.addEventListener('touchstart', onGalTouchStart, { passive: true });
+                    galleryViewport?.addEventListener('touchend', onGalTouchEnd, { passive: true });
+
                     gsap.fromTo('#themePhoneLight',
-                        { x: -42, y: 20, rotate: -4, opacity: 0.78 },
-                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 90%', end: 'top 32%', scrub: 1.6 } }
+                        { x: isMobile ? -24 : -42, y: 20, rotate: -4, opacity: 0.78 },
+                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 90%', end: 'top 32%', scrub: isMobile ? 0.75 : 1.6 } }
                     );
                     gsap.fromTo('#themePhoneDark',
-                        { x: 42, y: 20, rotate: 4, opacity: 0.78 },
-                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 90%', end: 'top 32%', scrub: 1.6 } }
+                        { x: isMobile ? 24 : 42, y: 20, rotate: 4, opacity: 0.78 },
+                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 90%', end: 'top 32%', scrub: isMobile ? 0.75 : 1.6 } }
                     );
 
                     return () => {
                         document.querySelectorAll('.tour-step-btn').forEach(btn => btn.removeEventListener('click', onStepClick));
                         document.querySelectorAll('.abi-step-btn').forEach(btn => btn.removeEventListener('click', onAbiStepClick));
-                        desktopGalleryTween?.kill();
-                        desktopGalleryTween = null;
-                    };
-                });
-
-                mm.add('(max-width: 1023px)', () => {
-                    gsap.set(['#tourCopy0', '#tourCopy1', '#tourCopy2', '#tourCopy3', '#abiCopy0', '#abiCopy1', '#abiCopy2', '#abiCopy3'], { clearProps: 'transform,opacity' });
-                    gsap.set(['#tourMacActor', '#tourPhoneActor', '#abiMacActor', '#abiPhoneActor', '#galleryTrack'], { clearProps: 'transform,opacity' });
-                    setMobileTourChapter(0);
-                    setMobileAbiChapter(0);
-
-                    const onMobileStepClick = (e) => {
-                        setMobileTourChapter(Number(e.currentTarget.getAttribute('data-tour-step')) || 0);
-                    };
-                    const onMobileAbiStepClick = (e) => {
-                        setMobileAbiChapter(Number(e.currentTarget.getAttribute('data-abi-step')) || 0);
-                    };
-                    document.querySelectorAll('.tour-step-btn').forEach(btn => btn.addEventListener('click', onMobileStepClick));
-                    document.querySelectorAll('.abi-step-btn').forEach(btn => btn.addEventListener('click', onMobileAbiStepClick));
-
-                    gsap.fromTo('#tourMacActor',
-                        { y: 20, rotation: 1.2 },
-                        { y: -10, rotation: -0.6, ease: 'sine.inOut', scrollTrigger: { trigger: '#tour', start: 'top 92%', end: 'bottom 20%', scrub: 1.5 } }
-                    );
-                    gsap.fromTo('#tourPhoneActor',
-                        { y: 30, rotation: -1.8 },
-                        { y: -14, rotation: 1.0, ease: 'sine.inOut', scrollTrigger: { trigger: '#tour', start: 'top 92%', end: 'bottom 20%', scrub: 1.5 } }
-                    );
-
-                    gsap.fromTo('#galleryTrack .gallery-card',
-                        { y: 22, scale: 0.97, opacity: 0.55 },
-                        { y: 0, scale: 1, opacity: 1, stagger: 0.05, ease: 'sine.out', scrollTrigger: { trigger: '#funktionen', start: 'top 88%', end: 'top 32%', scrub: 1.4 } }
-                    );
-
-                    gsap.fromTo('#themePhoneLight',
-                        { x: -24, y: 22, rotate: -4, opacity: 0.78 },
-                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 92%', end: 'top 36%', scrub: 1.5 } }
-                    );
-                    gsap.fromTo('#themePhoneDark',
-                        { x: 24, y: 22, rotate: 4, opacity: 0.78 },
-                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 92%', end: 'top 36%', scrub: 1.5 } }
-                    );
-
-                    gsap.to('#abiGridLayer', {
-                        yPercent: 12,
-                        ease: 'none',
-                        scrollTrigger: { trigger: '#abitur', start: 'top bottom', end: 'bottom top', scrub: 1.5 }
-                    });
-                    gsap.fromTo('#abiMacActor',
-                        { y: 20, rotation: 1.2 },
-                        { y: -10, rotation: -0.6, ease: 'sine.inOut', scrollTrigger: { trigger: '#abitur', start: 'top 92%', end: 'bottom 20%', scrub: 1.5 } }
-                    );
-                    gsap.fromTo('#abiPhoneActor',
-                        { y: 30, rotation: -1.8 },
-                        { y: -14, rotation: 1.0, ease: 'sine.inOut', scrollTrigger: { trigger: '#abitur', start: 'top 92%', end: 'bottom 20%', scrub: 1.5 } }
-                    );
-
-                    return () => {
-                        document.querySelectorAll('.tour-step-btn').forEach(btn => btn.removeEventListener('click', onMobileStepClick));
-                        document.querySelectorAll('.abi-step-btn').forEach(btn => btn.removeEventListener('click', onMobileAbiStepClick));
+                        tourStageTouch?.removeEventListener('touchstart', onTourTouchStart);
+                        tourStageTouch?.removeEventListener('touchend', onTourTouchEnd);
+                        abiStageTouch?.removeEventListener('touchstart', onAbiTouchStart);
+                        abiStageTouch?.removeEventListener('touchend', onAbiTouchEnd);
+                        galleryViewport?.removeEventListener('touchstart', onGalTouchStart);
+                        galleryViewport?.removeEventListener('touchend', onGalTouchEnd);
+                        activeGalleryTween?.kill();
+                        activeGalleryTween = null;
                     };
                 });
 
@@ -1863,10 +1739,10 @@
                 updateTourUI(resolveTourChapter(0));
                 updateAbiUI(resolveAbiChapter(0));
                 document.querySelectorAll('.tour-step-btn').forEach(btn => {
-                    btn.addEventListener('click', () => setMobileTourChapter(Number(btn.getAttribute('data-tour-step')) || 0));
+                    btn.addEventListener('click', () => setStaticTourChapter(Number(btn.getAttribute('data-tour-step')) || 0));
                 });
                 document.querySelectorAll('.abi-step-btn').forEach(btn => {
-                    btn.addEventListener('click', () => setMobileAbiChapter(Number(btn.getAttribute('data-abi-step')) || 0));
+                    btn.addEventListener('click', () => setStaticAbiChapter(Number(btn.getAttribute('data-abi-step')) || 0));
                 });
 
                 const fallbackMap = [
