@@ -5,7 +5,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Schooly">
-    <meta name="theme-color" content="#f7f3eb">
+    <meta name="theme-color" content="#f2ece1">
     <script>
         (function() {
             try {
@@ -178,19 +178,19 @@
         /* ── PWA STANDALONE: Android Navigationsleiste ausblenden ── */
         /* ── GOOGLE MATERIAL YOU EXPRESSIVE (ANDROID 16/17 PIXEL SYSTEM) ── */
         :root {
-            /* Google Pixel Light Beige/Cream Palette */
-            --md-sys-color-surface: #f7f3eb;
-            --md-sys-color-surface-dim: #f0e9de;
-            --md-sys-color-surface-bright: #ffffff;
-            --md-sys-color-surface-container-lowest: #ffffff;
-            --md-sys-color-surface-container-low: #f3edd2;
-            --md-sys-color-surface-container: #f2ece2;
-            --md-sys-color-surface-container-high: #eae3d7;
-            --md-sys-color-surface-container-highest: #e0d8cb;
-            --md-sys-color-on-surface: #1f1b16;
-            --md-sys-color-on-surface-variant: #524d44;
+            /* Warmes Leinenpapier (Augenschonende Light Palette) */
+            --md-sys-color-surface: #f2ece1;
+            --md-sys-color-surface-dim: #e8e0d2;
+            --md-sys-color-surface-bright: #f7f2e8;
+            --md-sys-color-surface-container-lowest: #f7f2e8;
+            --md-sys-color-surface-container-low: #efe8da;
+            --md-sys-color-surface-container: #ebe3d5;
+            --md-sys-color-surface-container-high: #e2d9c9;
+            --md-sys-color-surface-container-highest: #d7cdbc;
+            --md-sys-color-on-surface: #26231e;
+            --md-sys-color-on-surface-variant: #5b554b;
             --md-sys-color-outline: #857e72;
-            --md-sys-color-outline-variant: #d3cbbe;
+            --md-sys-color-outline-variant: #d6cdbd;
             
             /* Material You / Stitch Sage Green & Warm Pastel Accents */
             --accent: #2d694c;
@@ -229,14 +229,14 @@
             font-family: 'Epilogue', 'Plus Jakarta Sans', sans-serif !important;
         }
         
-        /* M3 Google Pixel Light Warm Beige/Cream Canvas */
+        /* Warmes Leinenpapier Canvas */
         body { 
-            background-color: #f7f3eb !important;
-            background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, #f7f3eb 72%) !important;
+            background-color: #f2ece1 !important;
+            background-image: radial-gradient(circle at 50% 0%, #f7f2e8 0%, #f2ece1 74%) !important;
             background-attachment: fixed !important;
             background-repeat: no-repeat !important;
             background-size: cover !important;
-            color: #1f1b16 !important;
+            color: #26231e !important;
             min-height: 100vh;
         }
 
@@ -244,46 +244,46 @@
 
         .bg-glow-1, .bg-glow-2 { display: none; }
 
-        /* ── M3 LIGHT ELEVATED CARDS (Google Pixel 24px - 28px Squircles) ── */
+        /* ── WARMES LEINENPAPIER ELEVATED CARDS ── */
         .glass-card {
-            background: #f2ece2 !important;
-            border: 1px solid #e5ded2 !important;
-            border-radius: 1.65rem !important; /* 26px Pixel shape */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+            background: #ebe3d5 !important;
+            border: 1px solid #ddd4c3 !important;
+            border-radius: 1.65rem !important;
+            box-shadow: 0 4px 20px rgba(38, 35, 30, 0.045) !important;
             contain: paint;
             transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
         }
         .glass-card-solid {
-            background: #ffffff !important;
-            border: 1px solid #e2dcd2 !important;
+            background: #f7f2e8 !important;
+            border: 1px solid #ddd4c3 !important;
             border-radius: 1.65rem !important;
             overflow: hidden;
         }
         @media (hover: hover) {
             .glass-card:hover {
-                box-shadow: 0 8px 26px rgba(0, 0, 0, 0.09) !important;
+                box-shadow: 0 8px 26px rgba(38, 35, 30, 0.08) !important;
                 border-color: rgba(45, 105, 76, 0.35) !important;
             }
         }
 
-        /* Fächerliste: Pixel Crisp White Containers */
+        /* Fächerliste: Sanfte Leinenpapier-Flächen */
         .subject-card, .subject-list-item {
-            background: #ffffff !important;
-            border: 1px solid #e8e2d8 !important;
-            border-radius: 1.5rem !important; /* Clean 24px */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+            background: #f7f2e8 !important;
+            border: 1px solid #dfd6c6 !important;
+            border-radius: 1.5rem !important;
+            box-shadow: 0 2px 10px rgba(38, 35, 30, 0.035) !important;
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease !important;
         }
         @media (hover: hover) {
             .subject-card:hover, .subject-list-item:hover {
-                background: #fdfbf7 !important;
+                background: #f3ede2 !important;
                 border-color: rgba(45, 105, 76, 0.35) !important;
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+                box-shadow: 0 6px 20px rgba(38, 35, 30, 0.07) !important;
             }
         }
         .subject-card:active, .subject-list-item:active {
             transform: scale(0.988);
-            background: #f7f1e7 !important;
+            background: #ebe3d5 !important;
         }
 
         /* Aufgabenliste Wrapper: transparent & rund ohne zweiten Außenrahmen */
@@ -360,21 +360,21 @@
         }
 
         .liquid-inner {
-            background: #f2ece2 !important;
-            border: 1px solid #e2dcd2 !important;
+            background: #ebe3d5 !important;
+            border: 1px solid #ddd4c3 !important;
             border-radius: 1rem;
         }
 
         /* ── M3 BOTTOM FLOATING NAVIGATION BAR & SMOOTH GLIDING LIQUID GLASS PILL ── */
         .glass-nav, .liquid-glass-nav, .liquid-nav-container, .liquid-dock {
-            background: rgba(253, 251, 247, 0.78) !important;
-            backdrop-filter: blur(28px) saturate(190%) !important;
-            -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.95) !important;
+            background: rgba(247, 242, 232, 0.86) !important;
+            backdrop-filter: blur(28px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+            border: 1px solid rgba(221, 212, 195, 0.92) !important;
             box-shadow: 
-                0 20px 48px -6px rgba(31, 27, 22, 0.14),
-                0 4px 12px rgba(0, 0, 0, 0.04),
-                inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+                0 20px 48px -6px rgba(38, 35, 30, 0.12),
+                0 4px 12px rgba(38, 35, 30, 0.04),
+                inset 0 1px 2px rgba(247, 242, 232, 0.9) !important;
             border-radius: 9999px !important;
         }
 
@@ -383,10 +383,10 @@
             top: 5px;
             bottom: 5px;
             border-radius: 9999px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(242, 250, 246, 0.84) 100%) !important;
-            backdrop-filter: blur(24px) saturate(200%) !important;
-            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.98) !important;
+            background: linear-gradient(180deg, rgba(247, 242, 232, 0.96) 0%, rgba(235, 227, 213, 0.88) 100%) !important;
+            backdrop-filter: blur(24px) saturate(190%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+            border: 1.5px solid rgba(232, 224, 210, 0.95) !important;
             box-shadow: 
                 0 8px 24px -2px rgba(45, 105, 76, 0.18),
                 0 2px 6px rgba(0, 0, 0, 0.04),
@@ -1434,6 +1434,43 @@
         .cal-cell-holiday {
             background-color: #f5f3ff !important;
             border-color: #ddd6fe !important;
+        }
+
+        /* ── LIGHT MODE: WARMES LEINENPAPIER (AUGENSCHONEND) ── */
+        html:not(.dark) #splash,
+        html:not(.dark) .bg-\[\#f7f3eb\] {
+            background-color: #f2ece1 !important;
+        }
+        html:not(.dark) .bg-white,
+        html:not(.dark) .bg-white\/95,
+        html:not(.dark) .bg-white\/90,
+        html:not(.dark) .bg-white\/80,
+        html:not(.dark) .bg-\[\#fbf8f3\],
+        html:not(.dark) .bg-\[\#fffdf9\],
+        html:not(.dark) .bg-\[\#fdfbf7\] {
+            background-color: #f7f2e8 !important;
+        }
+        html:not(.dark) .bg-\[\#f2ece2\],
+        html:not(.dark) .bg-\[\#f4ece4\],
+        html:not(.dark) .bg-\[\#faf7f2\],
+        html:not(.dark) .bg-\[\#faf6f0\] {
+            background-color: #ebe3d5 !important;
+        }
+        html:not(.dark) .bg-\[\#eae3d7\],
+        html:not(.dark) .bg-\[\#ede4dc\],
+        html:not(.dark) .bg-\[\#ebe4d8\] {
+            background-color: #e4dccd !important;
+        }
+        @media (min-width: 1024px) {
+            html:not(.dark) .lg\:bg-white {
+                background-color: #f7f2e8 !important;
+            }
+            html:not(.dark) .lg\:bg-\[\#f4ece4\] {
+                background-color: #ebe3d5 !important;
+            }
+        }
+        html:not(.dark) .text-\[\#1f1b16\] {
+            color: #26231e !important;
         }
 
         /* ── DARK MODE: TIEFES ANTHRAZIT & WALDGRÜN ── */
