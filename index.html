@@ -2540,9 +2540,9 @@
         </div>
 
         <!-- HAUPT APP (Für reguläre Schüler: Notenapp Layout) -->
-        <div v-else class="w-full max-w-md md:max-w-none mx-auto px-4 xs:px-5 md:pl-28 md:pr-8 xl:pl-32 xl:pr-10 pt-6 md:pt-8">
+        <div v-else class="w-full max-w-md md:max-w-none mx-auto px-4 xs:px-5 md:px-0 pt-6 md:pt-8">
             <!-- STITCH TOP HEADER (Auf Home-Dashboard aktiv) -->
-            <header v-if="!selectedSubject && currentTab === 'home'" class="mb-5 sm:mb-7 flex justify-between items-center gap-2">
+            <header v-if="!selectedSubject && currentTab === 'home'" class="mb-5 sm:mb-7 flex justify-between items-center gap-2 md:pl-4 md:pr-8 xl:pl-6 xl:pr-10">
                 <!-- Left: Profile Avatar + Class Subtitle + Schooly Title -->
                 <div class="flex items-center gap-3 min-w-0">
                     <!-- Klickbarer Avatar mit Profilbild-Wechsel -->
@@ -2605,19 +2605,20 @@
                 </div>
             </header>
 
-            <!-- HALBJAHR SLIDER (Stitch Capsule Segmented Control) -->
-            <div v-if="!selectedSubject && currentTab === 'home'" class="bg-[#ede4dc] border border-[#ded5c7] p-1.5 flex relative mb-6 z-10 max-w-xs mx-auto rounded-full shadow-xs">
-                <div class="absolute top-1.5 bottom-1.5 bg-white rounded-full shadow-xs transition-all duration-300"
-                     :style="{ width: `calc((100% - 12px) / ${(halfYears?.length || 1)})`, left: `calc(6px + ${(halfYears || []).indexOf(selectedHalfYear)} * (100% - 12px) / ${(halfYears?.length || 1)})` }"></div>
-                <button v-for="s in halfYears" :key="s" @click="setHalfYear(s)"
-                        :class="selectedHalfYear === s ? 'text-[#1f1b16] font-extrabold' : 'text-[#6E665E] font-semibold hover:text-[#1f1b16]'"
-                        class="flex-1 py-2 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors duration-300 cursor-pointer">
-                    {{ s }}
-                </button>
-            </div>
+            <div class="md:pl-28 md:pr-8 xl:pl-32 xl:pr-10">
+                <!-- HALBJAHR SLIDER (Stitch Capsule Segmented Control) -->
+                <div v-if="!selectedSubject && currentTab === 'home'" class="bg-[#ede4dc] border border-[#ded5c7] p-1.5 flex relative mb-6 z-10 max-w-xs mx-auto rounded-full shadow-xs">
+                    <div class="absolute top-1.5 bottom-1.5 bg-white rounded-full shadow-xs transition-all duration-300"
+                         :style="{ width: `calc((100% - 12px) / ${(halfYears?.length || 1)})`, left: `calc(6px + ${(halfYears || []).indexOf(selectedHalfYear)} * (100% - 12px) / ${(halfYears || []).length || 1})` }"></div>
+                    <button v-for="s in halfYears" :key="s" @click="setHalfYear(s)"
+                            :class="selectedHalfYear === s ? 'text-[#1f1b16] font-extrabold' : 'text-[#6E665E] font-semibold hover:text-[#1f1b16]'"
+                            class="flex-1 py-2 text-xs sm:text-sm uppercase tracking-wider text-center relative z-10 transition-colors duration-300 cursor-pointer">
+                        {{ s }}
+                    </button>
+                </div>
 
-            <!-- MAIN INHALT -->
-            <main class="min-h-[60vh] pb-44 md:pb-14">
+                <!-- MAIN INHALT -->
+                <main class="min-h-[60vh] pb-48 md:pb-14">
                 
                 <!-- 1. DASHBOARD / HOME (Zweispaltig & Touch-optimiert - Expressive Shapes) -->
                 <!-- 1. DASHBOARD / HOME (Zweispaltig & Desktop-optimiert) -->
@@ -6163,12 +6164,13 @@
                     </div>
                 </div>
 
-            </main>
+                </main>
+            </div>
 
-            <!-- STITCH BOTTOM FLOATING NAVIGATION BAR (Nur Handy / schmale Bildschirme) -->
-            <div class="md:hidden fixed left-0 right-0 z-50 flex justify-center px-3 sm:px-4 pointer-events-none pb-[calc(1.25rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
-                <div class="w-full max-w-lg mx-auto pointer-events-auto">
-                    <nav class="liquid-dock relative p-1.5 flex justify-between items-center rounded-full select-none shadow-[0_20px_48px_-6px_rgba(31,27,22,0.16)]">
+            <!-- STITCH BOTTOM FLOATING NAVIGATION BAR (Nur Handy / schmale Bildschirme, ergonomisch in der Daumenzone) -->
+            <div class="md:hidden fixed left-0 right-0 z-50 flex justify-center px-3.5 sm:px-5 pointer-events-none pb-[calc(2.25rem+env(safe-area-inset-bottom))]" style="bottom: 0px;">
+                <div class="w-full max-w-md mx-auto pointer-events-auto">
+                    <nav aria-label="Mobile Navigation" class="liquid-dock relative p-1.5 flex justify-between items-center rounded-full select-none shadow-[0_22px_50px_-6px_rgba(31,27,22,0.18)]">
                         <!-- Smooth Sliding Liquid Glass Pill (Glider) -->
                         <div class="liquid-glass-glider pointer-events-none"
                              :style="{
@@ -6180,43 +6182,43 @@
                         </div>
 
                         <!-- 1. Dashboard -->
-                        <button @click="currentTab = 'home'; selectedSubject = null; scrollToTop()"
-                                class="relative z-10 flex-1 py-2 px-0.5 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+                        <button type="button" @click="currentTab = 'home'; selectedSubject = null; scrollToTop()"
+                                class="relative z-10 flex-1 min-h-[50px] py-2 px-1 rounded-full flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer active:scale-95"
                                 :class="activeNavIndex === 0 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
-                            <i data-lucide="layout-grid" class="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200" :class="activeNavIndex === 0 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.8]'"></i>
-                            <span class="text-[9.5px] sm:text-[10px] tracking-tight mt-0.5 transition-all duration-200" :class="activeNavIndex === 0 ? 'font-black' : 'font-semibold'">Dashboard</span>
+                            <i data-lucide="layout-grid" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 0 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.9]'"></i>
+                            <span class="text-[10px] leading-tight tracking-tight transition-all duration-200" :class="activeNavIndex === 0 ? 'font-black' : 'font-semibold'">Dashboard</span>
                         </button>
 
                         <!-- 2. Fächer -->
-                        <button @click="currentTab = 'subjects'; selectedSubject = null; scrollToTop()"
-                                class="relative z-10 flex-1 py-2 px-0.5 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+                        <button type="button" @click="currentTab = 'subjects'; selectedSubject = null; scrollToTop()"
+                                class="relative z-10 flex-1 min-h-[50px] py-2 px-1 rounded-full flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer active:scale-95"
                                 :class="activeNavIndex === 1 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
-                            <i data-lucide="book-open" class="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200" :class="activeNavIndex === 1 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.8]'"></i>
-                            <span class="text-[9.5px] sm:text-[10px] tracking-tight mt-0.5 transition-all duration-200" :class="activeNavIndex === 1 ? 'font-black' : 'font-semibold'">Fächer</span>
+                            <i data-lucide="book-open" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 1 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.9]'"></i>
+                            <span class="text-[10px] leading-tight tracking-tight transition-all duration-200" :class="activeNavIndex === 1 ? 'font-black' : 'font-semibold'">Fächer</span>
                         </button>
 
                         <!-- 3. Kalender -->
-                        <button @click="currentTab = 'planner'; selectedSubject = null; scrollToTop()"
-                                class="relative z-10 flex-1 py-2 px-0.5 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+                        <button type="button" @click="currentTab = 'planner'; selectedSubject = null; scrollToTop()"
+                                class="relative z-10 flex-1 min-h-[50px] py-2 px-1 rounded-full flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer active:scale-95"
                                 :class="activeNavIndex === 2 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
-                            <i data-lucide="calendar" class="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200" :class="activeNavIndex === 2 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.8]'"></i>
-                            <span class="text-[9.5px] sm:text-[10px] tracking-tight mt-0.5 transition-all duration-200" :class="activeNavIndex === 2 ? 'font-black' : 'font-semibold'">Kalender</span>
+                            <i data-lucide="calendar" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 2 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.9]'"></i>
+                            <span class="text-[10px] leading-tight tracking-tight transition-all duration-200" :class="activeNavIndex === 2 ? 'font-black' : 'font-semibold'">Kalender</span>
                         </button>
 
                         <!-- 4. Insights (Statistik & Notenverlauf) -->
-                        <button @click="currentTab = 'stats'; selectedSubject = null; scrollToTop()"
-                                class="relative z-10 flex-1 py-2 px-0.5 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+                        <button type="button" @click="currentTab = 'stats'; selectedSubject = null; scrollToTop()"
+                                class="relative z-10 flex-1 min-h-[50px] py-2 px-1 rounded-full flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer active:scale-95"
                                 :class="activeNavIndex === 3 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
-                            <i data-lucide="trending-up" class="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200" :class="activeNavIndex === 3 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.8]'"></i>
-                            <span class="text-[9.5px] sm:text-[10px] tracking-tight mt-0.5 transition-all duration-200" :class="activeNavIndex === 3 ? 'font-black' : 'font-semibold'">Insights</span>
+                            <i data-lucide="trending-up" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 3 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.9]'"></i>
+                            <span class="text-[10px] leading-tight tracking-tight transition-all duration-200" :class="activeNavIndex === 3 ? 'font-black' : 'font-semibold'">Insights</span>
                         </button>
 
                         <!-- 5. Abitur (Sachsen SOGYA Rechner) -->
-                        <button @click="currentTab = 'abitur'; selectedSubject = null; scrollToTop()"
-                                class="relative z-10 flex-1 py-2 px-0.5 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+                        <button type="button" @click="currentTab = 'abitur'; selectedSubject = null; scrollToTop()"
+                                class="relative z-10 flex-1 min-h-[50px] py-2 px-1 rounded-full flex flex-col items-center justify-center gap-0.5 transition-all duration-200 cursor-pointer active:scale-95"
                                 :class="activeNavIndex === 4 ? 'text-[#2d694c]' : 'text-[#6E665E] hover:text-[#1f1b16]'">
-                            <i data-lucide="graduation-cap" class="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200" :class="activeNavIndex === 4 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.8]'"></i>
-                            <span class="text-[9.5px] sm:text-[10px] tracking-tight mt-0.5 transition-all duration-200" :class="activeNavIndex === 4 ? 'font-black' : 'font-semibold'">ABI</span>
+                            <i data-lucide="graduation-cap" class="w-5 h-5 transition-transform duration-200" :class="activeNavIndex === 4 ? 'scale-110 stroke-[2.5]' : 'stroke-[1.9]'"></i>
+                            <span class="text-[10px] leading-tight tracking-tight transition-all duration-200" :class="activeNavIndex === 4 ? 'font-black' : 'font-semibold'">ABI</span>
                         </button>
                     </nav>
                 </div>
