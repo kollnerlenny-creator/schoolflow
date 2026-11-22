@@ -239,9 +239,15 @@
         }
 
         .gallery-hw-canvas {
-            max-width: 96%;
-            max-height: 92%;
+            max-width: 98%;
+            max-height: 97%;
             object-fit: contain;
+        }
+        @media (min-width: 1024px) {
+            .gallery-hw-canvas {
+                max-width: 96%;
+                max-height: 92%;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -450,22 +456,22 @@
                 </div>
 
                 <div class="lg:col-span-7 relative space-y-3 sm:space-y-4">
-                    <div id="heroStageWrap" class="relative overflow-visible w-full h-[clamp(225px,34svh,300px)] sm:h-[clamp(320px,45svh,420px)] lg:h-[clamp(320px,54svh,520px)] flex items-center justify-center">
+                    <div id="heroStageWrap" class="relative overflow-visible w-full h-[clamp(340px,49svh,440px)] sm:h-[clamp(400px,52svh,480px)] lg:h-[clamp(320px,54svh,520px)] flex items-center justify-center">
                         <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-square rounded-full border border-white/[0.08]"></div>
                         <div class="pointer-events-none absolute inset-x-[4%] bottom-[8%] h-px bg-white/15"></div>
 
-                        <div id="heroMacActor" class="hw-actor absolute right-[0%] bottom-[8%] h-[78%] sm:h-[83%] max-w-[82%] lg:max-w-[85%] aspect-[480/355] pointer-events-none">
+                        <div id="heroMacActor" class="hw-actor hidden lg:block absolute right-[0%] bottom-[8%] h-[83%] max-w-[85%] aspect-[480/355] pointer-events-none">
                             <canvas id="heroMacCanvas" class="w-full h-full block object-contain object-bottom"></canvas>
                         </div>
 
-                        <div id="heroPhoneActor" class="hw-actor absolute left-[2%] sm:left-[3%] bottom-[2%] h-[76%] sm:h-[82%] max-w-[38%] aspect-[320/610] z-10 pointer-events-none">
+                        <div id="heroPhoneActor" class="hw-actor absolute inset-x-0 mx-auto lg:inset-x-auto lg:mx-0 lg:left-[3%] bottom-[2%] h-[94%] lg:h-[82%] max-w-[80%] lg:max-w-[38%] aspect-[320/610] z-10 pointer-events-none">
                             <canvas id="heroPhoneLightCanvas" class="screen-layer is-active"></canvas>
                             <canvas id="heroPhoneDarkCanvas" class="screen-layer"></canvas>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-between gap-2.5 pt-1">
-                        <div class="inline-flex items-center p-1 rounded-xl bg-white/[0.05] border border-white/[0.12]" role="tablist" aria-label="Geräteansicht wählen">
+                    <div class="flex flex-wrap items-center justify-center lg:justify-between gap-2.5 pt-1">
+                        <div class="hidden lg:inline-flex items-center p-1 rounded-xl bg-white/[0.05] border border-white/[0.12]" role="tablist" aria-label="Geräteansicht wählen">
                             <button type="button" data-hero-mode="duo" class="hero-mode-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#ff9e2c] text-[#0d2419] shadow-sm transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                                 <span class="sm:hidden">Beide</span>
                                 <span class="hidden sm:inline">Handy &amp; Laptop</span>
@@ -479,9 +485,9 @@
                             </button>
                         </div>
 
-                        <button type="button" id="heroDarkToggleBtn" aria-pressed="false" class="btn-surface inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer min-h-[40px] whitespace-nowrap shrink-0">
+                        <button type="button" id="heroDarkToggleBtn" aria-pressed="false" class="btn-surface inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer min-h-[42px] whitespace-nowrap shrink-0">
                             <span id="heroThemeLabel" class="hidden sm:inline">Dark Mode Vorschau</span>
-                            <span id="heroThemeLabelMobile" class="sm:hidden">Dark Mode</span>
+                            <span id="heroThemeLabelMobile" class="sm:hidden">Dark Mode Vorschau</span>
                         </button>
                     </div>
                 </div>
@@ -532,8 +538,8 @@
 
         <!-- 02 · LIVE-EINBLICK (#tour) — UNIFIED PINNED SCROLL STAGE (MOBILE & DESKTOP) -->
         <section id="tour" class="scroll-mt-0 relative bg-[#0f281c] text-[#f7f2e8] border-t border-white/[0.08] overflow-x-clip">
-            <div id="tourPinWrap" class="min-h-[100svh] w-full flex flex-col justify-between pt-[76px] pb-4 sm:pt-[94px] sm:pb-6 lg:pt-[86px] lg:pb-6 space-y-2.5 sm:space-y-4 lg:space-y-3">
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-2.5 sm:space-y-3 relative z-30">
+            <div id="tourPinWrap" class="min-h-[100svh] w-full flex flex-col justify-between pt-[70px] pb-3 sm:pt-[94px] sm:pb-6 lg:pt-[86px] lg:pb-6 space-y-2 sm:space-y-4 lg:space-y-3">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-2 sm:space-y-3 relative z-30">
                     <div class="flex items-center justify-between gap-4">
                         <span class="text-xs sm:text-[13px] font-bold tracking-[0.02em] text-[#ff9e2c]">02 · Live-Einblick</span>
                         <div class="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
@@ -560,18 +566,18 @@
                     </div>
                 </div>
 
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-8 items-center py-0.5 relative z-20">
-                    <div id="tourStageTouch" class="lg:col-span-7 relative w-full h-[clamp(198px,30svh,290px)] sm:h-[clamp(285px,39svh,375px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5 sm:gap-6 lg:gap-8 items-center py-0.5 relative z-20">
+                    <div id="tourStageTouch" class="lg:col-span-7 relative w-full h-[clamp(235px,37.5svh,390px)] sm:h-[clamp(320px,44svh,420px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
                         <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-square rounded-full border border-white/[0.08]"></div>
                         <div class="pointer-events-none absolute inset-x-[4%] bottom-[8%] h-px bg-white/15"></div>
 
-                        <div id="tourMacActor" class="hw-actor absolute h-[76%] sm:h-[82%] max-w-[78%] lg:max-w-[82%] aspect-[480/355]" style="left: 14%; bottom: 9%;">
+                        <div id="tourMacActor" class="hw-actor hidden lg:block absolute h-[82%] max-w-[82%] aspect-[480/355]" style="left: 14%; bottom: 9%;">
                             <canvas id="tourMacScreen0" class="screen-layer is-active"></canvas>
                             <canvas id="tourMacScreen1" class="screen-layer"></canvas>
                             <canvas id="tourMacScreen2" class="screen-layer"></canvas>
                         </div>
 
-                        <div id="tourPhoneActor" class="hw-actor absolute h-[74%] sm:h-[80%] max-w-[36%] aspect-[320/610] z-20" style="left: 3%; bottom: 2%;">
+                        <div id="tourPhoneActor" class="hw-actor absolute inset-x-0 mx-auto lg:inset-x-auto lg:mx-0 lg:left-[3%] bottom-[2%] h-[95%] lg:h-[80%] max-w-[80%] lg:max-w-[36%] aspect-[320/610] z-20">
                             <canvas id="tourPhoneScreen0" class="screen-layer is-active"></canvas>
                             <canvas id="tourPhoneScreen1" class="screen-layer"></canvas>
                             <canvas id="tourPhoneScreen2" class="screen-layer"></canvas>
@@ -640,7 +646,7 @@
                 </div>
 
                 <div class="border-t border-white/[0.08]">
-                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
+                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-2 sm:py-3 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
                         <span id="tourCaptionText" class="truncate">01 / 04 · Echtzeit-Sync zwischen Smartphone und Laptop</span>
                         <span class="lg:hidden text-[#ff9e2c] font-bold shrink-0">Scrollen ↓</span>
                         <span class="hidden lg:inline text-[#ff9e2c] font-bold shrink-0">schooly · Handy &amp; Laptop</span>
@@ -651,17 +657,17 @@
 
         <!-- 03 · ALLE ANSICHTEN (#funktionen) — UNIFIED HORIZONTAL SCROLL GALLERY -->
         <section id="funktionen" class="scroll-mt-0 relative bg-[#133122] text-[#f7f2e8] border-t border-white/[0.08] overflow-x-clip">
-            <div id="funktionenPinWrap" class="min-h-[100svh] flex flex-col justify-center pt-[76px] pb-6 sm:pt-[94px] sm:pb-10 lg:pt-[86px] lg:pb-8">
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 mb-5 lg:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-3.5 sm:gap-4">
-                    <div class="max-w-2xl space-y-1.5 sm:space-y-2 reveal-up">
+            <div id="funktionenPinWrap" class="min-h-[100svh] flex flex-col justify-center pt-[72px] pb-4 sm:pt-[94px] sm:pb-8 lg:pt-[86px] lg:pb-8">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 mb-3.5 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-2.5 sm:gap-4">
+                    <div class="max-w-2xl space-y-1 sm:space-y-2 reveal-up">
                         <div class="text-xs sm:text-[13px] font-bold tracking-[0.02em] text-[#ff9e2c]">03 · Alle Ansichten</div>
-                        <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.08]" style="font-size: clamp(1.42rem, 3.1vw, 2.65rem); text-wrap: balance;">
+                        <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.08]" style="font-size: clamp(1.36rem, 3.1vw, 2.65rem); text-wrap: balance;">
                             Jedes Werkzeug genau dann, wenn du es <span class="text-[#ff9e2c]">brauchst.</span>
                         </h2>
                     </div>
 
                     <div class="flex flex-wrap items-center justify-between md:justify-end gap-3 reveal-up">
-                        <div class="inline-flex items-center p-1 rounded-xl bg-white/[0.05] border border-white/[0.12]" role="tablist" aria-label="Ansichten filtern">
+                        <div class="hidden lg:inline-flex items-center p-1 rounded-xl bg-white/[0.05] border border-white/[0.12]" role="tablist" aria-label="Ansichten filtern">
                             <button type="button" data-gallery-filter="all" class="gallery-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#ff9e2c] text-[#0d2419] shadow-sm transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                                 Alle (9)
                             </button>
@@ -682,12 +688,12 @@
                     </div>
                 </div>
 
-                <!-- Unified Studio Bays (scroll-driven across both Mobile & Desktop) -->
+                <!-- Unified Studio Bays (phones-only enlarged on Mobile, full duo on Desktop) -->
                 <div id="galleryViewport" class="w-full overflow-hidden touch-pan-y">
-                    <div id="galleryTrack" class="flex items-stretch gap-5 sm:gap-6 w-max px-5 sm:px-8 lg:px-[max(2rem,calc((100vw-1280px)/2+2rem))] pb-2">
-                        <figure data-device="mobile" class="gallery-card snap-start w-[min(70vw,258px)] sm:w-[272px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 overflow-hidden">
-                                <canvas id="galleryHw0" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-faecher-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Fächer und Gewichtung Smartphone Mockup"></canvas>
+                    <div id="galleryTrack" class="flex items-stretch gap-4 sm:gap-6 w-max px-5 sm:px-8 lg:px-[max(2rem,calc((100vw-1280px)/2+2rem))] pb-1.5">
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-3 overflow-hidden">
+                                <canvas id="galleryHw0" class="gallery-hw-canvas relative z-10 h-[97%] lg:h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-faecher-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Fächer und Gewichtung Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
                                 <div class="text-xs font-bold text-[#ff9e2c]">Smartphone · Fächer</div>
@@ -695,9 +701,9 @@
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[min(70vw,258px)] sm:w-[272px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 overflow-hidden">
-                                <canvas id="galleryHw1" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-wunschnote-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Wunschnoten-Rechner Smartphone Mockup"></canvas>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-3 overflow-hidden">
+                                <canvas id="galleryHw1" class="gallery-hw-canvas relative z-10 h-[97%] lg:h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-wunschnote-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Wunschnoten-Rechner Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
                                 <div class="text-xs font-bold text-[#ff9e2c]">Smartphone · Wunschnote</div>
@@ -705,19 +711,26 @@
                             </figcaption>
                         </figure>
 
-                        <figure data-device="laptop" class="gallery-card snap-start w-[min(86vw,352px)] sm:w-[450px] lg:w-[clamp(370px,34vw,490px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-                                <canvas id="galleryHw2" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-dash-laptop" data-yaw="5.5" aria-label="schooly Laptop Dashboard Mockup"></canvas>
+                        <figure data-device="laptop" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(370px,34vw,490px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-4 overflow-hidden">
+                                <canvas id="galleryHw2Mob" class="gallery-hw-canvas lg:hidden relative z-10 h-[97%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-dash-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Dashboard Smartphone Mockup"></canvas>
+                                <canvas id="galleryHw2" class="gallery-hw-canvas hidden lg:block relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-dash-laptop" data-yaw="5.5" aria-label="schooly Laptop Dashboard Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
-                                <div class="text-xs font-bold text-[#ff9e2c]">Laptop · Dashboard</div>
-                                <div class="text-sm font-bold text-[#f7f2e8]">Volle Übersicht am großen Monitor</div>
+                                <div class="text-xs font-bold text-[#ff9e2c]">
+                                    <span class="lg:hidden">Smartphone · Dashboard</span>
+                                    <span class="hidden lg:inline">Laptop · Dashboard</span>
+                                </div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">
+                                    <span class="lg:hidden">Alle Fächer, Schnitt &amp; Fokus im Blick</span>
+                                    <span class="hidden lg:inline">Volle Übersicht am großen Monitor</span>
+                                </div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[min(70vw,258px)] sm:w-[272px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 overflow-hidden">
-                                <canvas id="galleryHw3" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-aufgaben-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Aufgaben Smartphone Mockup"></canvas>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-3 overflow-hidden">
+                                <canvas id="galleryHw3" class="gallery-hw-canvas relative z-10 h-[97%] lg:h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-aufgaben-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Aufgaben Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
                                 <div class="text-xs font-bold text-[#ff9e2c]">Smartphone · Aufgaben</div>
@@ -725,9 +738,9 @@
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[min(70vw,258px)] sm:w-[272px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 overflow-hidden">
-                                <canvas id="galleryHw4" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-stundenplan-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Stundenplan Smartphone Mockup"></canvas>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-3 overflow-hidden">
+                                <canvas id="galleryHw4" class="gallery-hw-canvas relative z-10 h-[97%] lg:h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-stundenplan-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Stundenplan Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
                                 <div class="text-xs font-bold text-[#ff9e2c]">Smartphone · Stundenplan</div>
@@ -735,19 +748,23 @@
                             </figcaption>
                         </figure>
 
-                        <figure data-device="laptop" class="gallery-card snap-start w-[min(86vw,352px)] sm:w-[450px] lg:w-[clamp(370px,34vw,490px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-                                <canvas id="galleryHw5" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-kalender-laptop" data-yaw="-5.2" aria-label="schooly Kalender Laptop Mockup"></canvas>
+                        <figure data-device="laptop" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(370px,34vw,490px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-4 overflow-hidden">
+                                <canvas id="galleryHw5Mob" class="gallery-hw-canvas lg:hidden relative z-10 h-[97%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-kalender-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Kalender Smartphone Mockup"></canvas>
+                                <canvas id="galleryHw5" class="gallery-hw-canvas hidden lg:block relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-kalender-laptop" data-yaw="-5.2" aria-label="schooly Kalender Laptop Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
-                                <div class="text-xs font-bold text-[#ff9e2c]">Laptop · Kalender &amp; Ferien</div>
+                                <div class="text-xs font-bold text-[#ff9e2c]">
+                                    <span class="lg:hidden">Smartphone · Kalender &amp; Ferien</span>
+                                    <span class="hidden lg:inline">Laptop · Kalender &amp; Ferien</span>
+                                </div>
                                 <div class="text-sm font-bold text-[#f7f2e8]">16 Bundesländer &amp; Google Calendar</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[min(70vw,258px)] sm:w-[272px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 overflow-hidden">
-                                <canvas id="galleryHw6" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-insights-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Insights Smartphone Mockup"></canvas>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-3 overflow-hidden">
+                                <canvas id="galleryHw6" class="gallery-hw-canvas relative z-10 h-[97%] lg:h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-insights-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Insights Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
                                 <div class="text-xs font-bold text-[#ff9e2c]">Smartphone · Insights</div>
@@ -755,19 +772,23 @@
                             </figcaption>
                         </figure>
 
-                        <figure data-device="laptop" class="gallery-card snap-start w-[min(86vw,352px)] sm:w-[450px] lg:w-[clamp(370px,34vw,490px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-                                <canvas id="galleryHw7" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-abi-laptop" data-yaw="5.2" aria-label="schooly Abitur-Check Laptop Mockup"></canvas>
+                        <figure data-device="laptop" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(370px,34vw,490px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-4 overflow-hidden">
+                                <canvas id="galleryHw7Mob" class="gallery-hw-canvas lg:hidden relative z-10 h-[97%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-abi-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Abitur-Check Smartphone Mockup"></canvas>
+                                <canvas id="galleryHw7" class="gallery-hw-canvas hidden lg:block relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-abi-laptop" data-yaw="5.2" aria-label="schooly Abitur-Check Laptop Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
-                                <div class="text-xs font-bold text-[#ff9e2c]">Laptop · Abitur-Check</div>
+                                <div class="text-xs font-bold text-[#ff9e2c]">
+                                    <span class="lg:hidden">Smartphone · Abitur-Check</span>
+                                    <span class="hidden lg:inline">Laptop · Abitur-Check</span>
+                                </div>
                                 <div class="text-sm font-bold text-[#f7f2e8]">Alle 40 Kurse &amp; P1–P5 im Blick</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[min(70vw,258px)] sm:w-[272px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-3">
-                            <div class="gallery-bay relative h-[clamp(250px,39svh,315px)] sm:h-[clamp(290px,42svh,355px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-3 overflow-hidden">
-                                <canvas id="galleryHw8" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-recap-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Wochenrückblick Smartphone Mockup"></canvas>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(76vw,292px)] sm:w-[300px] lg:w-[clamp(235px,21vw,295px)] shrink-0 space-y-2.5 sm:space-y-3">
+                            <div class="gallery-bay relative h-[clamp(315px,47svh,430px)] sm:h-[clamp(340px,46svh,430px)] lg:h-[clamp(240px,42svh,385px)] rounded-2xl flex items-center justify-center p-1.5 sm:p-2 lg:p-3 overflow-hidden">
+                                <canvas id="galleryHw8" class="gallery-hw-canvas relative z-10 h-[97%] lg:h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-recap-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Wochenrückblick Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-0.5 space-y-0.5">
                                 <div class="text-xs font-bold text-[#ff9e2c]">Smartphone · Rückblick</div>
@@ -777,8 +798,8 @@
                     </div>
                 </div>
 
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 pt-4 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
-                    <span class="lg:hidden">Alle 9 Ansichten · Handy &amp; Laptop</span>
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 pt-2.5 lg:pt-4 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
+                    <span class="lg:hidden">Alle 9 Ansichten · Smartphone</span>
                     <span class="hidden lg:inline">Alle 9 Ansichten im Live-Überblick</span>
                     <span class="lg:hidden text-[#ff9e2c] font-bold">Scrollen ↓</span>
                 </div>
@@ -787,7 +808,7 @@
 
         <!-- 04 · LIGHT & DARK MODE (#themes) -->
         <section id="themes" class="scroll-mt-20 relative bg-[#0f281c] text-[#f7f2e8] py-16 sm:py-20 lg:pt-24 lg:pb-16 border-t border-white/[0.08] overflow-x-clip">
-            <div class="max-w-[1280px] mx-auto px-5 sm:px-8 space-y-6 sm:space-y-8">
+            <div class="max-w-[1280px] mx-auto px-4 sm:px-8 space-y-6 sm:space-y-8">
                 <div class="max-w-2xl mx-auto text-center space-y-3 reveal-up">
                     <div class="text-xs sm:text-[13px] font-bold tracking-[0.02em] text-[#ff9e2c]">04 · Light &amp; Dark Mode</div>
                     <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.08]" style="font-size: clamp(1.5rem, 3.3vw, 2.75rem); text-wrap: balance;">
@@ -812,15 +833,15 @@
                     </div>
                 </div>
 
-                <div id="themePhonesStage" class="relative py-2 flex items-center justify-center gap-4 sm:gap-12 lg:gap-16">
+                <div id="themePhonesStage" class="relative py-2 flex items-center justify-center gap-2 sm:gap-10 lg:gap-16">
                     <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] max-w-[500px] aspect-square rounded-full border border-white/[0.08]"></div>
-                    <div class="pointer-events-none absolute inset-x-[12%] sm:inset-x-[18%] bottom-1 h-px bg-white/15"></div>
+                    <div class="pointer-events-none absolute inset-x-[10%] sm:inset-x-[18%] bottom-1 h-px bg-white/15"></div>
 
-                    <div id="themePhoneLight" class="hw-actor w-[clamp(138px,36vw,175px)] sm:w-[clamp(195px,23vw,230px)] lg:w-[clamp(195px,16.5vw,242px)] aspect-[320/610]">
+                    <div id="themePhoneLight" class="hw-actor w-[clamp(158px,43vw,196px)] sm:w-[clamp(210px,26vw,250px)] lg:w-[clamp(195px,16.5vw,242px)] aspect-[320/610]">
                         <canvas id="themePhoneLightCanvas" class="w-full h-full block"></canvas>
                     </div>
 
-                    <div id="themePhoneDark" class="hw-actor w-[clamp(138px,36vw,175px)] sm:w-[clamp(195px,23vw,230px)] lg:w-[clamp(195px,16.5vw,242px)] aspect-[320/610]">
+                    <div id="themePhoneDark" class="hw-actor w-[clamp(158px,43vw,196px)] sm:w-[clamp(210px,26vw,250px)] lg:w-[clamp(195px,16.5vw,242px)] aspect-[320/610]">
                         <canvas id="themePhoneDarkCanvas" class="w-full h-full block"></canvas>
                     </div>
                 </div>
@@ -829,11 +850,11 @@
 
         <!-- 05 · OBERSTUFE & ABITUR (#abitur) — MATCHED SISTER SCROLL STAGE (MOBILE & DESKTOP) -->
         <section id="abitur" class="scroll-mt-0 relative bg-[#153626] text-[#f7f2e8] overflow-x-clip border-t border-white/[0.08]">
-            <div id="abiPinWrap" class="relative min-h-[100svh] w-full flex flex-col justify-between pt-[76px] pb-4 sm:pt-[94px] sm:pb-6 lg:pt-[86px] lg:pb-6 space-y-2.5 sm:space-y-4 lg:space-y-3">
+            <div id="abiPinWrap" class="relative min-h-[100svh] w-full flex flex-col justify-between pt-[70px] pb-3 sm:pt-[94px] sm:pb-6 lg:pt-[86px] lg:pb-6 space-y-2 sm:space-y-4 lg:space-y-3">
                 <div id="abiGridLayer" class="abi-grid-bg pointer-events-none absolute -inset-y-20 inset-x-0" aria-hidden="true"></div>
 
                 <!-- Top Section Label + Chapter Controls (Identical symmetry to 02 · Live-Einblick) -->
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-2.5 sm:space-y-3 relative z-30">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 space-y-2 sm:space-y-3 relative z-30">
                     <div class="flex items-center justify-between gap-4">
                         <span class="text-xs sm:text-[13px] font-bold tracking-[0.02em] text-[#ff9e2c]">05 · Oberstufe &amp; Abitur</span>
                         <div class="flex items-center gap-2.5 sm:gap-3 text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 tabular-nums">
@@ -861,16 +882,16 @@
                 </div>
 
                 <!-- Main Choreographed 3D Hardware + Abitur Editorial Copy -->
-                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-8 items-center py-0.5 relative z-20">
-                    <div id="abiStageTouch" class="lg:col-span-7 relative w-full h-[clamp(198px,30svh,290px)] sm:h-[clamp(285px,39svh,375px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
+                <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5 sm:gap-6 lg:gap-8 items-center py-0.5 relative z-20">
+                    <div id="abiStageTouch" class="lg:col-span-7 relative w-full h-[clamp(235px,37.5svh,390px)] sm:h-[clamp(320px,44svh,420px)] lg:h-[clamp(270px,48svh,490px)] flex items-center justify-center touch-pan-y">
                         <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-square rounded-full border border-white/[0.08]"></div>
                         <div class="pointer-events-none absolute inset-x-[4%] bottom-[8%] h-px bg-white/15"></div>
 
-                        <div id="abiMacActor" class="hw-actor absolute h-[76%] sm:h-[82%] max-w-[78%] lg:max-w-[82%] aspect-[480/355]" style="left: 14%; bottom: 9%;">
+                        <div id="abiMacActor" class="hw-actor hidden lg:block absolute h-[82%] max-w-[82%] aspect-[480/355]" style="left: 14%; bottom: 9%;">
                             <canvas id="abiMacScreen0" class="w-full h-full block object-contain object-bottom"></canvas>
                         </div>
 
-                        <div id="abiPhoneActor" class="hw-actor absolute h-[74%] sm:h-[80%] max-w-[36%] aspect-[320/610] z-20" style="left: 3%; bottom: 2%;">
+                        <div id="abiPhoneActor" class="hw-actor absolute inset-x-0 mx-auto lg:inset-x-auto lg:mx-0 lg:left-[3%] bottom-[2%] h-[95%] lg:h-[80%] max-w-[80%] lg:max-w-[36%] aspect-[320/610] z-20">
                             <canvas id="abiPhoneScreen0" class="screen-layer is-active"></canvas>
                             <canvas id="abiPhoneScreen1" class="screen-layer"></canvas>
                             <canvas id="abiPhoneScreen2" class="screen-layer"></canvas>
@@ -937,7 +958,7 @@
                 </div>
 
                 <div class="border-t border-white/[0.08] relative z-20">
-                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
+                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-2 sm:py-3 flex items-center justify-between gap-3 text-[11px] sm:text-xs font-semibold text-[#f7f2e8]/65">
                         <span id="abiCaptionText" class="truncate">01 / 04 · Abitur-Übersicht &amp; Punktekonto</span>
                         <span class="lg:hidden text-[#ff9e2c] font-bold shrink-0">Scrollen ↓</span>
                         <span class="hidden lg:inline text-[#ff9e2c] font-bold shrink-0">schooly · Oberstufe &amp; Abitur</span>
@@ -1472,6 +1493,23 @@
                     const tourPinDist = isMobile ? '+=260%' : '+=420%';
                     const abiPinDist = isMobile ? '+=260%' : '+=410%';
 
+                    if (isMobile) {
+                        setHeroMode('duo');
+                        if (activeGalleryFilter !== 'all') {
+                            activeGalleryFilter = 'all';
+                            document.querySelectorAll('.gallery-filter-btn').forEach(b => {
+                                const on = b.getAttribute('data-gallery-filter') === 'all';
+                                b.classList.toggle('bg-[#ff9e2c]', on);
+                                b.classList.toggle('text-[#0d2419]', on);
+                                b.classList.toggle('shadow-sm', on);
+                                b.classList.toggle('text-[#f7f2e8]/80', !on);
+                            });
+                            galleryCards.forEach(c => c.classList.remove('hidden'));
+                            gsap.set('#galleryTrack', { x: 0 });
+                            updateGalleryProgressLabel(0);
+                        }
+                    }
+
                     const tourMac = document.getElementById('tourMacActor');
                     const tourPhone = document.getElementById('tourPhoneActor');
                     const tourProgressFill = document.getElementById('tourProgressFill');
@@ -1497,24 +1535,41 @@
                         }
                     });
 
-                    tourTl
-                        .to(tourMac, { xPercent: 1.2, yPercent: -0.6, duration: 0.16, ease: 'sine.inOut' }, 0)
-                        .to(tourPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
-                        .to('#tourCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
-                        .to(tourMac, { xPercent: -7, yPercent: -2, scale: 0.88, opacity: 0.44, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
-                        .to(tourPhone, { xPercent: isMobile ? 42 : 48, yPercent: -1.8, scale: 1.06, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
-                        .to('#tourCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
-                        .to(tourPhone, { yPercent: -3.0, rotation: 0.4, duration: 0.12, ease: 'sine.inOut' }, 0.32)
-                        .to('#tourCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
-                        .to(tourMac, { xPercent: -3, yPercent: 0, scale: 1.04, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
-                        .to(tourPhone, { xPercent: isMobile ? 74 : 84, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.4, duration: 0.17, ease: 'sine.inOut' }, 0.42)
-                        .to('#tourCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
-                        .to(tourMac, { scale: 1.055, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
-                        .to('#tourCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
-                        .to(tourMac, { xPercent: 2, yPercent: -1.2, scale: 0.99, opacity: 1, rotation: 0, duration: 0.17, ease: 'sine.inOut' }, 0.69)
-                        .to(tourPhone, { xPercent: 0, yPercent: 0.8, scale: 1.01, opacity: 1, rotation: -0.7, duration: 0.17, ease: 'sine.inOut' }, 0.69)
-                        .to('#tourCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
-                        .to(tourPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                    if (isMobile) {
+                        tourTl
+                            .to(tourPhone, { yPercent: -1.2, scale: 1.015, duration: 0.16, ease: 'sine.inOut' }, 0)
+                            .to('#tourCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
+                            .to(tourPhone, { xPercent: 0, yPercent: -1.8, scale: 1.035, rotation: 1.1, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                            .to('#tourCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
+                            .to(tourPhone, { yPercent: -2.5, rotation: 0.4, duration: 0.12, ease: 'sine.inOut' }, 0.32)
+                            .to('#tourCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
+                            .to(tourPhone, { xPercent: 0, yPercent: 0.4, scale: 1.0, rotation: -1.0, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                            .to('#tourCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
+                            .to(tourPhone, { scale: 1.025, yPercent: -0.6, duration: 0.12, ease: 'sine.inOut' }, 0.59)
+                            .to('#tourCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
+                            .to(tourPhone, { xPercent: 0, yPercent: -0.8, scale: 1.035, rotation: 0.5, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                            .to('#tourCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
+                            .to(tourPhone, { yPercent: -0.3, scale: 1.015, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                    } else {
+                        tourTl
+                            .to(tourMac, { xPercent: 1.2, yPercent: -0.6, duration: 0.16, ease: 'sine.inOut' }, 0)
+                            .to(tourPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
+                            .to('#tourCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
+                            .to(tourMac, { xPercent: -7, yPercent: -2, scale: 0.88, opacity: 0.44, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                            .to(tourPhone, { xPercent: 48, yPercent: -1.8, scale: 1.06, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                            .to('#tourCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
+                            .to(tourPhone, { yPercent: -3.0, rotation: 0.4, duration: 0.12, ease: 'sine.inOut' }, 0.32)
+                            .to('#tourCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
+                            .to(tourMac, { xPercent: -3, yPercent: 0, scale: 1.04, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                            .to(tourPhone, { xPercent: 84, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.4, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                            .to('#tourCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
+                            .to(tourMac, { scale: 1.055, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
+                            .to('#tourCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
+                            .to(tourMac, { xPercent: 2, yPercent: -1.2, scale: 0.99, opacity: 1, rotation: 0, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                            .to(tourPhone, { xPercent: 0, yPercent: 0.8, scale: 1.01, opacity: 1, rotation: -0.7, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                            .to('#tourCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
+                            .to(tourPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                    }
 
                     const chapterJumpStops = [0.05, 0.36, 0.64, 0.90];
                     const jumpToTourChapter = (idx) => {
@@ -1580,25 +1635,43 @@
                         }
                     });
 
-                    abiTl
-                        .to('#abiGridLayer', { yPercent: 10, duration: 1, ease: 'none' }, 0)
-                        .to(abiMac, { xPercent: 1.2, yPercent: -0.6, duration: 0.16, ease: 'sine.inOut' }, 0)
-                        .to(abiPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
-                        .to('#abiCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
-                        .to(abiMac, { xPercent: -7, yPercent: -1.8, scale: 0.88, opacity: 0.36, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
-                        .to(abiPhone, { xPercent: isMobile ? 44 : 50, yPercent: -1.6, scale: 1.07, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
-                        .to('#abiCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
-                        .to(abiPhone, { yPercent: -2.8, rotation: 0.3, duration: 0.12, ease: 'sine.inOut' }, 0.32)
-                        .to('#abiCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
-                        .to(abiMac, { xPercent: -2.5, yPercent: 0, scale: 1.035, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
-                        .to(abiPhone, { xPercent: isMobile ? 74 : 82, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
-                        .to('#abiCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
-                        .to(abiMac, { scale: 1.05, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
-                        .to('#abiCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
-                        .to(abiMac, { xPercent: -8, yPercent: -1.4, scale: 0.86, opacity: 0.32, rotation: -1.1, duration: 0.17, ease: 'sine.inOut' }, 0.69)
-                        .to(abiPhone, { xPercent: isMobile ? 46 : 52, yPercent: -1.2, scale: 1.08, opacity: 1, rotation: -0.8, duration: 0.17, ease: 'sine.inOut' }, 0.69)
-                        .to('#abiCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
-                        .to(abiPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                    if (isMobile) {
+                        abiTl
+                            .to('#abiGridLayer', { yPercent: 10, duration: 1, ease: 'none' }, 0)
+                            .to(abiPhone, { yPercent: -1.2, scale: 1.015, duration: 0.16, ease: 'sine.inOut' }, 0)
+                            .to('#abiCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
+                            .to(abiPhone, { xPercent: 0, yPercent: -1.8, scale: 1.035, rotation: 1.0, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                            .to('#abiCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
+                            .to(abiPhone, { yPercent: -2.4, rotation: 0.3, duration: 0.12, ease: 'sine.inOut' }, 0.32)
+                            .to('#abiCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
+                            .to(abiPhone, { xPercent: 0, yPercent: 0.4, scale: 1.0, rotation: -0.9, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                            .to('#abiCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
+                            .to(abiPhone, { scale: 1.025, yPercent: -0.6, duration: 0.12, ease: 'sine.inOut' }, 0.59)
+                            .to('#abiCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
+                            .to(abiPhone, { xPercent: 0, yPercent: -0.8, scale: 1.04, rotation: 0.4, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                            .to('#abiCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
+                            .to(abiPhone, { yPercent: -0.3, scale: 1.015, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                    } else {
+                        abiTl
+                            .to('#abiGridLayer', { yPercent: 10, duration: 1, ease: 'none' }, 0)
+                            .to(abiMac, { xPercent: 1.2, yPercent: -0.6, duration: 0.16, ease: 'sine.inOut' }, 0)
+                            .to(abiPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
+                            .to('#abiCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
+                            .to(abiMac, { xPercent: -7, yPercent: -1.8, scale: 0.88, opacity: 0.36, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                            .to(abiPhone, { xPercent: 50, yPercent: -1.6, scale: 1.07, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                            .to('#abiCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
+                            .to(abiPhone, { yPercent: -2.8, rotation: 0.3, duration: 0.12, ease: 'sine.inOut' }, 0.32)
+                            .to('#abiCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
+                            .to(abiMac, { xPercent: -2.5, yPercent: 0, scale: 1.035, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                            .to(abiPhone, { xPercent: 82, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                            .to('#abiCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
+                            .to(abiMac, { scale: 1.05, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
+                            .to('#abiCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
+                            .to(abiMac, { xPercent: -8, yPercent: -1.4, scale: 0.86, opacity: 0.32, rotation: -1.1, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                            .to(abiPhone, { xPercent: 52, yPercent: -1.2, scale: 1.08, opacity: 1, rotation: -0.8, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                            .to('#abiCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
+                            .to(abiPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                    }
 
                     const abiJumpStops = [0.05, 0.36, 0.64, 0.90];
                     const jumpToAbiChapter = (idx) => {
