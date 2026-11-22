@@ -5,13 +5,25 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Schooly">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
     <meta name="theme-color" content="#f2ece1">
     <script>
         (function() {
             try {
-                if (localStorage.getItem('sf_dark_mode') === 'true') {
+                var savedMode = localStorage.getItem('sf_color_mode');
+                if (!savedMode) {
+                    savedMode = localStorage.getItem('sf_dark_mode') === 'true' ? 'dark' : 'light';
+                }
+                var tc = document.querySelector('meta[name="theme-color"]');
+                if (savedMode === 'evening') {
+                    document.documentElement.classList.add('evening');
+                    if (tc) tc.setAttribute('content', '#eadcc7');
+                } else if (savedMode === 'dim') {
+                    document.documentElement.classList.add('dark', 'dim');
+                    if (tc) tc.setAttribute('content', '#252b28');
+                } else if (savedMode === 'dark') {
                     document.documentElement.classList.add('dark');
-                    var tc = document.querySelector('meta[name="theme-color"]');
                     if (tc) tc.setAttribute('content', '#111412');
                 }
             } catch (_) {}
@@ -24,7 +36,24 @@
     <link rel="apple-touch-icon" href="/icon-192.png?v=50">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Schooly</title>
+    <title>schooly – Dein Schulalltag, endlich an einem Ort</title>
+    <meta name="description" content="Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und kompletter Abitur-Check. Kostenlos &amp; werbefrei auf schooly26.vercel.app.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="de_DE">
+    <meta property="og:site_name" content="schooly">
+    <meta property="og:url" content="https://schooly26.vercel.app/">
+    <meta property="og:title" content="schooly – All-in-One Schul-App für Handy &amp; Laptop">
+    <meta property="og:description" content="Noten, Wunschnote, Stundenplan, Kalender-Sync &amp; Abitur-Check nahtlos synchron auf Smartphone und Laptop.">
+    <meta property="og:image" content="https://schooly26.vercel.app/assets/og-preview.png">
+    <meta property="og:image:secure_url" content="https://schooly26.vercel.app/assets/og-preview.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="schooly – All-in-One Schul-App für Smartphone und Laptop">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="schooly – All-in-One Schul-App für Handy &amp; Laptop">
+    <meta name="twitter:description" content="Noten, Wunschnote, Stundenplan, Kalender-Sync &amp; Abitur-Check nahtlos synchron auf Smartphone und Laptop.">
+    <meta name="twitter:image" content="https://schooly26.vercel.app/assets/og-preview.png">
     <!-- Google Fonts: Epilogue, Plus Jakarta Sans & Roboto (Warm Pastel Student Planner Typography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1436,10 +1465,34 @@
             border-color: #ddd6fe !important;
         }
 
-        /* ── LIGHT MODE: WARMES LEINENPAPIER (AUGENSCHONEND) ── */
+        /* ── LIGHT MODE & ABENDPAPIER (AUGENSCHONEND) ── */
+        html:not(.dark) {
+            --sf-l-bg: #f2ece1;
+            --sf-l-surface: #f7f2e8;
+            --sf-l-surface-2: #ebe3d5;
+            --sf-l-surface-3: #e4dccd;
+            --sf-l-text: #26231e;
+        }
+        html:not(.dark).evening {
+            --sf-l-bg: #eadcc7;
+            --sf-l-surface: #f4eadb;
+            --sf-l-surface-2: #e4d4bc;
+            --sf-l-surface-3: #dbc9ae;
+            --sf-l-text: #2c241c;
+        }
+        html:not(.dark) body,
         html:not(.dark) #splash,
         html:not(.dark) .bg-\[\#f7f3eb\] {
-            background-color: #f2ece1 !important;
+            background-color: var(--sf-l-bg) !important;
+        }
+        html:not(.dark).evening body {
+            background-color: #eadcc7 !important;
+            background-image: radial-gradient(circle at 50% 0%, #eee2cf 0%, #e6d6be 78%) !important;
+            color: var(--sf-l-text) !important;
+        }
+        html:not(.dark).evening #splash {
+            background-color: #eadcc7 !important;
+            background-image: radial-gradient(circle at 50% 0%, #eee2cf 0%, #e6d6be 78%) !important;
         }
         html:not(.dark) .bg-white,
         html:not(.dark) .bg-white\/95,
@@ -1448,46 +1501,277 @@
         html:not(.dark) .bg-\[\#fbf8f3\],
         html:not(.dark) .bg-\[\#fffdf9\],
         html:not(.dark) .bg-\[\#fdfbf7\] {
-            background-color: #f7f2e8 !important;
+            background-color: var(--sf-l-surface) !important;
         }
         html:not(.dark) .bg-\[\#f2ece2\],
         html:not(.dark) .bg-\[\#f4ece4\],
         html:not(.dark) .bg-\[\#faf7f2\],
         html:not(.dark) .bg-\[\#faf6f0\] {
-            background-color: #ebe3d5 !important;
+            background-color: var(--sf-l-surface-2) !important;
         }
         html:not(.dark) .bg-\[\#eae3d7\],
         html:not(.dark) .bg-\[\#ede4dc\],
         html:not(.dark) .bg-\[\#ebe4d8\] {
-            background-color: #e4dccd !important;
+            background-color: var(--sf-l-surface-3) !important;
         }
         @media (min-width: 1024px) {
             html:not(.dark) .lg\:bg-white {
-                background-color: #f7f2e8 !important;
+                background-color: var(--sf-l-surface) !important;
             }
             html:not(.dark) .lg\:bg-\[\#f4ece4\] {
-                background-color: #ebe3d5 !important;
+                background-color: var(--sf-l-surface-2) !important;
             }
         }
         html:not(.dark) .text-\[\#1f1b16\] {
-            color: #26231e !important;
+            color: var(--sf-l-text) !important;
+        }
+        html.evening .bg-gradient-to-br {
+            background-image: linear-gradient(135deg, #f5ecde 0%, #f1e5d3 54%, #ebdcca 100%) !important;
+        }
+        html.evening .bg-\[\#faf6ef\],
+        html.evening .bg-\[\#faf7f2\]\/95,
+        html.evening .bg-\[\#f7f2e8\],
+        html.evening .bg-\[\#fcf3e8\],
+        html.evening .bg-\[\#fdf8f0\],
+        html.evening .bg-\[\#fff8f2\] {
+            background-color: #f4eadb !important;
+        }
+        html.evening .bg-\[\#fcfaf6\],
+        html.evening .bg-\[\#fcfaf7\],
+        html.evening .bg-\[\#f7f2ea\],
+        html.evening .bg-\[\#f7f2ea\]\/70,
+        html.evening .bg-\[\#f7f2ea\]\/40,
+        html.evening .bg-\[\#f5efe7\],
+        html.evening .bg-\[\#f4ece4\]\/60,
+        html.evening .bg-\[\#f4ece4\]\/50,
+        html.evening .bg-\[\#f4ede4\],
+        html.evening .bg-\[\#f3ebe3\],
+        html.evening .bg-\[\#f0e6df\],
+        html.evening .bg-\[\#efe8dc\],
+        html.evening .bg-\[\#efe8dc\]\/80,
+        html.evening .bg-\[\#efe7dc\],
+        html.evening .bg-\[\#efe5dc\],
+        html.evening .bg-\[\#f6f0e8\]\/95 {
+            background-color: #e4d4bc !important;
+        }
+        html.evening .bg-\[\#ded5c7\],
+        html.evening .bg-\[\#ded5c7\]\/70,
+        html.evening .bg-\[\#e2dacd\],
+        html.evening .bg-\[\#e2d8cd\],
+        html.evening .bg-\[\#e5dccd\],
+        html.evening .bg-\[\#e6dcd3\],
+        html.evening .bg-\[\#eae0d5\],
+        html.evening .bg-\[\#eadecf\],
+        html.evening .bg-\[\#ede4dc\]\/80,
+        html.evening .bg-\[\#ede4dc\]\/60,
+        html.evening .bg-\[\#ece3d8\]\/75 {
+            background-color: #dbc9ae !important;
+        }
+        html.evening .bg-\[\#f0f8f4\],
+        html.evening .bg-\[\#f2f8f4\],
+        html.evening .bg-\[\#e8f3ed\] {
+            background-color: #e1e6cf !important;
+        }
+        html.evening .bg-\[\#f4f8ff\],
+        html.evening .bg-\[\#f5f3ff\],
+        html.evening .bg-\[\#f0fdfa\] {
+            background-color: #e9dcc7 !important;
+        }
+        @media (min-width: 768px) {
+            html.evening .md\:bg-\[\#f6f0e8\]\/95 {
+                background-color: #e4d4bc !important;
+            }
+            html.evening .md\:bg-\[\#ece3d8\]\/75 {
+                background-color: #dbc9ae !important;
+            }
+            html.evening .md\:border-\[\#ded5c7\] {
+                border-color: #cbb99e !important;
+            }
+        }
+        html.evening .border-\[\#ede3d8\],
+        html.evening .border-\[\#ede3d8\]\/80,
+        html.evening .border-\[\#ded5c7\],
+        html.evening .border-\[\#ded3c2\],
+        html.evening .border-\[\#dfd4c4\],
+        html.evening .border-\[\#e5ded2\],
+        html.evening .border-\[\#e2dcd2\],
+        html.evening .border-\[\#f0e8df\],
+        html.evening .border-\[\#f0e8df\]\/50,
+        html.evening .border-\[\#f2ebe2\],
+        html.evening .border-\[\#f4ede6\],
+        html.evening .border-\[\#cec5b8\],
+        html.evening .border-\[\#cfe2d7\] {
+            border-color: #cbb99e !important;
+        }
+        html.evening .text-\[\#524d44\],
+        html.evening .text-\[\#6E665E\],
+        html.evening .text-\[\#857e72\],
+        html.evening .text-\[\#7d766b\] {
+            color: #645748 !important;
+        }
+        html.evening .text-\[\#2d694c\] {
+            color: #1f5538 !important;
+        }
+        html.evening .glass-card,
+        html.evening .glass-card-solid,
+        html.evening .subject-card,
+        html.evening .subject-list-item,
+        html.evening .liquid-inner,
+        html.evening .liquid-glass-modal,
+        html.evening .modal-glass,
+        html.evening .liquid-glass-datepicker {
+            background: #f4eadb !important;
+            border-color: #cbb99e !important;
+            color: #2c241c !important;
+        }
+        html.evening .modal-overlay-enter {
+            background: rgba(44, 36, 28, 0.48) !important;
+        }
+        html.evening .glass-nav,
+        html.evening .liquid-glass-nav,
+        html.evening .liquid-nav-container,
+        html.evening .liquid-dock {
+            background: rgba(234, 220, 199, 0.92) !important;
+            border-color: #cbb99e !important;
+        }
+        html.evening .liquid-glass-glider,
+        html.evening .liquid-glass-glider-vertical {
+            background: rgba(246, 238, 225, 0.96) !important;
+            border-color: #cbb99e !important;
+        }
+        html.evening .glass-pill {
+            background: #e4d4bc !important;
+            border-color: #cbb99e !important;
+        }
+        html.evening .fixed[style*="bottom: 0px"] .glass-pill {
+            background: rgba(234, 220, 199, 0.92) !important;
+            border-color: #cbb99e !important;
+        }
+        html.evening .modal-close-btn,
+        html.evening .back-btn {
+            background: #dbc9ae !important;
+            border-color: #cbb99e !important;
+            color: #2c241c !important;
+        }
+        html.evening .card-enter-1 > div {
+            background: #e4d4bc !important;
+            border-color: #cbb99e !important;
+        }
+        html.evening .cal-day {
+            background-color: #f4eadb !important;
+            border-color: #cbb99e !important;
+            color: #2c241c !important;
+        }
+        html.evening .cal-day:hover {
+            background-color: #e4d4bc !important;
+        }
+        html.evening .modal-input,
+        html.evening input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(.login-input),
+        html.evening select,
+        html.evening textarea,
+        html.evening input:focus,
+        html.evening select:focus,
+        html.evening textarea:focus,
+        html.evening .modal-input:focus {
+            background-color: #f6ede0 !important;
+            border-color: #cbb99e !important;
+            color: #2c241c !important;
+        }
+        html.evening .cal-cell-vacation {
+            background-color: #dde3c8 !important;
+            border-color: #9fb387 !important;
+        }
+        html.evening .cal-cell-holiday {
+            background-color: #ebd9ca !important;
+            border-color: #c8a189 !important;
+        }
+        @media (hover: hover) {
+            html.evening .hover\:bg-\[\#faf7f2\]:hover,
+            html.evening .hover\:bg-\[\#f7f2ea\]:hover,
+            html.evening .hover\:bg-\[\#f4ece4\]:hover,
+            html.evening .hover\:bg-\[\#eae0d5\]:hover,
+            html.evening .hover\:bg-\[\#ede4dc\]:hover,
+            html.evening .hover\:bg-\[\#e6dcd3\]:hover {
+                background-color: #d5c2a6 !important;
+            }
         }
 
-        /* ── DARK MODE: TIEFES ANTHRAZIT & WALDGRÜN ── */
+        /* ── DARK MODE & DÄMMERUNG: VARIABLES & SURFACE OVERRIDES ── */
         html.dark {
             color-scheme: dark;
+            --sf-bg: #111412;
+            --sf-bg-glow: #1b221e;
+            --sf-surface: #1a1f1c;
+            --sf-surface-2: #222824;
+            --sf-surface-3: #29312c;
+            --sf-surface-hover: #323c36;
+            --sf-card-hover: #232a25;
+            --sf-nav-surface: #28302b;
+            --sf-border: #2e3731;
+            --sf-border-strong: #37423b;
+            --sf-text: #f2efe9;
+            --sf-text-muted: #b4aea3;
+            --sf-text-soft: #8f897e;
+            --sf-green-text: #5ec28f;
+            --sf-green-bright: #6ee7b7;
+            --sf-green-btn: #2d694c;
+            --sf-input-bg: #232a25;
+            --sf-input-focus: #28302b;
+            --sf-nav-bg: rgba(24, 29, 26, 0.88);
+            --sf-modal-bg: #191e1b;
+            --sf-overlay: rgba(5, 7, 6, 0.72);
+            --sf-hover-bg: #2a332d;
+            --sf-shadow-card: 0 6px 24px rgba(0, 0, 0, 0.32);
+            --sf-shadow-glass: 0 8px 28px rgba(0, 0, 0, 0.35);
+            --sf-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.65);
+            --sf-grad-a: #1b221e;
+            --sf-grad-b: #171c19;
+            --sf-grad-c: #1d2821;
+        }
+        html.dark.dim {
+            --sf-bg: #252b28;
+            --sf-bg-glow: #313b35;
+            --sf-surface: #2f3733;
+            --sf-surface-2: #38413c;
+            --sf-surface-3: #424c46;
+            --sf-surface-hover: #4b5650;
+            --sf-card-hover: #37403b;
+            --sf-nav-surface: #3d4741;
+            --sf-border: #47534c;
+            --sf-border-strong: #536159;
+            --sf-text: #efeae1;
+            --sf-text-muted: #c2bcb0;
+            --sf-text-soft: #9e988c;
+            --sf-green-text: #6cd49f;
+            --sf-green-bright: #7ee8b2;
+            --sf-green-btn: #2f6e4f;
+            --sf-input-bg: #37403b;
+            --sf-input-focus: #3f4a44;
+            --sf-nav-bg: rgba(43, 50, 46, 0.88);
+            --sf-modal-bg: #2d3531;
+            --sf-overlay: rgba(18, 22, 20, 0.56);
+            --sf-hover-bg: #45504a;
+            --sf-shadow-card: 0 6px 22px rgba(0, 0, 0, 0.22);
+            --sf-shadow-glass: 0 8px 24px rgba(0, 0, 0, 0.24);
+            --sf-shadow-modal: 0 24px 56px rgba(0, 0, 0, 0.45);
+            --sf-grad-a: #313b35;
+            --sf-grad-b: #2b332f;
+            --sf-grad-c: #34413a;
         }
         html.dark body {
-            background-color: #111412 !important;
-            background-image: radial-gradient(circle at 50% 0%, #1b221e 0%, #111412 68%) !important;
-            color: #f2efe9 !important;
+            background-color: var(--sf-bg) !important;
+            background-image: radial-gradient(circle at 50% 0%, var(--sf-bg-glow) 0%, var(--sf-bg) 68%) !important;
+            color: var(--sf-text) !important;
         }
         html.dark #splash {
-            background-color: #111412 !important;
-            color: #f2efe9 !important;
+            background-color: var(--sf-bg) !important;
+            color: var(--sf-text) !important;
         }
         html.dark img[src*="schooly_logo_transparent"] {
             filter: brightness(1.85) saturate(1.1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+        }
+        html.dark.dim img[src*="schooly_logo_transparent"] {
+            filter: brightness(1.45) saturate(1.06) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
         }
 
         /* Surfaces & Cards */
@@ -1498,7 +1782,7 @@
         html.dark .bg-\[\#fbf8f3\],
         html.dark .bg-\[\#fffdf9\],
         html.dark .bg-\[\#fdfbf7\] {
-            background-color: #1a1f1c !important;
+            background-color: var(--sf-surface) !important;
         }
         html.dark .bg-\[\#faf7f2\],
         html.dark .bg-\[\#faf6f0\],
@@ -1518,7 +1802,7 @@
         html.dark .bg-\[\#f6f0e8\]\/95,
         html.dark .bg-\[\#f0e6df\],
         html.dark .bg-\[\#efe8dc\] {
-            background-color: #222824 !important;
+            background-color: var(--sf-surface-2) !important;
         }
         html.dark .bg-\[\#ede4dc\],
         html.dark .bg-\[\#ede4dc\]\/80,
@@ -1527,87 +1811,87 @@
         html.dark .bg-\[\#ebe4d8\],
         html.dark .bg-\[\#ded5c7\],
         html.dark .bg-\[\#e2dacd\] {
-            background-color: #29312c !important;
+            background-color: var(--sf-surface-3) !important;
         }
         @media (min-width: 768px) {
             html.dark .md\:bg-\[\#f6f0e8\]\/95 {
-                background-color: #222824 !important;
+                background-color: var(--sf-surface-2) !important;
             }
             html.dark .md\:bg-\[\#ece3d8\]\/75 {
-                background-color: #29312c !important;
+                background-color: var(--sf-surface-3) !important;
             }
             html.dark .md\:border-\[\#ded5c7\] {
-                border-color: #2e3731 !important;
+                border-color: var(--sf-border) !important;
             }
         }
         @media (min-width: 1024px) {
             html.dark .lg\:bg-\[\#f4ece4\] {
-                background-color: #222824 !important;
+                background-color: var(--sf-surface-2) !important;
             }
             html.dark .lg\:bg-white {
-                background-color: #1a1f1c !important;
+                background-color: var(--sf-surface) !important;
             }
         }
         @media (hover: hover) {
             html.dark .md\:hover\:bg-\[\#e2d6c7\]:hover {
-                background-color: #323c36 !important;
+                background-color: var(--sf-surface-hover) !important;
             }
         }
         html.dark .bg-gradient-to-br {
-            background-image: linear-gradient(135deg, #1b221e 0%, #171c19 52%, #1d2821 100%) !important;
+            background-image: linear-gradient(135deg, var(--sf-grad-a) 0%, var(--sf-grad-b) 52%, var(--sf-grad-c) 100%) !important;
         }
 
         html.dark .glass-card,
         html.dark .liquid-inner {
-            background: #1a1f1c !important;
-            border-color: #2d3730 !important;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
+            background: var(--sf-surface) !important;
+            border-color: var(--sf-border) !important;
+            box-shadow: var(--sf-shadow-glass) !important;
         }
         html.dark .glass-card-solid,
         html.dark .subject-card,
         html.dark .subject-list-item,
         html.dark .card-enter-1 > div {
-            background: #1a1f1c !important;
-            border-color: #2d3730 !important;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.32) !important;
+            background: var(--sf-surface) !important;
+            border-color: var(--sf-border) !important;
+            box-shadow: var(--sf-shadow-card) !important;
         }
         @media (hover: hover) {
             html.dark .subject-card:hover,
             html.dark .subject-list-item:hover,
             html.dark .task-list-item .swipe-item:hover {
-                background: #232a25 !important;
+                background: var(--sf-card-hover) !important;
                 border-color: rgba(94, 194, 143, 0.42) !important;
             }
         }
         html.dark .liquid-glass-modal,
         html.dark .modal-glass {
-            background: #191e1b !important;
-            border-color: #2d3730 !important;
-            color: #f2efe9 !important;
-            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65) !important;
+            background: var(--sf-modal-bg) !important;
+            border-color: var(--sf-border) !important;
+            color: var(--sf-text) !important;
+            box-shadow: var(--sf-shadow-modal) !important;
         }
         html.dark .modal-overlay-enter {
-            background: rgba(5, 7, 6, 0.72) !important;
+            background: var(--sf-overlay) !important;
         }
         html.dark .modal-close-btn,
         html.dark .back-btn {
-            background: #28302b !important;
-            border-color: #37423b !important;
-            color: #f2efe9 !important;
+            background: var(--sf-nav-surface) !important;
+            border-color: var(--sf-border-strong) !important;
+            color: var(--sf-text) !important;
         }
         html.dark .modal-close-btn:hover {
-            background: #323c36 !important;
+            background: var(--sf-surface-hover) !important;
         }
         html.dark .modal-drag-handle::after {
-            background: #4e5b52;
+            background: var(--sf-border-strong);
         }
         html.dark .bg-black\/20,
         html.dark .bg-black\/25,
         html.dark .bg-black\/30,
         html.dark .bg-black\/40,
         html.dark .bg-black\/50 {
-            background-color: #222824 !important;
-            border-color: #2f3a33 !important;
+            background-color: var(--sf-surface-2) !important;
+            border-color: var(--sf-border) !important;
         }
 
         /* Borders */
@@ -1627,7 +1911,7 @@
         html.dark .border-white\/10,
         html.dark .border-white\/20,
         html.dark .border-\[\#cfe2d7\] {
-            border-color: #2e3731 !important;
+            border-color: var(--sf-border) !important;
         }
 
         /* Typography & Contrast Compensation */
@@ -1664,7 +1948,7 @@
         html.dark .bg-black\/20 span.text-white,
         html.dark .datepicker-enter .text-white,
         html.dark .datepicker-enter h3.text-white {
-            color: #f2efe9 !important;
+            color: var(--sf-text) !important;
         }
         html.dark .text-\[\#524d44\],
         html.dark .text-\[\#6E665E\],
@@ -1678,10 +1962,10 @@
         html.dark .modal-enter .text-slate-500,
         html.dark .liquid-glass-modal .text-slate-400,
         html.dark .liquid-glass-modal .text-slate-500 {
-            color: #b4aea3 !important;
+            color: var(--sf-text-muted) !important;
         }
         html.dark .text-\[\#2d694c\] {
-            color: #5ec28f !important;
+            color: var(--sf-green-text) !important;
         }
         html.dark .text-\[\#825500\],
         html.dark .text-\[\#b45309\],
@@ -1702,7 +1986,7 @@
         html.dark .pill-indicator,
         html.dark .btn-accent,
         html.dark .liquid-glass-btn {
-            background-color: #2d694c !important;
+            background-color: var(--sf-green-btn) !important;
             color: #ffffff !important;
         }
         html.dark .bg-\[\#2d694c\] *,
@@ -1726,7 +2010,7 @@
         html.dark .bg-\[\#2d694c\]\/10 *,
         html.dark .bg-\[\#2d694c\]\/12 *,
         html.dark .bg-\[\#2d694c\]\/15 * {
-            color: #5ec28f !important;
+            color: var(--sf-green-text) !important;
         }
 
         /* Warm Peach & Amber Badges */
@@ -1776,19 +2060,19 @@
         html.dark .text-emerald-600,
         html.dark .text-emerald-700,
         html.dark .text-emerald-800 {
-            color: #6ee7b7 !important;
+            color: var(--sf-green-bright) !important;
         }
 
         /* Segmented Docks, Liquid Nav & Gliders */
         html.dark .glass-pill {
-            background: #232a25 !important;
-            border-color: #323c35 !important;
+            background: var(--sf-input-bg) !important;
+            border-color: var(--sf-border-strong) !important;
         }
         html.dark .glass-pill button {
-            color: #b4aea3 !important;
+            color: var(--sf-text-muted) !important;
         }
         html.dark .glass-pill button:hover {
-            color: #f2efe9 !important;
+            color: var(--sf-text) !important;
         }
         html.dark .glass-pill button.text-white,
         html.dark .glass-pill button.font-black {
@@ -1798,24 +2082,28 @@
         html.dark .liquid-glass-nav,
         html.dark .liquid-nav-container,
         html.dark .liquid-dock {
-            background: rgba(24, 29, 26, 0.88) !important;
-            border-color: rgba(94, 194, 143, 0.22) !important;
-            box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+            background: var(--sf-nav-bg) !important;
+            border-color: rgba(94, 194, 143, 0.24) !important;
+            box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
         }
         html.dark .liquid-glass-glider,
         html.dark .liquid-glass-glider-vertical {
             background: linear-gradient(180deg, rgba(45, 105, 76, 0.42) 0%, rgba(35, 52, 42, 0.88) 100%) !important;
             border-color: rgba(94, 194, 143, 0.42) !important;
-            box-shadow: 0 8px 24px -2px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.14) !important;
+            box-shadow: 0 8px 24px -2px rgba(0, 0, 0, 0.42), inset 0 1px 1px rgba(255, 255, 255, 0.14) !important;
+        }
+        html.dark.dim .liquid-glass-glider,
+        html.dark.dim .liquid-glass-glider-vertical {
+            background: linear-gradient(180deg, rgba(61, 133, 98, 0.46) 0%, rgba(49, 68, 58, 0.9) 100%) !important;
         }
         html.dark .glider-specular-top {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 100%);
         }
         html.dark .liquid-dock button.text-\[\#2d694c\] {
-            color: #6ee7b7 !important;
+            color: var(--sf-green-bright) !important;
         }
         html.dark .liquid-dock button.text-\[\#6E665E\] {
-            color: #a8a298 !important;
+            color: var(--sf-text-muted) !important;
         }
 
         /* Inputs, Selects, Textareas & Datepicker */
@@ -1823,37 +2111,37 @@
         html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(.login-input),
         html.dark select,
         html.dark textarea {
-            background-color: #232a25 !important;
-            border-color: #36413a !important;
-            color: #f2efe9 !important;
+            background-color: var(--sf-input-bg) !important;
+            border-color: var(--sf-border-strong) !important;
+            color: var(--sf-text) !important;
         }
         html.dark input:focus,
         html.dark select:focus,
         html.dark textarea:focus,
         html.dark .modal-input:focus {
-            background-color: #28302b !important;
-            border-color: #5ec28f !important;
+            background-color: var(--sf-input-focus) !important;
+            border-color: var(--sf-green-text) !important;
             box-shadow: 0 0 0 3px rgba(94, 194, 143, 0.22) !important;
         }
         html.dark input::placeholder,
         html.dark textarea::placeholder {
-            color: #8f897e !important;
+            color: var(--sf-text-soft) !important;
         }
         html.dark .liquid-glass-datepicker {
-            background: #1a1f1c !important;
-            border-color: #2e3731 !important;
-            color: #f2efe9 !important;
+            background: var(--sf-surface) !important;
+            border-color: var(--sf-border) !important;
+            color: var(--sf-text) !important;
         }
         html.dark .cal-day {
-            background-color: #222824 !important;
-            border-color: #2e3731 !important;
-            color: #f2efe9 !important;
+            background-color: var(--sf-surface-2) !important;
+            border-color: var(--sf-border) !important;
+            color: var(--sf-text) !important;
         }
         html.dark .cal-day:hover {
-            background-color: #2b342e !important;
+            background-color: var(--sf-surface-hover) !important;
         }
 
-        /* Calendar Vacation & Public Holiday Cells in Dark Mode */
+        /* Calendar Vacation & Public Holiday Cells in Dark & Dim Mode */
         html.dark .cal-cell-vacation {
             background-color: rgba(13, 148, 136, 0.16) !important;
             border-color: rgba(45, 212, 191, 0.35) !important;
@@ -1873,7 +2161,7 @@
             border-color: rgba(167, 139, 250, 0.45) !important;
         }
 
-        /* Hover utilities on dark cards */
+        /* Hover utilities on dark & dim cards */
         @media (hover: hover) {
             html.dark .hover\:bg-\[\#faf7f2\]:hover,
             html.dark .hover\:bg-\[\#f7f2ea\]:hover,
@@ -1881,7 +2169,7 @@
             html.dark .hover\:bg-\[\#eae0d5\]:hover,
             html.dark .hover\:bg-\[\#ede4dc\]:hover,
             html.dark .hover\:bg-\[\#e6dcd3\]:hover {
-                background-color: #2a332d !important;
+                background-color: var(--sf-hover-bg) !important;
             }
         }
 </style>
@@ -2300,10 +2588,15 @@
                         <i data-lucide="download" class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-white"></i>
                         <span class="whitespace-nowrap">Installieren</span>
                     </button>
-                    <!-- Dark Mode Toggle Button -->
-                    <button @click="toggleDarkMode" :title="isDarkMode ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'" :aria-label="isDarkMode ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
-                        <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#f3c471]"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    <!-- Design-Modus Toggle Button (Light -> Abendpapier -> Dämmerung -> Dark) -->
+                    <button @click="toggleDarkMode"
+                            :title="colorMode === 'light' ? 'Modus: Light — Klick für Abendpapier' : (colorMode === 'evening' ? 'Modus: Abendpapier — Klick für Dämmerung' : (colorMode === 'dim' ? 'Modus: Dämmerung — Klick für Dark' : 'Modus: Dark — Klick für Light'))"
+                            :aria-label="colorMode === 'light' ? 'Abendpapier aktivieren' : (colorMode === 'evening' ? 'Dämmerung aktivieren' : (colorMode === 'dim' ? 'Dark Mode aktivieren' : 'Light Mode aktivieren'))"
+                            class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
+                        <svg v-if="colorMode === 'light'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#825500]"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                        <svg v-else-if="colorMode === 'evening'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#6d4500]"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+                        <svg v-else-if="colorMode === 'dim'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#f3c471]"><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#6ee7b7]"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                     </button>
                     <!-- Einstellungen Button (Schlicht & einheitlich ohne äußeren Kasten) -->
                     <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; tempFederalState = federalState; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
@@ -3494,7 +3787,7 @@
 
                                     <!-- Calendar Days Grid (Month or Week) -->
                                     <div class="grid grid-cols-7 gap-1 sm:gap-1.5">
-                                        <div v-for="(day, idx) in (calendarViewMode === 'week' ? currentWeekDays : calendarDays)" :key="idx"
+                                        <div v-for="(day, idx) in (calendarViewMode === 'week' ? currentWeekDays : calendarDays)" :key="day.date || idx"
                                              @click="selectCalendarDay(day.date)"
                                              :title="day.holidayTooltip || ''"
                                              class="flex flex-col items-center sm:items-start justify-start p-1 sm:p-1.5 lg:p-2 relative rounded-xl sm:rounded-2xl cursor-pointer transition-all border group overflow-hidden"
@@ -6767,22 +7060,46 @@
                         </div>
                     </div>
 
-                    <!-- 5b. Design-Modus (Dark Mode) -->
-                    <div class="bg-white p-5 rounded-2xl border border-[#ede3d8] shadow-2xs flex items-center justify-between gap-4">
+                    <!-- 5b. Design-Modus (Light / Abendpapier / Dämmerung / Dark) -->
+                    <div class="bg-white p-5 rounded-2xl border border-[#ede3d8] shadow-2xs space-y-3.5">
                         <div class="space-y-1 min-w-0">
                             <div class="flex items-center gap-2">
-                                <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#f3c471] shrink-0"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                                <svg v-if="colorMode === 'light'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#825500] shrink-0"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                                <svg v-else-if="colorMode === 'evening'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#6d4500] shrink-0"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+                                <svg v-else-if="colorMode === 'dim'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#f3c471] shrink-0"><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#2d694c] shrink-0"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-                                <label class="text-xs font-black uppercase tracking-wider text-[#6E665E]">Dark Mode</label>
+                                <label class="text-xs font-black uppercase tracking-wider text-[#6E665E]">Erscheinungsbild</label>
                             </div>
-                            <p class="text-xs text-[#857e72] leading-normal">Dunkles Anthrazit &amp; Waldgrün — schont die Augen beim Lernen am Abend.</p>
+                            <p class="text-xs text-[#857e72] leading-normal">
+                                {{ colorMode === 'light' ? 'Warmes Leinenpapier — hell und kontrastreich für den Tag.' : (colorMode === 'evening' ? 'Warmes Bernsteingold wie ein Blaulichtfilter — extra sanft für die Augen.' : (colorMode === 'dim' ? 'Weiches Moos-Schiefergrau — angenehm gedimmt ohne hartes Schwarz.' : 'Tiefes Anthrazit & Waldgrün — schont die Augen beim Lernen am Abend.')) }}
+                            </p>
                         </div>
-                        <button type="button" role="switch" :aria-checked="isDarkMode" @click="toggleDarkMode"
-                                class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none"
-                                :class="isDarkMode ? 'bg-[#2d694c]' : 'bg-[#ded5c7]'">
-                            <span class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-sm ring-0 transition duration-200"
-                                  :class="isDarkMode ? 'translate-x-5' : 'translate-x-0'"></span>
-                        </button>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 select-none">
+                            <button type="button" @click="setColorMode('light')"
+                                    class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs border transition-all cursor-pointer active:scale-95 min-h-[42px]"
+                                    :class="colorMode === 'light' ? 'bg-[#2d694c] text-white font-black border-[#2d694c] shadow-xs' : 'bg-[#f4ede4] hover:bg-[#eae0d5] text-[#524d44] font-bold border-[#ded5c7]'">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#f7f2e8] border border-[#c8bfb0] shrink-0"></span>
+                                <span class="truncate">Light</span>
+                            </button>
+                            <button type="button" @click="setColorMode('evening')"
+                                    class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs border transition-all cursor-pointer active:scale-95 min-h-[42px]"
+                                    :class="colorMode === 'evening' ? 'bg-[#2d694c] text-white font-black border-[#2d694c] shadow-xs' : 'bg-[#f4ede4] hover:bg-[#eae0d5] text-[#524d44] font-bold border-[#ded5c7]'">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#eadcc7] border border-[#b59e7d] shrink-0"></span>
+                                <span class="truncate">Abendpapier</span>
+                            </button>
+                            <button type="button" @click="setColorMode('dim')"
+                                    class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs border transition-all cursor-pointer active:scale-95 min-h-[42px]"
+                                    :class="colorMode === 'dim' ? 'bg-[#2d694c] text-white font-black border-[#2d694c] shadow-xs' : 'bg-[#f4ede4] hover:bg-[#eae0d5] text-[#524d44] font-bold border-[#ded5c7]'">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#2f3733] border border-[#536159] shrink-0"></span>
+                                <span class="truncate">Dämmerung</span>
+                            </button>
+                            <button type="button" @click="setColorMode('dark')"
+                                    class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs border transition-all cursor-pointer active:scale-95 min-h-[42px]"
+                                    :class="colorMode === 'dark' ? 'bg-[#2d694c] text-white font-black border-[#2d694c] shadow-xs' : 'bg-[#f4ede4] hover:bg-[#eae0d5] text-[#524d44] font-bold border-[#ded5c7]'">
+                                <span class="w-3.5 h-3.5 rounded-full bg-[#111412] border border-[#37423b] shrink-0"></span>
+                                <span class="truncate">Dark</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 5c. Bundesland (Ferien & Feiertage - Custom Schooly Dropdown) -->
@@ -8323,20 +8640,41 @@
                 const gradeSystem = ref('15'); // '15' oder '6'
                 const tempGradeSystem = ref('15');
                 const abiturViewClass = ref('oberstufe'); 
-                const isDarkMode = ref((() => {
-                    try { return localStorage.getItem('sf_dark_mode') === 'true'; } catch (_) { return false; }
+                const normalizeColorMode = (val) => {
+                    if (val === 'evening' || val === 'dim' || val === 'dark' || val === 'light') return val;
+                    if (val === true) return 'dark';
+                    return 'light';
+                };
+                const colorMode = ref((() => {
+                    try {
+                        const saved = localStorage.getItem('sf_color_mode');
+                        if (saved === 'light' || saved === 'evening' || saved === 'dim' || saved === 'dark') return saved;
+                        return localStorage.getItem('sf_dark_mode') === 'true' ? 'dark' : 'light';
+                    } catch (_) { return 'light'; }
                 })());
-                const applyDarkMode = (enabled) => {
-                    const isDark = !!enabled;
+                const isDarkMode = ref(colorMode.value === 'dim' || colorMode.value === 'dark');
+                const applyColorMode = (modeOrBool) => {
+                    const nextMode = normalizeColorMode(modeOrBool);
+                    const isDark = nextMode === 'dim' || nextMode === 'dark';
+                    colorMode.value = nextMode;
                     isDarkMode.value = isDark;
                     if (typeof document !== 'undefined') {
                         document.documentElement.classList.toggle('dark', isDark);
+                        document.documentElement.classList.toggle('dim', nextMode === 'dim');
+                        document.documentElement.classList.toggle('evening', nextMode === 'evening');
                         const metaTheme = document.querySelector('meta[name="theme-color"]');
-                        if (metaTheme) metaTheme.setAttribute('content', isDark ? '#111412' : '#f7f3eb');
+                        if (metaTheme) {
+                            const themeColorMap = { light: '#f2ece1', evening: '#eadcc7', dim: '#252b28', dark: '#111412' };
+                            metaTheme.setAttribute('content', themeColorMap[nextMode] || '#f2ece1');
+                        }
                     }
-                    try { localStorage.setItem('sf_dark_mode', isDark ? 'true' : 'false'); } catch (_) {}
+                    try {
+                        localStorage.setItem('sf_color_mode', nextMode);
+                        localStorage.setItem('sf_dark_mode', isDark ? 'true' : 'false');
+                    } catch (_) {}
                 };
-                applyDarkMode(isDarkMode.value);
+                const applyDarkMode = (enabledOrMode) => applyColorMode(enabledOrMode);
+                applyColorMode(colorMode.value);
 
                 const GERMAN_STATES = [
                     { code: 'BW', name: 'Baden-Württemberg' },
@@ -8485,7 +8823,8 @@
                             }
                             if (parsedConfig.gradeSystem) { gradeSystem.value = parsedConfig.gradeSystem; tempGradeSystem.value = parsedConfig.gradeSystem; }
                             if (parsedConfig.userAvatar) userAvatar.value = parsedConfig.userAvatar;
-                            if (typeof parsedConfig.darkMode === 'boolean') applyDarkMode(parsedConfig.darkMode);
+                            if (typeof parsedConfig.colorMode === 'string') applyColorMode(parsedConfig.colorMode);
+                            else if (typeof parsedConfig.darkMode === 'boolean') applyColorMode(parsedConfig.darkMode);
                             if (typeof parsedConfig.federalState === 'string') {
                                 federalState.value = parsedConfig.federalState;
                                 tempFederalState.value = parsedConfig.federalState;
@@ -9947,8 +10286,9 @@
 
                 const publicHolidaysYearCache = new Map();
                 const getGermanPublicHolidaysForYear = (year, stateCode) => {
-                    if (!stateCode) return {};
-                    const key = `${year}_${stateCode}`;
+                    const yr = Number(year);
+                    if (!stateCode || !Number.isFinite(yr)) return {};
+                    const key = `${yr}_${stateCode}`;
                     if (publicHolidaysYearCache.has(key)) return publicHolidaysYearCache.get(key);
                     const map = {};
                     const addH = (dateStr, name) => {
@@ -9956,38 +10296,38 @@
                         if (!map[dateStr].includes(name)) map[dateStr].push(name);
                     };
 
-                    const easter = getEasterSunday(year);
-                    addH(`${year}-01-01`, 'Neujahr');
+                    const easter = getEasterSunday(yr);
+                    addH(`${yr}-01-01`, 'Neujahr');
                     addH(addIsoDays(easter, -2), 'Karfreitag');
                     addH(addIsoDays(easter, 1), 'Ostermontag');
-                    addH(`${year}-05-01`, 'Tag der Arbeit');
+                    addH(`${yr}-05-01`, 'Tag der Arbeit');
                     addH(addIsoDays(easter, 39), 'Christi Himmelfahrt');
                     addH(addIsoDays(easter, 50), 'Pfingstmontag');
-                    addH(`${year}-10-03`, 'Tag der Deutschen Einheit');
-                    addH(`${year}-12-25`, '1. Weihnachtstag');
-                    addH(`${year}-12-26`, '2. Weihnachtstag');
+                    addH(`${yr}-10-03`, 'Tag der Deutschen Einheit');
+                    addH(`${yr}-12-25`, '1. Weihnachtstag');
+                    addH(`${yr}-12-26`, '2. Weihnachtstag');
 
-                    if (['BW', 'BY', 'ST'].includes(stateCode)) addH(`${year}-01-06`, 'Heilige Drei Könige');
-                    if (['BE', 'MV'].includes(stateCode)) addH(`${year}-03-08`, 'Internationaler Frauentag');
+                    if (['BW', 'BY', 'ST'].includes(stateCode)) addH(`${yr}-01-06`, 'Heilige Drei Könige');
+                    if (['BE', 'MV'].includes(stateCode)) addH(`${yr}-03-08`, 'Internationaler Frauentag');
                     if (stateCode === 'BB') {
                         addH(fmtIsoDate(easter), 'Ostersonntag');
                         addH(addIsoDays(easter, 49), 'Pfingstsonntag');
                     }
                     if (['BW', 'BY', 'HE', 'NW', 'RP', 'SL'].includes(stateCode)) {
-                        addH(addIsoDate(easter, 60), 'Fronleichnam');
+                        addH(addIsoDays(easter, 60), 'Fronleichnam');
                     }
-                    if (stateCode === 'SL') addH(`${year}-08-15`, 'Mariä Himmelfahrt');
-                    if (stateCode === 'TH') addH(`${year}-09-20`, 'Weltkindertag');
+                    if (stateCode === 'SL') addH(`${yr}-08-15`, 'Mariä Himmelfahrt');
+                    if (stateCode === 'TH') addH(`${yr}-09-20`, 'Weltkindertag');
                     if (['BB', 'HB', 'HH', 'MV', 'NI', 'SN', 'ST', 'SH', 'TH'].includes(stateCode)) {
-                        addH(`${year}-10-31`, 'Reformationstag');
+                        addH(`${yr}-10-31`, 'Reformationstag');
                     }
                     if (['BW', 'BY', 'NW', 'RP', 'SL'].includes(stateCode)) {
-                        addH(`${year}-11-01`, 'Allerheiligen');
+                        addH(`${yr}-11-01`, 'Allerheiligen');
                     }
                     if (stateCode === 'SN') {
-                        const nov23 = new Date(year, 10, 23);
+                        const nov23 = new Date(yr, 10, 23);
                         const diff = ((nov23.getDay() + 4) % 7) || 7;
-                        addH(fmtIsoDate(new Date(year, 10, 23 - diff)), 'Buß- und Bettag');
+                        addH(fmtIsoDate(new Date(yr, 10, 23 - diff)), 'Buß- und Bettag');
                     }
 
                     publicHolidaysYearCache.set(key, map);
@@ -10027,9 +10367,12 @@
 
                     if (inFlightHolidayFetches.has(cacheKey)) return;
                     inFlightHolidayFetches.add(cacheKey);
+                    let timeoutId = null;
                     try {
                         const url = `https://openholidaysapi.org/SchoolHolidays?countryIsoCode=DE&subdivisionCode=DE-${encodeURIComponent(stateCode)}&validFrom=${year}-01-01&validTo=${year}-12-31&languageIsoCode=DE`;
-                        const res = await fetch(url);
+                        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+                        if (controller) timeoutId = setTimeout(() => controller.abort(), 5000);
+                        const res = await fetch(url, controller ? { signal: controller.signal } : undefined);
                         if (res.ok) {
                             const data = await res.json();
                             if (Array.isArray(data)) {
@@ -10048,6 +10391,7 @@
                         }
                     } catch (_) {
                     } finally {
+                        if (timeoutId) clearTimeout(timeoutId);
                         inFlightHolidayFetches.delete(cacheKey);
                     }
 
@@ -10068,10 +10412,13 @@
                 const getDateHolidayInfo = (dateStr) => {
                     const _v = schoolHolidaysVersion.value;
                     const st = federalState.value;
-                    if (!st || !dateStr) {
+                    if (!st || !dateStr || typeof dateStr !== 'string') {
                         return { isHoliday: false, holidayNames: [], isVacation: false, vacationNames: [], holidayTooltip: '' };
                     }
                     const y = Number(dateStr.slice(0, 4));
+                    if (!Number.isFinite(y) || y < 1900 || y > 2200) {
+                        return { isHoliday: false, holidayNames: [], isVacation: false, vacationNames: [], holidayTooltip: '' };
+                    }
                     const pubMap = getGermanPublicHolidaysForYear(y, st);
                     const holidayNames = pubMap[dateStr] || [];
 
@@ -10505,7 +10852,8 @@
                     }
                     if (typeof data.lastWeeklyRecapViewedWeek === 'string') lastWeeklyRecapViewedWeek.value = data.lastWeeklyRecapViewedWeek;
                     if (Array.isArray(data.googleSelectedCalendarIds)) googleSelectedCalendarIds.value = data.googleSelectedCalendarIds;
-                    if (typeof data.darkMode === 'boolean') applyDarkMode(data.darkMode);
+                    if (typeof data.colorMode === 'string') applyColorMode(data.colorMode);
+                    else if (typeof data.darkMode === 'boolean') applyColorMode(data.darkMode);
                     if (typeof data.federalState === 'string') {
                         federalState.value = data.federalState;
                         tempFederalState.value = data.federalState;
@@ -10515,20 +10863,28 @@
                     autoSetCurrentHalfYear();
                 };
 
-                const toggleDarkMode = async () => {
-                    const nextVal = !isDarkMode.value;
-                    applyDarkMode(nextVal);
+                const setColorMode = async (mode) => {
+                    const nextMode = normalizeColorMode(mode);
+                    const nextDarkBool = nextMode === 'dim' || nextMode === 'dark';
+                    applyColorMode(nextMode);
                     triggerCharts();
                     if (user.value?.uid) {
                         try {
                             const lsKey = 'sf_user_config_' + user.value.uid;
                             const existing = JSON.parse(localStorage.getItem(lsKey) || '{}');
-                            localStorage.setItem(lsKey, JSON.stringify({ ...existing, darkMode: nextVal }));
+                            localStorage.setItem(lsKey, JSON.stringify({ ...existing, colorMode: nextMode, darkMode: nextDarkBool }));
                         } catch (_) {}
                         try {
-                            await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { darkMode: nextVal }, { merge: true });
-                        } catch (e) { console.warn('darkMode save:', e); }
+                            await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { colorMode: nextMode, darkMode: nextDarkBool }, { merge: true });
+                        } catch (e) { console.warn('colorMode save:', e); }
                     }
+                };
+
+                const toggleDarkMode = async () => {
+                    const order = ['light', 'evening', 'dim', 'dark'];
+                    const idx = order.indexOf(colorMode.value);
+                    const nextMode = order[(idx + 1) % order.length];
+                    await setColorMode(nextMode);
                 };
 
                 const setFederalState = async (code) => {
@@ -10669,6 +11025,7 @@
                         gradeSystem: nextGradeSystem,
                         weeklyRecapWeekday: nextRecapDay,
                         theme: activeTheme.value || 'original',
+                        colorMode: colorMode.value,
                         darkMode: isDarkMode.value,
                         federalState: nextFederalState
                     };
@@ -14926,8 +15283,8 @@
                                     if (chartInst) { try { chartInst.destroy(); } catch(e){} }
                                     const dist = processedData.value?.pointsDistribution || [];
                                     const isDark = isDarkMode.value;
-                                    const gridColor = isDark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.06)';
-                                    const tickColor = isDark ? '#b4aea3' : '#6E665E';
+                                    const gridColor = isDark ? 'rgba(255,255,255,0.09)' : (colorMode.value === 'evening' ? 'rgba(44,36,28,0.10)' : 'rgba(0,0,0,0.06)');
+                                    const tickColor = colorMode.value === 'dim' ? '#c2bcb0' : (isDark ? '#b4aea3' : (colorMode.value === 'evening' ? '#645748' : '#6E665E'));
                                     const accentNow = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#2d694c';
                                     const accentDimNow = getComputedStyle(document.documentElement).getPropertyValue('--accent-dim').trim() || 'rgba(45, 105, 76, 0.18)';
                                     chartInst = new Chart(ctx, {
@@ -14954,9 +15311,9 @@
                                     destroyCanvasChart('yearTrendChart');
                                     if (yearTrendChartInst) { try { yearTrendChartInst.destroy(); } catch(e){} }
                                     const isDark2 = isDarkMode.value;
-                                    const gridColor2 = isDark2 ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.06)';
-                                    const tickColor2 = isDark2 ? '#b4aea3' : '#6E665E';
-                                    const pointBg2 = isDark2 ? '#1a1f1c' : '#ffffff';
+                                    const gridColor2 = isDark2 ? 'rgba(255,255,255,0.09)' : (colorMode.value === 'evening' ? 'rgba(44,36,28,0.10)' : 'rgba(0,0,0,0.06)');
+                                    const tickColor2 = colorMode.value === 'dim' ? '#c2bcb0' : (isDark2 ? '#b4aea3' : (colorMode.value === 'evening' ? '#645748' : '#6E665E'));
+                                    const pointBg2 = colorMode.value === 'dim' ? '#2f3733' : (isDark2 ? '#1a1f1c' : (colorMode.value === 'evening' ? '#f4eadb' : '#ffffff'));
                                     const accentNow2 = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#2d694c';
                                     const chartMax = gradeSystem.value === '6' ? 6 : 15;
                                     const chartMin = gradeSystem.value === '6' ? 1 : 0;
@@ -14981,9 +15338,9 @@
                                     destroyCanvasChart('trendChart');
                                     if (trendChartInst) { try { trendChartInst.destroy(); } catch (e) {} trendChartInst = null; }
                                     const isDark3 = isDarkMode.value;
-                                    const gridColor3 = isDark3 ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.06)';
-                                    const tickColor3 = isDark3 ? '#b4aea3' : '#6E665E';
-                                    const pointBg3 = isDark3 ? '#1a1f1c' : '#ffffff';
+                                    const gridColor3 = isDark3 ? 'rgba(255,255,255,0.09)' : (colorMode.value === 'evening' ? 'rgba(44,36,28,0.10)' : 'rgba(0,0,0,0.06)');
+                                    const tickColor3 = colorMode.value === 'dim' ? '#c2bcb0' : (isDark3 ? '#b4aea3' : (colorMode.value === 'evening' ? '#645748' : '#6E665E'));
+                                    const pointBg3 = colorMode.value === 'dim' ? '#2f3733' : (isDark3 ? '#1a1f1c' : (colorMode.value === 'evening' ? '#f4eadb' : '#ffffff'));
                                     const sGrades = (activeSubjectData.value?.semesterGrades || []).filter(g => !g.pending);
                                     const sorted = [...sGrades].sort((a,b) => new Date(a.date || 0) - new Date(b.date || 0));
                                     const chartMax = gradeSystem.value === '6' ? 6 : 15;
@@ -15611,7 +15968,7 @@
                     toastState, triggerToastAction, dismissToast,
                     examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
                     selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
-                    isDarkMode, toggleDarkMode, GERMAN_STATES, federalState, tempFederalState, setFederalState, selectedDayHolidayInfo,
+                    colorMode, setColorMode, isDarkMode, toggleDarkMode, GERMAN_STATES, federalState, tempFederalState, setFederalState, selectedDayHolidayInfo,
                     isCalendarStateDropdownOpen, isSettingsStateDropdownOpen, isSettingsRecapDropdownOpen, WEEKDAY_OPTIONS, getFederalStateName, getWeekdayName,
                     activeCustomDropdown, toggleCustomDropdown, REMINDER_DAY_OPTIONS, getReminderDayLabel,
                     saxonTargetGrade, stepTargetGrade, saxonTargetBreakdown, applyTargetAvgToOpenCoursesAndExams,

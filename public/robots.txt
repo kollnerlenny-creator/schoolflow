@@ -1,0 +1,6 @@
+# Search engines can fetch pages only to read the global
+# X-Robots-Tag: noindex, nofollow HTTP header and <meta name="robots" content="noindex">
+# so all pages and subpages remain unlisted in Google Search while accessible via direct link.
+User-agent: *
+Allow: /
+Disallow: /api/

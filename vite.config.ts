@@ -20,6 +20,11 @@ export default defineConfig({
         },
       },
       configureServer(server) {
+        server.middlewares.use((_req, res, next) => {
+          res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet, noimageindex');
+          next();
+        });
+
         server.middlewares.use('/@vite/client', (_req, res) => {
           res.setHeader('Content-Type', 'application/javascript');
           res.end(

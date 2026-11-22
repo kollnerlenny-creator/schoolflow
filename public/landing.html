@@ -3,10 +3,26 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
     <title>schooly – Dein Schulalltag, endlich an einem Ort</title>
     <meta name="description" content="Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und kompletter Abitur-Check. Kostenlos &amp; werbefrei auf schooly26.vercel.app." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content="schooly" />
+    <meta property="og:url" content="https://schooly26.vercel.app/landing.html" />
     <meta property="og:title" content="schooly – All-in-One Schul-App für Handy &amp; Laptop" />
     <meta property="og:description" content="Noten, Wunschnote, Stundenplan, Kalender-Sync &amp; Abitur-Check nahtlos synchron auf Smartphone und Laptop." />
+    <meta property="og:image" content="https://schooly26.vercel.app/assets/og-preview.png" />
+    <meta property="og:image:secure_url" content="https://schooly26.vercel.app/assets/og-preview.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="schooly – All-in-One Schul-App für Smartphone und Laptop" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="schooly – All-in-One Schul-App für Handy &amp; Laptop" />
+    <meta name="twitter:description" content="Noten, Wunschnote, Stundenplan, Kalender-Sync &amp; Abitur-Check nahtlos synchron auf Smartphone und Laptop." />
+    <meta name="twitter:image" content="https://schooly26.vercel.app/assets/og-preview.png" />
     <link rel="icon" type="image/svg+xml" href="/assets/aistudio/schooly_app_icon_7d45ac62.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
 
@@ -22,27 +38,29 @@
 
     <style>
         :root {
-            /* Vorschlag A: Warmes Leinenpapier (Augenschonend) */
-            --canvas-linen: #f2ece1;
-            --canvas-paper: #f7f2e8;
-            --canvas-sand: #e8e0d2;
-            --ink-espresso: #26231e;
-            --ink-muted: #635d53;
-            --forest-deep: #102b1e;
-            --forest-accent: #225c40;
-            --obsidian: #0d1310;
-            --honey: #f3c879;
+            /* Schooly Dark-Forest Canvas + Electric Orange & ~176° Berry-Crimson */
+            --forest-void: #0f281c;
+            --forest-rich: #143525;
+            --forest-stage: #18422e;
+            --forest-card: #1b4a34;
+            --accent-orange: #ff9e2c;
+            --accent-orange-bright: #ffb84d;
+            --accent-orange-ink: #0d2419;
+            --accent-berry: #d82c68;
+            --accent-berry-deep: #3a1023;
+            --accent-berry-text: #ff7aa8;
+            --ink-cream: #f7f2e8;
         }
 
         html {
             scroll-behavior: auto;
-            background-color: var(--canvas-linen);
+            background-color: var(--forest-void);
             overflow-x: clip;
         }
 
         body {
-            background-color: var(--canvas-linen);
-            color: var(--ink-espresso);
+            background-color: var(--forest-void);
+            color: var(--ink-cream);
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
             overflow-x: clip;
@@ -66,37 +84,44 @@
         }
 
         .hero-grid-bg {
-            background-image:
-                linear-gradient(to right, rgba(38, 35, 30, 0.115) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(38, 35, 30, 0.115) 1px, transparent 1px);
-            background-size: 46px 46px;
-            mask-image: radial-gradient(ellipse 94% 88% at 54% 45%, rgba(0, 0, 0, 1) 18%, rgba(0, 0, 0, 0.56) 66%, transparent 96%);
-            -webkit-mask-image: radial-gradient(ellipse 94% 88% at 54% 45%, rgba(0, 0, 0, 1) 18%, rgba(0, 0, 0, 0.56) 66%, transparent 96%);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='none'%3E%3Cpath d='M48 0H0v48' stroke='%23ff9e2c' stroke-opacity='0.08' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 48px 48px;
+        }
+        .hero-grid-bg-light {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='none'%3E%3Cpath d='M48 0H0v48' stroke='%23ff7aa8' stroke-opacity='0.075' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 48px 48px;
         }
 
-        .nav-link {
-            position: relative;
+        .text-flash-orange-berry {
+            color: #ff9e2c;
         }
-        .nav-link::after {
-            content: '';
+
+        /* ── FLOATING LIQUID GLASS TOP BAR + GLIDING PILL (SOLID FLAT GLASS, ZERO GRADIENTS) ── */
+        .landing-liquid-bar {
+            background-color: rgba(14, 38, 26, 0.86);
+            backdrop-filter: blur(24px) saturate(165%);
+            -webkit-backdrop-filter: blur(24px) saturate(165%);
+            border: 1px solid rgba(255, 158, 44, 0.34);
+            box-shadow: 0 20px 44px -10px rgba(4, 15, 10, 0.62);
+        }
+        .landing-liquid-drawer {
+            background-color: rgba(14, 38, 26, 0.96);
+            backdrop-filter: blur(24px) saturate(165%);
+            -webkit-backdrop-filter: blur(24px) saturate(165%);
+            border: 1px solid rgba(255, 158, 44, 0.32);
+            box-shadow: 0 24px 50px -8px rgba(4, 15, 10, 0.65);
+        }
+        .landing-liquid-glider {
             position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -4px;
-            height: 1.5px;
-            background: var(--forest-accent);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .nav-link:hover::after {
-            transform: scaleX(1);
-        }
-
-        #scrollProgressBar {
-            transform: scaleX(0);
-            transform-origin: left center;
-            will-change: transform;
+            top: 4px;
+            bottom: 4px;
+            border-radius: 9999px;
+            background-color: #ff9e2c;
+            border: 1px solid rgba(255, 224, 178, 0.65);
+            box-shadow: 0 6px 18px -4px rgba(255, 158, 44, 0.42);
+            transition: left 0.45s cubic-bezier(0.25, 1, 0.35, 1), width 0.45s cubic-bezier(0.25, 1, 0.35, 1), opacity 0.25s ease;
+            z-index: 1;
+            pointer-events: none;
         }
 
         .hw-actor {
@@ -109,9 +134,11 @@
             inset: 0;
             width: 100%;
             height: 100%;
+            object-fit: contain;
+            object-position: bottom center;
             opacity: 0;
-            transform: scale(0.985);
-            transition: opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1), transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: scale(0.99);
+            transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
             pointer-events: none;
         }
         .screen-layer.is-active {
@@ -120,8 +147,7 @@
         }
 
         .tour-cyclorama {
-            background:
-                radial-gradient(ellipse 68% 64% at 38% 48%, rgba(52, 118, 86, 0.42) 0%, rgba(16, 43, 30, 0.97) 58%, #0d2419 100%);
+            background-color: #112e20;
         }
 
         .tour-copy-block,
@@ -148,35 +174,42 @@
             will-change: opacity;
         }
 
-        .btn-forest {
-            background: #1d5138;
-            color: #f7f2e8;
+        .btn-orange {
+            background-color: #ff9e2c;
+            color: #0d2419;
             transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.22s ease, box-shadow 0.22s ease;
-            box-shadow: 0 12px 26px -10px rgba(24, 61, 43, 0.44);
+            box-shadow: 0 12px 28px -8px rgba(255, 158, 44, 0.42);
         }
-        .btn-forest:hover {
-            background: #16402c;
+        .btn-orange:hover {
+            background-color: #ffb24f;
             transform: translateY(-2px);
-            box-shadow: 0 16px 30px -10px rgba(24, 61, 43, 0.52);
+            box-shadow: 0 16px 34px -8px rgba(255, 158, 44, 0.54);
         }
-        .btn-paper {
-            background: #f7f2e8;
-            color: #26231e;
-            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.22s ease;
-            box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.38);
+        .btn-berry {
+            background-color: #d82c68;
+            color: #fff8f4;
+            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.22s ease, box-shadow 0.22s ease;
+            box-shadow: 0 12px 26px -8px rgba(216, 44, 104, 0.42);
         }
-        .btn-paper:hover {
-            background: #efe7d8;
+        .btn-berry:hover {
+            background-color: #e93d79;
             transform: translateY(-2px);
+            box-shadow: 0 16px 32px -8px rgba(216, 44, 104, 0.54);
         }
 
+        .gallery-bay {
+            transition: border-color 0.32s ease, box-shadow 0.32s ease;
+        }
         .gallery-card {
-            transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.32s ease;
+            transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
         }
         @media (hover: hover) {
             .gallery-card:hover {
                 transform: translateY(-5px);
-                border-color: rgba(34, 92, 64, 0.32);
+            }
+            .gallery-card:hover .gallery-bay {
+                border-color: rgba(255, 158, 44, 0.55);
+                box-shadow: 0 20px 38px -14px rgba(5, 16, 10, 0.72);
             }
         }
 
@@ -188,10 +221,127 @@
             .manifesto-word {
                 opacity: 1 !important;
             }
+            .landing-logo-wrap,
+            #landingLoaderBar {
+                animation: none !important;
+            }
+        }
+
+        /* ── SCHOOLY LANDING PRELOADER ── */
+        html.landing-loading,
+        html.landing-loading body {
+            overflow: hidden !important;
+        }
+        @keyframes landingLogoReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(14px) scale(0.92);
+            }
+            65% {
+                opacity: 1;
+                transform: translateY(-2px) scale(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes landingLogoFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-5px) scale(1.02);
+            }
+        }
+        @keyframes landingLoaderSweep {
+            0% {
+                transform: scaleX(0.14);
+            }
+            60% {
+                transform: scaleX(0.76);
+            }
+            100% {
+                transform: scaleX(0.88);
+            }
+        }
+        .landing-logo-wrap {
+            animation:
+                landingLogoReveal 0.68s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+                landingLogoFloat 2.6s ease-in-out 0.68s infinite;
+        }
+        #landingLoaderBar {
+            transform-origin: left center;
+            animation: landingLoaderSweep 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .gallery-hw-canvas {
+            max-width: 96%;
+            max-height: 92%;
+            object-fit: contain;
         }
     </style>
+    <script>
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('landing-loading');
+        }
+    </script>
 </head>
-<body id="top" class="min-h-screen flex flex-col selection:bg-[#225c40] selection:text-[#f7f2e8]">
+<body id="top" class="min-h-screen flex flex-col bg-[#0f281c] text-[#f7f2e8] selection:bg-[#d82c68] selection:text-[#fff8f4]">
+
+    <!-- SCHOOLY LOGO PRELOADER -->
+    <div id="landingPreloader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0f281c] px-6 transition-opacity duration-500" aria-live="polite" aria-label="schooly wird geladen">
+        <div class="hero-grid-bg-light pointer-events-none absolute inset-0 opacity-85" aria-hidden="true"></div>
+        <div id="landingPreloaderInner" class="relative z-10 flex flex-col items-center justify-center gap-6 transition-all duration-500">
+            <div class="relative flex items-center justify-center p-6 rounded-3xl bg-[#143525] border border-[#ff9e2c]/30">
+                <div class="landing-logo-wrap relative z-10 flex items-center justify-center">
+                    <img src="/assets/schooly_logo_light.png" alt="schooly" class="h-14 sm:h-20 w-auto object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.42)]" />
+                </div>
+            </div>
+            <div class="flex flex-col items-center gap-2.5">
+                <div class="w-40 sm:w-48 h-[3px] rounded-full bg-white/15 overflow-hidden">
+                    <div id="landingLoaderBar" class="h-full w-full rounded-full bg-[#ff9e2c]"></div>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#ffb85c]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#ff7aa8] animate-ping"></span>
+                    <span>schooly wird geladen</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.__dismissLandingPreloader = function() {
+            var pre = document.getElementById('landingPreloader');
+            var inner = document.getElementById('landingPreloaderInner');
+            var bar = document.getElementById('landingLoaderBar');
+            if (!pre || pre.dataset.dismissed === '1') return;
+            pre.dataset.dismissed = '1';
+            if (bar) {
+                bar.style.animation = 'none';
+                bar.style.transform = 'scaleX(1)';
+            }
+            if (inner) {
+                inner.style.opacity = '0';
+                inner.style.transform = 'translateY(-10px) scale(0.96)';
+            }
+            setTimeout(function() {
+                pre.style.opacity = '0';
+                pre.style.pointerEvents = 'none';
+                document.documentElement.classList.remove('landing-loading');
+                window.dispatchEvent(new CustomEvent('landingPreloaderHidden'));
+                setTimeout(function() {
+                    if (pre.parentNode) pre.parentNode.removeChild(pre);
+                }, 520);
+            }, 140);
+        };
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            window.__dismissLandingPreloader();
+        } else {
+            setTimeout(function() {
+                window.__dismissLandingPreloader();
+            }, 3200);
+        }
+    </script>
 
     <!-- Verified Local App Screenshots -->
     <div class="hidden" aria-hidden="true">
@@ -212,27 +362,29 @@
         <img id="tex-pdf-mobile" src="/assets/screenshot_pdf_mobile.png" alt="" />
     </div>
 
-    <!-- 3-ZONE STICKY NAVIGATION BAR -->
-    <header class="sticky top-0 z-50 bg-[#f2ece1]/92 backdrop-blur-md border-b border-[#26231e]/10">
-        <div class="max-w-[1280px] mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between gap-4 sm:gap-8">
-            <a href="#top" class="flex items-center whitespace-nowrap shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-[#225c40]">
-                <img src="/assets/schooly_logo_transparent.png" alt="schooly" class="h-6 sm:h-7 w-auto object-contain" />
+    <!-- FLOATING LIQUID GLASS NAVIGATION BAR -->
+    <header class="fixed top-3 sm:top-4 inset-x-0 z-50 px-3 sm:px-6 pointer-events-none">
+        <div class="landing-liquid-bar pointer-events-auto relative max-w-[1220px] mx-auto rounded-full px-3.5 sm:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-3 sm:gap-6 overflow-hidden">
+            <a href="#top" class="flex items-center whitespace-nowrap shrink-0 pl-1 sm:pl-1.5 rounded-full focus-visible:outline-2 focus-visible:outline-[#ff9e2c]">
+                <img src="/assets/schooly_logo_light.png" alt="schooly" class="h-5 sm:h-6 w-auto object-contain" />
             </a>
 
-            <nav class="hidden md:flex items-center gap-8 text-[13.5px] font-semibold text-[#635d53]" aria-label="Hauptnavigation">
-                <a href="#manifesto" class="nav-link hover:text-[#26231e] transition-colors whitespace-nowrap shrink-0">Prinzip</a>
-                <a href="#tour" class="nav-link hover:text-[#26231e] transition-colors whitespace-nowrap shrink-0">Einblick</a>
-                <a href="#funktionen" class="nav-link hover:text-[#26231e] transition-colors whitespace-nowrap shrink-0">Funktionen</a>
-                <a href="#abitur" class="nav-link hover:text-[#26231e] transition-colors whitespace-nowrap shrink-0">Abitur &amp; PDF</a>
+            <nav id="landingGlassNav" class="hidden md:flex relative items-center p-1 rounded-full bg-black/20 border border-white/15" aria-label="Hauptnavigation">
+                <div id="landingNavGlider" class="landing-liquid-glider" style="opacity: 0;" aria-hidden="true"></div>
+                <a href="#top" data-nav-sec="top" class="landing-nav-pill relative z-10 px-3.5 py-1.5 rounded-full text-[13px] font-bold text-[#0d2419] transition-colors whitespace-nowrap shrink-0">Start</a>
+                <a href="#manifesto" data-nav-sec="manifesto" class="landing-nav-pill relative z-10 px-3.5 py-1.5 rounded-full text-[13px] font-bold text-[#f7f2e8]/85 transition-colors whitespace-nowrap shrink-0">Prinzip</a>
+                <a href="#tour" data-nav-sec="tour" class="landing-nav-pill relative z-10 px-3.5 py-1.5 rounded-full text-[13px] font-bold text-[#f7f2e8]/85 transition-colors whitespace-nowrap shrink-0">Einblick</a>
+                <a href="#funktionen" data-nav-sec="funktionen" class="landing-nav-pill relative z-10 px-3.5 py-1.5 rounded-full text-[13px] font-bold text-[#f7f2e8]/85 transition-colors whitespace-nowrap shrink-0">Funktionen</a>
+                <a href="#abitur" data-nav-sec="abitur" class="landing-nav-pill relative z-10 px-3.5 py-1.5 rounded-full text-[13px] font-bold text-[#f7f2e8]/85 transition-colors whitespace-nowrap shrink-0">Abitur &amp; PDF</a>
             </nav>
 
             <div class="flex items-center gap-2 shrink-0">
-                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-forest inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-[13.5px] font-bold whitespace-nowrap shrink-0 min-h-[40px]">
+                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-berry inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-[13px] font-extrabold whitespace-nowrap shrink-0 min-h-[38px]">
                     <span>App starten</span>
                     <span aria-hidden="true">→</span>
                 </a>
-                <button id="mobileNavBtn" type="button" aria-expanded="false" aria-controls="mobileNavDrawer" aria-label="Menü öffnen" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-[#26231e]/14 bg-[#f7f2e8] text-[#26231e] cursor-pointer">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <button id="mobileNavBtn" type="button" aria-expanded="false" aria-controls="mobileNavDrawer" aria-label="Menü öffnen" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-[#ff9e2c]/40 bg-white/[0.08] text-[#ffe6b9] cursor-pointer">
+                    <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                         <line x1="4" y1="7" x2="20" y2="7"></line>
                         <line x1="4" y1="12" x2="20" y2="12"></line>
                         <line x1="4" y1="17" x2="20" y2="17"></line>
@@ -240,14 +392,13 @@
                 </button>
             </div>
         </div>
-        <div id="scrollProgressBar" class="h-[2px] w-full bg-[#225c40]" aria-hidden="true"></div>
 
-        <div id="mobileNavDrawer" class="hidden md:hidden border-t border-[#26231e]/10 bg-[#f2ece1] px-4 py-3.5 space-y-1">
-            <a href="#manifesto" class="block py-2.5 px-3 rounded-xl text-sm font-bold text-[#26231e] hover:bg-[#26231e]/5">Prinzip &amp; Überblick</a>
-            <a href="#tour" class="block py-2.5 px-3 rounded-xl text-sm font-bold text-[#26231e] hover:bg-[#26231e]/5">Einblick &amp; Geräte</a>
-            <a href="#funktionen" class="block py-2.5 px-3 rounded-xl text-sm font-bold text-[#26231e] hover:bg-[#26231e]/5">Alle Funktionen</a>
-            <a href="#abitur" class="block py-2.5 px-3 rounded-xl text-sm font-bold text-[#26231e] hover:bg-[#26231e]/5">Abitur-Check &amp; PDF</a>
-            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-bold text-[#225c40] hover:bg-[#225c40]/5">
+        <div id="mobileNavDrawer" class="hidden md:hidden pointer-events-auto max-w-[1220px] mx-auto mt-2.5 rounded-3xl landing-liquid-drawer px-3.5 py-3.5 space-y-1.5">
+            <a href="#manifesto" class="block py-2.5 px-3.5 rounded-2xl text-sm font-bold text-[#f7f2e8] hover:bg-white/[0.08]">Prinzip &amp; Überblick</a>
+            <a href="#tour" class="block py-2.5 px-3.5 rounded-2xl text-sm font-bold text-[#f7f2e8] hover:bg-white/[0.08]">Einblick &amp; Geräte</a>
+            <a href="#funktionen" class="block py-2.5 px-3.5 rounded-2xl text-sm font-bold text-[#f7f2e8] hover:bg-white/[0.08]">Alle Funktionen</a>
+            <a href="#abitur" class="block py-2.5 px-3.5 rounded-2xl text-sm font-bold text-[#f7f2e8] hover:bg-white/[0.08]">Abitur-Check &amp; PDF</a>
+            <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between py-2.5 px-3.5 rounded-2xl text-sm font-bold text-[#ff9e2c] hover:bg-white/[0.08]">
                 <span>Instagram @schooly.app</span>
                 <span aria-hidden="true">↗</span>
             </a>
@@ -255,44 +406,44 @@
     </header>
 
     <!-- Minimal Floating Chapter Navigator (Desktop XL) -->
-    <nav id="chapterRail" class="hidden xl:flex fixed right-6 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-3 py-3 px-2 rounded-2xl bg-[#f7f2e8]/88 backdrop-blur-md border border-[#26231e]/12 shadow-sm" aria-label="Kapitel-Navigation">
-        <button type="button" data-scroll-target="#top" title="Start" class="sec-dot w-2 h-2 rounded-full bg-[#225c40] scale-125 transition-all cursor-pointer"></button>
-        <button type="button" data-scroll-target="#manifesto" title="Prinzip" class="sec-dot w-2 h-2 rounded-full bg-[#26231e]/25 transition-all cursor-pointer"></button>
-        <button type="button" data-scroll-target="#tour" title="Einblick" class="sec-dot w-2 h-2 rounded-full bg-[#26231e]/25 transition-all cursor-pointer"></button>
-        <button type="button" data-scroll-target="#funktionen" title="Funktionen" class="sec-dot w-2 h-2 rounded-full bg-[#26231e]/25 transition-all cursor-pointer"></button>
-        <button type="button" data-scroll-target="#themes" title="Light &amp; Dark" class="sec-dot w-2 h-2 rounded-full bg-[#26231e]/25 transition-all cursor-pointer"></button>
-        <button type="button" data-scroll-target="#abitur" title="Abitur" class="sec-dot w-2 h-2 rounded-full bg-[#26231e]/25 transition-all cursor-pointer"></button>
-        <button type="button" data-scroll-target="#launch" title="Starten" class="sec-dot w-2 h-2 rounded-full bg-[#26231e]/25 transition-all cursor-pointer"></button>
+    <nav id="chapterRail" class="hidden xl:flex fixed right-6 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-3 py-3 px-2 rounded-2xl bg-[#0b2016]/88 backdrop-blur-md border border-[#ff9e2c]/30 shadow-lg" aria-label="Kapitel-Navigation">
+        <button type="button" data-scroll-target="#top" title="Start" class="sec-dot w-2 h-2 rounded-full bg-[#ff9e2c] scale-125 transition-all cursor-pointer"></button>
+        <button type="button" data-scroll-target="#manifesto" title="Prinzip" class="sec-dot w-2 h-2 rounded-full bg-[#ff7aa8]/35 transition-all cursor-pointer"></button>
+        <button type="button" data-scroll-target="#tour" title="Einblick" class="sec-dot w-2 h-2 rounded-full bg-[#ff7aa8]/35 transition-all cursor-pointer"></button>
+        <button type="button" data-scroll-target="#funktionen" title="Funktionen" class="sec-dot w-2 h-2 rounded-full bg-[#ff7aa8]/35 transition-all cursor-pointer"></button>
+        <button type="button" data-scroll-target="#themes" title="Light &amp; Dark" class="sec-dot w-2 h-2 rounded-full bg-[#ff7aa8]/35 transition-all cursor-pointer"></button>
+        <button type="button" data-scroll-target="#abitur" title="Abitur" class="sec-dot w-2 h-2 rounded-full bg-[#ff7aa8]/35 transition-all cursor-pointer"></button>
+        <button type="button" data-scroll-target="#launch" title="Starten" class="sec-dot w-2 h-2 rounded-full bg-[#ff7aa8]/35 transition-all cursor-pointer"></button>
     </nav>
 
     <main class="flex-1">
 
-        <!-- BAND 01: OPEN ARCHITECTURAL HERO -->
-        <section id="hero" class="relative pt-3 pb-7 sm:pt-12 sm:pb-20 lg:pt-16 lg:pb-24 overflow-x-clip">
+        <!-- BAND 01: DARK FOREST HERO WITH SOLID ELECTRIC ORANGE & BERRY ACCENTS -->
+        <section id="hero" class="relative bg-[#0f281c] text-[#f7f2e8] pt-[clamp(80px,10svh,120px)] pb-[clamp(40px,6.5svh,88px)] lg:min-h-[100svh] flex items-center overflow-x-clip">
             <div id="heroGridLayer" class="hero-grid-bg pointer-events-none absolute inset-0" aria-hidden="true"></div>
 
-            <div class="max-w-[1280px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-8 lg:gap-6 items-center relative z-10">
-                <div id="heroCopyWrap" class="lg:col-span-6 space-y-2.5 sm:space-y-6">
-                    <div class="hero-enter text-[10.5px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40]">
+            <div class="w-full max-w-[1460px] mx-auto px-5 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-6 items-center relative z-10">
+                <div id="heroCopyWrap" class="lg:col-span-5 space-y-4 sm:space-y-5">
+                    <div class="hero-enter text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8]">
                         All-in-One Schul-App · Klasse 5 bis Abitur
                     </div>
 
-                    <h1 class="hero-enter font-epilogue font-black text-[#26231e] leading-[1.03]" style="font-size: clamp(1.8rem, 4.7vw, 4.3rem); text-wrap: balance;">
-                        Dein Schulalltag. Endlich an einem Ort.
+                    <h1 class="hero-enter font-epilogue font-black text-[#f7f2e8] leading-[1.04]" style="font-size: clamp(1.85rem, 4vw, 3.85rem); text-wrap: balance;">
+                        Dein Schulalltag. <span class="text-flash-orange-berry">Endlich an einem Ort.</span>
                     </h1>
 
-                    <p class="hero-enter text-[13.5px] sm:text-[18px] text-[#635d53] leading-[1.46] sm:leading-[1.6] max-w-xl font-medium">
-                        Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und Abitur-Check — synchron auf <strong class="text-[#26231e] font-bold">Smartphone &amp; Laptop</strong>.
+                    <p class="hero-enter text-[14.5px] sm:text-[17px] text-[#f7f2e8]/85 leading-[1.55] max-w-xl font-medium">
+                        Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und Abitur-Check — synchron auf <strong class="text-[#ff9e2c] font-bold">Smartphone &amp; Laptop</strong>.
                     </p>
 
-                    <div class="hero-enter flex flex-row items-center gap-2.5 sm:gap-3 pt-0.5 sm:pt-1">
-                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-forest flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl font-bold text-[13.5px] sm:text-base whitespace-nowrap min-h-[44px] sm:min-h-[48px]">
+                    <div class="hero-enter flex flex-row items-center gap-3 pt-1">
+                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-orange flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl font-extrabold text-[13.5px] sm:text-base whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
                             <span class="sm:hidden">Jetzt öffnen</span>
                             <span class="hidden sm:inline">schooly26.vercel.app öffnen</span>
                             <span aria-hidden="true">→</span>
                         </a>
-                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3.5 rounded-2xl border border-[#26231e]/14 bg-[#f7f2e8] hover:bg-[#ebe3d5] text-[#26231e] font-bold text-[13px] sm:text-base transition-colors whitespace-nowrap min-h-[44px] sm:min-h-[48px]">
-                            <svg class="w-4 h-4 text-[#225c40] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-3 sm:py-3.5 rounded-2xl border border-[#ff7aa8]/45 bg-[#3a1023] hover:bg-[#4d152f] text-[#ffd4e3] font-bold text-[13px] sm:text-base transition-colors whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
+                            <svg class="w-4 h-4 text-[#ff7aa8] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                                 <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -301,60 +452,60 @@
                         </a>
                     </div>
 
-                    <div class="hero-enter pt-1.5 sm:pt-4 border-t border-[#26231e]/10 flex flex-wrap items-center gap-x-2.5 sm:gap-x-4 gap-y-1 text-[11px] sm:text-xs font-semibold text-[#635d53]">
-                        <span class="tabular-nums whitespace-nowrap">0 € kostenlos</span>
+                    <div class="hero-enter pt-3 sm:pt-4 border-t border-[#ff9e2c]/25 flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1.5 text-[11.5px] sm:text-xs font-bold text-[#f7f2e8]/75">
+                        <span class="tabular-nums whitespace-nowrap text-[#ff9e2c]">0 € kostenlos</span>
                         <span aria-hidden="true">·</span>
-                        <span class="whitespace-nowrap">0–15 Pkt. &amp; 1–6</span>
+                        <span class="whitespace-nowrap text-[#f7f2e8]/90">0–15 Pkt. &amp; 1–6</span>
                         <span aria-hidden="true">·</span>
-                        <span class="whitespace-nowrap">Keine Werbung</span>
+                        <span class="whitespace-nowrap text-[#ff7aa8]">Keine Werbung</span>
                     </div>
                 </div>
 
-                <div class="lg:col-span-6 relative">
-                    <div id="heroStageWrap" class="relative overflow-visible aspect-[14/9.2] sm:aspect-[14/10.5] flex items-center justify-center">
-                        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] rounded-full" style="background: radial-gradient(circle closest-side, rgba(34, 92, 64, 0.13) 0%, rgba(232, 224, 210, 0.45) 52%, rgba(242, 236, 225, 0) 90%);"></div>
-                        <div class="pointer-events-none absolute inset-x-[4%] bottom-[13%] h-px bg-gradient-to-r from-transparent via-[#26231e]/15 to-transparent"></div>
+                <div class="lg:col-span-7 relative space-y-3 sm:space-y-2.5">
+                    <div id="heroStageWrap" class="relative overflow-visible w-full h-[clamp(245px,38svh,340px)] sm:h-[clamp(330px,46svh,440px)] lg:h-[clamp(310px,54svh,570px)] flex items-center justify-center">
+                        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[92%] aspect-square rounded-full border border-[#ff9e2c]/[0.16]"></div>
+                        <div class="pointer-events-none absolute inset-x-[3%] bottom-[9%] h-px bg-[#ff9e2c]/30"></div>
 
-                        <div id="heroMacActor" class="hw-actor absolute right-[0%] bottom-[12%] w-[78%] aspect-[480/355] pointer-events-none">
-                            <canvas id="heroMacCanvas" class="w-full h-full block"></canvas>
+                        <div id="heroMacActor" class="hw-actor absolute right-[0%] lg:-right-[1%] bottom-[9%] h-[78%] sm:h-[82%] max-w-[82%] lg:max-w-[88%] aspect-[480/355] pointer-events-none">
+                            <canvas id="heroMacCanvas" class="w-full h-full block object-contain object-bottom"></canvas>
                         </div>
 
-                        <div id="heroPhoneActor" class="hw-actor absolute left-[2%] bottom-[5%] w-[33%] aspect-[320/610] z-10 pointer-events-none">
+                        <div id="heroPhoneActor" class="hw-actor absolute left-[2%] lg:left-[1%] bottom-[2%] h-[76%] sm:h-[82%] max-w-[38%] aspect-[320/610] z-10 pointer-events-none">
                             <canvas id="heroPhoneLightCanvas" class="screen-layer is-active"></canvas>
                             <canvas id="heroPhoneDarkCanvas" class="screen-layer"></canvas>
                         </div>
 
-                        <div id="heroParallaxTagA" class="hidden sm:flex items-center gap-3 absolute left-[28%] bottom-[0%] z-20 px-4 py-2.5 rounded-2xl bg-[#f7f2e8]/95 backdrop-blur-md border border-[#26231e]/12 shadow-lg pointer-events-none transition-opacity duration-300">
-                            <div class="w-2 h-7 rounded-full bg-[#225c40]"></div>
+                        <div id="heroParallaxTagA" class="hidden sm:flex items-center gap-3 absolute left-[28%] bottom-[0%] z-20 px-4 py-2.5 rounded-2xl bg-[#112e20]/95 backdrop-blur-md border border-[#ff9e2c]/45 shadow-2xl pointer-events-none transition-opacity duration-300">
+                            <div class="w-1.5 h-7 rounded-full bg-[#ff9e2c]"></div>
                             <div>
-                                <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#225c40]">Echtzeit-Sync</div>
-                                <div class="text-xs font-extrabold text-[#26231e] tabular-nums">Schnitt 13,10 Pkt. · 1,30</div>
+                                <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#ff7aa8]">Echtzeit-Sync</div>
+                                <div class="text-xs font-extrabold text-[#f7f2e8] tabular-nums">Schnitt 13,10 Pkt. · 1,30</div>
                             </div>
                         </div>
 
-                        <div id="heroParallaxTagB" class="hidden sm:flex items-center gap-2.5 absolute right-[2%] top-[4%] z-20 px-3.5 py-2 rounded-xl bg-[#26231e] text-[#f7f2e8] shadow-lg pointer-events-none transition-opacity duration-300">
-                            <span class="text-xs font-bold text-[#f3c879] tabular-nums">664 / 900</span>
-                            <span class="text-[11px] font-semibold text-[#f7f2e8]/85">Abitur bestanden ✓</span>
+                        <div id="heroParallaxTagB" class="hidden sm:flex items-center gap-2.5 absolute right-[2%] top-[3%] z-20 px-3.5 py-2 rounded-xl bg-[#3a1023]/95 backdrop-blur-md border border-[#ff7aa8]/45 text-[#f7f2e8] shadow-2xl pointer-events-none transition-opacity duration-300">
+                            <span class="text-xs font-extrabold text-[#ff9e2c] tabular-nums">664 / 900</span>
+                            <span class="text-[11px] font-semibold text-[#ffd4e3]">Abitur bestanden ✓</span>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between gap-2 pt-1 sm:pt-2">
-                        <div class="inline-flex items-center p-0.5 sm:p-1 rounded-xl bg-[#26231e]/[0.06] border border-[#26231e]/10" role="tablist" aria-label="Geräteansicht wählen">
-                            <button type="button" data-hero-mode="duo" class="hero-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold bg-[#f7f2e8] text-[#26231e] shadow-sm transition-colors cursor-pointer min-h-[34px] sm:min-h-[38px] whitespace-nowrap">
+                    <div class="flex flex-wrap items-center justify-between gap-2.5 pt-1">
+                        <div class="inline-flex items-center p-1 rounded-xl bg-white/[0.06] border border-[#ff9e2c]/25" role="tablist" aria-label="Geräteansicht wählen">
+                            <button type="button" data-hero-mode="duo" class="hero-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold bg-[#ff9e2c] text-[#0d2419] shadow-sm transition-colors cursor-pointer min-h-[36px] sm:min-h-[38px] whitespace-nowrap">
                                 <span class="sm:hidden">Beide</span>
                                 <span class="hidden sm:inline">Handy &amp; Laptop</span>
                             </button>
-                            <button type="button" data-hero-mode="phone" class="hero-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-[#635d53] hover:text-[#26231e] transition-colors cursor-pointer min-h-[34px] sm:min-h-[38px] whitespace-nowrap">
+                            <button type="button" data-hero-mode="phone" class="hero-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/75 hover:text-[#f7f2e8] transition-colors cursor-pointer min-h-[36px] sm:min-h-[38px] whitespace-nowrap">
                                 <span class="sm:hidden">Handy</span>
                                 <span class="hidden sm:inline">Smartphone</span>
                             </button>
-                            <button type="button" data-hero-mode="laptop" class="hero-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-[#635d53] hover:text-[#26231e] transition-colors cursor-pointer min-h-[34px] sm:min-h-[38px] whitespace-nowrap">
+                            <button type="button" data-hero-mode="laptop" class="hero-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/75 hover:text-[#f7f2e8] transition-colors cursor-pointer min-h-[36px] sm:min-h-[38px] whitespace-nowrap">
                                 Laptop
                             </button>
                         </div>
 
-                        <button type="button" id="heroDarkToggleBtn" aria-pressed="false" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl border border-[#26231e]/14 bg-[#f7f2e8] hover:bg-[#e8e0d2] text-[11px] sm:text-xs font-bold text-[#26231e] transition-colors cursor-pointer min-h-[36px] sm:min-h-[40px] whitespace-nowrap shrink-0">
-                            <span id="heroThemeDot" class="w-2.5 h-2.5 rounded-full bg-[#e8e0d2] border border-[#26231e]/25"></span>
+                        <button type="button" id="heroDarkToggleBtn" aria-pressed="false" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-xl border border-[#ff7aa8]/40 bg-[#3a1023] hover:bg-[#4d152f] text-[11px] sm:text-xs font-bold text-[#ffe6b9] transition-colors cursor-pointer min-h-[38px] sm:min-h-[40px] whitespace-nowrap shrink-0">
+                            <span id="heroThemeDot" class="w-2.5 h-2.5 rounded-full bg-[#ff9e2c] border border-white/40"></span>
                             <span id="heroThemeLabel" class="hidden sm:inline">Dark Mode Vorschau</span>
                             <span id="heroThemeLabelMobile" class="sm:hidden">Dark Mode</span>
                         </button>
@@ -363,41 +514,41 @@
             </div>
         </section>
 
-        <!-- BAND 02: EDITORIAL MANIFESTO -->
-        <section id="manifesto" class="scroll-mt-14 sm:scroll-mt-16 relative bg-[#e8e0d2] py-12 sm:py-24 lg:py-28 border-t border-[#26231e]/10 overflow-x-clip">
-            <div class="max-w-[1160px] mx-auto px-4 sm:px-8 space-y-7 sm:space-y-14 relative z-10">
+        <!-- BAND 02: EDITORIAL MANIFESTO IN DARK FOREST GREEN (#143525) -->
+        <section id="manifesto" class="scroll-mt-24 sm:scroll-mt-28 relative bg-[#143525] text-[#f7f2e8] py-14 sm:py-22 lg:py-26 border-t border-[#ff9e2c]/20 overflow-x-clip">
+            <div class="max-w-[1160px] mx-auto px-5 sm:px-8 space-y-8 sm:space-y-12 relative z-10">
                 <div class="flex items-center justify-between gap-4">
-                    <span class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40]">01 · Das Prinzip</span>
-                    <span class="text-xs font-semibold text-[#635d53] hidden sm:inline">Klasse 5 bis Abitur</span>
+                    <span class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff9e2c]">01 · Das Prinzip</span>
+                    <span class="text-xs font-bold text-[#ff7aa8] hidden sm:inline">Klasse 5 bis Abitur</span>
                 </div>
 
-                <h2 id="manifestoHeading" class="font-epilogue font-bold text-[#26231e] leading-[1.18]" style="font-size: clamp(1.38rem, 3.4vw, 3rem); text-wrap: balance;">
+                <h2 id="manifestoHeading" class="font-epilogue font-bold text-[#f7f2e8] leading-[1.2]" style="font-size: clamp(1.38rem, 3.2vw, 2.85rem); text-wrap: balance;">
                     Schluss mit Excel-Tabellen, fünf verschiedenen Apps und verlorenen Zetteln. schooly verbindet Fächer, Termine, Aufgaben und dein Abitur in einer klaren Oberfläche.
                 </h2>
 
-                <div class="w-full h-px bg-[#26231e]/12 overflow-hidden">
-                    <div id="manifestoLine" class="scrub-line h-full w-full bg-[#225c40]" style="transform: scaleX(0.12);"></div>
+                <div class="w-full h-px bg-white/15 overflow-hidden">
+                    <div id="manifestoLine" class="scrub-line h-full w-full bg-[#ff9e2c]" style="transform: scaleX(0.12);"></div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-8 md:gap-10 pt-1">
-                    <div class="manifesto-pillar space-y-1.5 sm:space-y-2 p-4 md:p-0 rounded-2xl md:rounded-none bg-[#f7f2e8]/75 md:bg-transparent border border-[#26231e]/8 md:border-0">
-                        <div class="text-[11px] sm:text-xs font-extrabold text-[#225c40] tabular-nums">01 · ALLES VERKNÜPFT</div>
-                        <h3 class="font-epilogue font-bold text-base sm:text-xl text-[#26231e]">Eine Eingabe, alles aktuell.</h3>
-                        <p class="text-[13.5px] sm:text-sm text-[#635d53] leading-relaxed font-medium">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8 md:gap-10 pt-2">
+                    <div class="manifesto-pillar space-y-2 p-5 md:p-0 rounded-2xl md:rounded-none bg-[#0f281c]/70 md:bg-transparent border border-[#ff9e2c]/18 md:border-0">
+                        <div class="text-[11px] sm:text-xs font-extrabold text-[#ff9e2c] tabular-nums">01 · ALLES VERKNÜPFT</div>
+                        <h3 class="font-epilogue font-bold text-base sm:text-xl text-[#f7f2e8]">Eine Eingabe, alles aktuell.</h3>
+                        <p class="text-[13.5px] sm:text-sm text-[#f7f2e8]/80 leading-relaxed font-medium">
                             Trägst du eine Klausur ein, aktualisieren sich Countdown, Google Kalender und deine Fachgewichtung automatisch.
                         </p>
                     </div>
-                    <div class="manifesto-pillar space-y-1.5 sm:space-y-2 p-4 md:p-0 rounded-2xl md:rounded-none bg-[#f7f2e8]/75 md:bg-transparent border border-[#26231e]/8 md:border-0">
-                        <div class="text-[11px] sm:text-xs font-extrabold text-[#225c40] tabular-nums">02 · RECHNERISCH EXAKT</div>
-                        <h3 class="font-epilogue font-bold text-base sm:text-xl text-[#26231e]">Von Klasse 5 bis zum Abitur.</h3>
-                        <p class="text-[13.5px] sm:text-sm text-[#635d53] leading-relaxed font-medium">
+                    <div class="manifesto-pillar space-y-2 p-5 md:p-0 rounded-2xl md:rounded-none bg-[#0f281c]/70 md:bg-transparent border border-[#ff7aa8]/20 md:border-0">
+                        <div class="text-[11px] sm:text-xs font-extrabold text-[#ff7aa8] tabular-nums">02 · RECHNERISCH EXAKT</div>
+                        <h3 class="font-epilogue font-bold text-base sm:text-xl text-[#f7f2e8]">Von Klasse 5 bis zum Abitur.</h3>
+                        <p class="text-[13.5px] sm:text-sm text-[#f7f2e8]/80 leading-relaxed font-medium">
                             Unterstützt Noten von 1 bis 6 genauso exakt wie 0–15 Punkte, LK-Faktor und Streichungs-Logik.
                         </p>
                     </div>
-                    <div class="manifesto-pillar space-y-1.5 sm:space-y-2 p-4 md:p-0 rounded-2xl md:rounded-none bg-[#f7f2e8]/75 md:bg-transparent border border-[#26231e]/8 md:border-0">
-                        <div class="text-[11px] sm:text-xs font-extrabold text-[#225c40] tabular-nums">03 · OHNE ABLENKUNG</div>
-                        <h3 class="font-epilogue font-bold text-base sm:text-xl text-[#26231e]">Kostenlos und komplett werbefrei.</h3>
-                        <p class="text-[13.5px] sm:text-sm text-[#635d53] leading-relaxed font-medium">
+                    <div class="manifesto-pillar space-y-2 p-5 md:p-0 rounded-2xl md:rounded-none bg-[#0f281c]/70 md:bg-transparent border border-[#ff9e2c]/18 md:border-0">
+                        <div class="text-[11px] sm:text-xs font-extrabold text-[#ff9e2c] tabular-nums">03 · OHNE ABLENKUNG</div>
+                        <h3 class="font-epilogue font-bold text-base sm:text-xl text-[#f7f2e8]">Kostenlos und komplett werbefrei.</h3>
+                        <p class="text-[13.5px] sm:text-sm text-[#f7f2e8]/80 leading-relaxed font-medium">
                             Kein Abo, keine versteckten Kosten, keine Werbung. Anmelden und auf jedem Gerät direkt weiterarbeiten.
                         </p>
                     </div>
@@ -405,45 +556,45 @@
             </div>
         </section>
 
-        <!-- BAND 03: HARDWARE STORY (#tour) — DESKTOP PINNED + MOBILE ADAPTIVE -->
-        <section id="tour" class="scroll-mt-14 sm:scroll-mt-16 tour-cyclorama relative text-[#f7f2e8] overflow-x-clip">
-            <div id="tourPinWrap" class="lg:min-h-[100svh] w-full flex flex-col justify-between py-6 sm:py-12 lg:py-0">
-                <div class="max-w-[1280px] w-full mx-auto px-4 sm:px-8 lg:pt-8 flex flex-wrap items-center justify-between gap-4 relative z-30">
-                    <div class="grid grid-cols-4 sm:inline-flex items-center gap-1 p-1 rounded-xl bg-white/10 border border-white/15 backdrop-blur-md w-full sm:w-auto" role="tablist" aria-label="Einblick Kapitel">
-                        <button type="button" data-tour-step="0" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold bg-[#f7f2e8] text-[#26231e] transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+        <!-- BAND 03: HARDWARE STORY (#tour) — DESKTOP PINNED + FLUID VIEWPORT FIT -->
+        <section id="tour" class="scroll-mt-20 lg:scroll-mt-0 tour-cyclorama relative text-[#f7f2e8] border-t border-[#ff7aa8]/20 overflow-x-clip">
+            <div id="tourPinWrap" class="lg:min-h-[100svh] w-full flex flex-col justify-between py-12 sm:py-14 lg:pt-[clamp(66px,8.2svh,88px)] lg:pb-[clamp(12px,2svh,24px)] space-y-5 lg:space-y-2">
+                <div class="max-w-[1460px] w-full mx-auto px-5 sm:px-8 flex flex-wrap items-center justify-between gap-3 relative z-30">
+                    <div class="grid grid-cols-4 sm:inline-flex items-center gap-1 p-1 rounded-xl bg-black/25 border border-[#ff9e2c]/25 backdrop-blur-md w-full sm:w-auto" role="tablist" aria-label="Einblick Kapitel">
+                        <button type="button" data-tour-step="0" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold bg-[#ff9e2c] text-[#0d2419] transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             01 Sync
                         </button>
-                        <button type="button" data-tour-step="1" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+                        <button type="button" data-tour-step="1" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             02 Noten
                         </button>
-                        <button type="button" data-tour-step="2" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+                        <button type="button" data-tour-step="2" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             03 Planer
                         </button>
-                        <button type="button" data-tour-step="3" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-white/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+                        <button type="button" data-tour-step="3" class="tour-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             04 Abitur
                         </button>
                     </div>
 
-                    <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-[#f3c879] tabular-nums">
+                    <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-[#ff9e2c] tabular-nums">
                         <span id="tourStepCounter">Kapitel 01 / 04</span>
                         <div class="w-28 h-1 rounded-full bg-white/15 overflow-hidden">
-                            <div id="tourProgressFill" class="h-full w-full bg-[#f3c879] origin-left" style="transform: scaleX(0.08);"></div>
+                            <div id="tourProgressFill" class="h-full w-full bg-[#ff9e2c] origin-left" style="transform: scaleX(0.08);"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="max-w-[1280px] w-full mx-auto px-4 sm:px-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-10 items-center py-3 sm:py-5 lg:py-8 relative z-20">
-                    <div id="tourStageTouch" class="lg:col-span-7 relative h-[215px] sm:h-[360px] lg:h-[490px] flex items-center justify-center touch-pan-y">
-                        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] aspect-square rounded-full border border-white/[0.06]"></div>
-                        <div class="pointer-events-none absolute inset-x-[6%] bottom-[10%] h-px bg-gradient-to-r from-transparent via-[#f3c879]/35 to-transparent"></div>
+                <div class="max-w-[1460px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-center py-1 relative z-20">
+                    <div id="tourStageTouch" class="lg:col-span-8 relative w-full h-[clamp(235px,36svh,320px)] sm:h-[clamp(300px,42svh,390px)] lg:h-[clamp(260px,48svh,520px)] flex items-center justify-center touch-pan-y">
+                        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-square rounded-full border border-[#ff9e2c]/[0.16]"></div>
+                        <div class="pointer-events-none absolute inset-x-[4%] bottom-[8%] h-px bg-[#ff9e2c]/30"></div>
 
-                        <div id="tourMacActor" class="hw-actor absolute w-[76%] sm:w-[76%] lg:w-[82%] max-w-[520px] aspect-[480/355]" style="left: 16%; bottom: 12%;">
+                        <div id="tourMacActor" class="hw-actor absolute h-[76%] sm:h-[82%] max-w-[78%] lg:max-w-[82%] aspect-[480/355]" style="left: 14%; bottom: 10%;">
                             <canvas id="tourMacScreen0" class="screen-layer is-active"></canvas>
                             <canvas id="tourMacScreen1" class="screen-layer"></canvas>
                             <canvas id="tourMacScreen2" class="screen-layer"></canvas>
                         </div>
 
-                        <div id="tourPhoneActor" class="hw-actor absolute w-[29%] sm:w-[27%] lg:w-[33%] max-w-[215px] aspect-[320/610] z-20" style="left: 6%; bottom: 4%;">
+                        <div id="tourPhoneActor" class="hw-actor absolute h-[74%] sm:h-[80%] max-w-[36%] aspect-[320/610] z-20" style="left: 3%; bottom: 2%;">
                             <canvas id="tourPhoneScreen0" class="screen-layer is-active"></canvas>
                             <canvas id="tourPhoneScreen1" class="screen-layer"></canvas>
                             <canvas id="tourPhoneScreen2" class="screen-layer"></canvas>
@@ -452,384 +603,375 @@
                         </div>
                     </div>
 
-                    <div class="lg:col-span-5 grid grid-cols-1 items-center">
-                        <div id="tourCopy0" class="tour-copy-block is-active flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-2">
-                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#f3c879] tabular-nums">01 / 04 · LIVE-SYNC</div>
-                            <h3 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.1rem] leading-[1.1] sm:leading-[1.08] text-[#f7f2e8]" style="text-wrap: balance;">
+                    <div class="lg:col-span-4 grid grid-cols-1 items-center">
+                        <div id="tourCopy0" class="tour-copy-block is-active flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">01 / 04 · LIVE-SYNC</div>
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                 Ein Konto. Handy und Laptop immer synchron.
                             </h3>
-                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/84 leading-relaxed font-medium">
                                 Trage eine Note unterwegs in Sekunden ein — und sieh denselben Schnitt, alle Aufgaben und deinen Wochenplan sofort am Laptop.
                             </p>
-                            <div class="pt-2.5 sm:pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#f3c879]">
+                            <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                 <span>Smartphone · Tablet · Laptop</span>
                                 <span>Live-Abgleich ✓</span>
                             </div>
                         </div>
 
-                        <div id="tourCopy1" class="tour-copy-block flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-2">
-                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#f3c879] tabular-nums">02 / 04 · FÄCHER &amp; WUNSCHNOTE</div>
-                            <h3 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.1rem] leading-[1.1] sm:leading-[1.08] text-[#f7f2e8]" style="text-wrap: balance;">
+                        <div id="tourCopy1" class="tour-copy-block flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">02 / 04 · FÄCHER &amp; WUNSCHNOTE</div>
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                 Jede Gewichtung exakt. Zielnote vor der Klausur.
                             </h3>
-                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[14px] sm:text-[15.5px] text-[#f7f2e8]/84 leading-relaxed font-medium">
                                 Schriftliche und mündliche Anteile sowie der LK-Faktor greifen halbjahresgenau. Der Wunschnoten-Rechner zeigt dir vorab, welche Punktzahl du brauchst.
                             </p>
-                            <div class="pt-2.5 sm:pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#f3c879]">
+                            <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                 <span>LK / GK &amp; Prozentanteile</span>
                                 <span>0–15 Pkt. &amp; 1–6 ✓</span>
                             </div>
                         </div>
 
-                        <div id="tourCopy2" class="tour-copy-block flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-2">
-                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#f3c879] tabular-nums">03 / 04 · STUNDENPLAN &amp; KALENDER</div>
-                            <h3 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.1rem] leading-[1.1] sm:leading-[1.08] text-[#f7f2e8]" style="text-wrap: balance;">
+                        <div id="tourCopy2" class="tour-copy-block flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">03 / 04 · STUNDENPLAN &amp; KALENDER</div>
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                 Termine, Wochenplan &amp; Google Kalender vereint.
                             </h3>
-                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[14px] sm:text-[15.5px] text-[#f7f2e8]/84 leading-relaxed font-medium">
                                 Behalte Hausaufgaben, Klausuren und die Schulferien aller 16 Bundesländer im Blick — inklusive 1-Klick-Sync in deinen Google Kalender.
                             </p>
-                            <div class="pt-2.5 sm:pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#f3c879]">
+                            <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                 <span>Alle 16 Bundesländer Ferien</span>
                                 <span>Google-Sync ✓</span>
                             </div>
                         </div>
 
-                        <div id="tourCopy3" class="tour-copy-block flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-2">
-                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#f3c879] tabular-nums">04 / 04 · ABITUR &amp; PDF-EXPORT</div>
-                            <h3 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.1rem] leading-[1.1] sm:leading-[1.08] text-[#f7f2e8]" style="text-wrap: balance;">
+                        <div id="tourCopy3" class="tour-copy-block flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                            <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">04 / 04 · ABITUR &amp; PDF-EXPORT</div>
+                            <h3 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                 40 Kurse, Streichungen &amp; Bestehens-Check ohne Excel.
                             </h3>
-                            <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium">
+                            <p class="text-[14px] sm:text-base text-[#f7f2e8]/84 leading-relaxed font-medium">
                                 Automatische Einbringungs-Logik für Block I, P1–P5 Simulation, Prüfung aller 5 Abitur-Kriterien und fertiger PDF-Notenspiegel per Klick.
                             </p>
-                            <div class="pt-2.5 sm:pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#f3c879]">
+                            <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                 <span>Inkl. 1-Klick PDF-Notenspiegel</span>
-                                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Jetzt ansehen →</a>
+                                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="underline hover:text-[#ff7aa8]">Jetzt ansehen →</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Mobile Prev/Next controls cleanly framed inside screen -->
-                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-4 pt-3 pb-1 flex items-center justify-between gap-3">
-                    <button type="button" id="tourMobilePrev" class="px-3.5 py-2 rounded-xl border border-white/20 bg-white/8 text-xs font-bold text-[#f7f2e8] min-h-[40px] cursor-pointer active:scale-95 transition-transform">
+                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-5 pt-3 pb-1 flex items-center justify-between gap-3">
+                    <button type="button" id="tourMobilePrev" class="px-4 py-2.5 rounded-xl border border-[#ff7aa8]/35 bg-[#3a1023]/65 text-xs font-bold text-[#ffd4e3] min-h-[42px] cursor-pointer active:scale-95 transition-transform">
                         ← Vorheriges
                     </button>
-                    <span id="tourMobileCount" class="text-xs font-bold text-[#f3c879] tabular-nums">01 / 04</span>
-                    <button type="button" id="tourMobileNext" class="px-3.5 py-2 rounded-xl bg-[#f7f2e8] text-xs font-bold text-[#26231e] min-h-[40px] cursor-pointer active:scale-95 transition-transform">
+                    <span id="tourMobileCount" class="text-xs font-bold text-[#ff9e2c] tabular-nums">01 / 04</span>
+                    <button type="button" id="tourMobileNext" class="px-4 py-2.5 rounded-xl bg-[#ff9e2c] text-xs font-extrabold text-[#0d2419] min-h-[42px] cursor-pointer active:scale-95 transition-transform">
                         Nächstes →
                     </button>
                 </div>
 
-                <div class="hidden lg:block border-t border-white/10">
-                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-3.5 flex items-center justify-between gap-4 text-xs font-semibold text-[#f7f2e8]/75">
+                <div class="hidden lg:block border-t border-white/12">
+                    <div class="max-w-[1460px] w-full mx-auto px-5 sm:px-8 py-2.5 lg:py-3 flex items-center justify-between gap-4 text-xs font-semibold text-[#f7f2e8]/75">
                         <span id="tourCaptionText">01 / 04 · Echtzeit-Sync zwischen Smartphone und Laptop</span>
-                        <span class="text-[#f3c879] font-bold">schooly · Handy &amp; Laptop</span>
+                        <span class="text-[#ff9e2c] font-bold">schooly · Handy &amp; Laptop</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- BAND 04: PINNED HORIZONTAL GALLERY ON DESKTOP + SWIPEABLE CAROUSEL ON MOBILE (#funktionen) -->
-        <section id="funktionen" class="scroll-mt-14 sm:scroll-mt-16 relative bg-[#f2ece1] overflow-x-clip">
-            <div id="funktionenPinWrap" class="lg:min-h-[100svh] flex flex-col justify-center py-11 sm:py-20 lg:py-12">
-                <div class="max-w-[1280px] w-full mx-auto px-4 sm:px-8 mb-4 sm:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-3.5 sm:gap-6">
-                    <div class="max-w-2xl space-y-1.5 sm:space-y-2.5 reveal-up">
-                        <div class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40]">02 · Alle Ansichten</div>
-                        <h2 class="font-epilogue font-black text-[#26231e] leading-[1.06]" style="font-size: clamp(1.5rem, 3.4vw, 2.9rem); text-wrap: balance;">
-                            Jedes Werkzeug genau dann, wenn du es brauchst.
+        <!-- BAND 04: DARK FOREST STUDIO GALLERY (#funktionen) — PINNED DESKTOP GLIDE + FLUID VIEWPORT FIT -->
+        <section id="funktionen" class="scroll-mt-20 lg:scroll-mt-0 relative bg-[#143525] text-[#f7f2e8] border-t border-[#ff9e2c]/20 overflow-x-clip">
+            <div id="funktionenPinWrap" class="lg:min-h-[100svh] flex flex-col justify-center py-12 sm:py-16 lg:pt-[clamp(66px,8.2svh,88px)] lg:pb-[clamp(16px,3svh,28px)]">
+                <div class="max-w-[1460px] w-full mx-auto px-5 sm:px-8 mb-5 sm:mb-7 lg:mb-4 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5">
+                    <div class="max-w-2xl space-y-2 reveal-up">
+                        <div class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8]">02 · Alle Ansichten</div>
+                        <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.06]" style="font-size: clamp(1.5rem, 3.2vw, 2.75rem); text-wrap: balance;">
+                            Jedes Werkzeug genau dann, wenn du es <span class="text-[#ff9e2c]">brauchst.</span>
                         </h2>
                     </div>
 
                     <div class="flex flex-wrap items-center justify-between md:justify-end gap-3 reveal-up">
-                        <div class="inline-flex items-center p-1 rounded-xl bg-[#26231e]/[0.06] border border-[#26231e]/10" role="tablist" aria-label="Ansichten filtern">
-                            <button type="button" data-gallery-filter="all" class="gallery-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#f7f2e8] text-[#26231e] shadow-sm transition-colors cursor-pointer min-h-[36px] whitespace-nowrap">
+                        <div class="inline-flex items-center p-1 rounded-xl bg-black/25 border border-[#ff9e2c]/22" role="tablist" aria-label="Ansichten filtern">
+                            <button type="button" data-gallery-filter="all" class="gallery-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#ff9e2c] text-[#0d2419] shadow-sm transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                                 Alle (9)
                             </button>
-                            <button type="button" data-gallery-filter="mobile" class="gallery-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#635d53] hover:text-[#26231e] transition-colors cursor-pointer min-h-[36px] whitespace-nowrap">
+                            <button type="button" data-gallery-filter="mobile" class="gallery-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                                 Smartphone
                             </button>
-                            <button type="button" data-gallery-filter="laptop" class="gallery-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#635d53] hover:text-[#26231e] transition-colors cursor-pointer min-h-[36px] whitespace-nowrap">
+                            <button type="button" data-gallery-filter="laptop" class="gallery-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                                 Laptop
                             </button>
                         </div>
 
-                        <div class="hidden lg:flex items-center gap-2.5 text-xs font-bold text-[#225c40] tabular-nums">
+                        <div class="hidden lg:flex items-center gap-2.5 text-xs font-bold text-[#ff7aa8] tabular-nums">
                             <span id="galleryProgressLabel">01 / 09</span>
-                            <div class="w-24 h-1 rounded-full bg-[#26231e]/12 overflow-hidden">
-                                <div id="galleryProgressFill" class="h-full w-full bg-[#225c40] origin-left" style="transform: scaleX(0.11);"></div>
+                            <div class="w-24 h-1 rounded-full bg-white/15 overflow-hidden">
+                                <div id="galleryProgressFill" class="h-full w-full bg-[#ff9e2c] origin-left" style="transform: scaleX(0.11);"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Stage: 3D Phone & Laptop Hardware Mockups — Pinned Desktop Glide + Mobile Touch Carousel -->
+                <!-- Stage: 3D Phone & Laptop Hardware Mockups on Clean Solid Dark Studio Bays -->
                 <div id="galleryViewport" class="w-full overflow-x-auto lg:overflow-hidden snap-x snap-mandatory lg:snap-none no-scrollbar">
-                    <div id="galleryTrack" class="flex items-stretch gap-4 sm:gap-7 w-max px-4 sm:px-8 lg:px-[max(2rem,calc((100vw-1280px)/2+2rem))] pb-2">
-                        <figure data-device="mobile" class="gallery-card snap-start w-[66vw] max-w-[244px] sm:w-[276px] sm:max-w-[276px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#f7f2e8] border border-[#26231e]/10 flex items-center justify-center p-2 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.08) 0%, transparent 68%);"></div>
+                    <div id="galleryTrack" class="flex items-stretch gap-5 sm:gap-7 w-max px-5 sm:px-8 lg:px-[max(2rem,calc((100vw-1460px)/2+2rem))] pb-2">
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(68vw,252px)] sm:w-[275px] lg:w-[clamp(235px,21vw,305px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#0f281c] border border-[#ff9e2c]/28 flex items-center justify-center p-2.5 overflow-hidden">
                                 <canvas id="galleryHw0" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-faecher-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Fächer und Gewichtung Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">SMARTPHONE · FÄCHER</div>
-                                <div class="text-sm font-bold text-[#26231e]">Schriftlich &amp; mündlich frei gewichten</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff9e2c]">SMARTPHONE · FÄCHER</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">Schriftlich &amp; mündlich frei gewichten</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[66vw] max-w-[244px] sm:w-[276px] sm:max-w-[276px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#e8e0d2] border border-[#26231e]/10 flex items-center justify-center p-2 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.10) 0%, transparent 68%);"></div>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(68vw,252px)] sm:w-[275px] lg:w-[clamp(235px,21vw,305px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#2d1020] border border-[#ff7aa8]/30 flex items-center justify-center p-2.5 overflow-hidden">
                                 <canvas id="galleryHw1" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-wunschnote-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Wunschnoten-Rechner Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">SMARTPHONE · WUNSCHNOTE</div>
-                                <div class="text-sm font-bold text-[#26231e]">Sofort sehen, welche Punktzahl reicht</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff7aa8]">SMARTPHONE · WUNSCHNOTE</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">Sofort sehen, welche Punktzahl reicht</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="laptop" class="gallery-card snap-start w-[84vw] max-w-[348px] sm:w-[460px] sm:max-w-[460px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#163626] border border-[#26231e]/12 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 52%, rgba(243, 200, 121, 0.10) 0%, transparent 72%);"></div>
-                                <canvas id="galleryHw2" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[88%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-dash-laptop" data-yaw="5.5" aria-label="schooly Laptop Dashboard Mockup"></canvas>
+                        <figure data-device="laptop" class="gallery-card snap-start w-[min(85vw,356px)] sm:w-[460px] lg:w-[clamp(380px,36vw,510px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#194430] border border-[#ff9e2c]/30 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
+                                <canvas id="galleryHw2" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-dash-laptop" data-yaw="5.5" aria-label="schooly Laptop Dashboard Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">LAPTOP · DASHBOARD</div>
-                                <div class="text-sm font-bold text-[#26231e]">Volle Übersicht am großen Monitor</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff9e2c]">LAPTOP · DASHBOARD</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">Volle Übersicht am großen Monitor</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[66vw] max-w-[244px] sm:w-[276px] sm:max-w-[276px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#f7f2e8] border border-[#26231e]/10 flex items-center justify-center p-2 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.08) 0%, transparent 68%);"></div>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(68vw,252px)] sm:w-[275px] lg:w-[clamp(235px,21vw,305px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#0f281c] border border-[#ff7aa8]/28 flex items-center justify-center p-2.5 overflow-hidden">
                                 <canvas id="galleryHw3" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-aufgaben-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Aufgaben Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">SMARTPHONE · AUFGABEN</div>
-                                <div class="text-sm font-bold text-[#26231e]">Deadlines &amp; Klausur-Countdown</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff7aa8]">SMARTPHONE · AUFGABEN</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">Deadlines &amp; Klausur-Countdown</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[66vw] max-w-[244px] sm:w-[276px] sm:max-w-[276px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#e8e0d2] border border-[#26231e]/10 flex items-center justify-center p-2 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.10) 0%, transparent 68%);"></div>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(68vw,252px)] sm:w-[275px] lg:w-[clamp(235px,21vw,305px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#1a4631] border border-[#ff9e2c]/28 flex items-center justify-center p-2.5 overflow-hidden">
                                 <canvas id="galleryHw4" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-stundenplan-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Stundenplan Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">SMARTPHONE · STUNDENPLAN</div>
-                                <div class="text-sm font-bold text-[#26231e]">A/B-Wochen &amp; Prüfungslast im Blick</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff9e2c]">SMARTPHONE · STUNDENPLAN</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">A/B-Wochen &amp; Prüfungslast im Blick</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="laptop" class="gallery-card snap-start w-[84vw] max-w-[348px] sm:w-[460px] sm:max-w-[460px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#f7f2e8] border border-[#26231e]/10 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.08) 0%, transparent 72%);"></div>
-                                <canvas id="galleryHw5" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[88%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-kalender-laptop" data-yaw="-5.2" aria-label="schooly Kalender Laptop Mockup"></canvas>
+                        <figure data-device="laptop" class="gallery-card snap-start w-[min(85vw,356px)] sm:w-[460px] lg:w-[clamp(380px,36vw,510px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#2d1020] border border-[#ff7aa8]/32 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
+                                <canvas id="galleryHw5" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-kalender-laptop" data-yaw="-5.2" aria-label="schooly Kalender Laptop Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">LAPTOP · KALENDER &amp; FERIEN</div>
-                                <div class="text-sm font-bold text-[#26231e]">16 Bundesländer &amp; Google Calendar</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff7aa8]">LAPTOP · KALENDER &amp; FERIEN</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">16 Bundesländer &amp; Google Calendar</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[66vw] max-w-[244px] sm:w-[276px] sm:max-w-[276px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#e8e0d2] border border-[#26231e]/10 flex items-center justify-center p-2 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.10) 0%, transparent 68%);"></div>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(68vw,252px)] sm:w-[275px] lg:w-[clamp(235px,21vw,305px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#0f281c] border border-[#ff9e2c]/28 flex items-center justify-center p-2.5 overflow-hidden">
                                 <canvas id="galleryHw6" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-insights-mobile" data-yaw="18.0" data-rot="-0.02" aria-label="schooly Insights Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">SMARTPHONE · INSIGHTS</div>
-                                <div class="text-sm font-bold text-[#26231e]">Notenverlauf über alle Halbjahre</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff9e2c]">SMARTPHONE · INSIGHTS</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">Notenverlauf über alle Halbjahre</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="laptop" class="gallery-card snap-start w-[84vw] max-w-[348px] sm:w-[460px] sm:max-w-[460px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#f7f2e8] border border-[#26231e]/10 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.08) 0%, transparent 72%);"></div>
-                                <canvas id="galleryHw7" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[88%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-abi-laptop" data-yaw="5.2" aria-label="schooly Abitur-Check Laptop Mockup"></canvas>
+                        <figure data-device="laptop" class="gallery-card snap-start w-[min(85vw,356px)] sm:w-[460px] lg:w-[clamp(380px,36vw,510px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#194430] border border-[#ff7aa8]/30 flex items-center justify-center p-3 sm:p-4 overflow-hidden">
+                                <canvas id="galleryHw7" class="gallery-hw-canvas relative z-10 w-[96%] h-auto max-h-[90%] aspect-[480/355]" data-hw-type="mac" data-img-id="tex-abi-laptop" data-yaw="5.2" aria-label="schooly Abitur-Check Laptop Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">LAPTOP · ABITUR-CHECK</div>
-                                <div class="text-sm font-bold text-[#26231e]">Alle 40 Kurse &amp; P1–P5 im Blick</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff7aa8]">LAPTOP · ABITUR-CHECK</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">Alle 40 Kurse &amp; P1–P5 im Blick</div>
                             </figcaption>
                         </figure>
 
-                        <figure data-device="mobile" class="gallery-card snap-start w-[66vw] max-w-[244px] sm:w-[276px] sm:max-w-[276px] shrink-0 space-y-2.5 sm:space-y-3">
-                            <div class="relative h-[275px] sm:h-[372px] rounded-2xl bg-[#e8e0d2] border border-[#26231e]/10 flex items-center justify-center p-2 overflow-hidden">
-                                <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(circle at 50% 56%, rgba(34, 92, 64, 0.10) 0%, transparent 68%);"></div>
+                        <figure data-device="mobile" class="gallery-card snap-start w-[min(68vw,252px)] sm:w-[275px] lg:w-[clamp(235px,21vw,305px)] shrink-0 space-y-2.5">
+                            <div class="gallery-bay relative h-[clamp(260px,42svh,330px)] sm:h-[clamp(310px,44svh,380px)] lg:h-[clamp(240px,43svh,400px)] rounded-2xl bg-[#2d1020] border border-[#ff9e2c]/28 flex items-center justify-center p-2.5 overflow-hidden">
                                 <canvas id="galleryHw8" class="gallery-hw-canvas relative z-10 h-[92%] w-auto aspect-[320/610]" data-hw-type="phone" data-img-id="tex-recap-mobile" data-yaw="-17.5" data-rot="0.02" aria-label="schooly Wochenrückblick Smartphone Mockup"></canvas>
                             </div>
                             <figcaption class="px-1">
-                                <div class="text-[11px] font-extrabold tracking-wider text-[#225c40]">SMARTPHONE · RÜCKBLICK</div>
-                                <div class="text-sm font-bold text-[#26231e]">Fortschritt Woche für Woche sehen</div>
+                                <div class="text-[11px] font-extrabold tracking-wider text-[#ff9e2c]">SMARTPHONE · RÜCKBLICK</div>
+                                <div class="text-sm font-bold text-[#f7f2e8]">Fortschritt Woche für Woche sehen</div>
                             </figcaption>
                         </figure>
                     </div>
                 </div>
 
                 <!-- Mobile Swipe Hint & Buttons -->
-                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-4 pt-4 flex items-center justify-between gap-3">
+                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-5 pt-5 flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2.5">
-                        <span id="galleryMobileCount" class="text-xs font-extrabold text-[#225c40] tabular-nums">01 / 09</span>
-                        <span class="text-xs font-semibold text-[#635d53]">· Seitlich wischen</span>
+                        <span id="galleryMobileCount" class="text-xs font-extrabold text-[#ff9e2c] tabular-nums">01 / 09</span>
+                        <span class="text-xs font-semibold text-[#ff7aa8]/90">· Seitlich wischen</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" id="galleryPrevBtn" aria-label="Vorherige Ansicht" class="w-10 h-10 rounded-xl bg-[#f7f2e8] border border-[#26231e]/12 flex items-center justify-center text-sm font-bold text-[#26231e] cursor-pointer active:scale-95 transition-transform">←</button>
-                        <button type="button" id="galleryNextBtn" aria-label="Nächste Ansicht" class="w-10 h-10 rounded-xl bg-[#26231e] flex items-center justify-center text-sm font-bold text-[#f7f2e8] cursor-pointer active:scale-95 transition-transform">→</button>
+                    <div class="flex items-center gap-2.5">
+                        <button type="button" id="galleryPrevBtn" aria-label="Vorherige Ansicht" class="w-10 h-10 rounded-xl bg-white/[0.08] border border-[#ff9e2c]/30 flex items-center justify-center text-sm font-bold text-[#f7f2e8] cursor-pointer active:scale-95 transition-transform">←</button>
+                        <button type="button" id="galleryNextBtn" aria-label="Nächste Ansicht" class="w-10 h-10 rounded-xl bg-[#ff9e2c] flex items-center justify-center text-sm font-extrabold text-[#0d2419] cursor-pointer active:scale-95 transition-transform">→</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- BAND 05: OBSIDIAN DARK MODE & WARM LINEN COMPARISON (#themes) -->
-        <section id="themes" class="scroll-mt-14 sm:scroll-mt-16 relative bg-[#0d1310] text-[#f7f2e8] py-12 sm:py-24 lg:py-28 overflow-x-clip">
-            <div class="max-w-[1280px] mx-auto px-4 sm:px-8 space-y-6 sm:space-y-12">
-                <div class="max-w-2xl mx-auto text-center space-y-2.5 sm:space-y-3 reveal-up">
-                    <div class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#f3c879]">03 · Light &amp; Dark Mode</div>
-                    <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.06]" style="font-size: clamp(1.55rem, 3.8vw, 3.3rem); text-wrap: balance;">
-                        Warmes Leinen am Tag. Anthrazit am Abend.
+        <!-- BAND 05: DARK FOREST THEME SHOWCASE (#themes) -->
+        <section id="themes" class="scroll-mt-24 sm:scroll-mt-28 relative bg-[#0f281c] text-[#f7f2e8] py-14 sm:py-22 lg:py-24 border-t border-[#ff7aa8]/20 overflow-x-clip">
+            <div class="max-w-[1280px] mx-auto px-5 sm:px-8 space-y-7 sm:space-y-10">
+                <div class="max-w-2xl mx-auto text-center space-y-3 reveal-up">
+                    <div class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff9e2c]">03 · Light &amp; Dark Mode</div>
+                    <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.08]" style="font-size: clamp(1.55rem, 3.6vw, 3.1rem); text-wrap: balance;">
+                        Warmes Leinen am Tag. <span class="text-[#ff7aa8]">Anthrazit am Abend.</span>
                     </h2>
-                    <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/75 font-medium leading-relaxed">
-                        Sanft getöntes Leinenpapier schont deine Augen tagsüber ohne hartes Weiß — abends schaltet ein Klick ins dunkle Anthrazit-Salbei um.
+                    <p class="text-[14px] sm:text-base text-[#f7f2e8]/82 font-medium leading-relaxed">
+                        Sanft getöntes Leinenpapier und dezentes Abendpapier schonen deine Augen tagsüber ohne hartes Weiß — abends schaltet ein Klick in Dämmerung oder Anthrazit-Dark um.
                     </p>
                 </div>
 
                 <div class="flex justify-center">
-                    <div class="inline-flex items-center p-1 rounded-xl bg-white/[0.07] border border-white/15" role="tablist" aria-label="Theme vergleichen">
-                        <button type="button" data-theme-focus="light" class="theme-focus-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold text-white/75 hover:text-white transition-colors cursor-pointer min-h-[36px] sm:min-h-[38px] whitespace-nowrap">
+                    <div class="inline-flex items-center p-1 rounded-xl bg-black/25 border border-[#ff7aa8]/25" role="tablist" aria-label="Theme vergleichen">
+                        <button type="button" data-theme-focus="light" class="theme-focus-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                             Leinenpapier
                         </button>
-                        <button type="button" data-theme-focus="both" class="theme-focus-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#f7f2e8] text-[#26231e] transition-colors cursor-pointer min-h-[36px] sm:min-h-[38px] whitespace-nowrap">
+                        <button type="button" data-theme-focus="both" class="theme-focus-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#ff9e2c] text-[#0d2419] transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                             Beide
                         </button>
-                        <button type="button" data-theme-focus="dark" class="theme-focus-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold text-white/75 hover:text-white transition-colors cursor-pointer min-h-[36px] sm:min-h-[38px] whitespace-nowrap">
+                        <button type="button" data-theme-focus="dark" class="theme-focus-btn px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer min-h-[38px] whitespace-nowrap">
                             Anthrazit Dark
                         </button>
                     </div>
                 </div>
 
-                <div id="themePhonesStage" class="relative min-h-[285px] sm:min-h-[460px] flex items-center justify-center gap-3 sm:gap-14 pt-1 sm:pt-2">
-                    <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[78%] max-w-[680px] aspect-square rounded-full" style="background: radial-gradient(circle closest-side, rgba(45, 105, 76, 0.28) 0%, rgba(13, 19, 16, 0) 85%);"></div>
+                <div id="themePhonesStage" class="relative min-h-[clamp(270px,42svh,540px)] flex items-center justify-center gap-4 sm:gap-12 lg:gap-20 pt-2">
+                    <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] max-w-[660px] aspect-square rounded-full border border-[#ff9e2c]/[0.16]"></div>
 
-                    <div id="themePhoneLight" class="hw-actor w-[148px] sm:w-[235px] lg:w-[265px] aspect-[320/610]">
+                    <div id="themePhoneLight" class="hw-actor w-[clamp(140px,36vw,175px)] sm:w-[clamp(210px,28vw,255px)] lg:w-[clamp(235px,22vw,335px)] aspect-[320/610]">
                         <canvas id="themePhoneLightCanvas" class="w-full h-full block"></canvas>
                     </div>
 
-                    <div id="themePhoneDark" class="hw-actor w-[148px] sm:w-[235px] lg:w-[265px] aspect-[320/610]">
+                    <div id="themePhoneDark" class="hw-actor w-[clamp(140px,36vw,175px)] sm:w-[clamp(210px,28vw,255px)] lg:w-[clamp(235px,22vw,335px)] aspect-[320/610]">
                         <canvas id="themePhoneDarkCanvas" class="w-full h-full block"></canvas>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- BAND 06: PINNED INTERACTIVE OBERSTUFE & ABITUR STAGE (#abitur) -->
-        <section id="abitur" class="scroll-mt-14 sm:scroll-mt-16 relative bg-[#f2ece1] text-[#26231e] overflow-x-clip border-t border-[#26231e]/10">
-            <div id="abiPinWrap" class="relative min-h-[calc(100svh-56px)] sm:min-h-[calc(100svh-64px)] flex flex-col justify-between pt-4 pb-5 sm:py-0">
-                <div id="abiGridLayer" class="hero-grid-bg pointer-events-none absolute -inset-y-20 inset-x-0 opacity-85" aria-hidden="true"></div>
+        <!-- BAND 06: PINNED INTERACTIVE OBERSTUFE & ABITUR STAGE (#abitur) — FLUID VIEWPORT FIT -->
+        <section id="abitur" class="scroll-mt-20 lg:scroll-mt-0 relative bg-[#18422e] text-[#f7f2e8] overflow-x-clip border-t border-[#ff9e2c]/20">
+            <div id="abiPinWrap" class="relative lg:min-h-[100svh] flex flex-col justify-between py-12 sm:py-14 lg:pt-[clamp(66px,8.2svh,88px)] lg:pb-[clamp(12px,2svh,24px)] space-y-5 lg:space-y-2">
+                <div id="abiGridLayer" class="hero-grid-bg-light pointer-events-none absolute -inset-y-20 inset-x-0 opacity-85" aria-hidden="true"></div>
 
                 <!-- Top Chapter Progress & Step Controls -->
-                <div class="max-w-[1280px] w-full mx-auto px-4 sm:px-8 pt-0 sm:pt-7 flex items-center justify-between gap-4 relative z-20">
-                    <div class="grid grid-cols-4 sm:inline-flex items-center p-1 rounded-xl bg-[#26231e]/[0.06] border border-[#26231e]/10 w-full sm:w-auto gap-0.5 sm:gap-1" role="tablist" aria-label="Abitur Kapitel">
-                        <button type="button" data-abi-step="0" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold bg-[#225c40] text-[#f7f2e8] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+                <div class="max-w-[1460px] w-full mx-auto px-5 sm:px-8 flex items-center justify-between gap-3 relative z-20">
+                    <div class="grid grid-cols-4 sm:inline-flex items-center p-1 rounded-xl bg-black/25 border border-[#ff9e2c]/25 backdrop-blur-md w-full sm:w-auto gap-0.5 sm:gap-1" role="tablist" aria-label="Abitur Kapitel">
+                        <button type="button" data-abi-step="0" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold bg-[#ff9e2c] text-[#0d2419] shadow-sm transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             01 Kurse
                         </button>
-                        <button type="button" data-abi-step="1" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#635d53] hover:text-[#26231e] transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+                        <button type="button" data-abi-step="1" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             02 Abzüge
                         </button>
-                        <button type="button" data-abi-step="2" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#635d53] hover:text-[#26231e] transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+                        <button type="button" data-abi-step="2" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             03 P1–P5
                         </button>
-                        <button type="button" data-abi-step="3" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#635d53] hover:text-[#26231e] transition-colors cursor-pointer whitespace-nowrap min-h-[36px] sm:min-h-[38px] text-center">
+                        <button type="button" data-abi-step="3" class="abi-step-btn px-1.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold text-[#f7f2e8]/80 hover:text-white transition-colors cursor-pointer whitespace-nowrap min-h-[38px] text-center">
                             04 PDF
                         </button>
                     </div>
 
-                    <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-[#225c40] tabular-nums">
+                    <div class="hidden sm:flex items-center gap-3 text-xs font-bold text-[#ff9e2c] tabular-nums">
                         <span id="abiStepCounter">Schritt 01 / 04</span>
-                        <div class="w-28 h-1 rounded-full bg-[#26231e]/12 overflow-hidden">
-                            <div id="abiProgressFill" class="h-full w-full bg-[#225c40] origin-left" style="transform: scaleX(0.08);"></div>
+                        <div class="w-28 h-1 rounded-full bg-white/15 overflow-hidden">
+                            <div id="abiProgressFill" class="h-full w-full bg-[#ff9e2c] origin-left" style="transform: scaleX(0.08);"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Main Choreographed 3D Hardware + Editorial Abitur Stage -->
-                <div class="max-w-[1280px] w-full mx-auto px-4 sm:px-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-10 items-center py-3 sm:py-5 lg:py-8 relative z-20">
-                    <div id="abiStageTouch" class="lg:col-span-6 relative h-[205px] sm:h-[340px] lg:h-[470px] flex items-center justify-center touch-pan-y">
-                        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[88%] aspect-square rounded-full" style="background: radial-gradient(circle closest-side, rgba(34, 92, 64, 0.14) 0%, rgba(232, 224, 210, 0.42) 52%, rgba(242, 236, 225, 0) 90%);"></div>
-                        <div class="pointer-events-none absolute inset-x-[6%] bottom-[9%] h-px bg-gradient-to-r from-transparent via-[#26231e]/18 to-transparent"></div>
+                <div class="max-w-[1460px] w-full mx-auto px-5 sm:px-8 flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-center py-1 relative z-20">
+                    <div id="abiStageTouch" class="lg:col-span-8 relative w-full h-[clamp(235px,36svh,320px)] sm:h-[clamp(300px,42svh,380px)] lg:h-[clamp(260px,48svh,520px)] flex items-center justify-center touch-pan-y">
+                        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[88%] aspect-square rounded-full border border-[#ff7aa8]/[0.16]"></div>
+                        <div class="pointer-events-none absolute inset-x-[4%] bottom-[8%] h-px bg-[#ff9e2c]/30"></div>
 
-                        <div id="abiMacActor" class="hw-actor absolute w-[76%] sm:w-[76%] lg:w-[82%] max-w-[500px] aspect-[480/355]" style="left: 17%; bottom: 12%;">
-                            <canvas id="abiMacScreen0" class="w-full h-full block"></canvas>
+                        <div id="abiMacActor" class="hw-actor absolute h-[76%] sm:h-[82%] max-w-[78%] lg:max-w-[82%] aspect-[480/355]" style="left: 14%; bottom: 10%;">
+                            <canvas id="abiMacScreen0" class="w-full h-full block object-contain object-bottom"></canvas>
                         </div>
 
-                        <div id="abiPhoneActor" class="hw-actor absolute w-[29%] sm:w-[27%] lg:w-[33%] max-w-[215px] aspect-[320/610] z-20" style="left: 5%; bottom: 4%;">
+                        <div id="abiPhoneActor" class="hw-actor absolute h-[74%] sm:h-[80%] max-w-[36%] aspect-[320/610] z-20" style="left: 3%; bottom: 2%;">
                             <canvas id="abiPhoneScreen0" class="screen-layer is-active"></canvas>
                             <canvas id="abiPhoneScreen1" class="screen-layer"></canvas>
                             <canvas id="abiPhoneScreen2" class="screen-layer"></canvas>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-6 flex flex-col justify-center space-y-2.5 sm:space-y-4">
-                        <div class="flex items-center justify-between gap-3 border-b border-[#26231e]/10 pb-2 sm:pb-3">
-                            <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40]">04 · Oberstufe &amp; Abitur</span>
-                            <span class="hidden sm:inline text-xs font-semibold text-[#635d53]">Alle Abitur-Kriterien bis zum PDF</span>
+                    <div class="lg:col-span-4 flex flex-col justify-center space-y-3">
+                        <div class="flex items-center justify-between gap-3 border-b border-white/15 pb-2.5">
+                            <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff9e2c]">04 · Oberstufe &amp; Abitur</span>
+                            <span class="hidden sm:inline text-xs font-semibold text-[#ffd4e3]/85">Alle Abitur-Kriterien bis zum PDF</span>
                         </div>
 
                         <div class="grid grid-cols-1 items-center">
-                            <div id="abiCopy0" class="abi-copy-block is-active flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-1">
-                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40] tabular-nums">01 / 04 · BLOCK I &amp; II IM ÜBERBLICK</div>
-                                <h2 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.15rem] leading-[1.1] sm:leading-[1.08] text-[#26231e]" style="text-wrap: balance;">
+                            <div id="abiCopy0" class="abi-copy-block is-active flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">01 / 04 · BLOCK I &amp; II IM ÜBERBLICK</div>
+                                <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                     Alle 40 Halbjahreskurse automatisch gesammelt.
                                 </h2>
-                                <p class="text-[13.5px] sm:text-base text-[#635d53] leading-relaxed font-medium">
+                                <p class="text-[14px] sm:text-[15.5px] text-[#f7f2e8]/84 leading-relaxed font-medium">
                                     schooly führt deine 11/1 bis 12/2 Punkte zusammen, zählt Leistungskurse doppelt und trennt Block I sauber von den Prüfungen in Block II.
                                 </p>
-                                <div class="pt-2.5 sm:pt-3 border-t border-[#26231e]/12 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#225c40]">
+                                <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                     <span>40 Kurse · LK doppelt gewichtet</span>
                                     <span>Block I &amp; II ✓</span>
                                 </div>
                             </div>
 
-                            <div id="abiCopy1" class="abi-copy-block flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-1">
-                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40] tabular-nums">02 / 04 · STREICHUNGEN &amp; UNTERKURSE</div>
-                                <h2 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.15rem] leading-[1.1] sm:leading-[1.08] text-[#26231e]" style="text-wrap: balance;">
+                            <div id="abiCopy1" class="abi-copy-block flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">02 / 04 · STREICHUNGEN &amp; UNTERKURSE</div>
+                                <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                     Bestmögliche Einbringung auf einen Blick.
                                 </h2>
-                                <p class="text-[13.5px] sm:text-base text-[#635d53] leading-relaxed font-medium">
+                                <p class="text-[14px] sm:text-[15.5px] text-[#f7f2e8]/84 leading-relaxed font-medium">
                                     Pflichtkurse bleiben fest, schwächere Grundkurse werden automatisch geklammert — inklusive sofortiger Warnung bei Unterkursen unter 5 Punkten.
                                 </p>
-                                <div class="pt-2.5 sm:pt-3 border-t border-[#26231e]/12 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#225c40]">
+                                <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                     <span>Unterkurs-Warnung &lt; 5 Pkt.</span>
                                     <span>Streichung automatisch ✓</span>
                                 </div>
                             </div>
 
-                            <div id="abiCopy2" class="abi-copy-block flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-1">
-                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40] tabular-nums">03 / 04 · P1–P5 SIMULATION</div>
-                                <h2 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.15rem] leading-[1.1] sm:leading-[1.08] text-[#26231e]" style="text-wrap: balance;">
+                            <div id="abiCopy2" class="abi-copy-block flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">03 / 04 · P1–P5 SIMULATION</div>
+                                <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                     Alle 5 Bestehens-Kriterien live geprüft.
                                 </h2>
-                                <p class="text-[13.5px] sm:text-base text-[#635d53] leading-relaxed font-medium">
+                                <p class="text-[14px] sm:text-[15.5px] text-[#f7f2e8]/84 leading-relaxed font-medium">
                                     Simuliere deine Prüfungsergebnisse (P1–P5) vorab — vom 200-Punkte-Minimum in Block I über 100 Punkte in Block II bis zu deinem Gesamtschnitt.
                                 </p>
-                                <div class="pt-2.5 sm:pt-3 border-t border-[#26231e]/12 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#225c40]">
+                                <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                     <span>200 / 100 Pkt. · P1–P5 live</span>
                                     <span>5 Kriterien geprüft ✓</span>
                                 </div>
                             </div>
 
-                            <div id="abiCopy3" class="abi-copy-block flex flex-col justify-center space-y-2 sm:space-y-3.5 py-0.5 sm:py-1">
-                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#225c40] tabular-nums">04 / 04 · PDF-EXPORT</div>
-                                <h2 class="font-epilogue font-black text-[1.35rem] sm:text-3xl lg:text-[2.15rem] leading-[1.1] sm:leading-[1.08] text-[#26231e]" style="text-wrap: balance;">
+                            <div id="abiCopy3" class="abi-copy-block flex flex-col justify-center space-y-2.5 sm:space-y-3 py-1">
+                                <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8] tabular-nums">04 / 04 · PDF-EXPORT</div>
+                                <h2 class="font-epilogue font-black leading-[1.1] text-[#f7f2e8]" style="font-size: clamp(1.32rem, 2.3vw, 2.05rem); text-wrap: balance;">
                                     Sauberer Notenspiegel mit einem Klick.
                                 </h2>
-                                <p class="text-[13.5px] sm:text-base text-[#635d53] leading-relaxed font-medium">
+                                <p class="text-[14px] sm:text-[15.5px] text-[#f7f2e8]/84 leading-relaxed font-medium">
                                     Erstelle jederzeit ein übersichtliches PDF mit allen Fächern, Punkten und deinem aktuellen Schnitt — ideal für Bewerbungen oder Praktika.
                                 </p>
-                                <div class="pt-2.5 sm:pt-3 border-t border-[#26231e]/12 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#225c40]">
+                                <div class="pt-3 border-t border-white/15 flex items-center justify-between text-[11px] sm:text-xs font-bold text-[#ff9e2c]">
                                     <span>Alle Fächer &amp; Punkte · 1 Klick</span>
-                                    <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="underline hover:text-[#16402c]">Jetzt testen →</a>
+                                    <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="underline hover:text-[#ff7aa8]">Jetzt testen →</a>
                                 </div>
                             </div>
                         </div>
@@ -837,75 +979,76 @@
                 </div>
 
                 <!-- Mobile Prev/Next controls cleanly framed inside screen -->
-                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-4 pt-3 pb-1 flex items-center justify-between gap-3 relative z-20">
-                    <button type="button" id="abiMobilePrev" class="px-3.5 py-2 rounded-xl border border-[#26231e]/15 bg-[#f7f2e8] text-xs font-bold text-[#26231e] min-h-[40px] cursor-pointer active:scale-95 transition-transform">
+                <div class="lg:hidden max-w-[1280px] w-full mx-auto px-5 pt-2 pb-1 flex items-center justify-between gap-3 relative z-20">
+                    <button type="button" id="abiMobilePrev" class="px-4 py-2.5 rounded-xl border border-[#ff7aa8]/35 bg-[#3a1023] text-xs font-bold text-[#ffd4e3] min-h-[42px] cursor-pointer active:scale-95 transition-transform">
                         ← Vorheriges
                     </button>
-                    <span id="abiMobileCount" class="text-xs font-bold text-[#225c40] tabular-nums">01 / 04</span>
-                    <button type="button" id="abiMobileNext" class="px-3.5 py-2 rounded-xl bg-[#225c40] text-xs font-bold text-[#f7f2e8] min-h-[40px] cursor-pointer active:scale-95 transition-transform">
+                    <span id="abiMobileCount" class="text-xs font-bold text-[#ff9e2c] tabular-nums">01 / 04</span>
+                    <button type="button" id="abiMobileNext" class="px-4 py-2.5 rounded-xl bg-[#ff9e2c] text-xs font-extrabold text-[#0d2419] min-h-[42px] cursor-pointer active:scale-95 transition-transform">
                         Nächstes →
                     </button>
                 </div>
 
-                <div class="hidden lg:block border-t border-[#26231e]/10 relative z-20">
-                    <div class="max-w-[1280px] w-full mx-auto px-5 sm:px-8 py-3.5 flex items-center justify-between gap-4 text-xs font-semibold text-[#635d53]">
+                <div class="hidden lg:block border-t border-white/12 relative z-20">
+                    <div class="max-w-[1460px] w-full mx-auto px-5 sm:px-8 py-2.5 flex items-center justify-between gap-4 text-xs font-semibold text-[#f7f2e8]/75">
                         <span id="abiCaptionText">01 / 04 · Abitur-Übersicht &amp; Punktekonto</span>
-                        <span class="text-[#225c40] font-bold">schooly · Oberstufe &amp; Abitur</span>
+                        <span class="text-[#ff9e2c] font-bold">schooly · Oberstufe &amp; Abitur</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- BAND 07: QUANTIFIED LEDGER + FULL-WIDTH LAUNCH FINALE -->
-        <section id="kennzahlen" class="bg-[#e8e0d2] py-10 sm:py-20 border-y border-[#26231e]/10">
-            <div class="max-w-[1280px] mx-auto px-4 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-10">
-                <div class="stat-ledger p-4 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#f7f2e8]/75 sm:bg-transparent border border-[#26231e]/8 sm:border-0 relative space-y-1 sm:space-y-1.5">
-                    <div class="stat-rule hidden sm:block absolute top-0 left-0 right-0 h-[1.5px] bg-[#26231e]/25 origin-left"></div>
-                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#225c40] tabular-nums">0 €</div>
-                    <div class="text-[13px] sm:text-sm font-extrabold text-[#26231e]">Dauerhaft kostenlos</div>
-                    <p class="text-[11.5px] sm:text-xs text-[#635d53] font-medium">Ohne Abo und ohne Werbung.</p>
+        <!-- BAND 07: QUANTIFIED LEDGER IN DARK FOREST GREEN + SOLID ORANGE & BERRY NUMERALS -->
+        <section id="kennzahlen" class="scroll-mt-24 sm:scroll-mt-28 bg-[#0f281c] text-[#f7f2e8] py-14 sm:py-20 border-y border-[#ff9e2c]/20">
+            <div class="max-w-[1280px] mx-auto px-5 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-10">
+                <div class="stat-ledger p-5 pt-5 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#143525] sm:bg-transparent border border-[#ff9e2c]/20 sm:border-0 relative space-y-2 sm:space-y-1.5 overflow-hidden sm:overflow-visible">
+                    <div class="stat-rule block absolute top-0 left-0 right-0 h-[2px] bg-[#ff9e2c] origin-left"></div>
+                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#ff9e2c] tabular-nums">0 €</div>
+                    <div class="text-[13.5px] sm:text-sm font-extrabold text-[#f7f2e8]">Dauerhaft kostenlos</div>
+                    <p class="text-[12px] sm:text-xs text-[#f7f2e8]/75 font-medium">Ohne Abo und ohne Werbung.</p>
                 </div>
-                <div class="stat-ledger p-4 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#f7f2e8]/75 sm:bg-transparent border border-[#26231e]/8 sm:border-0 relative space-y-1 sm:space-y-1.5">
-                    <div class="stat-rule hidden sm:block absolute top-0 left-0 right-0 h-[1.5px] bg-[#26231e]/25 origin-left"></div>
-                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#26231e] tabular-nums">0–<span data-count-target="15">15</span> Pkt.</div>
-                    <div class="text-[13px] sm:text-sm font-extrabold text-[#26231e]">Beide Notensysteme</div>
-                    <p class="text-[11.5px] sm:text-xs text-[#635d53] font-medium">Klassen 5–10 &amp; Oberstufe.</p>
+                <div class="stat-ledger p-5 pt-5 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#143525] sm:bg-transparent border border-[#ff7aa8]/20 sm:border-0 relative space-y-2 sm:space-y-1.5 overflow-hidden sm:overflow-visible">
+                    <div class="stat-rule block absolute top-0 left-0 right-0 h-[2px] bg-[#ff7aa8] origin-left"></div>
+                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#ff7aa8] tabular-nums">0–<span data-count-target="15">15</span> Pkt.</div>
+                    <div class="text-[13.5px] sm:text-sm font-extrabold text-[#f7f2e8]">Beide Notensysteme</div>
+                    <p class="text-[12px] sm:text-xs text-[#f7f2e8]/75 font-medium">Klassen 5–10 &amp; Oberstufe.</p>
                 </div>
-                <div class="stat-ledger p-4 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#f7f2e8]/75 sm:bg-transparent border border-[#26231e]/8 sm:border-0 relative space-y-1 sm:space-y-1.5">
-                    <div class="stat-rule hidden sm:block absolute top-0 left-0 right-0 h-[1.5px] bg-[#26231e]/25 origin-left"></div>
-                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#26231e] tabular-nums"><span data-count-target="40">40</span> Kurse</div>
-                    <div class="text-[13px] sm:text-sm font-extrabold text-[#26231e]">Abitur-Vollcheck</div>
-                    <p class="text-[11.5px] sm:text-xs text-[#635d53] font-medium">Block I &amp; II samt Streichung.</p>
+                <div class="stat-ledger p-5 pt-5 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#143525] sm:bg-transparent border border-[#ff9e2c]/20 sm:border-0 relative space-y-2 sm:space-y-1.5 overflow-hidden sm:overflow-visible">
+                    <div class="stat-rule block absolute top-0 left-0 right-0 h-[2px] bg-[#ff9e2c] origin-left"></div>
+                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#ff9e2c] tabular-nums"><span data-count-target="40">40</span> Kurse</div>
+                    <div class="text-[13.5px] sm:text-sm font-extrabold text-[#f7f2e8]">Abitur-Vollcheck</div>
+                    <p class="text-[12px] sm:text-xs text-[#f7f2e8]/75 font-medium">Block I &amp; II samt Streichung.</p>
                 </div>
-                <div class="stat-ledger p-4 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#f7f2e8]/75 sm:bg-transparent border border-[#26231e]/8 sm:border-0 relative space-y-1 sm:space-y-1.5">
-                    <div class="stat-rule hidden sm:block absolute top-0 left-0 right-0 h-[1.5px] bg-[#26231e]/25 origin-left"></div>
-                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#225c40] tabular-nums"><span data-count-target="16">16</span> Länder</div>
-                    <div class="text-[13px] sm:text-sm font-extrabold text-[#26231e]">Ferien integriert</div>
-                    <p class="text-[11.5px] sm:text-xs text-[#635d53] font-medium">Jedes Bundesland automatisch.</p>
+                <div class="stat-ledger p-5 pt-5 sm:p-0 sm:pt-4 rounded-2xl sm:rounded-none bg-[#143525] sm:bg-transparent border border-[#ff7aa8]/20 sm:border-0 relative space-y-2 sm:space-y-1.5 overflow-hidden sm:overflow-visible">
+                    <div class="stat-rule block absolute top-0 left-0 right-0 h-[2px] bg-[#ff7aa8] origin-left"></div>
+                    <div class="font-epilogue font-black text-2xl sm:text-4xl text-[#ff7aa8] tabular-nums"><span data-count-target="16">16</span> Länder</div>
+                    <div class="text-[13.5px] sm:text-sm font-extrabold text-[#f7f2e8]">Ferien integriert</div>
+                    <p class="text-[12px] sm:text-xs text-[#f7f2e8]/75 font-medium">Jedes Bundesland automatisch.</p>
                 </div>
             </div>
         </section>
 
-        <section id="launch" class="scroll-mt-14 sm:scroll-mt-16 relative bg-[#102b1e] text-[#f7f2e8] py-12 sm:py-24 lg:py-28 overflow-x-clip">
-            <div class="max-w-[1280px] mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-7 sm:gap-10 lg:gap-14 items-center">
-                <div class="lg:col-span-6 space-y-4 sm:space-y-6 reveal-up">
-                    <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#f3c879]">
+        <!-- BAND 08: LAUNCH FINALE IN DARK FOREST GREEN -->
+        <section id="launch" class="scroll-mt-24 sm:scroll-mt-28 relative bg-[#143525] text-[#f7f2e8] py-14 sm:py-22 lg:py-26 overflow-x-clip">
+            <div class="max-w-[1280px] mx-auto px-5 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-14 items-center relative z-10">
+                <div class="lg:col-span-6 space-y-5 sm:space-y-6 reveal-up">
+                    <div class="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-[#ff7aa8]">
                         Bereit für entspanntere Schulwochen
                     </div>
-                    <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.06]" style="font-size: clamp(1.65rem, 3.8vw, 3.25rem); text-wrap: balance;">
-                        Kostenlos starten — auf Handy und Laptop.
+                    <h2 class="font-epilogue font-black text-[#f7f2e8] leading-[1.08]" style="font-size: clamp(1.6rem, 3.6vw, 3.15rem); text-wrap: balance;">
+                        Kostenlos starten — <span class="text-flash-orange-berry">auf Handy und Laptop.</span>
                     </h2>
-                    <p class="text-[13.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium max-w-xl">
-                        Öffne <strong class="text-[#f7f2e8] font-bold">schooly26.vercel.app</strong> direkt im Browser oder installiere schooly in Sekunden auf deinem Homescreen — inklusive privatem Freundes-Duell per Einladungscode.
+                    <p class="text-[14px] sm:text-base text-[#f7f2e8]/84 leading-relaxed font-medium max-w-xl">
+                        Öffne <strong class="text-[#ff9e2c] font-bold">schooly26.vercel.app</strong> direkt im Browser oder installiere schooly in Sekunden auf deinem Homescreen — inklusive privatem Freundes-Duell per Einladungscode.
                     </p>
 
-                    <div class="flex flex-row sm:flex-row items-center gap-2.5 sm:gap-3.5 pt-1 sm:pt-2">
-                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-paper flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl font-extrabold text-[13.5px] sm:text-base whitespace-nowrap min-h-[44px] sm:min-h-[48px]">
+                    <div class="flex flex-row sm:flex-row items-center gap-3 sm:gap-3.5 pt-1 sm:pt-2">
+                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-orange flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl font-extrabold text-[13.5px] sm:text-base whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
                             <span class="sm:hidden">Jetzt starten</span>
                             <span class="hidden sm:inline">schooly26.vercel.app öffnen</span>
                             <span aria-hidden="true">→</span>
                         </a>
-                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-3 sm:py-3.5 rounded-2xl border border-[#f7f2e8]/25 hover:border-[#f3c879] bg-white/[0.07] text-[#f7f2e8] font-bold text-[13px] sm:text-base transition-colors whitespace-nowrap min-h-[44px] sm:min-h-[48px]">
+                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl border border-[#ff7aa8]/45 bg-[#3a1023] hover:bg-[#4d152f] text-[#ffd4e3] font-bold text-[13px] sm:text-base transition-colors whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
                             <span>@schooly.app</span>
                             <span aria-hidden="true">↗</span>
                         </a>
@@ -913,14 +1056,11 @@
                 </div>
 
                 <div class="lg:col-span-6 relative">
-                    <div class="relative rounded-3xl overflow-hidden border border-white/15 aspect-[16/11] shadow-2xl">
+                    <div class="relative rounded-3xl overflow-hidden border border-[#ff9e2c]/30 aspect-[16/11] shadow-2xl">
                         <img id="launchParallaxImg" src="/assets/images/student_study_desk_1794779563076.jpg" alt="Schreibtisch-Umgebung mit Lernunterlagen" class="w-full h-[116%] object-cover -mt-[8%] will-change-transform" />
-                        <div class="absolute inset-0 bg-gradient-to-tr from-[#0d2419]/85 via-[#0d2419]/35 to-transparent"></div>
-                        <div class="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
-                            <div>
-                                <div class="text-[11px] font-extrabold uppercase tracking-wider text-[#f3c879]">Als Web-App installierbar</div>
-                                <div class="text-base sm:text-lg font-extrabold text-[#f7f2e8]">Startet ohne App-Store direkt im Vollbild</div>
-                            </div>
+                        <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6 bg-[#0f281c]/90 border-t border-[#ff9e2c]/25">
+                            <div class="text-[11px] font-extrabold uppercase tracking-wider text-[#ff9e2c]">Als Web-App installierbar</div>
+                            <div class="text-base sm:text-lg font-extrabold text-[#f7f2e8]">Startet ohne App-Store direkt im Vollbild</div>
                         </div>
                     </div>
                 </div>
@@ -929,16 +1069,16 @@
 
     </main>
 
-    <!-- QUIET EDITORIAL FOOTER -->
-    <footer class="bg-[#0b1f15] text-[#f7f2e8]/75 border-t border-white/10 py-10">
+    <!-- QUIET EDITORIAL FOOTER IN DEEPEST LOGO FOREST -->
+    <footer class="bg-[#0b2016] text-[#f7f2e8]/80 border-t border-[#ff9e2c]/20 py-12">
         <div class="max-w-[1280px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div class="flex items-center gap-3">
                 <img src="/assets/schooly_logo_light.png" alt="schooly" class="h-5 w-auto object-contain" />
-                <span class="text-xs font-medium text-[#f7f2e8]/65">· Für deinen gesamten Schulalltag</span>
+                <span class="text-xs font-medium text-[#f7f2e8]/70">· Für deinen gesamten Schulalltag</span>
             </div>
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold">
-                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#f3c879] font-bold hover:underline">schooly26.vercel.app</a>
-                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="hover:text-white hover:underline">Instagram @schooly.app</a>
+                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#ff9e2c] font-bold hover:underline">schooly26.vercel.app</a>
+                <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="text-[#ff7aa8] hover:text-white hover:underline">Instagram @schooly.app</a>
             </div>
         </div>
     </footer>
@@ -962,13 +1102,17 @@
             if (!heading) return [];
             const tokens = heading.textContent.trim().split(/\s+/);
             heading.innerHTML = tokens.map((word, idx) => {
-                const highlight = word.startsWith('schooly') || word.startsWith('Fächer') || word.startsWith('Abitur');
-                return `<span class="manifesto-word ${highlight ? 'text-[#225c40]' : ''}" data-word-idx="${idx}">${word}</span>`;
+                let colorCls = '';
+                if (word.startsWith('schooly') || word.startsWith('Abitur') || word.startsWith('Oberfläche')) colorCls = 'text-[#ff9e2c]';
+                else if (word.startsWith('Fächer') || word.startsWith('Termine') || word.startsWith('Aufgaben')) colorCls = 'text-[#ff7aa8]';
+                return `<span class="manifesto-word ${colorCls}" data-word-idx="${idx}">${word}</span>`;
             }).join(' ');
             return Array.from(heading.querySelectorAll('.manifesto-word'));
         }
 
         (async function bootLanding() {
+            const loaderStart = performance.now();
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const manifestoWords = prepareManifestoWords();
             await waitForTextures();
             const tex = (id) => document.getElementById(id);
@@ -979,7 +1123,7 @@
                 const w = 320, h = 610;
                 const ctx = sizeCanvas(cv, w, h, 2);
                 ctx.clearRect(0, 0, w, h);
-                drawStudio3DPhone(ctx, w * 0.50, h * 0.49, 0.90, rotZ, tex(imgId), yaw, -4.2);
+                drawStudio3DPhone(ctx, w * 0.50, h * 0.49, 0.94, rotZ, tex(imgId), yaw, -4.2);
             };
 
             const renderMac = (canvasId, imgId, yaw = 5.4) => {
@@ -988,7 +1132,7 @@
                 const w = 480, h = 355;
                 const ctx = sizeCanvas(cv, w, h, 2);
                 ctx.clearRect(0, 0, w, h);
-                drawStudio3DMacBook(ctx, w * 0.50, h * 0.45, 420, tex(imgId), yaw);
+                drawStudio3DMacBook(ctx, w * 0.50, h * 0.45, 438, tex(imgId), yaw);
             };
 
             renderMac('heroMacCanvas', 'tex-dash-laptop', 5.5);
@@ -1023,6 +1167,19 @@
                 else renderPhone(cv.id, imgId, yaw, rot);
             });
 
+            // Complete preloader bar & reveal hero cleanly
+            const loaderBar = document.getElementById('landingLoaderBar');
+            if (loaderBar) {
+                loaderBar.style.animation = 'none';
+                loaderBar.style.transform = 'scaleX(1)';
+            }
+            const minLoaderMs = reducedMotion ? 0 : 780;
+            const remainingLoaderMs = Math.max(0, minLoaderMs - (performance.now() - loaderStart));
+            if (remainingLoaderMs > 0) {
+                await new Promise(resolve => setTimeout(resolve, remainingLoaderMs));
+            }
+            window.__dismissLandingPreloader?.();
+
             // Smooth anchor scrolling for header & mobile nav links
             document.querySelectorAll('a[href^="#"]').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -1044,25 +1201,25 @@
             const setHeroMode = (mode) => {
                 document.querySelectorAll('.hero-mode-btn').forEach(btn => {
                     const active = btn.getAttribute('data-hero-mode') === mode;
-                    btn.classList.toggle('bg-[#f7f2e8]', active);
-                    btn.classList.toggle('text-[#26231e]', active);
+                    btn.classList.toggle('bg-[#ff9e2c]', active);
+                    btn.classList.toggle('text-[#0d2419]', active);
                     btn.classList.toggle('shadow-sm', active);
-                    btn.classList.toggle('text-[#635d53]', !active);
+                    btn.classList.toggle('text-[#f7f2e8]/75', !active);
                 });
                 if (typeof gsap === 'undefined') return;
                 if (mode === 'duo') {
-                    gsap.to(heroMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.42, ease: 'power3.out' });
-                    gsap.to(heroPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.42, ease: 'power3.out' });
-                    gsap.to([tagA, tagB], { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' });
+                    gsap.to(heroMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to(heroPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to([tagA, tagB], { opacity: 1, x: 0, duration: 0.55, ease: 'power2.out' });
                 } else if (mode === 'phone') {
-                    gsap.to(heroMac, { xPercent: 18, scale: 0.86, opacity: 0.14, duration: 0.42, ease: 'power3.out' });
-                    gsap.to(heroPhone, { xPercent: 86, scale: 1.12, opacity: 1, duration: 0.42, ease: 'power3.out' });
-                    gsap.to(tagA, { opacity: 0, x: -16, duration: 0.25, ease: 'power2.out' });
-                    gsap.to(tagB, { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' });
+                    gsap.to(heroMac, { xPercent: 14, scale: 0.88, opacity: 0.14, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to(heroPhone, { xPercent: 68, scale: 1.12, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to(tagA, { opacity: 0, x: -16, duration: 0.42, ease: 'power2.out' });
+                    gsap.to(tagB, { opacity: 1, x: 0, duration: 0.55, ease: 'power2.out' });
                 } else {
-                    gsap.to(heroMac, { xPercent: -10, scale: 1.08, opacity: 1, duration: 0.42, ease: 'power3.out' });
-                    gsap.to(heroPhone, { xPercent: -36, scale: 0.84, opacity: 0.14, duration: 0.42, ease: 'power3.out' });
-                    gsap.to([tagA, tagB], { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' });
+                    gsap.to(heroMac, { xPercent: -7, scale: 1.07, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to(heroPhone, { xPercent: -28, scale: 0.86, opacity: 0.14, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to([tagA, tagB], { opacity: 1, x: 0, duration: 0.55, ease: 'power2.out' });
                 }
             };
             document.querySelectorAll('.hero-mode-btn').forEach(b => {
@@ -1080,7 +1237,7 @@
                     const dot = document.getElementById('heroThemeDot');
                     const lbl = document.getElementById('heroThemeLabel');
                     const mLbl = document.getElementById('heroThemeLabelMobile');
-                    if (dot) dot.style.backgroundColor = isHeroDark ? '#18241d' : '#e8e0d2';
+                    if (dot) dot.style.backgroundColor = isHeroDark ? '#ff7aa8' : '#ff9e2c';
                     if (lbl) lbl.textContent = isHeroDark ? 'Leinenpapier Vorschau' : 'Dark Mode Vorschau';
                     if (mLbl) mLbl.textContent = isHeroDark ? 'Leinenpapier' : 'Dark Mode';
                 });
@@ -1090,22 +1247,22 @@
             const setThemeFocus = (focus) => {
                 document.querySelectorAll('.theme-focus-btn').forEach(btn => {
                     const active = btn.getAttribute('data-theme-focus') === focus;
-                    btn.classList.toggle('bg-[#f7f2e8]', active);
-                    btn.classList.toggle('text-[#26231e]', active);
-                    btn.classList.toggle('text-white/75', !active);
+                    btn.classList.toggle('bg-[#ff9e2c]', active);
+                    btn.classList.toggle('text-[#0d2419]', active);
+                    btn.classList.toggle('text-[#f7f2e8]/80', !active);
                 });
                 const pLight = document.getElementById('themePhoneLight');
                 const pDark = document.getElementById('themePhoneDark');
                 if (!pLight || !pDark || typeof gsap === 'undefined') return;
                 if (focus === 'both') {
-                    gsap.to(pLight, { scale: 1, opacity: 1, x: 0, duration: 0.42, ease: 'power3.out' });
-                    gsap.to(pDark, { scale: 1, opacity: 1, x: 0, duration: 0.42, ease: 'power3.out' });
+                    gsap.to(pLight, { scale: 1, opacity: 1, x: 0, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to(pDark, { scale: 1, opacity: 1, x: 0, duration: 0.72, ease: 'power2.inOut' });
                 } else if (focus === 'light') {
-                    gsap.to(pLight, { scale: 1.07, opacity: 1, x: 20, duration: 0.42, ease: 'power3.out' });
-                    gsap.to(pDark, { scale: 0.85, opacity: 0.28, x: 0, duration: 0.42, ease: 'power3.out' });
+                    gsap.to(pLight, { scale: 1.07, opacity: 1, x: 20, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to(pDark, { scale: 0.86, opacity: 0.28, x: 0, duration: 0.72, ease: 'power2.inOut' });
                 } else {
-                    gsap.to(pDark, { scale: 1.07, opacity: 1, x: -20, duration: 0.42, ease: 'power3.out' });
-                    gsap.to(pLight, { scale: 0.85, opacity: 0.28, x: 0, duration: 0.42, ease: 'power3.out' });
+                    gsap.to(pDark, { scale: 1.07, opacity: 1, x: -20, duration: 0.72, ease: 'power2.inOut' });
+                    gsap.to(pLight, { scale: 0.86, opacity: 0.28, x: 0, duration: 0.72, ease: 'power2.inOut' });
                 }
             };
             document.querySelectorAll('.theme-focus-btn').forEach(b => {
@@ -1141,9 +1298,9 @@
 
                 document.querySelectorAll('.tour-step-btn').forEach(btn => {
                     const active = Number(btn.getAttribute('data-tour-step')) === state.chapterIndex;
-                    btn.classList.toggle('bg-[#f7f2e8]', active);
-                    btn.classList.toggle('text-[#26231e]', active);
-                    btn.classList.toggle('text-white/80', !active);
+                    btn.classList.toggle('bg-[#ff9e2c]', active);
+                    btn.classList.toggle('text-[#0d2419]', active);
+                    btn.classList.toggle('text-[#f7f2e8]/80', !active);
                 });
                 [0, 1, 2, 3].forEach(i => {
                     document.getElementById(`tourCopy${i}`)?.classList.toggle('is-active', i === state.chapterIndex);
@@ -1166,7 +1323,7 @@
                     const c = document.getElementById(`tourCopy${i}`);
                     if (!c) return;
                     if (typeof gsap !== 'undefined') {
-                        gsap.to(c, { opacity: i === safeIdx ? 1 : 0, y: i === safeIdx ? 0 : 10, duration: 0.28, ease: 'power2.out' });
+                        gsap.to(c, { opacity: i === safeIdx ? 1 : 0, y: i === safeIdx ? 0 : 10, duration: 0.48, ease: 'power2.inOut' });
                     } else {
                         c.style.opacity = i === safeIdx ? '1' : '0';
                     }
@@ -1175,17 +1332,17 @@
                 const tourPhone = document.getElementById('tourPhoneActor');
                 if (typeof gsap !== 'undefined' && tourMac && tourPhone) {
                     if (safeIdx === 1) {
-                        gsap.to(tourMac, { xPercent: -8, scale: 0.85, opacity: 0.36, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(tourPhone, { xPercent: 52, scale: 1.06, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(tourMac, { xPercent: -8, scale: 0.86, opacity: 0.38, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(tourPhone, { xPercent: 48, scale: 1.07, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     } else if (safeIdx === 2) {
-                        gsap.to(tourMac, { xPercent: -4, scale: 1.03, opacity: 1, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(tourPhone, { xPercent: 86, scale: 0.90, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(tourMac, { xPercent: -4, scale: 1.03, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(tourPhone, { xPercent: 78, scale: 0.90, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     } else if (safeIdx === 3) {
-                        gsap.to(tourMac, { xPercent: 3, scale: 0.98, opacity: 1, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(tourPhone, { xPercent: -3, scale: 1.02, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(tourMac, { xPercent: 2, scale: 0.98, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(tourPhone, { xPercent: 0, scale: 1.02, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     } else {
-                        gsap.to(tourMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(tourPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(tourMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(tourPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     }
                 }
             };
@@ -1237,10 +1394,10 @@
                     activeGalleryFilter = btn.getAttribute('data-gallery-filter') || 'all';
                     document.querySelectorAll('.gallery-filter-btn').forEach(b => {
                         const on = b.getAttribute('data-gallery-filter') === activeGalleryFilter;
-                        b.classList.toggle('bg-[#f7f2e8]', on);
-                        b.classList.toggle('text-[#26231e]', on);
+                        b.classList.toggle('bg-[#ff9e2c]', on);
+                        b.classList.toggle('text-[#0d2419]', on);
                         b.classList.toggle('shadow-sm', on);
-                        b.classList.toggle('text-[#635d53]', !on);
+                        b.classList.toggle('text-[#f7f2e8]/80', !on);
                     });
                     galleryCards.forEach(c => {
                         const match = activeGalleryFilter === 'all' || c.getAttribute('data-device') === activeGalleryFilter;
@@ -1278,10 +1435,10 @@
 
                 document.querySelectorAll('.abi-step-btn').forEach(btn => {
                     const active = Number(btn.getAttribute('data-abi-step')) === state.chapterIndex;
-                    btn.classList.toggle('bg-[#225c40]', active);
-                    btn.classList.toggle('text-[#f7f2e8]', active);
+                    btn.classList.toggle('bg-[#ff9e2c]', active);
+                    btn.classList.toggle('text-[#0d2419]', active);
                     btn.classList.toggle('shadow-sm', active);
-                    btn.classList.toggle('text-[#635d53]', !active);
+                    btn.classList.toggle('text-[#f7f2e8]/80', !active);
                 });
                 [0, 1, 2, 3].forEach(i => {
                     document.getElementById(`abiCopy${i}`)?.classList.toggle('is-active', i === state.chapterIndex);
@@ -1303,7 +1460,7 @@
                     const c = document.getElementById(`abiCopy${i}`);
                     if (!c) return;
                     if (typeof gsap !== 'undefined') {
-                        gsap.to(c, { opacity: i === safeIdx ? 1 : 0, y: i === safeIdx ? 0 : 10, duration: 0.28, ease: 'power2.out' });
+                        gsap.to(c, { opacity: i === safeIdx ? 1 : 0, y: i === safeIdx ? 0 : 10, duration: 0.48, ease: 'power2.inOut' });
                     } else {
                         c.style.opacity = i === safeIdx ? '1' : '0';
                     }
@@ -1312,17 +1469,17 @@
                 const abiPhone = document.getElementById('abiPhoneActor');
                 if (typeof gsap !== 'undefined' && abiMac && abiPhone) {
                     if (safeIdx === 1) {
-                        gsap.to(abiMac, { xPercent: -8, scale: 0.86, opacity: 0.32, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(abiPhone, { xPercent: 58, scale: 1.08, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(abiMac, { xPercent: -8, scale: 0.87, opacity: 0.34, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(abiPhone, { xPercent: 52, scale: 1.07, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     } else if (safeIdx === 2) {
-                        gsap.to(abiMac, { xPercent: -4, scale: 1.03, opacity: 1, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(abiPhone, { xPercent: 90, scale: 0.90, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(abiMac, { xPercent: -4, scale: 1.03, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(abiPhone, { xPercent: 80, scale: 0.90, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     } else if (safeIdx === 3) {
-                        gsap.to(abiMac, { xPercent: -10, scale: 0.84, opacity: 0.28, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(abiPhone, { xPercent: 64, scale: 1.10, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(abiMac, { xPercent: -9, scale: 0.85, opacity: 0.30, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(abiPhone, { xPercent: 56, scale: 1.09, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     } else {
-                        gsap.to(abiMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'power2.out' });
-                        gsap.to(abiPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.4, ease: 'power2.out' });
+                        gsap.to(abiMac, { xPercent: 0, scale: 1, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
+                        gsap.to(abiPhone, { xPercent: 0, scale: 1, opacity: 1, duration: 0.72, ease: 'power2.inOut' });
                     }
                 }
             };
@@ -1342,40 +1499,95 @@
                 }, { passive: true });
             }
 
+            // Liquid Glass Nav Glider State & Physics
+            const glassNav = document.getElementById('landingGlassNav');
+            const navGlider = document.getElementById('landingNavGlider');
+            const navPills = Array.from(document.querySelectorAll('.landing-nav-pill'));
+            let activeNavSec = 'top';
+            let navLockUntil = 0;
+
+            const moveLandingGlider = (targetPill, immediate = false) => {
+                if (!glassNav || !navGlider || !targetPill) return;
+                const left = targetPill.offsetLeft;
+                const width = targetPill.offsetWidth;
+                if (width <= 0) return;
+                if (immediate) navGlider.style.transition = 'none';
+                navGlider.style.left = `${left}px`;
+                navGlider.style.width = `${width}px`;
+                navGlider.style.opacity = '1';
+                if (immediate) {
+                    navGlider.getBoundingClientRect();
+                    navGlider.style.transition = '';
+                }
+                navPills.forEach(p => {
+                    const isCurrent = p === targetPill;
+                    p.classList.toggle('text-[#0d2419]', isCurrent);
+                    p.classList.toggle('text-[#f7f2e8]/85', !isCurrent);
+                });
+            };
+
+            const setActiveNavSection = (sec, { fromScroll = false, immediate = false } = {}) => {
+                if (!sec) return;
+                if (fromScroll && performance.now() < navLockUntil) return;
+                activeNavSec = sec;
+                const pill = navPills.find(p => p.getAttribute('data-nav-sec') === sec) || navPills[0];
+                if (pill) moveLandingGlider(pill, immediate);
+            };
+
+            navPills.forEach(pill => {
+                pill.addEventListener('mouseenter', () => moveLandingGlider(pill));
+                pill.addEventListener('focus', () => moveLandingGlider(pill));
+                pill.addEventListener('click', () => {
+                    const sec = pill.getAttribute('data-nav-sec');
+                    if (sec) {
+                        navLockUntil = performance.now() + 750;
+                        setActiveNavSection(sec);
+                    }
+                });
+            });
+
+            if (glassNav) {
+                glassNav.addEventListener('mouseleave', () => {
+                    const activePill = navPills.find(p => p.getAttribute('data-nav-sec') === activeNavSec) || navPills[0];
+                    if (activePill) moveLandingGlider(activePill);
+                });
+            }
+
+            requestAnimationFrame(() => setActiveNavSection(activeNavSec, { immediate: true }));
+            document.fonts?.ready?.then(() => setActiveNavSection(activeNavSec, { immediate: true }));
+            window.addEventListener('resize', () => setActiveNavSection(activeNavSec, { immediate: true }), { passive: true });
+            window.addEventListener('landingPreloaderHidden', () => {
+                setActiveNavSection(activeNavSec, { immediate: true });
+                if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+            });
+
             // SITE-WIDE GSAP + SCROLLTRIGGER CHOREOGRAPHY (FLUID TRANSITIONS ON DESKTOP & MOBILE)
-            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !reducedMotion) {
                 gsap.registerPlugin(ScrollTrigger);
                 ScrollTrigger.config({ ignoreMobileResize: true });
 
-                gsap.to('#scrollProgressBar', {
-                    scaleX: 1,
-                    ease: 'none',
-                    scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.2 }
-                });
-
-                gsap.from('.hero-enter', { y: 18, opacity: 0, duration: 0.72, stagger: 0.06, ease: 'power3.out' });
-                gsap.from('#heroMacActor', { xPercent: 6, yPercent: 5, opacity: 0, scale: 0.96, duration: 0.85, ease: 'power3.out' });
-                gsap.from('#heroPhoneActor', { xPercent: -8, yPercent: 7, opacity: 0, scale: 0.95, duration: 0.88, delay: 0.08, ease: 'power3.out' });
+                gsap.from('.hero-enter', { y: 18, opacity: 0, duration: 1.02, delay: 0.08, stagger: 0.08, ease: 'power2.out' });
+                gsap.from('#heroMacActor', { xPercent: 5, yPercent: 4, opacity: 0, scale: 0.97, duration: 1.15, delay: 0.1, ease: 'power2.out' });
+                gsap.from('#heroPhoneActor', { xPercent: -6, yPercent: 5, opacity: 0, scale: 0.96, duration: 1.18, delay: 0.18, ease: 'power2.out' });
 
                 const heroScrollTl = gsap.timeline({
-                    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.72 }
+                    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.85 }
                 });
                 heroScrollTl
-                    .to('#heroGridLayer', { yPercent: 18, ease: 'none' }, 0)
-                    .to('#heroCopyWrap', { y: -24, opacity: 0.45, ease: 'sine.inOut' }, 0)
-                    .to('#heroMacActor', { y: -34, x: 10, ease: 'sine.out' }, 0)
-                    .to('#heroPhoneActor', { y: -56, x: -10, rotate: -2.2, ease: 'sine.out' }, 0)
-                    .to('#heroParallaxTagA', { y: -60, x: 14, ease: 'sine.out' }, 0)
-                    .to('#heroParallaxTagB', { y: -42, x: -14, ease: 'sine.out' }, 0);
+                    .to('#heroGridLayer', { yPercent: 16, ease: 'none' }, 0)
+                    .to('#heroCopyWrap', { y: -20, opacity: 0.5, ease: 'sine.inOut' }, 0)
+                    .to('#heroMacActor', { y: -28, x: 8, ease: 'sine.inOut' }, 0)
+                    .to('#heroPhoneActor', { y: -44, x: -8, rotate: -1.8, ease: 'sine.inOut' }, 0)
+                    .to('#heroParallaxTagA', { y: -48, x: 10, ease: 'sine.inOut' }, 0)
+                    .to('#heroParallaxTagB', { y: -34, x: -10, ease: 'sine.inOut' }, 0);
 
                 if (manifestoWords.length) {
                     gsap.set(manifestoWords, { opacity: 0.28 });
                     ScrollTrigger.create({
                         trigger: '#manifesto',
                         start: 'top 88%',
-                        end: 'top 34%',
-                        scrub: 0.55,
+                        end: 'top 30%',
+                        scrub: 1.5,
                         onUpdate: (self) => {
                             const ops = computeWordRevealOpacities(self.progress, manifestoWords.length, 0.28);
                             for (let i = 0; i < manifestoWords.length; i++) {
@@ -1388,25 +1600,19 @@
                 gsap.to('#manifestoLine', {
                     scaleX: 1,
                     ease: 'sine.inOut',
-                    scrollTrigger: { trigger: '#manifesto', start: 'top 76%', end: 'bottom 64%', scrub: 0.65 }
+                    scrollTrigger: { trigger: '#manifesto', start: 'top 76%', end: 'bottom 60%', scrub: 1.6 }
                 });
 
                 gsap.fromTo('.manifesto-pillar',
-                    { y: 24, opacity: 0 },
+                    { y: 20, opacity: 0 },
                     {
                         y: 0,
                         opacity: 1,
-                        duration: 0.78,
-                        stagger: 0.11,
-                        ease: 'power3.out',
-                        scrollTrigger: { trigger: '.manifesto-pillar', start: 'top 86%', toggleActions: 'play none none reverse' }
+                        duration: 1.05,
+                        stagger: 0.14,
+                        ease: 'power2.out',
+                        scrollTrigger: { trigger: '.manifesto-pillar', start: 'top 88%', toggleActions: 'play none none reverse' }
                     }
-                );
-
-                // Smooth entry fade/lift for #tour stage as user arrives from Manifesto
-                gsap.fromTo('#tourPinWrap',
-                    { y: 26, opacity: 0.85 },
-                    { y: 0, opacity: 1, ease: 'sine.out', scrollTrigger: { trigger: '#tour', start: 'top 95%', end: 'top 45%', scrub: 0.65 } }
                 );
 
                 // Responsive MatchMedia for Pinned Desktop Choreography vs Responsive Mobile Flow
@@ -1417,7 +1623,7 @@
                     const tourPhone = document.getElementById('tourPhoneActor');
                     const tourProgressFill = document.getElementById('tourProgressFill');
 
-                    gsap.set(['#tourCopy1', '#tourCopy2', '#tourCopy3'], { y: 22, opacity: 0 });
+                    gsap.set(['#tourCopy1', '#tourCopy2', '#tourCopy3'], { y: 12, opacity: 0 });
                     gsap.set('#tourCopy0', { y: 0, opacity: 1 });
                     gsap.set(tourMac, { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, rotation: 0 });
                     gsap.set(tourPhone, { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, rotation: 0 });
@@ -1425,11 +1631,12 @@
                     const tourTl = gsap.timeline({
                         scrollTrigger: {
                             trigger: '#tour',
-                            start: 'top 64px',
-                            end: '+=310%',
+                            start: 'top top',
+                            end: '+=440%',
                             pin: '#tourPinWrap',
-                            scrub: 0.72,
+                            scrub: 2.0,
                             anticipatePin: 1,
+                            invalidateOnRefresh: true,
                             onUpdate: (self) => {
                                 if (tourProgressFill) tourProgressFill.style.transform = `scaleX(${Math.max(0.06, self.progress)})`;
                                 updateTourUI(resolveTourChapter(self.progress));
@@ -1437,25 +1644,25 @@
                         }
                     });
 
-                    // Continuous weighted choreography: wide morphs + living breathing plateaus
+                    // Ultra-smooth weighted choreography with long glide morphs & calm plateaus
                     tourTl
-                        .to(tourMac, { xPercent: 1.5, yPercent: -0.8, duration: 0.19, ease: 'sine.inOut' }, 0)
-                        .to(tourPhone, { yPercent: -1.5, duration: 0.19, ease: 'sine.inOut' }, 0)
-                        .to('#tourCopy0', { y: -18, opacity: 0, duration: 0.08, ease: 'power2.inOut' }, 0.19)
-                        .to(tourMac, { xPercent: -10, yPercent: -3, scale: 0.86, opacity: 0.45, rotation: -1.3, duration: 0.11, ease: 'power2.inOut' }, 0.19)
-                        .to(tourPhone, { xPercent: 54, yPercent: -2.5, scale: 1.08, opacity: 1, rotation: 1.3, duration: 0.11, ease: 'power2.inOut' }, 0.19)
-                        .to('#tourCopy1', { y: 0, opacity: 1, duration: 0.09, ease: 'power2.out' }, 0.24)
-                        .to(tourPhone, { yPercent: -4.2, rotation: 0.5, duration: 0.14, ease: 'sine.inOut' }, 0.31)
-                        .to('#tourCopy1', { y: -18, opacity: 0, duration: 0.08, ease: 'power2.inOut' }, 0.45)
-                        .to(tourMac, { xPercent: -4, yPercent: 0, scale: 1.04, opacity: 1, rotation: 0.4, duration: 0.11, ease: 'power2.inOut' }, 0.45)
-                        .to(tourPhone, { xPercent: 120, yPercent: 3.5, scale: 0.90, opacity: 1, rotation: 2.0, duration: 0.11, ease: 'power2.inOut' }, 0.45)
-                        .to('#tourCopy2', { y: 0, opacity: 1, duration: 0.09, ease: 'power2.out' }, 0.50)
-                        .to(tourMac, { scale: 1.06, yPercent: -1, duration: 0.15, ease: 'sine.inOut' }, 0.57)
-                        .to('#tourCopy2', { y: -18, opacity: 0, duration: 0.08, ease: 'power2.inOut' }, 0.72)
-                        .to(tourMac, { xPercent: 3, yPercent: -2, scale: 0.98, opacity: 1, rotation: 0, duration: 0.11, ease: 'power2.inOut' }, 0.72)
-                        .to(tourPhone, { xPercent: -2, yPercent: 1.5, scale: 1.01, opacity: 1, rotation: -1.1, duration: 0.11, ease: 'power2.inOut' }, 0.72)
-                        .to('#tourCopy3', { y: 0, opacity: 1, duration: 0.09, ease: 'power2.out' }, 0.77)
-                        .to(tourPhone, { yPercent: -0.5, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                        .to(tourMac, { xPercent: 1.2, yPercent: -0.6, duration: 0.16, ease: 'sine.inOut' }, 0)
+                        .to(tourPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
+                        .to('#tourCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
+                        .to(tourMac, { xPercent: -7, yPercent: -2, scale: 0.88, opacity: 0.44, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                        .to(tourPhone, { xPercent: 48, yPercent: -1.8, scale: 1.06, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                        .to('#tourCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
+                        .to(tourPhone, { yPercent: -3.0, rotation: 0.4, duration: 0.12, ease: 'sine.inOut' }, 0.32)
+                        .to('#tourCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
+                        .to(tourMac, { xPercent: -3, yPercent: 0, scale: 1.04, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                        .to(tourPhone, { xPercent: 84, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.4, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                        .to('#tourCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
+                        .to(tourMac, { scale: 1.055, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
+                        .to('#tourCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
+                        .to(tourMac, { xPercent: 2, yPercent: -1.2, scale: 0.99, opacity: 1, rotation: 0, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                        .to(tourPhone, { xPercent: 0, yPercent: 0.8, scale: 1.01, opacity: 1, rotation: -0.7, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                        .to('#tourCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
+                        .to(tourPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
 
                     const chapterJumpStops = [0.05, 0.36, 0.64, 0.90];
                     const onStepClick = (e) => {
@@ -1475,10 +1682,10 @@
                     desktopGalleryTween = gsap.timeline({
                         scrollTrigger: {
                             trigger: '#funktionen',
-                            start: 'top 64px',
-                            end: () => `+=${Math.max(680, getGalleryMaxShift() * 1.45 + 520)}`,
+                            start: 'top top',
+                            end: () => `+=${Math.max(960, getGalleryMaxShift() * 1.9 + 720)}`,
                             pin: '#funktionenPinWrap',
-                            scrub: 0.75,
+                            scrub: 1.9,
                             anticipatePin: 1,
                             invalidateOnRefresh: true,
                             onUpdate: (self) => {
@@ -1488,16 +1695,16 @@
                         }
                     });
                     desktopGalleryTween
-                        .fromTo('#galleryTrack', { y: 12, opacity: 0.94 }, { y: 0, opacity: 1, duration: 0.06, ease: 'sine.out' }, 0)
-                        .fromTo('#galleryTrack', { x: 0 }, { x: () => -getGalleryMaxShift(), duration: 0.88, ease: 'sine.inOut' }, 0.06)
-                        .to({}, { duration: 0.06 }, 0.94);
+                        .fromTo('#galleryTrack', { y: 10, opacity: 0.94 }, { y: 0, opacity: 1, duration: 0.08, ease: 'sine.out' }, 0)
+                        .fromTo('#galleryTrack', { x: 0 }, { x: () => -getGalleryMaxShift(), duration: 0.86, ease: 'sine.inOut' }, 0.07)
+                        .to({}, { duration: 0.07 }, 0.93);
 
                     // Abitur Pinned Interactive Scroll Stage (#abitur) matching Einblick (#tour)
                     const abiMac = document.getElementById('abiMacActor');
                     const abiPhone = document.getElementById('abiPhoneActor');
                     const abiProgressFill = document.getElementById('abiProgressFill');
 
-                    gsap.set(['#abiCopy1', '#abiCopy2', '#abiCopy3'], { y: 22, opacity: 0 });
+                    gsap.set(['#abiCopy1', '#abiCopy2', '#abiCopy3'], { y: 12, opacity: 0 });
                     gsap.set('#abiCopy0', { y: 0, opacity: 1 });
                     gsap.set(abiMac, { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, rotation: 0 });
                     gsap.set(abiPhone, { xPercent: 0, yPercent: 0, scale: 1, opacity: 1, rotation: 0 });
@@ -1505,11 +1712,12 @@
                     const abiTl = gsap.timeline({
                         scrollTrigger: {
                             trigger: '#abitur',
-                            start: 'top 64px',
-                            end: '+=290%',
+                            start: 'top top',
+                            end: '+=410%',
                             pin: '#abiPinWrap',
-                            scrub: 0.72,
+                            scrub: 2.0,
                             anticipatePin: 1,
+                            invalidateOnRefresh: true,
                             onUpdate: (self) => {
                                 if (abiProgressFill) abiProgressFill.style.transform = `scaleX(${Math.max(0.06, self.progress)})`;
                                 updateAbiUI(resolveAbiChapter(self.progress));
@@ -1519,23 +1727,23 @@
 
                     abiTl
                         .to('#abiGridLayer', { yPercent: 10, duration: 1, ease: 'none' }, 0)
-                        .to(abiMac, { xPercent: 1.5, yPercent: -0.8, duration: 0.19, ease: 'sine.inOut' }, 0)
-                        .to(abiPhone, { yPercent: -1.5, duration: 0.19, ease: 'sine.inOut' }, 0)
-                        .to('#abiCopy0', { y: -18, opacity: 0, duration: 0.08, ease: 'power2.inOut' }, 0.19)
-                        .to(abiMac, { xPercent: -9, yPercent: -2.5, scale: 0.86, opacity: 0.36, rotation: -1.2, duration: 0.11, ease: 'power2.inOut' }, 0.19)
-                        .to(abiPhone, { xPercent: 56, yPercent: -2.2, scale: 1.09, opacity: 1, rotation: 1.2, duration: 0.11, ease: 'power2.inOut' }, 0.19)
-                        .to('#abiCopy1', { y: 0, opacity: 1, duration: 0.09, ease: 'power2.out' }, 0.24)
-                        .to(abiPhone, { yPercent: -4, rotation: 0.4, duration: 0.14, ease: 'sine.inOut' }, 0.31)
-                        .to('#abiCopy1', { y: -18, opacity: 0, duration: 0.08, ease: 'power2.inOut' }, 0.45)
-                        .to(abiMac, { xPercent: -3, yPercent: 0, scale: 1.03, opacity: 1, rotation: 0.4, duration: 0.11, ease: 'power2.inOut' }, 0.45)
-                        .to(abiPhone, { xPercent: 112, yPercent: 3.2, scale: 0.90, opacity: 1, rotation: 1.8, duration: 0.11, ease: 'power2.inOut' }, 0.45)
-                        .to('#abiCopy2', { y: 0, opacity: 1, duration: 0.09, ease: 'power2.out' }, 0.50)
-                        .to(abiMac, { scale: 1.05, yPercent: -1, duration: 0.15, ease: 'sine.inOut' }, 0.57)
-                        .to('#abiCopy2', { y: -18, opacity: 0, duration: 0.08, ease: 'power2.inOut' }, 0.72)
-                        .to(abiMac, { xPercent: -11, yPercent: -2, scale: 0.83, opacity: 0.30, rotation: -1.5, duration: 0.11, ease: 'power2.inOut' }, 0.72)
-                        .to(abiPhone, { xPercent: 60, yPercent: -1.5, scale: 1.11, opacity: 1, rotation: -1.1, duration: 0.11, ease: 'power2.inOut' }, 0.72)
-                        .to('#abiCopy3', { y: 0, opacity: 1, duration: 0.09, ease: 'power2.out' }, 0.77)
-                        .to(abiPhone, { yPercent: -0.5, duration: 0.14, ease: 'sine.inOut' }, 0.86);
+                        .to(abiMac, { xPercent: 1.2, yPercent: -0.6, duration: 0.16, ease: 'sine.inOut' }, 0)
+                        .to(abiPhone, { yPercent: -1.2, duration: 0.16, ease: 'sine.inOut' }, 0)
+                        .to('#abiCopy0', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.16)
+                        .to(abiMac, { xPercent: -7, yPercent: -1.8, scale: 0.88, opacity: 0.36, rotation: -0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                        .to(abiPhone, { xPercent: 50, yPercent: -1.6, scale: 1.07, opacity: 1, rotation: 0.9, duration: 0.16, ease: 'sine.inOut' }, 0.16)
+                        .to('#abiCopy1', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.22)
+                        .to(abiPhone, { yPercent: -2.8, rotation: 0.3, duration: 0.12, ease: 'sine.inOut' }, 0.32)
+                        .to('#abiCopy1', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.42)
+                        .to(abiMac, { xPercent: -2.5, yPercent: 0, scale: 1.035, opacity: 1, rotation: 0.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                        .to(abiPhone, { xPercent: 82, yPercent: 2.2, scale: 0.90, opacity: 1, rotation: 1.3, duration: 0.17, ease: 'sine.inOut' }, 0.42)
+                        .to('#abiCopy2', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.49)
+                        .to(abiMac, { scale: 1.05, yPercent: -0.8, duration: 0.12, ease: 'sine.inOut' }, 0.59)
+                        .to('#abiCopy2', { y: -10, opacity: 0, duration: 0.11, ease: 'sine.inOut' }, 0.69)
+                        .to(abiMac, { xPercent: -8, yPercent: -1.4, scale: 0.86, opacity: 0.32, rotation: -1.1, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                        .to(abiPhone, { xPercent: 52, yPercent: -1.2, scale: 1.08, opacity: 1, rotation: -0.8, duration: 0.17, ease: 'sine.inOut' }, 0.69)
+                        .to('#abiCopy3', { y: 0, opacity: 1, duration: 0.12, ease: 'sine.out' }, 0.76)
+                        .to(abiPhone, { yPercent: -0.4, duration: 0.14, ease: 'sine.inOut' }, 0.86);
 
                     const abiJumpStops = [0.05, 0.36, 0.64, 0.90];
                     const onAbiStepClick = (e) => {
@@ -1547,12 +1755,12 @@
                     document.querySelectorAll('.abi-step-btn').forEach(btn => btn.addEventListener('click', onAbiStepClick));
 
                     gsap.fromTo('#themePhoneLight',
-                        { x: -56, y: 28, rotate: -6, opacity: 0.72 },
-                        { x: 0, y: -4, rotate: 0, opacity: 1, ease: 'sine.out', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 34%', scrub: 0.75 } }
+                        { x: -46, y: 24, rotate: -4.5, opacity: 0.72 },
+                        { x: 0, y: -4, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 28%', scrub: 1.85 } }
                     );
                     gsap.fromTo('#themePhoneDark',
-                        { x: 56, y: 28, rotate: 6, opacity: 0.72 },
-                        { x: 0, y: -4, rotate: 0, opacity: 1, ease: 'sine.out', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 34%', scrub: 0.75 } }
+                        { x: 46, y: 24, rotate: 4.5, opacity: 0.72 },
+                        { x: 0, y: -4, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 28%', scrub: 1.85 } }
                     );
 
                     return () => {
@@ -1578,18 +1786,49 @@
                     document.querySelectorAll('.tour-step-btn').forEach(btn => btn.addEventListener('click', onMobileStepClick));
                     document.querySelectorAll('.abi-step-btn').forEach(btn => btn.addEventListener('click', onMobileAbiStepClick));
 
-                    gsap.fromTo('#galleryViewport',
-                        { y: 20, opacity: 0.85 },
-                        { y: 0, opacity: 1, ease: 'sine.out', scrollTrigger: { trigger: '#funktionen', start: 'top 90%', end: 'top 48%', scrub: 0.65 } }
+                    // Mobile Scroll Choreography for Tour hardware stage (y + rotation, conflict-free with xPercent/scale taps)
+                    gsap.fromTo('#tourMacActor',
+                        { y: 24, rotation: 1.4 },
+                        { y: -12, rotation: -0.8, ease: 'sine.inOut', scrollTrigger: { trigger: '#tour', start: 'top 92%', end: 'bottom 20%', scrub: 1.55 } }
+                    );
+                    gsap.fromTo('#tourPhoneActor',
+                        { y: 36, rotation: -2.2 },
+                        { y: -18, rotation: 1.3, ease: 'sine.inOut', scrollTrigger: { trigger: '#tour', start: 'top 92%', end: 'bottom 20%', scrub: 1.55 } }
                     );
 
+                    // Mobile Scroll Choreography for Gallery viewport & staggered card reveal
+                    gsap.fromTo('#galleryViewport',
+                        { y: 20, opacity: 0.85 },
+                        { y: 0, opacity: 1, ease: 'sine.out', scrollTrigger: { trigger: '#funktionen', start: 'top 92%', end: 'top 42%', scrub: 1.5 } }
+                    );
+                    gsap.fromTo('#galleryTrack .gallery-card',
+                        { y: 26, scale: 0.96, opacity: 0.45 },
+                        { y: 0, scale: 1, opacity: 1, stagger: 0.06, ease: 'sine.out', scrollTrigger: { trigger: '#funktionen', start: 'top 88%', end: 'top 28%', scrub: 1.5 } }
+                    );
+
+                    // Mobile Dual-Phone Scroll Convergence
                     gsap.fromTo('#themePhoneLight',
-                        { x: -22, y: 20, rotate: -3.5, opacity: 0.78 },
-                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.out', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 44%', scrub: 0.7 } }
+                        { x: -28, y: 28, rotate: -4.5, opacity: 0.72 },
+                        { x: 0, y: -4, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 32%', scrub: 1.6 } }
                     );
                     gsap.fromTo('#themePhoneDark',
-                        { x: 22, y: 20, rotate: 3.5, opacity: 0.78 },
-                        { x: 0, y: 0, rotate: 0, opacity: 1, ease: 'sine.out', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 44%', scrub: 0.7 } }
+                        { x: 28, y: 28, rotate: 4.5, opacity: 0.72 },
+                        { x: 0, y: -4, rotate: 0, opacity: 1, ease: 'sine.inOut', scrollTrigger: { trigger: '#themes', start: 'top 94%', end: 'top 32%', scrub: 1.6 } }
+                    );
+
+                    // Mobile Scroll Choreography for Abitur hardware stage & grid
+                    gsap.to('#abiGridLayer', {
+                        yPercent: 12,
+                        ease: 'none',
+                        scrollTrigger: { trigger: '#abitur', start: 'top bottom', end: 'bottom top', scrub: 1.5 }
+                    });
+                    gsap.fromTo('#abiMacActor',
+                        { y: 24, rotation: 1.4 },
+                        { y: -12, rotation: -0.8, ease: 'sine.inOut', scrollTrigger: { trigger: '#abitur', start: 'top 92%', end: 'bottom 20%', scrub: 1.55 } }
+                    );
+                    gsap.fromTo('#abiPhoneActor',
+                        { y: 36, rotation: -2.0 },
+                        { y: -18, rotation: 1.2, ease: 'sine.inOut', scrollTrigger: { trigger: '#abitur', start: 'top 92%', end: 'bottom 20%', scrub: 1.55 } }
                     );
 
                     return () => {
@@ -1600,32 +1839,32 @@
 
                 document.querySelectorAll('.reveal-up').forEach(el => {
                     gsap.fromTo(el,
-                        { y: 22, opacity: 0 },
+                        { y: 18, opacity: 0 },
                         {
                             y: 0,
                             opacity: 1,
-                            duration: 0.72,
-                            ease: 'power3.out',
+                            duration: 1.0,
+                            ease: 'power2.out',
                             scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' }
                         }
                     );
                 });
 
                 gsap.fromTo('.stat-ledger',
-                    { y: 22, opacity: 0 },
+                    { y: 18, opacity: 0 },
                     {
                         y: 0,
                         opacity: 1,
-                        duration: 0.72,
-                        stagger: 0.08,
-                        ease: 'power3.out',
+                        duration: 1.0,
+                        stagger: 0.11,
+                        ease: 'power2.out',
                         scrollTrigger: { trigger: '#kennzahlen', start: 'top 86%', toggleActions: 'play none none reverse' }
                     }
                 );
 
                 gsap.fromTo('.stat-rule',
                     { scaleX: 0 },
-                    { scaleX: 1, stagger: 0.08, ease: 'sine.inOut', scrollTrigger: { trigger: '#kennzahlen', start: 'top 92%', end: 'top 62%', scrub: 0.65 } }
+                    { scaleX: 1, stagger: 0.1, ease: 'sine.inOut', scrollTrigger: { trigger: '#kennzahlen', start: 'top 92%', end: 'top 56%', scrub: 1.6 } }
                 );
 
                 document.querySelectorAll('[data-count-target]').forEach(el => {
@@ -1633,7 +1872,7 @@
                     const proxy = { val: 0 };
                     gsap.to(proxy, {
                         val: target,
-                        duration: 1.15,
+                        duration: 1.45,
                         ease: 'power2.out',
                         scrollTrigger: { trigger: '#kennzahlen', start: 'top 86%', once: true },
                         onUpdate: () => { el.textContent = String(Math.round(proxy.val)); }
@@ -1642,26 +1881,41 @@
 
                 gsap.fromTo('#launchParallaxImg',
                     { yPercent: -7, scale: 1.06 },
-                    { yPercent: 7, scale: 1.0, ease: 'none', scrollTrigger: { trigger: '#launch', start: 'top bottom', end: 'bottom top', scrub: 0.75 } }
+                    { yPercent: 7, scale: 1.0, ease: 'none', scrollTrigger: { trigger: '#launch', start: 'top bottom', end: 'bottom top', scrub: 1.8 } }
                 );
 
-                const secIds = ['#top', '#manifesto', '#tour', '#funktionen', '#themes', '#abitur', '#launch'];
+                const secMap = [
+                    { sel: '#hero', nav: 'top', dot: 0 },
+                    { sel: '#manifesto', nav: 'manifesto', dot: 1 },
+                    { sel: '#tour', nav: 'tour', dot: 2 },
+                    { sel: '#funktionen', nav: 'funktionen', dot: 3 },
+                    { sel: '#themes', nav: 'funktionen', dot: 4 },
+                    { sel: '#abitur', nav: 'abitur', dot: 5 },
+                    { sel: '#kennzahlen', nav: 'abitur', dot: 5 },
+                    { sel: '#launch', nav: 'abitur', dot: 6 }
+                ];
                 const dots = Array.from(document.querySelectorAll('.sec-dot'));
                 const highlightDot = (idx) => {
                     dots.forEach((d, i) => {
                         const active = i === idx;
-                        d.classList.toggle('bg-[#225c40]', active);
+                        d.classList.toggle('bg-[#ff9e2c]', active);
                         d.classList.toggle('scale-125', active);
-                        d.classList.toggle('bg-[#26231e]/25', !active);
+                        d.classList.toggle('bg-[#ff7aa8]/35', !active);
                     });
                 };
-                secIds.forEach((sel, i) => {
+                secMap.forEach(({ sel, nav, dot }) => {
                     const sec = document.querySelector(sel);
                     if (!sec) return;
                     ScrollTrigger.create({
                         trigger: sec, start: 'top 52%', end: 'bottom 52%',
-                        onEnter: () => highlightDot(i),
-                        onEnterBack: () => highlightDot(i)
+                        onEnter: () => {
+                            highlightDot(dot);
+                            setActiveNavSection(nav, { fromScroll: true });
+                        },
+                        onEnterBack: () => {
+                            highlightDot(dot);
+                            setActiveNavSection(nav, { fromScroll: true });
+                        }
                     });
                 });
                 dots.forEach(d => {
@@ -1679,6 +1933,28 @@
                 document.querySelectorAll('.abi-step-btn').forEach(btn => {
                     btn.addEventListener('click', () => setMobileAbiChapter(Number(btn.getAttribute('data-abi-step')) || 0));
                 });
+
+                const fallbackMap = [
+                    { sel: '#hero', nav: 'top' },
+                    { sel: '#manifesto', nav: 'manifesto' },
+                    { sel: '#tour', nav: 'tour' },
+                    { sel: '#funktionen', nav: 'funktionen' },
+                    { sel: '#themes', nav: 'funktionen' },
+                    { sel: '#abitur', nav: 'abitur' },
+                    { sel: '#launch', nav: 'abitur' }
+                ];
+                const syncNavByScroll = () => {
+                    const mid = window.innerHeight * 0.45;
+                    let matched = 'top';
+                    fallbackMap.forEach(({ sel, nav }) => {
+                        const el = document.querySelector(sel);
+                        if (!el) return;
+                        const r = el.getBoundingClientRect();
+                        if (r.top <= mid && r.bottom >= mid) matched = nav;
+                    });
+                    setActiveNavSection(matched, { fromScroll: true });
+                };
+                window.addEventListener('scroll', syncNavByScroll, { passive: true });
             }
         })();
     </script>
