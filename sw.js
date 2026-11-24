@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden, aktuelle App-Shell und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v55';
+const CACHE_NAME = 'schooly-cache-v56';
 
 const PRECACHE_URLS = [
   '/',
@@ -62,7 +62,7 @@ self.addEventListener('activate', (event) => {
 // 3. Fetch-Strategie:
 // - Firebase & Google APIs: Direkt durchleiten (Firestore IndexedDB übernimmt Offline-Sync)
 // - Navigation: Network-First über saubere URL-Anfrage (vermeidet WebKit/PWA navigate-Request-Fehler)
-// - Statische Ressourcen (JS, CSS, Schriften, Bilder, Icons): Cache-First für 0ms Antwortzeit
+// - Statische Ressourcen: Stale-While-Revalidate (sofortiger Start + stille Aktualisierung im Hintergrund)
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -150,19 +150,25 @@ self.addEventListener('fetch', (event) => {
   }
 
   // B. Statische & geladene Ressourcen (JS, CSS, Schriften, Bilder, Icons)
+  const isSameOrigin = url.origin === self.location.origin;
   event.respondWith(
     caches.match(req).then(async (exactRes) => {
       const cachedRes = exactRes || (!url.search.includes('html-proxy') ? await caches.match(req, { ignoreSearch: true }) : null);
-      if (cachedRes) {
-        return cachedRes;
-      }
-      try {
-        const netRes = await fetch(req);
+      const fetchAndUpdate = fetch(req, isSameOrigin ? { cache: 'no-store' } : undefined).then((netRes) => {
         if (netRes && (netRes.status === 200 || netRes.type === 'opaque')) {
           const clone = netRes.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone)).catch(() => {});
         }
         return netRes;
+      });
+      if (cachedRes) {
+        if (isSameOrigin) {
+          event.waitUntil(fetchAndUpdate.catch(() => {}));
+        }
+        return cachedRes;
+      }
+      try {
+        return await fetchAndUpdate;
       } catch (err) {
         return new Response('/* Not in offline cache */', { status: 503, statusText: 'Offline unavailable' });
       }

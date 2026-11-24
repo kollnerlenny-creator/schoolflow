@@ -112,7 +112,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v55';
+        const CURRENT_BUILD = 'schooly-v56';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -124,7 +124,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v55') {
+                        if (k !== 'schooly-cache-v56') {
                             caches.delete(k);
                         }
                     });
@@ -1804,15 +1804,43 @@
             background-color: #ebd9ca !important;
             border-color: #c8a189 !important;
         }
-        @media (hover: hover) {
-            html.evening .hover\:bg-\[\#faf7f2\]:hover,
-            html.evening .hover\:bg-\[\#f7f2ea\]:hover,
-            html.evening .hover\:bg-\[\#f4ece4\]:hover,
-            html.evening .hover\:bg-\[\#eae0d5\]:hover,
-            html.evening .hover\:bg-\[\#ede4dc\]:hover,
-            html.evening .hover\:bg-\[\#e6dcd3\]:hover {
-                background-color: #d5c2a6 !important;
-            }
+        html.evening .hover\:bg-white:hover,
+        html.evening .hover\:bg-\[\#fffdf9\]:hover,
+        html.evening .hover\:bg-\[\#faf7f2\]:hover,
+        html.evening .hover\:bg-\[\#faf6f0\]:hover,
+        html.evening .hover\:bg-\[\#faf6ef\]:hover,
+        html.evening .hover\:bg-\[\#f7f3eb\]:hover,
+        html.evening .hover\:bg-\[\#f7f2ea\]:hover,
+        html.evening .hover\:bg-\[\#f5efe7\]:hover,
+        html.evening .hover\:bg-\[\#f4ece4\]:hover,
+        html.evening .hover\:bg-\[\#efe7dc\]:hover,
+        html.evening .hover\:bg-\[\#eae0d5\]:hover,
+        html.evening .hover\:bg-\[\#ede4dc\]:hover,
+        html.evening .hover\:bg-\[\#ede3d8\]:hover,
+        html.evening .hover\:bg-\[\#eadecf\]:hover,
+        html.evening .hover\:bg-\[\#e6dcd3\]:hover,
+        html.evening .hover\:bg-\[\#e5dccd\]:hover,
+        html.evening .hover\:bg-\[\#e2d8cd\]:hover,
+        html.evening .hover\:bg-\[\#ded5c7\]:hover,
+        html.evening .group:hover .group-hover\:bg-\[\#f5efe7\] {
+            background-color: #d5c2a6 !important;
+        }
+        html.evening .hover\:text-\[\#1f1b16\]:hover {
+            color: #2c241c !important;
+        }
+        html.evening .filter-pill {
+            background: #e4d4bc !important;
+            border-color: #cbb99e !important;
+            color: #5a4c3b !important;
+        }
+        html.evening .filter-pill:hover {
+            background: #d5c2a6 !important;
+            color: #2c241c !important;
+        }
+        html.evening .filter-pill.toggle-accent-on {
+            background: #2d694c !important;
+            border-color: #2d694c !important;
+            color: #ffffff !important;
         }
 
         /* ── DARK MODE & DÄMMERUNG: VARIABLES & SURFACE OVERRIDES ── */
@@ -1904,6 +1932,7 @@
             background-color: var(--sf-surface) !important;
         }
         html.dark .bg-\[\#faf7f2\],
+        html.dark .bg-\[\#faf7f2\]\/95,
         html.dark .bg-\[\#faf6f0\],
         html.dark .bg-\[\#faf6ef\],
         html.dark .bg-\[\#fcfaf6\],
@@ -1912,6 +1941,7 @@
         html.dark .bg-\[\#f7f2ea\],
         html.dark .bg-\[\#f7f2ea\]\/70,
         html.dark .bg-\[\#f7f2ea\]\/40,
+        html.dark .bg-\[\#f5efe7\],
         html.dark .bg-\[\#f2ece2\],
         html.dark .bg-\[\#f4ece4\],
         html.dark .bg-\[\#f4ece4\]\/60,
@@ -1920,17 +1950,34 @@
         html.dark .bg-\[\#f3ebe3\],
         html.dark .bg-\[\#f6f0e8\]\/95,
         html.dark .bg-\[\#f0e6df\],
-        html.dark .bg-\[\#efe8dc\] {
+        html.dark .bg-\[\#efe8dc\],
+        html.dark .bg-\[\#efe8dc\]\/80,
+        html.dark .bg-\[\#efe7dc\],
+        html.dark .bg-\[\#efe5dc\] {
             background-color: var(--sf-surface-2) !important;
         }
         html.dark .bg-\[\#ede4dc\],
         html.dark .bg-\[\#ede4dc\]\/80,
+        html.dark .bg-\[\#ede4dc\]\/60,
+        html.dark .bg-\[\#ede3d8\],
+        html.dark .bg-\[\#eadecf\],
+        html.dark .bg-\[\#eae0d5\],
         html.dark .bg-\[\#eae3d7\],
         html.dark .bg-\[\#ece3d8\]\/75,
         html.dark .bg-\[\#ebe4d8\],
+        html.dark .bg-\[\#e6dcd3\],
+        html.dark .bg-\[\#e5dccd\],
+        html.dark .bg-\[\#e2d8cd\],
         html.dark .bg-\[\#ded5c7\],
+        html.dark .bg-\[\#ded5c7\]\/70,
         html.dark .bg-\[\#e2dacd\] {
             background-color: var(--sf-surface-3) !important;
+        }
+        html.dark .bg-\[\#f0f8f4\],
+        html.dark .bg-\[\#e8f3ed\],
+        html.dark .bg-\[\#f4f8ff\],
+        html.dark .bg-\[\#f5f3ff\] {
+            background-color: var(--sf-surface-2) !important;
         }
         @media (min-width: 768px) {
             html.dark .md\:bg-\[\#f6f0e8\]\/95 {
@@ -1951,10 +1998,8 @@
                 background-color: var(--sf-surface) !important;
             }
         }
-        @media (hover: hover) {
-            html.dark .md\:hover\:bg-\[\#e2d6c7\]:hover {
-                background-color: var(--sf-surface-hover) !important;
-            }
+        html.dark .md\:hover\:bg-\[\#e2d6c7\]:hover {
+            background-color: var(--sf-surface-hover) !important;
         }
         html.dark .bg-gradient-to-br {
             background-image: linear-gradient(135deg, var(--sf-grad-a) 0%, var(--sf-grad-b) 52%, var(--sf-grad-c) 100%) !important;
@@ -1974,13 +2019,11 @@
             border-color: var(--sf-border) !important;
             box-shadow: var(--sf-shadow-card) !important;
         }
-        @media (hover: hover) {
-            html.dark .subject-card:hover,
-            html.dark .subject-list-item:hover,
-            html.dark .task-list-item .swipe-item:hover {
-                background: var(--sf-card-hover) !important;
-                border-color: rgba(94, 194, 143, 0.42) !important;
-            }
+        html.dark .subject-card:hover,
+        html.dark .subject-list-item:hover,
+        html.dark .task-list-item .swipe-item:hover {
+            background: var(--sf-card-hover) !important;
+            border-color: rgba(94, 194, 143, 0.42) !important;
         }
         html.dark .liquid-glass-modal,
         html.dark .modal-glass {
@@ -1998,8 +2041,10 @@
             border-color: var(--sf-border-strong) !important;
             color: var(--sf-text) !important;
         }
-        html.dark .modal-close-btn:hover {
+        html.dark .modal-close-btn:hover,
+        html.dark .header-action-btn:hover {
             background: var(--sf-surface-hover) !important;
+            color: var(--sf-text) !important;
         }
         html.dark .modal-drag-handle::after {
             background: var(--sf-border-strong);
@@ -2182,19 +2227,36 @@
             color: var(--sf-green-bright) !important;
         }
 
-        /* Segmented Docks, Liquid Nav & Gliders */
+        /* Segmented Docks, Filter Pills, Liquid Nav & Gliders */
         html.dark .glass-pill {
             background: var(--sf-input-bg) !important;
             border-color: var(--sf-border-strong) !important;
         }
-        html.dark .glass-pill button {
+        html.dark .glass-pill button,
+        html.dark .fixed[style*="bottom: 0px"] .glass-pill button {
             color: var(--sf-text-muted) !important;
         }
-        html.dark .glass-pill button:hover {
+        html.dark .glass-pill button:hover,
+        html.dark .fixed[style*="bottom: 0px"] .glass-pill button:hover,
+        html.dark .liquid-glass-pill-inactive:hover {
             color: var(--sf-text) !important;
         }
         html.dark .glass-pill button.text-white,
         html.dark .glass-pill button.font-black {
+            color: #ffffff !important;
+        }
+        html.dark .filter-pill {
+            background: var(--sf-surface-2) !important;
+            border-color: var(--sf-border) !important;
+            color: var(--sf-text-muted) !important;
+        }
+        html.dark .filter-pill:hover {
+            background: var(--sf-hover-bg) !important;
+            color: var(--sf-text) !important;
+        }
+        html.dark .filter-pill.toggle-accent-on {
+            background: var(--sf-green-btn) !important;
+            border-color: var(--sf-green-btn) !important;
             color: #ffffff !important;
         }
         html.dark .glass-nav,
@@ -2280,16 +2342,65 @@
             border-color: rgba(167, 139, 250, 0.45) !important;
         }
 
-        /* Hover utilities on dark & dim cards */
-        @media (hover: hover) {
-            html.dark .hover\:bg-\[\#faf7f2\]:hover,
-            html.dark .hover\:bg-\[\#f7f2ea\]:hover,
-            html.dark .hover\:bg-\[\#f4ece4\]:hover,
-            html.dark .hover\:bg-\[\#eae0d5\]:hover,
-            html.dark .hover\:bg-\[\#ede4dc\]:hover,
-            html.dark .hover\:bg-\[\#e6dcd3\]:hover {
-                background-color: var(--sf-hover-bg) !important;
-            }
+        /* Hover utilities & table/calendar contrast on dark & dim modes */
+        html.dark .hover\:bg-white:hover,
+        html.dark .hover\:bg-\[\#fffdf9\]:hover,
+        html.dark .hover\:bg-\[\#fbf8f3\]:hover,
+        html.dark .hover\:bg-\[\#faf7f2\]:hover,
+        html.dark .hover\:bg-\[\#faf6f0\]:hover,
+        html.dark .hover\:bg-\[\#faf6ef\]:hover,
+        html.dark .hover\:bg-\[\#f7f3eb\]:hover,
+        html.dark .hover\:bg-\[\#f7f2ea\]:hover,
+        html.dark .hover\:bg-\[\#f5efe7\]:hover,
+        html.dark .hover\:bg-\[\#f4ece4\]:hover,
+        html.dark .hover\:bg-\[\#f4ede4\]:hover,
+        html.dark .hover\:bg-\[\#f3ebe3\]:hover,
+        html.dark .hover\:bg-\[\#f0e6df\]:hover,
+        html.dark .hover\:bg-\[\#efe7dc\]:hover,
+        html.dark .hover\:bg-\[\#ede4dc\]:hover,
+        html.dark .hover\:bg-\[\#ede3d8\]:hover,
+        html.dark .hover\:bg-\[\#eadecf\]:hover,
+        html.dark .hover\:bg-\[\#eae0d5\]:hover,
+        html.dark .hover\:bg-\[\#e6dcd3\]:hover,
+        html.dark .hover\:bg-\[\#e5dccd\]:hover,
+        html.dark .hover\:bg-\[\#e2d8cd\]:hover,
+        html.dark .hover\:bg-\[\#e2d6c7\]:hover,
+        html.dark .hover\:bg-\[\#ded5c7\]:hover,
+        html.dark .hover\:bg-slate-50:hover,
+        html.dark .hover\:bg-gray-50:hover,
+        html.dark table tbody tr:hover,
+        html.dark table tbody tr:hover > td {
+            background-color: var(--sf-hover-bg) !important;
+        }
+        html.dark .group:hover .group-hover\:bg-\[\#f5efe7\] {
+            background-color: var(--sf-surface-hover) !important;
+            color: var(--sf-text) !important;
+        }
+        html.dark .cal-cell-vacation:hover {
+            background-color: rgba(13, 148, 136, 0.25) !important;
+            border-color: rgba(45, 212, 191, 0.52) !important;
+        }
+        html.dark .cal-cell-holiday:hover {
+            background-color: rgba(124, 58, 237, 0.29) !important;
+            border-color: rgba(167, 139, 250, 0.58) !important;
+        }
+        html.dark .hover\:border-\[\#2d694c\]\/40:hover {
+            background-color: var(--sf-card-hover) !important;
+            border-color: rgba(94, 194, 143, 0.45) !important;
+        }
+        html.dark .hover\:bg-\[\#fed8b1\]:hover,
+        html.dark .hover\:bg-\[\#fcd0a1\]:hover,
+        html.dark .hover\:bg-amber-200:hover {
+            background-color: rgba(217, 119, 6, 0.34) !important;
+            color: #fde68a !important;
+        }
+        html.dark .hover\:bg-\[\#fecaca\]:hover,
+        html.dark .hover\:bg-rose-50:hover {
+            background-color: rgba(225, 29, 72, 0.28) !important;
+            color: #fda4af !important;
+        }
+        html.dark .hover\:text-\[\#1f1b16\]:hover {
+            color: var(--sf-text) !important;
         }
 </style>
 </head>
@@ -8391,7 +8502,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocs, getDocsFromServer, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
@@ -8407,7 +8518,7 @@
             _origConsoleError.apply(console, args);
         };
         // Firestore-Modul global cachen fuer spaetere dynamische Nutzung
-        window.__firestoreModule = { onSnapshot, collection, doc, setDoc, getDoc, getDocs, getDocsFromServer, updateDoc, deleteDoc };
+        window.__firestoreModule = { onSnapshot, collection, doc, setDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, updateDoc, deleteDoc };
 
         // Globale Avatar-Hilfsfunktionen (immer global und fehlertolerant verfuegbar)
         window.getMemberAvatar = function(target) {
@@ -8531,19 +8642,34 @@
 
         const auth = getAuth(app);
 
-        // PWA-Service-Worker-Registrierung für Offline App-Shell
+        // PWA-Service-Worker-Registrierung für Offline App-Shell & automatische App-Updates beim Öffnen
         if ('serviceWorker' in navigator) {
-            const hadPriorController = !!navigator.serviceWorker.controller;
+            let hadPriorController = !!navigator.serviceWorker.controller;
+            let lastSwUpdateCheckAt = 0;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (hadPriorController && !window.__swReloading) {
+                if (!hadPriorController) {
+                    hadPriorController = true;
+                    return;
+                }
+                if (!window.__swReloading) {
                     window.__swReloading = true;
                     console.log('Schooly PWA aktualisiert — Seite lädt neu.');
                     window.location.reload();
                 }
             });
+            window.__checkSchoolySwUpdate = (force = false) => {
+                if (!navigator.onLine) return;
+                const now = Date.now();
+                if (!force && now - lastSwUpdateCheckAt < 15000) return;
+                lastSwUpdateCheckAt = now;
+                navigator.serviceWorker.getRegistration('/').then((reg) => {
+                    if (reg) reg.update().catch(() => {});
+                }).catch(() => {});
+            };
             const registerSW = () => {
                 navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).then((reg) => {
                     console.log('Schooly PWA Service-Worker erfolgreich registriert.', reg.scope);
+                    lastSwUpdateCheckAt = Date.now();
                     reg.update().catch(() => {});
                 }).catch((err) => {
                     console.warn('PWA Service Worker konnte nicht registriert werden:', err);
@@ -9456,6 +9582,8 @@
                     return `vor ${Math.floor(hours / 24)} Tag(en)`;
                 };
 
+                let unsubscribeAppConfig = null;
+                let unsubscribeExamScores = null;
                 let unsubscribeAllMembers = null;
                 let unsubscribeFriends = null;
                 let unsubscribeSentRequests = null;
@@ -9463,9 +9591,15 @@
                 let unsubscribeNotifications = null;
 
                 const unsubscribeAllListeners = () => {
+                    if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                    if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
                     if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
+                    if (typeof activeSubjectsListenerUid !== 'undefined') activeSubjectsListenerUid = null;
+                    if (typeof activeSubjectsCollection !== 'undefined') activeSubjectsCollection = null;
+                    if (typeof subjectsListenerHasAuth !== 'undefined') subjectsListenerHasAuth = false;
                     if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
                     if (typeof activeTasksListenerUid !== 'undefined') activeTasksListenerUid = null;
+                    if (typeof tasksListenerHasAuth !== 'undefined') tasksListenerHasAuth = false;
                     if (typeof pendingTaskDoneMap !== 'undefined') pendingTaskDoneMap.clear();
                     if (typeof pendingTaskDoneSync !== 'undefined') pendingTaskDoneSync.clear();
                     if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
@@ -10892,12 +11026,31 @@
 
                     nextTick(updatePlannerIndicator);
                     window.addEventListener('resize', updatePlannerIndicator);
+
+                    const handleAppResumeSync = (force = false) => {
+                        checkExamReminders();
+                        if (typeof window.__checkSchoolySwUpdate === 'function') {
+                            window.__checkSchoolySwUpdate(force);
+                        }
+                        if (user.value?.uid && navigator.onLine !== false) {
+                            syncAllUserDataFromServer(user.value.uid, { force });
+                            refreshSocialData({ quiet: true });
+                        }
+                    };
+
                     document.addEventListener('visibilitychange', () => {
                         if (!document.hidden) {
-                            checkExamReminders();
-                            if (user.value?.uid && navigator.onLine) {
-                                refreshSocialData({ quiet: true });
-                            }
+                            handleAppResumeSync(false);
+                        }
+                    });
+                    window.addEventListener('pageshow', (e) => {
+                        if (e.persisted || !document.hidden) {
+                            handleAppResumeSync(Boolean(e.persisted));
+                        }
+                    });
+                    window.addEventListener('focus', () => {
+                        if (!document.hidden) {
+                            handleAppResumeSync(false);
                         }
                     });
                     // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
@@ -10947,12 +11100,10 @@
                         }).catch(() => {});
                     }
 
-                    // Online/Offline-Status überwachen & Sozialdaten bei Reconnect neu laden
+                    // Online/Offline-Status überwachen & Cloud-Daten sowie Sozialdaten bei Reconnect sofort synchronisieren
                     window.addEventListener('online', () => {
                         isOnline.value = true;
-                        if (user.value?.uid) {
-                            refreshSocialData({ quiet: true });
-                        }
+                        handleAppResumeSync(true);
                     });
                     window.addEventListener('offline', () => {
                         isOnline.value = false;
@@ -10980,10 +11131,12 @@
                                 if (cachedConfig) applyConfigData(JSON.parse(cachedConfig));
                             } catch (_) {}
 
-                            // Daten-Listener starten (Firestore IndexedDB Cache antwortet sofort!)
-                            listenToSubjects(currentUser.uid);
-                            listenToTasks(currentUser.uid);
-                            flushPendingTaskDoneSync(currentUser.uid);
+                            // Authentifizierte Echtzeit-Listener starten (ersetzt evtl. Pre-Auth-Listener sauber!)
+                            listenToAppConfig(currentUser.uid);
+                            listenToSubjects(currentUser.uid, { force: true });
+                            listenToTasks(currentUser.uid, { force: true });
+                            listenToExamScores(currentUser.uid);
+                            await flushPendingTaskDoneSync(currentUser.uid);
                             loadExamScores(currentUser.uid);
                             loadAllMembers(currentUser.uid);
                             loadFriendsData(currentUser.uid);
@@ -10992,24 +11145,8 @@
                                 loadSelectedFriendSubjects(selectedFriend.value.uid, true);
                             }
 
-                            // Im Hintergrund prüfen & synchronisieren (ohne UI zu blockieren)
-                            (async () => {
-                                try {
-                                    const configPromise = getDoc(doc(db, 'users', currentUser.uid, 'settings', 'config'));
-                                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2500));
-                                    const configDoc = await Promise.race([configPromise, timeoutPromise]);
-                                    
-                                    if (configDoc && configDoc.exists()) {
-                                        isOnboarding.value = false;
-                                        await loadAppSettings(currentUser.uid, configDoc);
-                                        await ensurePublicProfile(currentUser.uid);
-                                    } else if (configDoc && !configDoc.exists() && !localStorage.getItem('sf_user_config_' + currentUser.uid)) {
-                                        isOnboarding.value = true;
-                                    }
-                                } catch (bgErr) {
-                                    // Offline oder Timeout: App läuft offline voll weiter
-                                }
-                            })();
+                            // Direkter Server-Abgleich beim App-Start (ohne hartes Timeout, damit PWA immer aktuell lädt)
+                            syncAllUserDataFromServer(currentUser.uid, { force: true, checkOnboarding: true });
                         } else {
                             // Wenn online und keine gültige Firebase Auth-Sitzung existiert (z.B. PWA nach Cache/Neuinstallation),
                             // keine unauthentifizierte "Zombie-Sitzung" halten (sonst scheitern Nutzer/Freunde mit permission-denied).
@@ -11190,24 +11327,53 @@
                     }
                 };
 
+                const applyLoadedConfigSnap = (uid, snap) => {
+                    if (!snap || !snap.exists()) return;
+                    const prevWasUpper = currentClass.value >= 11;
+                    const data = snap.data();
+                    applyConfigData(data);
+                    try { localStorage.setItem('sf_user_config_' + uid, JSON.stringify(data)); } catch (_) {}
+                    const nextIsUpper = currentClass.value >= 11;
+                    if (prevWasUpper !== nextIsUpper && uid) {
+                        listenToSubjects(uid, { force: true });
+                    }
+                    if (typeof data.googleCalendarConnected === 'boolean' && data.googleCalendarConnected) {
+                        loadGoogleCalendarCache();
+                        googleCalendarConnected.value = true;
+                        maybeSilentlyReconnectGoogleCalendar();
+                    }
+                };
+
                 const loadAppSettings = async (uid, existingSnap) => {
                     try {
-                        const snap = existingSnap || await getDoc(doc(db, 'users', uid, 'settings', 'config'));
+                        const configRef = doc(db, 'users', uid, 'settings', 'config');
+                        const snap = existingSnap || (navigator.onLine !== false
+                            ? await getDocFromServer(configRef).catch(() => getDoc(configRef))
+                            : await getDoc(configRef));
                         if (snap && snap.exists()) {
-                            const data = snap.data();
-                            applyConfigData(data);
-                            try { localStorage.setItem('sf_user_config_' + uid, JSON.stringify(data)); } catch (_) {}
-                            if (typeof data.googleCalendarConnected === 'boolean' && data.googleCalendarConnected) {
-                                // Zwischengespeicherte Termine sofort zeigen
-                                loadGoogleCalendarCache();
-                                googleCalendarConnected.value = true;
-                                maybeSilentlyReconnectGoogleCalendar();
-                            }
+                            applyLoadedConfigSnap(uid, snap);
                         }
                     } catch (e) {
                         console.warn('loadAppSettings error (offline/cached):', e);
                     }
                     autoSetCurrentHalfYear();
+                };
+
+                const listenToAppConfig = (uid) => {
+                    if (!uid) return;
+                    if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                    const configRef = doc(db, 'users', uid, 'settings', 'config');
+                    unsubscribeAppConfig = onSnapshot(configRef, (snap) => {
+                        if (!snap.exists()) return;
+                        if (snap.metadata?.fromCache && localStorage.getItem('sf_user_config_' + uid)) {
+                            // Server-Update oder Änderung übernehmen, Cache nur anwenden falls neuer/online
+                            if (!navigator.onLine) return;
+                        }
+                        isOnboarding.value = false;
+                        applyLoadedConfigSnap(uid, snap);
+                    }, (err) => {
+                        if (err.code !== 'permission-denied') console.warn('config listener:', err.code);
+                    });
                 };
 
                 // ── THEMES ──
@@ -11379,20 +11545,41 @@
                 };
 
                 let unsubscribeSubjects = null;
-                const listenToSubjects = (uid) => {
-                    if (unsubscribeSubjects) unsubscribeSubjects();
-                    // Klassen 5-10 nutzen 'subjects_lower', Klassen 11/12 nutzen 'subjects'
+                let activeSubjectsListenerUid = null;
+                let activeSubjectsCollection = null;
+                let subjectsListenerHasAuth = false;
+                let hasPendingSubjectWrites = false;
+
+                const applySubjectsSnapshotDocs = (uid, incoming, fromCache) => {
+                    if (incoming.length === 0 && fromCache && (subjects.value || []).length > 0) {
+                        return;
+                    }
+                    subjects.value = incoming;
+                    if (selectedSubject.value?.id) {
+                        const refreshedSub = incoming.find(s => s.id === selectedSubject.value.id);
+                        if (refreshedSub) selectedSubject.value = refreshedSub;
+                    }
+                    try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
+                    refreshIcons();
+                    triggerCharts();
+                };
+
+                const listenToSubjects = (uid, { force = false } = {}) => {
+                    if (!uid) return;
                     const collectionName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                    const isAuthedNow = Boolean(auth.currentUser && auth.currentUser.uid === uid);
+                    if (!force && unsubscribeSubjects && activeSubjectsListenerUid === uid && activeSubjectsCollection === collectionName && (subjectsListenerHasAuth || !isAuthedNow)) {
+                        return;
+                    }
+                    if (unsubscribeSubjects) unsubscribeSubjects();
+                    activeSubjectsListenerUid = uid;
+                    activeSubjectsCollection = collectionName;
+                    subjectsListenerHasAuth = isAuthedNow;
                     const q = collection(db, 'users', uid, collectionName);
                     unsubscribeSubjects = onSnapshot(q, (snapshot) => {
-                        const incoming = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        if (incoming.length === 0 && snapshot.metadata?.fromCache && (subjects.value || []).length > 0) {
-                            return;
-                        }
-                        subjects.value = incoming;
-                        try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
-                        refreshIcons();
-                        triggerCharts();
+                        hasPendingSubjectWrites = Boolean(snapshot.metadata?.hasPendingWrites);
+                        const incoming = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                        applySubjectsSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache));
                     }, (err) => {
                         if (err.code !== 'permission-denied') console.warn('subjects listener:', err.code);
                     });
@@ -11418,38 +11605,83 @@
 
                 let unsubscribeTasks = null;
                 let activeTasksListenerUid = null;
-                const listenToTasks = (uid) => {
+                let tasksListenerHasAuth = false;
+                let hasPendingTaskWrites = false;
+
+                const applyTasksSnapshotDocs = (uid, incoming, fromCache, fromServerConfirmed) => {
+                    if (incoming.length === 0 && fromCache && (tasks.value || []).length > 0) {
+                        return;
+                    }
+                    const now = Date.now();
+                    tasks.value = incoming.map(t => {
+                        if (animatingDoneTasks.value.has(t.id)) return { ...t, done: true };
+                        const override = pendingTaskDoneMap.get(t.id);
+                        if (override) {
+                            if (fromServerConfirmed && Boolean(t.done) === override.done) {
+                                pendingTaskDoneMap.delete(t.id);
+                                return t;
+                            }
+                            if (now < override.expiresAt) {
+                                return { ...t, done: override.done };
+                            }
+                            pendingTaskDoneMap.delete(t.id);
+                        }
+                        return t;
+                    });
+                    try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+                    refreshIcons();
+                };
+
+                const listenToTasks = (uid, { force = false } = {}) => {
                     if (!uid) return;
-                    if (unsubscribeTasks && activeTasksListenerUid === uid) return;
+                    const isAuthedNow = Boolean(auth.currentUser && auth.currentUser.uid === uid);
+                    if (!force && unsubscribeTasks && activeTasksListenerUid === uid && (tasksListenerHasAuth || !isAuthedNow)) return;
                     if (unsubscribeTasks) unsubscribeTasks();
                     activeTasksListenerUid = uid;
+                    tasksListenerHasAuth = isAuthedNow;
                     const q = collection(db, 'users', uid, 'tasks');
                     unsubscribeTasks = onSnapshot(q, (snapshot) => {
-                        const now = Date.now();
+                        hasPendingTaskWrites = Boolean(snapshot.metadata?.hasPendingWrites);
                         const fromServerConfirmed = !snapshot.metadata?.fromCache && !snapshot.metadata?.hasPendingWrites;
                         const incoming = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
-                        if (incoming.length === 0 && snapshot.metadata?.fromCache && (tasks.value || []).length > 0) {
-                            return;
-                        }
-                        tasks.value = incoming.map(t => {
-                            if (animatingDoneTasks.value.has(t.id)) return { ...t, done: true };
-                            const override = pendingTaskDoneMap.get(t.id);
-                            if (override) {
-                                if (fromServerConfirmed && Boolean(t.done) === override.done) {
-                                    pendingTaskDoneMap.delete(t.id);
-                                    return t;
-                                }
-                                if (now < override.expiresAt) {
-                                    return { ...t, done: override.done };
-                                }
-                                pendingTaskDoneMap.delete(t.id);
-                            }
-                            return t;
-                        });
-                        try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
-                        refreshIcons();
+                        applyTasksSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache), fromServerConfirmed);
                     }, (err) => {
                         if (err.code !== 'permission-denied') console.warn('tasks listener:', err.code);
+                    });
+                };
+
+                const applyExamScoresData = (uid, d) => {
+                    if (!d) return;
+                    examScores.value = {
+                        P1: d.P1 !== undefined ? d.P1 : examScores.value.P1,
+                        P2: d.P2 !== undefined ? d.P2 : examScores.value.P2,
+                        P3: d.P3 !== undefined ? d.P3 : examScores.value.P3,
+                        P4: d.P4 !== undefined ? d.P4 : examScores.value.P4,
+                        P5: d.P5 !== undefined ? d.P5 : examScores.value.P5
+                    };
+                    if (d.saxonSchoolType) saxonSchoolType.value = d.saxonSchoolType;
+                    if (d.saxonP3 !== undefined) saxonP3.value = d.saxonP3;
+                    if (d.saxonP4 !== undefined) saxonP4.value = d.saxonP4;
+                    if (d.saxonP5 !== undefined) saxonP5.value = d.saxonP5;
+                    if (d.saxonTargetGrade) saxonTargetGrade.value = d.saxonTargetGrade;
+                    if (d.saxonSimulatedGrades) saxonSimulatedGrades.value = { ...d.saxonSimulatedGrades };
+                    if (d.saxonSubjectCategories) saxonSubjectCategories.value = { ...d.saxonSubjectCategories };
+                    if (d.saxonErsatzfaecher) saxonErsatzfaecher.value = { ...saxonErsatzfaecher.value, ...d.saxonErsatzfaecher };
+                    if (uid) {
+                        try { localStorage.setItem(`saxon_abitur_scores_${uid}`, JSON.stringify(d)); } catch (_) {}
+                    }
+                };
+
+                const listenToExamScores = (uid) => {
+                    if (!uid) return;
+                    if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
+                    const scoresRef = doc(db, 'users', uid, 'abitur', 'scores');
+                    unsubscribeExamScores = onSnapshot(scoresRef, (snap) => {
+                        if (snap.exists()) {
+                            applyExamScoresData(uid, snap.data());
+                        }
+                    }, (err) => {
+                        if (err.code !== 'permission-denied') console.warn('examScores listener:', err.code);
                     });
                 };
 
@@ -11459,44 +11691,88 @@
                         const localRaw = localStorage.getItem(`saxon_abitur_scores_${uid || 'guest'}`);
                         if (localRaw) {
                             try {
-                                const ld = JSON.parse(localRaw);
-                                if (ld.saxonErsatzfaecher) saxonErsatzfaecher.value = { ...saxonErsatzfaecher.value, ...ld.saxonErsatzfaecher };
-                                if (ld.saxonSchoolType) saxonSchoolType.value = ld.saxonSchoolType;
-                                if (ld.saxonP3) saxonP3.value = ld.saxonP3;
-                                if (ld.saxonP4) saxonP4.value = ld.saxonP4;
-                                if (ld.saxonP5) saxonP5.value = ld.saxonP5;
-                                if (ld.saxonTargetGrade) saxonTargetGrade.value = ld.saxonTargetGrade;
-                                if (ld.P1 !== undefined) examScores.value.P1 = ld.P1;
-                                if (ld.P2 !== undefined) examScores.value.P2 = ld.P2;
-                                if (ld.P3 !== undefined) examScores.value.P3 = ld.P3;
-                                if (ld.P4 !== undefined) examScores.value.P4 = ld.P4;
-                                if (ld.P5 !== undefined) examScores.value.P5 = ld.P5;
-                                if (ld.saxonSimulatedGrades) saxonSimulatedGrades.value = { ...ld.saxonSimulatedGrades };
-                                if (ld.saxonSubjectCategories) saxonSubjectCategories.value = { ...ld.saxonSubjectCategories };
+                                applyExamScoresData(null, JSON.parse(localRaw));
                             } catch (e) {}
                         }
 
-                        if (!uid) return;
-                        const snap = await getDoc(doc(db, 'users', uid, 'abitur', 'scores'));
-                        if (snap.exists()) {
-                            const d = snap.data();
-                            examScores.value = {
-                                P1: d.P1 !== undefined ? d.P1 : examScores.value.P1,
-                                P2: d.P2 !== undefined ? d.P2 : examScores.value.P2,
-                                P3: d.P3 !== undefined ? d.P3 : examScores.value.P3,
-                                P4: d.P4 !== undefined ? d.P4 : examScores.value.P4,
-                                P5: d.P5 !== undefined ? d.P5 : examScores.value.P5
-                            };
-                            if (d.saxonSchoolType) saxonSchoolType.value = d.saxonSchoolType;
-                            if (d.saxonP3) saxonP3.value = d.saxonP3;
-                            if (d.saxonP4) saxonP4.value = d.saxonP4;
-                            if (d.saxonP5) saxonP5.value = d.saxonP5;
-                            if (d.saxonTargetGrade) saxonTargetGrade.value = d.saxonTargetGrade;
-                            if (d.saxonSimulatedGrades) saxonSimulatedGrades.value = { ...d.saxonSimulatedGrades };
-                            if (d.saxonSubjectCategories) saxonSubjectCategories.value = { ...d.saxonSubjectCategories };
-                            if (d.saxonErsatzfaecher) saxonErsatzfaecher.value = { ...saxonErsatzfaecher.value, ...d.saxonErsatzfaecher };
+                        if (!uid || !auth.currentUser || auth.currentUser.uid !== uid) return;
+                        const scoresRef = doc(db, 'users', uid, 'abitur', 'scores');
+                        const snap = navigator.onLine !== false
+                            ? await getDocFromServer(scoresRef).catch(() => getDoc(scoresRef))
+                            : await getDoc(scoresRef);
+                        if (snap && snap.exists()) {
+                            applyExamScoresData(uid, snap.data());
                         }
                     } catch (e) { console.warn('Abitur daten konnten nicht geladen werden', e); }
+                };
+
+                let lastServerSyncAt = 0;
+                let activeServerSyncPromise = null;
+                const syncAllUserDataFromServer = async (uid, { force = false, checkOnboarding = false } = {}) => {
+                    if (!uid || navigator.onLine === false) return;
+                    if (!auth.currentUser || auth.currentUser.uid !== uid) return;
+                    const now = Date.now();
+                    if (!force && now - lastServerSyncAt < 3000) return;
+                    if (activeServerSyncPromise) return activeServerSyncPromise;
+
+                    lastServerSyncAt = now;
+                    activeServerSyncPromise = (async () => {
+                        try {
+                            await flushPendingTaskDoneSync(uid);
+                            // Warte kurz auf lokale Offline-Writes in IndexedDB, damit diese vor dem Server-Pull rausgehen
+                            try {
+                                await Promise.race([
+                                    waitForPendingWrites(db),
+                                    new Promise((resolve) => setTimeout(resolve, 2500))
+                                ]);
+                            } catch (_) {}
+
+                            // 1. Settings / Stundenplan / Design / Klasse vom Server ziehen
+                            const configRef = doc(db, 'users', uid, 'settings', 'config');
+                            try {
+                                const configSnap = await getDocFromServer(configRef);
+                                if (configSnap.exists()) {
+                                    isOnboarding.value = false;
+                                    applyLoadedConfigSnap(uid, configSnap);
+                                    await ensurePublicProfile(uid);
+                                } else if (checkOnboarding && !localStorage.getItem('sf_user_config_' + uid)) {
+                                    isOnboarding.value = true;
+                                }
+                            } catch (_) {}
+
+                            // 2. Fächer & Noten vom Server ziehen (nur wenn keine ungesicherten lokalen Schreibvorgänge anstehen)
+                            if (!hasPendingSubjectWrites) {
+                                const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                                try {
+                                    const subSnap = await getDocsFromServer(collection(db, 'users', uid, collName));
+                                    const incomingSubs = subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                                    applySubjectsSnapshotDocs(uid, incomingSubs, false);
+                                } catch (_) {}
+                            }
+
+                            // 3. Aufgaben & Kalendertermine vom Server ziehen
+                            if (!hasPendingTaskWrites && pendingTaskDoneSync.size === 0) {
+                                try {
+                                    const taskSnap = await getDocsFromServer(collection(db, 'users', uid, 'tasks'));
+                                    const incomingTasks = taskSnap.docs.map(d => ({ ...d.data(), id: d.id }));
+                                    applyTasksSnapshotDocs(uid, incomingTasks, false, true);
+                                } catch (_) {}
+                            }
+
+                            // 4. Abitur- & Notentabellen-Simulation vom Server ziehen
+                            try {
+                                const abiSnap = await getDocFromServer(doc(db, 'users', uid, 'abitur', 'scores'));
+                                if (abiSnap.exists()) {
+                                    applyExamScoresData(uid, abiSnap.data());
+                                }
+                            } catch (_) {}
+                        } catch (syncErr) {
+                            console.warn('[Schooly Server-Sync] Hinweis:', syncErr?.message || syncErr);
+                        } finally {
+                            activeServerSyncPromise = null;
+                        }
+                    })();
+                    return activeServerSyncPromise;
                 };
 
                 const saveExamScores = async () => {
@@ -15415,6 +15691,7 @@
                             subjects.value[sIdx].reportCardGrades = existing;
                             subjects.value = [...subjects.value];
                         }
+                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
 
                         closeModal('isReportCardModalOpen');
 
