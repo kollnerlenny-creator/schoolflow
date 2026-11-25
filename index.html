@@ -3238,16 +3238,16 @@
                 </div>
 
                 <!-- 2. FÄCHER LISTE -->
-                <div v-if="currentTab === 'subjects' && !selectedSubject" class="space-y-5 max-w-4xl md:max-w-[1040px] mx-auto w-full animate-fade-in pb-12">
+                <div v-if="currentTab === 'subjects' && !selectedSubject" class="space-y-5 md:space-y-6 max-w-5xl md:max-w-[1180px] xl:max-w-[1320px] 2xl:max-w-[1480px] mx-auto w-full md:pl-6 lg:pl-8 xl:pl-10 md:pr-2 xl:pr-4 animate-fade-in pb-12">
                     <!-- Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 px-2 mb-8 sm:mb-10">
+                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 px-2 mb-5 sm:mb-6 md:mb-7">
                         <div>
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-bold text-[#6E665E]">
+                                <span class="text-xs md:text-sm font-bold text-[#6E665E]">
                                     {{ (processedData?.semesterSubjects || []).length }} Fächer angelegt
                                 </span>
                             </div>
-                            <h2 class="text-2xl sm:text-4xl font-black text-[#1f1b16] font-['Epilogue'] tracking-tight">Fächer & Noten</h2>
+                            <h2 class="text-2xl sm:text-4xl xl:text-[2.6rem] font-black text-[#1f1b16] font-['Epilogue'] tracking-tight leading-none">Fächer & Noten</h2>
                         </div>
                         <div class="flex items-center gap-2 sm:gap-2.5 flex-nowrap">
                             <!-- HALBJAHR WECHSLER (Interaktiv & Gleitender Indikator) -->
@@ -3260,7 +3260,7 @@
                                 <button v-for="hy in halfYears" :key="hy"
                                         @click="setHalfYear(hy)"
                                         type="button"
-                                        class="relative z-10 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-black transition-colors duration-200 cursor-pointer min-h-[36px]"
+                                        class="relative z-10 px-3 sm:px-3.5 md:px-4 py-1.5 rounded-full text-xs md:text-[13px] font-black transition-colors duration-200 cursor-pointer min-h-[36px] md:min-h-[38px]"
                                         :class="selectedHalfYear === hy ? 'text-white' : 'text-[#6E665E] hover:text-[#1f1b16]'">
                                     {{ hy }}
                                 </button>
@@ -3272,7 +3272,7 @@
                     </div>
 
                     <!-- LIQUID SEGMENTED FILTER DOCK (Alle | Leistungskurse | Grundkurse) -->
-                    <div class="max-w-md mx-auto mb-6 px-1">
+                    <div class="max-w-md md:max-w-lg mx-auto mb-5 md:mb-6 px-1">
                         <nav class="liquid-dock relative p-1.5 flex justify-between items-center rounded-full select-none shadow-xs bg-[#ede4dc] border border-[#ded5c7]">
                             <div class="liquid-glass-glider pointer-events-none"
                                  :style="{
@@ -3283,17 +3283,17 @@
                                 <div class="glider-dot-glow"></div>
                             </div>
                             <button @click="subjectFilter = 'all'"
-                                    class="relative z-10 flex-1 py-2 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                                    class="relative z-10 flex-1 py-2 md:py-2.5 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
                                     :class="activeSubjectFilterIndex === 0 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
                                 <span>Alle ({{ (processedData?.semesterSubjects || []).length }})</span>
                             </button>
                             <button @click="subjectFilter = 'lk'"
-                                    class="relative z-10 flex-1 py-2 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                                    class="relative z-10 flex-1 py-2 md:py-2.5 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
                                     :class="activeSubjectFilterIndex === 1 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
                                 <span>LK ({{ getLkCount(processedData) }})</span>
                             </button>
                             <button @click="subjectFilter = 'gk'"
-                                    class="relative z-10 flex-1 py-2 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
+                                    class="relative z-10 flex-1 py-2 md:py-2.5 px-1 rounded-full text-xs sm:text-sm transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap active:scale-95"
                                     :class="activeSubjectFilterIndex === 2 ? 'text-[#2d694c] font-black' : 'text-[#6E665E] font-bold hover:text-[#1f1b16]'">
                                 <span>GK ({{ getGkCount(processedData) }})</span>
                             </button>
@@ -3312,29 +3312,29 @@
                         </button>
                     </div>
 
-                    <!-- Fächer Grid (Mobil komfortabel antippbar, rund & kompakt auf Desktop) -->
-                    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-2.5 sm:gap-2">
+                    <!-- Fächer Grid (Auf einen Blick, nutzt Bildschirmbreite & -höhe optimal aus) -->
+                    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-3.5 xl:gap-4">
                         <div v-for="(s, idx) in sortedSubjectsList" :key="s.id" @click="openSubject(s, $event)"
-                             class="bg-white rounded-full px-4 py-3.5 sm:px-4 sm:py-2.5 min-h-[70px] sm:min-h-0 border border-[#ede3d8] flex items-center justify-between gap-3 sm:gap-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-[#2d694c]/35 transition-all cursor-pointer active:scale-[0.985] relative overflow-hidden"
+                             class="bg-white hover:bg-[#faf7f2] rounded-full px-4 py-3.5 sm:px-5 sm:py-3.5 lg:px-5 lg:py-3.5 xl:px-6 xl:py-4 min-h-[70px] lg:min-h-[clamp(76px,8.8vh,102px)] border border-[#ede3d8] flex items-center justify-between gap-3 md:gap-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-[#2d694c]/35 transition-all cursor-pointer active:scale-[0.985] relative overflow-hidden"
                              :style="{ animationDelay: (idx * 0.03) + 's' }">
                             
                             <!-- Left side: Circular Icon + Title + Category badges -->
-                            <div class="flex items-center gap-3 min-w-0 flex-1">
-                                <div class="w-11 h-11 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 relative shadow-2xs"
+                            <div class="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
+                                <div class="w-11 h-11 md:w-12 md:h-12 xl:w-13 xl:h-13 rounded-full flex items-center justify-center shrink-0 relative shadow-2xs"
                                      :style="{ backgroundColor: (s.color || '#2d694c') + '18', color: s.color || '#2d694c' }">
-                                    <span class="flex items-center justify-center" v-html="getSubjectIconSvg(s.icon || 'book-open', 'w-5 h-5 sm:w-4.5 sm:h-4.5')"></span>
+                                    <span class="flex items-center justify-center" v-html="getSubjectIconSvg(s.icon || 'book-open', 'w-5 h-5 md:w-5.5 md:h-5.5 xl:w-6 xl:h-6')"></span>
                                 </div>
                                 <div class="overflow-hidden min-w-0 flex-1">
-                                    <div class="flex items-center gap-1.5 min-w-0">
-                                        <h3 class="text-[15px] font-bold text-[#1f1b16] font-['Epilogue'] truncate leading-tight">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <h3 class="text-[15px] md:text-[17px] xl:text-[18px] font-bold text-[#1f1b16] font-['Epilogue'] truncate leading-tight">
                                             {{ s.name }}
                                         </h3>
-                                        <span v-if="gradeSystem !== '6'" class="text-[8.5px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0"
+                                        <span v-if="gradeSystem !== '6'" class="text-[8.5px] md:text-[9.5px] font-black px-1.5 md:px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0"
                                               :class="isLKSubject(s) ? 'bg-[#2d694c] text-white' : 'bg-[#ede4dc] text-[#524d44]'">
                                             {{ isLKSubject(s) ? 'LK' : 'GK' }}
                                         </span>
                                     </div>
-                                    <div class="flex items-center gap-1.5 text-[10.5px] sm:text-[11px] text-[#6E665E] font-medium mt-0.5 truncate">
+                                    <div class="flex items-center gap-1.5 text-[11px] md:text-xs xl:text-[13px] text-[#6E665E] font-medium mt-0.5 md:mt-1 truncate">
                                         <span>{{ s.semesterGrades ? s.semesterGrades.length : 0 }} {{ (s.semesterGrades && s.semesterGrades.length === 1) ? 'Note' : 'Noten' }}</span>
                                         <span class="text-[#c7bfb4]">•</span>
                                         <span>{{ s.examWeight }}% Klausur</span>
@@ -3342,30 +3342,30 @@
                                 </div>
                             </div>
                             
-                            <!-- Right side: Compact Pill Grade Capsule -->
-                            <div class="flex items-center gap-1.5 shrink-0">
-                                <div class="bg-[#f7f2ea] rounded-full px-3.5 py-1 sm:px-4 sm:py-1.5 text-right border border-[#ede3d8] min-w-[58px] sm:min-w-[66px] flex flex-col items-center justify-center tabular-nums">
-                                    <div class="text-sm sm:text-base font-black text-[#1f1b16] font-['Epilogue'] leading-none">
+                            <!-- Right side: Proportional Pill Grade Capsule -->
+                            <div class="flex items-center gap-2 md:gap-2.5 shrink-0">
+                                <div class="bg-[#f7f2ea] rounded-full px-3.5 py-1.5 sm:px-4 sm:py-1.5 md:px-4.5 md:py-2 xl:px-5 xl:py-2 text-right border border-[#ede3d8] min-w-[60px] sm:min-w-[68px] md:min-w-[82px] xl:min-w-[92px] flex flex-col items-center justify-center tabular-nums">
+                                    <div class="text-sm sm:text-base md:text-lg xl:text-xl font-black text-[#1f1b16] font-['Epilogue'] leading-none">
                                         <span v-if="s.reportCardGrade !== null" class="flex items-center justify-center gap-1 text-[#b45309]">
-                                            <span v-html="getSubjectIconSvg('award', 'w-3 h-3 text-[#b45309]')"></span>
+                                            <span v-html="getSubjectIconSvg('award', 'w-3.5 h-3.5 md:w-4 md:h-4 text-[#b45309]')"></span>
                                             {{ s.reportCardGrade }}
                                         </span>
                                         <span v-else>{{ s.finalPoints !== null ? formatNumber(s.finalPoints) : '–' }}</span>
                                     </div>
-                                    <div class="text-[9px] font-black uppercase tracking-tight mt-0.5 text-center leading-none">
+                                    <div class="text-[9px] md:text-[10.5px] font-black uppercase tracking-tight mt-0.5 md:mt-1 text-center leading-none">
                                         <span v-if="s.reportCardGrade !== null" class="text-[#857e72] font-bold">Zeugnis</span>
-                                        <span v-else-if="gradeSystem !== '6' && s.finalGrade" class="text-[#2d694c] font-black text-[9.5px]">{{ formatNumber(s.finalGrade) }}</span>
+                                        <span v-else-if="gradeSystem !== '6' && s.finalGrade" class="text-[#2d694c] font-black text-[9.5px] md:text-[11px]">{{ formatNumber(s.finalGrade) }}</span>
                                         <span v-else-if="s.finalPoints !== null" class="text-[#857e72] font-bold">{{ gradeSystem === '6' ? 'Schnitt' : 'Punkte' }}</span>
                                         <span v-else class="text-[#857e72] font-bold">Offen</span>
                                     </div>
                                 </div>
-                                <div class="w-5 h-5 rounded-full flex items-center justify-center text-[#9c9488] shrink-0">
-                                    <span v-html="getSubjectIconSvg('chevron-right', 'w-3.5 h-3.5')"></span>
+                                <div class="w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[#9c9488] shrink-0">
+                                    <span v-html="getSubjectIconSvg('chevron-right', 'w-3.5 h-3.5 md:w-4 md:h-4')"></span>
                                 </div>
                             </div>
 
-                            <!-- Sleek 2px bottom accent bar showing progress -->
-                            <div v-if="s.finalPoints !== null" class="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ede4dc]/60 overflow-hidden">
+                            <!-- Sleek bottom accent bar showing progress -->
+                            <div v-if="s.finalPoints !== null" class="absolute bottom-0 left-0 right-0 h-[2.5px] md:h-[3px] bg-[#ede4dc]/60 overflow-hidden">
                                 <div class="h-full transition-all duration-300"
                                      :style="{
                                          backgroundColor: s.color || '#2d694c',
