@@ -112,7 +112,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v56';
+        const CURRENT_BUILD = 'schooly-v57';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -124,7 +124,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v56') {
+                        if (k !== 'schooly-cache-v57') {
                             caches.delete(k);
                         }
                     });
@@ -8504,6 +8504,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+        import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue } from "/src/sync-engine.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
         const _origConsoleError = console.error;
@@ -8595,16 +8596,9 @@
         const GOOGLE_CLIENT_ID = "968757647135-vbulfc2qhguc6b83kv5arkpun544fp18.apps.googleusercontent.com";
         const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
 
-        // Veraltete Firestore WebStorage-Keys aus localStorage bereinigen (verhindert QuotaExceededError & Internal Assertion Failures)
+        // Nur temporäre WebSocket-Fehlerflags bereinigen (aktive firestore_* Tab-Lease-Keys nicht löschen!)
         try {
-            const keysToRemove = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                if (k && (k.startsWith('firestore_') || k.startsWith('firebase:previous_websocket_failure'))) {
-                    keysToRemove.push(k);
-                }
-            }
-            keysToRemove.forEach(k => localStorage.removeItem(k));
+            localStorage.removeItem('firebase:previous_websocket_failure');
         } catch (_) {}
 
         const app = initializeApp(firebaseConfig);
@@ -8907,10 +8901,11 @@
                 const timetable = ref({ mo: [], di: [], mi: [], do: [], fr: [], sa: [], so: [] });
                 const timetableEditDay = ref('mo');
                 const saveTimetable = async () => {
-                    if (!user.value) return;
-                    try {
-                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { timetable: timetable.value }, { merge: true });
-                    } catch (e) { console.error('Stundenplan speichern fehlgeschlagen', e); }
+                    const uid = user.value?.uid || auth.currentUser?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    if (!uid) return;
+                    const ttPayload = sanitizeFirestoreValue({ timetable: timetable.value });
+                    enqueueConfigPatch(uid, 'timetable', ttPayload);
+                    flushPendingUserOps(uid);
                 };
                 const toggleTimetableSubject = (day, subjectId) => {
                     const list = timetable.value[day] || [];
@@ -9212,19 +9207,17 @@
                     gesellschaftOrig: 'Geographie',
                     gesellschaftReplacement: ''
                 });
-                // Sofort-Fallback aus lokalem Gerätespeicher für 0ms Ladezeit beim Öffnen:
+                // Sofort-Fallback aus lokalem Gerätespeicher + ungesynchronisierten Offline-Mutationen (0ms Ladezeit & 100% Persistenz beim erneuten Öffnen):
                 const lastSavedUid = initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
                 let initialSubjects = [];
                 let initialTasks = [];
                 if (lastSavedUid) {
                     try {
-                        const sRaw = localStorage.getItem('sf_subjects_' + lastSavedUid);
-                        if (sRaw) initialSubjects = JSON.parse(sRaw);
-                        const tRaw = localStorage.getItem('sf_tasks_' + lastSavedUid);
-                        if (tRaw) initialTasks = JSON.parse(tRaw);
+                        const initialPendingOps = readPendingOps(lastSavedUid);
                         const cRaw = localStorage.getItem('sf_user_config_' + lastSavedUid);
-                        if (cRaw) {
-                            const parsedConfig = JSON.parse(cRaw);
+                        let parsedConfig = cRaw ? JSON.parse(cRaw) : {};
+                        parsedConfig = mergeConfigWithPendingOps(parsedConfig, initialPendingOps);
+                        if (parsedConfig && Object.keys(parsedConfig).length > 0) {
                             if (parsedConfig.startYear) { startYear.value = parsedConfig.startYear; tempStartYear.value = parsedConfig.startYear; }
                             if (parsedConfig.displayName) displayName.value = parsedConfig.displayName;
                             if (parsedConfig.currentClass) { 
@@ -9234,6 +9227,8 @@
                             }
                             if (parsedConfig.gradeSystem) { gradeSystem.value = parsedConfig.gradeSystem; tempGradeSystem.value = parsedConfig.gradeSystem; }
                             if (parsedConfig.userAvatar) userAvatar.value = parsedConfig.userAvatar;
+                            if (parsedConfig.timetable) timetable.value = { ...timetable.value, ...parsedConfig.timetable };
+                            if (parsedConfig.theme) localStorage.setItem('schooly_theme', parsedConfig.theme);
                             if (typeof parsedConfig.colorMode === 'string') applyColorMode(parsedConfig.colorMode);
                             else if (typeof parsedConfig.darkMode === 'boolean') applyColorMode(parsedConfig.darkMode);
                             if (typeof parsedConfig.federalState === 'string') {
@@ -9242,6 +9237,11 @@
                             }
                             abiturViewClass.value = (parsedConfig.currentClass || 11) >= 11 ? 'oberstufe' : parsedConfig.currentClass;
                         }
+                        const collNameInit = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                        const sRaw = localStorage.getItem('sf_subjects_' + lastSavedUid);
+                        initialSubjects = mergeSubjectsWithPendingOps(sRaw ? JSON.parse(sRaw) : [], initialPendingOps, collNameInit);
+                        const tRaw = localStorage.getItem('sf_tasks_' + lastSavedUid);
+                        initialTasks = mergeTasksWithPendingOps(tRaw ? JSON.parse(tRaw) : [], initialPendingOps);
                     } catch (_) {}
                 }
                 const subjects = ref(initialSubjects);
@@ -9292,10 +9292,11 @@
                 const examReminderDays = ref(1);
                 const examReminderTime = ref('18:00'); // HH:MM, für lokale Erinnerung UND als Vorgabe für die Cloud Function
                 const saveReminderSettings = async () => {
-                    if (!user.value) return;
-                    try {
-                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { examRemindersEnabled: examRemindersEnabled.value, examReminderDays: examReminderDays.value, examReminderTime: examReminderTime.value }, { merge: true });
-                    } catch (e) { console.error('Erinnerungs-Einstellungen konnten nicht gespeichert werden', e); }
+                    const uid = getActiveUid();
+                    if (!uid) return;
+                    const patch = { examRemindersEnabled: examRemindersEnabled.value, examReminderDays: examReminderDays.value, examReminderTime: examReminderTime.value };
+                    enqueueConfigPatch(uid, 'reminders', patch);
+                    flushPendingUserOps(uid);
                 };
                 const getNotifiedTaskIds = () => {
                     try { return JSON.parse(localStorage.getItem('sf_notified_tasks') || '[]'); } catch { return []; }
@@ -9589,10 +9590,21 @@
                 let unsubscribeSentRequests = null;
                 let unsubscribeDeclinedRequests = null;
                 let unsubscribeNotifications = null;
+                const listenerRetryTimers = new Map();
+                const listenerRetryCounts = new Map();
+
+                const clearListenerRetry = (name) => {
+                    const t = listenerRetryTimers.get(name);
+                    if (t) { clearTimeout(t); listenerRetryTimers.delete(name); }
+                };
 
                 const unsubscribeAllListeners = () => {
+                    ['config', 'examScores', 'subjects', 'tasks'].forEach(clearListenerRetry);
+                    listenerRetryCounts.clear();
                     if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                    if (typeof activeConfigListenerUid !== 'undefined') activeConfigListenerUid = null;
                     if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
+                    if (typeof activeExamScoresListenerUid !== 'undefined') activeExamScoresListenerUid = null;
                     if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
                     if (typeof activeSubjectsListenerUid !== 'undefined') activeSubjectsListenerUid = null;
                     if (typeof activeSubjectsCollection !== 'undefined') activeSubjectsCollection = null;
@@ -11013,39 +11025,50 @@
                         }
                     }, 400);
 
-                    // Falls gecachter Nutzer vorhanden ist, sofort lokale Firestore-Listener starten (0ms Offline-Start!)
-                    if (initialCachedUser?.uid) {
-                        listenToSubjects(initialCachedUser.uid);
-                        listenToTasks(initialCachedUser.uid);
-                        loadExamScores(initialCachedUser.uid);
-                        loadAllMembers(initialCachedUser.uid);
-                        loadFriendsData(initialCachedUser.uid);
-                    }
+                    // 0ms-Start kommt bereits synchron aus localStorage + sf_pending_ops;
+                    // authentifizierte Firestore-Listener starten sauber direkt in onAuthStateChanged.
 
                     autoSetCurrentHalfYear();
 
                     nextTick(updatePlannerIndicator);
                     window.addEventListener('resize', updatePlannerIndicator);
 
-                    const handleAppResumeSync = (force = false) => {
+                    let lastHiddenAt = document.hidden ? Date.now() : 0;
+                    const ensureLiveListeners = (uid, { force = false } = {}) => {
+                        if (!uid || !auth.currentUser || auth.currentUser.uid !== uid) return;
+                        listenToAppConfig(uid, { force });
+                        listenToSubjects(uid, { force });
+                        listenToTasks(uid, { force });
+                        listenToExamScores(uid, { force });
+                    };
+
+                    const handleAppResumeSync = (force = false, { reconnectListeners = false } = {}) => {
                         checkExamReminders();
                         if (typeof window.__checkSchoolySwUpdate === 'function') {
                             window.__checkSchoolySwUpdate(force);
                         }
-                        if (user.value?.uid && navigator.onLine !== false) {
-                            syncAllUserDataFromServer(user.value.uid, { force });
+                        const uid = user.value?.uid;
+                        if (uid && navigator.onLine !== false) {
+                            if (reconnectListeners || !unsubscribeAppConfig || !unsubscribeSubjects || !unsubscribeTasks || !unsubscribeExamScores) {
+                                ensureLiveListeners(uid, { force: reconnectListeners });
+                            }
+                            syncAllUserDataFromServer(uid, { force });
                             refreshSocialData({ quiet: true });
                         }
                     };
 
                     document.addEventListener('visibilitychange', () => {
-                        if (!document.hidden) {
-                            handleAppResumeSync(false);
+                        if (document.hidden) {
+                            lastHiddenAt = Date.now();
+                        } else {
+                            const hiddenDuration = lastHiddenAt ? (Date.now() - lastHiddenAt) : 0;
+                            const longPause = hiddenDuration >= 10000;
+                            handleAppResumeSync(hiddenDuration >= 2500, { reconnectListeners: longPause });
                         }
                     });
                     window.addEventListener('pageshow', (e) => {
                         if (e.persisted || !document.hidden) {
-                            handleAppResumeSync(Boolean(e.persisted));
+                            handleAppResumeSync(Boolean(e.persisted), { reconnectListeners: Boolean(e.persisted) });
                         }
                     });
                     window.addEventListener('focus', () => {
@@ -11053,6 +11076,19 @@
                             handleAppResumeSync(false);
                         }
                     });
+                    // Beim Schließen/Hintergrund-Wechsel ausstehende Schreibvorgänge sofort anstoßen
+                    window.addEventListener('pagehide', () => {
+                        const uid = user.value?.uid || auth.currentUser?.uid;
+                        if (uid && navigator.onLine !== false) {
+                            flushPendingUserOps(uid);
+                        }
+                    });
+                    // Aktiver Sync-Heartbeat (alle 20s solange Tab sichtbar & online — Sicherheitsnetz falls Mobile-Browser WebChannel pausiert)
+                    setInterval(() => {
+                        if (!document.hidden && navigator.onLine !== false && user.value?.uid && auth.currentUser?.uid === user.value.uid) {
+                            syncAllUserDataFromServer(user.value.uid, { force: false });
+                        }
+                    }, 20000);
                     // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
                     if (window.earlyDeferredPrompt) {
                         rawDeferredPrompt = window.earlyDeferredPrompt;
@@ -11103,7 +11139,7 @@
                     // Online/Offline-Status überwachen & Cloud-Daten sowie Sozialdaten bei Reconnect sofort synchronisieren
                     window.addEventListener('online', () => {
                         isOnline.value = true;
-                        handleAppResumeSync(true);
+                        handleAppResumeSync(true, { reconnectListeners: true });
                     });
                     window.addEventListener('offline', () => {
                         isOnline.value = false;
@@ -11115,6 +11151,7 @@
                         hideSplash();
 
                         if (currentUser) {
+                            const prevActiveUid = user.value?.uid || lastSavedUid || '';
                             user.value = currentUser;
                             try {
                                 localStorage.setItem('sf_cached_user', JSON.stringify({
@@ -11124,19 +11161,36 @@
                                 }));
                                 localStorage.setItem('sf_last_uid', currentUser.uid);
                             } catch (_) {}
-                            
-                            // Lokale zwischengespeicherte Einstellungen sofort anwenden
+
+                            const pendingOps = readPendingOps(currentUser.uid);
+                            // Lokale zwischengespeicherte Einstellungen sofort anwenden (gemerged mit ausstehenden Änderungen)
                             try {
-                                const cachedConfig = localStorage.getItem('sf_user_config_' + currentUser.uid);
-                                if (cachedConfig) applyConfigData(JSON.parse(cachedConfig));
+                                const cachedConfigRaw = localStorage.getItem('sf_user_config_' + currentUser.uid);
+                                const mergedCfg = mergeConfigWithPendingOps(cachedConfigRaw ? JSON.parse(cachedConfigRaw) : {}, pendingOps);
+                                if (Object.keys(mergedCfg).length > 0) applyConfigData(mergedCfg);
                             } catch (_) {}
 
-                            // Authentifizierte Echtzeit-Listener starten (ersetzt evtl. Pre-Auth-Listener sauber!)
-                            listenToAppConfig(currentUser.uid);
+                            // Bei Nutzerwechsel sofort eigene lokale Fächer/Aufgaben laden (kein Daten-Leak vom vorherigen Konto)
+                            if (prevActiveUid !== currentUser.uid) {
+                                try {
+                                    const collInit = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                                    const sRaw = localStorage.getItem('sf_subjects_' + currentUser.uid);
+                                    subjects.value = mergeSubjectsWithPendingOps(sRaw ? JSON.parse(sRaw) : [], pendingOps, collInit);
+                                    const tRaw = localStorage.getItem('sf_tasks_' + currentUser.uid);
+                                    tasks.value = mergeTasksWithPendingOps(tRaw ? JSON.parse(tRaw) : [], pendingOps);
+                                } catch (_) {
+                                    subjects.value = [];
+                                    tasks.value = [];
+                                }
+                            }
+
+                            // Authentifizierte Echtzeit-Listener starten
+                            listenToAppConfig(currentUser.uid, { force: true });
                             listenToSubjects(currentUser.uid, { force: true });
                             listenToTasks(currentUser.uid, { force: true });
-                            listenToExamScores(currentUser.uid);
+                            listenToExamScores(currentUser.uid, { force: true });
                             await flushPendingTaskDoneSync(currentUser.uid);
+                            await flushPendingUserOps(currentUser.uid);
                             loadExamScores(currentUser.uid);
                             loadAllMembers(currentUser.uid);
                             loadFriendsData(currentUser.uid);
@@ -11145,7 +11199,7 @@
                                 loadSelectedFriendSubjects(selectedFriend.value.uid, true);
                             }
 
-                            // Direkter Server-Abgleich beim App-Start (ohne hartes Timeout, damit PWA immer aktuell lädt)
+                            // Direkter Server-Abgleich beim App-Start (flusht Outbox zuerst und merged sauber)
                             syncAllUserDataFromServer(currentUser.uid, { force: true, checkOnboarding: true });
                         } else {
                             // Wenn online und keine gültige Firebase Auth-Sitzung existiert (z.B. PWA nach Cache/Neuinstallation),
@@ -11285,20 +11339,32 @@
                     autoSetCurrentHalfYear();
                 };
 
+                const getActiveUid = () => user.value?.uid || auth.currentUser?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+
+                const enqueueConfigPatch = (uid, fieldGroup, patch) => {
+                    if (!uid || !patch) return;
+                    const cleanPatch = sanitizeFirestoreValue(patch);
+                    try {
+                        const lsKey = 'sf_user_config_' + uid;
+                        const existing = JSON.parse(localStorage.getItem(lsKey) || '{}');
+                        localStorage.setItem(lsKey, JSON.stringify({ ...existing, ...cleanPatch }));
+                    } catch (_) {}
+                    enqueuePendingOp(uid, {
+                        key: `cfg:${fieldGroup}`,
+                        opType: 'patch_config',
+                        data: cleanPatch
+                    });
+                };
+
                 const setColorMode = async (mode) => {
                     const nextMode = normalizeColorMode(mode);
                     const nextDarkBool = nextMode === 'dim' || nextMode === 'dark';
                     applyColorMode(nextMode);
                     triggerCharts();
-                    if (user.value?.uid) {
-                        try {
-                            const lsKey = 'sf_user_config_' + user.value.uid;
-                            const existing = JSON.parse(localStorage.getItem(lsKey) || '{}');
-                            localStorage.setItem(lsKey, JSON.stringify({ ...existing, colorMode: nextMode, darkMode: nextDarkBool }));
-                        } catch (_) {}
-                        try {
-                            await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { colorMode: nextMode, darkMode: nextDarkBool }, { merge: true });
-                        } catch (e) { console.warn('colorMode save:', e); }
+                    const uid = getActiveUid();
+                    if (uid) {
+                        enqueueConfigPatch(uid, 'appearance', { colorMode: nextMode, darkMode: nextDarkBool });
+                        flushPendingUserOps(uid);
                     }
                 };
 
@@ -11315,22 +11381,19 @@
                     tempFederalState.value = cleanCode;
                     try { localStorage.setItem('sf_federal_state', cleanCode); } catch (_) {}
                     if (cleanCode) ensureCalendarHolidaysLoaded(cleanCode, calYear.value, calMonth.value);
-                    if (user.value?.uid) {
-                        try {
-                            const lsKey = 'sf_user_config_' + user.value.uid;
-                            const existing = JSON.parse(localStorage.getItem(lsKey) || '{}');
-                            localStorage.setItem(lsKey, JSON.stringify({ ...existing, federalState: cleanCode }));
-                        } catch (_) {}
-                        try {
-                            await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { federalState: cleanCode }, { merge: true });
-                        } catch (e) { console.warn('federalState save:', e); }
+                    const uid = getActiveUid();
+                    if (uid) {
+                        enqueueConfigPatch(uid, 'federalState', { federalState: cleanCode });
+                        flushPendingUserOps(uid);
                     }
                 };
 
-                const applyLoadedConfigSnap = (uid, snap) => {
-                    if (!snap || !snap.exists()) return;
+                const applyLoadedConfigSnap = (uid, snapOrData) => {
+                    if (!snapOrData) return;
+                    const rawData = typeof snapOrData.data === 'function' ? (snapOrData.exists() ? snapOrData.data() : null) : snapOrData;
+                    if (!rawData) return;
                     const prevWasUpper = currentClass.value >= 11;
-                    const data = snap.data();
+                    const data = mergeConfigWithPendingOps(rawData, readPendingOps(uid));
                     applyConfigData(data);
                     try { localStorage.setItem('sf_user_config_' + uid, JSON.stringify(data)); } catch (_) {}
                     const nextIsUpper = currentClass.value >= 11;
@@ -11359,20 +11422,35 @@
                     autoSetCurrentHalfYear();
                 };
 
-                const listenToAppConfig = (uid) => {
+                let activeConfigListenerUid = null;
+                const listenToAppConfig = (uid, { force = false } = {}) => {
                     if (!uid) return;
+                    if (!force && unsubscribeAppConfig && activeConfigListenerUid === uid) return;
+                    clearListenerRetry('config');
                     if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                    activeConfigListenerUid = uid;
                     const configRef = doc(db, 'users', uid, 'settings', 'config');
-                    unsubscribeAppConfig = onSnapshot(configRef, (snap) => {
+                    unsubscribeAppConfig = onSnapshot(configRef, { includeMetadataChanges: true }, (snap) => {
+                        listenerRetryCounts.set('config', 0);
                         if (!snap.exists()) return;
                         if (snap.metadata?.fromCache && localStorage.getItem('sf_user_config_' + uid)) {
-                            // Server-Update oder Änderung übernehmen, Cache nur anwenden falls neuer/online
                             if (!navigator.onLine) return;
                         }
                         isOnboarding.value = false;
                         applyLoadedConfigSnap(uid, snap);
                     }, (err) => {
+                        if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                        activeConfigListenerUid = null;
                         if (err.code !== 'permission-denied') console.warn('config listener:', err.code);
+                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                            const count = (listenerRetryCounts.get('config') || 0) + 1;
+                            listenerRetryCounts.set('config', count);
+                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                            clearListenerRetry('config');
+                            listenerRetryTimers.set('config', setTimeout(() => {
+                                if (auth.currentUser?.uid === uid) listenToAppConfig(uid, { force: true });
+                            }, delay));
+                        }
                     });
                 };
 
@@ -11436,10 +11514,10 @@
                     try {
                         localStorage.setItem('schooly_theme', theme.key);
                     } catch (e) {}
-                    if (user.value) {
-                        try {
-                            await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { theme: theme.key }, { merge: true });
-                        } catch (e) { console.warn('Theme save:', e); }
+                    const uid = getActiveUid();
+                    if (uid) {
+                        enqueueConfigPatch(uid, 'theme', { theme: theme.key });
+                        flushPendingUserOps(uid);
                     }
                 };
 
@@ -11450,7 +11528,8 @@
                 };
 
                 const saveAppSettings = async () => {
-                    if (!user.value) return;
+                    const uid = getActiveUid();
+                    if (!uid) return;
                     const prevClass = currentClass.value;
                     const nextStartYear = Number(tempStartYear.value) || new Date().getFullYear();
                     const nextClass = Number(tempCurrentClass.value) || 11;
@@ -11482,9 +11561,9 @@
                     };
 
                     try {
-                        localStorage.setItem('sf_user_config_' + user.value.uid, JSON.stringify(configPayload));
                         localStorage.setItem('sf_federal_state', nextFederalState);
                     } catch (_) {}
+                    enqueueConfigPatch(uid, 'appSettings', configPayload);
                     if (nextFederalState) ensureCalendarHolidaysLoaded(nextFederalState, calYear.value, calMonth.value);
 
                     // Modal sofort schließen und Subjects-Listener bei Stufenwechsel aktualisieren
@@ -11492,13 +11571,13 @@
                     autoSetCurrentHalfYear();
                     const crossedBoundary = (prevClass >= 11) !== (currentClass.value >= 11);
                     if (crossedBoundary) {
-                        listenToSubjects(user.value.uid);
+                        listenToSubjects(uid, { force: true });
                     }
                     showToast('Einstellungen gespeichert ✓');
 
+                    await flushPendingUserOps(uid);
                     try {
-                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), configPayload, { merge: true });
-                        await ensurePublicProfile(user.value.uid);
+                        await ensurePublicProfile(uid);
                     } catch (err) {
                         console.warn('saveAppSettings sync error:', err?.message || err);
                     }
@@ -11550,14 +11629,37 @@
                 let subjectsListenerHasAuth = false;
                 let hasPendingSubjectWrites = false;
 
+                const flushPendingUserOps = async (uid) => {
+                    if (!uid) return { flushed: 0, remaining: 0 };
+                    return flushPendingOpsQueue(uid, {
+                        db,
+                        doc,
+                        setDoc,
+                        updateDoc,
+                        deleteDoc,
+                        getDoc,
+                        getDocFromServer,
+                        isOnline: () => navigator.onLine !== false,
+                        getCurrentUid: () => auth.currentUser?.uid || null,
+                        getLocalSubjectFallback: (subId) => (subjects.value || []).find((s) => s && s.id === subId) || null
+                    });
+                };
+
                 const applySubjectsSnapshotDocs = (uid, incoming, fromCache) => {
-                    if (incoming.length === 0 && fromCache && (subjects.value || []).length > 0) {
+                    const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                    const pendingOps = readPendingOps(uid);
+                    if (incoming.length === 0 && fromCache && (subjects.value || []).length > 0 && pendingOps.length === 0) {
                         return;
                     }
-                    subjects.value = incoming;
+                    const merged = mergeSubjectsWithPendingOps(incoming, pendingOps, collName);
+                    subjects.value = merged;
                     if (selectedSubject.value?.id) {
-                        const refreshedSub = incoming.find(s => s.id === selectedSubject.value.id);
-                        if (refreshedSub) selectedSubject.value = refreshedSub;
+                        const refreshedSub = merged.find(s => s.id === selectedSubject.value.id);
+                        if (refreshedSub) {
+                            selectedSubject.value = refreshedSub;
+                        } else if (!fromCache) {
+                            selectedSubject.value = null;
+                        }
                     }
                     try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
                     refreshIcons();
@@ -11571,17 +11673,30 @@
                     if (!force && unsubscribeSubjects && activeSubjectsListenerUid === uid && activeSubjectsCollection === collectionName && (subjectsListenerHasAuth || !isAuthedNow)) {
                         return;
                     }
-                    if (unsubscribeSubjects) unsubscribeSubjects();
+                    clearListenerRetry('subjects');
+                    if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
                     activeSubjectsListenerUid = uid;
                     activeSubjectsCollection = collectionName;
                     subjectsListenerHasAuth = isAuthedNow;
                     const q = collection(db, 'users', uid, collectionName);
-                    unsubscribeSubjects = onSnapshot(q, (snapshot) => {
+                    unsubscribeSubjects = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
+                        listenerRetryCounts.set('subjects', 0);
                         hasPendingSubjectWrites = Boolean(snapshot.metadata?.hasPendingWrites);
                         const incoming = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
                         applySubjectsSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache));
                     }, (err) => {
+                        if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
+                        activeSubjectsListenerUid = null;
                         if (err.code !== 'permission-denied') console.warn('subjects listener:', err.code);
+                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                            const count = (listenerRetryCounts.get('subjects') || 0) + 1;
+                            listenerRetryCounts.set('subjects', count);
+                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                            clearListenerRetry('subjects');
+                            listenerRetryTimers.set('subjects', setTimeout(() => {
+                                if (auth.currentUser?.uid === uid) listenToSubjects(uid, { force: true });
+                            }, delay));
+                        }
                     });
                 };
 
@@ -11595,7 +11710,7 @@
                     const entries = Array.from(pendingTaskDoneSync.entries());
                     for (const [taskId, payload] of entries) {
                         try {
-                            await setDoc(doc(db, 'users', uid, 'tasks', taskId), payload, { merge: true });
+                            await setDoc(doc(db, 'users', uid, 'tasks', taskId), sanitizeFirestoreValue(payload), { merge: true });
                             pendingTaskDoneSync.delete(taskId);
                         } catch (e) {
                             console.warn('[GradeFlow] retry task sync notice:', e?.code || e?.message || e);
@@ -11609,11 +11724,13 @@
                 let hasPendingTaskWrites = false;
 
                 const applyTasksSnapshotDocs = (uid, incoming, fromCache, fromServerConfirmed) => {
-                    if (incoming.length === 0 && fromCache && (tasks.value || []).length > 0) {
+                    const pendingOps = readPendingOps(uid);
+                    if (incoming.length === 0 && fromCache && (tasks.value || []).length > 0 && pendingOps.length === 0) {
                         return;
                     }
+                    const mergedIncoming = mergeTasksWithPendingOps(incoming, pendingOps);
                     const now = Date.now();
-                    tasks.value = incoming.map(t => {
+                    tasks.value = mergedIncoming.map(t => {
                         if (animatingDoneTasks.value.has(t.id)) return { ...t, done: true };
                         const override = pendingTaskDoneMap.get(t.id);
                         if (override) {
@@ -11636,22 +11753,36 @@
                     if (!uid) return;
                     const isAuthedNow = Boolean(auth.currentUser && auth.currentUser.uid === uid);
                     if (!force && unsubscribeTasks && activeTasksListenerUid === uid && (tasksListenerHasAuth || !isAuthedNow)) return;
-                    if (unsubscribeTasks) unsubscribeTasks();
+                    clearListenerRetry('tasks');
+                    if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
                     activeTasksListenerUid = uid;
                     tasksListenerHasAuth = isAuthedNow;
                     const q = collection(db, 'users', uid, 'tasks');
-                    unsubscribeTasks = onSnapshot(q, (snapshot) => {
+                    unsubscribeTasks = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
+                        listenerRetryCounts.set('tasks', 0);
                         hasPendingTaskWrites = Boolean(snapshot.metadata?.hasPendingWrites);
                         const fromServerConfirmed = !snapshot.metadata?.fromCache && !snapshot.metadata?.hasPendingWrites;
                         const incoming = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
                         applyTasksSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache), fromServerConfirmed);
                     }, (err) => {
+                        if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
+                        activeTasksListenerUid = null;
                         if (err.code !== 'permission-denied') console.warn('tasks listener:', err.code);
+                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                            const count = (listenerRetryCounts.get('tasks') || 0) + 1;
+                            listenerRetryCounts.set('tasks', count);
+                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                            clearListenerRetry('tasks');
+                            listenerRetryTimers.set('tasks', setTimeout(() => {
+                                if (auth.currentUser?.uid === uid) listenToTasks(uid, { force: true });
+                            }, delay));
+                        }
                     });
                 };
 
-                const applyExamScoresData = (uid, d) => {
-                    if (!d) return;
+                const applyExamScoresData = (uid, rawD) => {
+                    if (!rawD) return;
+                    const d = uid ? mergeExamScoresWithPendingOps(rawD, readPendingOps(uid)) : rawD;
                     examScores.value = {
                         P1: d.P1 !== undefined ? d.P1 : examScores.value.P1,
                         P2: d.P2 !== undefined ? d.P2 : examScores.value.P2,
@@ -11672,16 +11803,32 @@
                     }
                 };
 
-                const listenToExamScores = (uid) => {
+                let activeExamScoresListenerUid = null;
+                const listenToExamScores = (uid, { force = false } = {}) => {
                     if (!uid) return;
+                    if (!force && unsubscribeExamScores && activeExamScoresListenerUid === uid) return;
+                    clearListenerRetry('examScores');
                     if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
+                    activeExamScoresListenerUid = uid;
                     const scoresRef = doc(db, 'users', uid, 'abitur', 'scores');
-                    unsubscribeExamScores = onSnapshot(scoresRef, (snap) => {
+                    unsubscribeExamScores = onSnapshot(scoresRef, { includeMetadataChanges: true }, (snap) => {
+                        listenerRetryCounts.set('examScores', 0);
                         if (snap.exists()) {
                             applyExamScoresData(uid, snap.data());
                         }
                     }, (err) => {
+                        if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
+                        activeExamScoresListenerUid = null;
                         if (err.code !== 'permission-denied') console.warn('examScores listener:', err.code);
+                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                            const count = (listenerRetryCounts.get('examScores') || 0) + 1;
+                            listenerRetryCounts.set('examScores', count);
+                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                            clearListenerRetry('examScores');
+                            listenerRetryTimers.set('examScores', setTimeout(() => {
+                                if (auth.currentUser?.uid === uid) listenToExamScores(uid, { force: true });
+                            }, delay));
+                        }
                     });
                 };
 
@@ -11691,7 +11838,7 @@
                         const localRaw = localStorage.getItem(`saxon_abitur_scores_${uid || 'guest'}`);
                         if (localRaw) {
                             try {
-                                applyExamScoresData(null, JSON.parse(localRaw));
+                                applyExamScoresData(uid || null, JSON.parse(localRaw));
                             } catch (e) {}
                         }
 
@@ -11712,14 +11859,15 @@
                     if (!uid || navigator.onLine === false) return;
                     if (!auth.currentUser || auth.currentUser.uid !== uid) return;
                     const now = Date.now();
-                    if (!force && now - lastServerSyncAt < 3000) return;
+                    if (!force && now - lastServerSyncAt < 1500) return;
                     if (activeServerSyncPromise) return activeServerSyncPromise;
 
                     lastServerSyncAt = now;
                     activeServerSyncPromise = (async () => {
                         try {
                             await flushPendingTaskDoneSync(uid);
-                            // Warte kurz auf lokale Offline-Writes in IndexedDB, damit diese vor dem Server-Pull rausgehen
+                            await flushPendingUserOps(uid);
+                            // Warte kurz auf Firestore IndexedDB-Writes vor dem Server-Pull
                             try {
                                 await Promise.race([
                                     waitForPendingWrites(db),
@@ -11727,7 +11875,7 @@
                                 ]);
                             } catch (_) {}
 
-                            // 1. Settings / Stundenplan / Design / Klasse vom Server ziehen
+                            // 1. Settings / Stundenplan / Design / Klasse vom Server ziehen (+ lokale Outbox mergen)
                             const configRef = doc(db, 'users', uid, 'settings', 'config');
                             try {
                                 const configSnap = await getDocFromServer(configRef);
@@ -11740,24 +11888,20 @@
                                 }
                             } catch (_) {}
 
-                            // 2. Fächer & Noten vom Server ziehen (nur wenn keine ungesicherten lokalen Schreibvorgänge anstehen)
-                            if (!hasPendingSubjectWrites) {
-                                const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
-                                try {
-                                    const subSnap = await getDocsFromServer(collection(db, 'users', uid, collName));
-                                    const incomingSubs = subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-                                    applySubjectsSnapshotDocs(uid, incomingSubs, false);
-                                } catch (_) {}
-                            }
+                            // 2. Fächer & Noten vom Server ziehen (Outbox-Merge schützt ungesicherte lokale Noten vor Überschreiben!)
+                            const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                            try {
+                                const subSnap = await getDocsFromServer(collection(db, 'users', uid, collName));
+                                const incomingSubs = subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                                applySubjectsSnapshotDocs(uid, incomingSubs, false);
+                            } catch (_) {}
 
-                            // 3. Aufgaben & Kalendertermine vom Server ziehen
-                            if (!hasPendingTaskWrites && pendingTaskDoneSync.size === 0) {
-                                try {
-                                    const taskSnap = await getDocsFromServer(collection(db, 'users', uid, 'tasks'));
-                                    const incomingTasks = taskSnap.docs.map(d => ({ ...d.data(), id: d.id }));
-                                    applyTasksSnapshotDocs(uid, incomingTasks, false, true);
-                                } catch (_) {}
-                            }
+                            // 3. Aufgaben & Kalendertermine vom Server ziehen (+ lokale Outbox mergen)
+                            try {
+                                const taskSnap = await getDocsFromServer(collection(db, 'users', uid, 'tasks'));
+                                const incomingTasks = taskSnap.docs.map(d => ({ ...d.data(), id: d.id }));
+                                applyTasksSnapshotDocs(uid, incomingTasks, false, true);
+                            } catch (_) {}
 
                             // 4. Abitur- & Notentabellen-Simulation vom Server ziehen
                             try {
@@ -11776,7 +11920,7 @@
                 };
 
                 const saveExamScores = async () => {
-                    const payloadToSave = {
+                    const payloadToSave = sanitizeFirestoreValue({
                         ...examScores.value,
                         saxonSchoolType: saxonSchoolType.value,
                         saxonP3: saxonP3.value,
@@ -11786,15 +11930,19 @@
                         saxonSimulatedGrades: { ...saxonSimulatedGrades.value },
                         saxonSubjectCategories: { ...saxonSubjectCategories.value },
                         saxonErsatzfaecher: { ...saxonErsatzfaecher.value }
-                    };
+                    });
+                    const uid = getActiveUid();
                     try {
-                        localStorage.setItem(`saxon_abitur_scores_${user.value?.uid || 'guest'}`, JSON.stringify(payloadToSave));
+                        localStorage.setItem(`saxon_abitur_scores_${uid || 'guest'}`, JSON.stringify(payloadToSave));
                     } catch (e) {}
 
-                    if (!user.value) return;
-                    try {
-                        await setDoc(doc(db, 'users', user.value.uid, 'abitur', 'scores'), payloadToSave, { merge: true });
-                    } catch (e) { console.warn('Abitur daten konnten nicht gespeichert werden', e); }
+                    if (!uid) return;
+                    enqueuePendingOp(uid, {
+                        key: 'exam_scores',
+                        opType: 'set_exam_scores',
+                        data: payloadToSave
+                    });
+                    await flushPendingUserOps(uid);
                 };
 
                 // Modal Swipe-Down-to-Close
@@ -12300,6 +12448,8 @@
                 const handleLogout = async () => {
                     unsubscribeAllListeners();
                     selectedSubject.value = null;
+                    subjects.value = [];
+                    tasks.value = [];
                     try { await signOut(auth); } catch (e) { console.warn('signOut:', e); }
                     user.value = null;
                     try {
@@ -12474,8 +12624,10 @@
                             googleAccessToken = response.access_token;
                             googleCalendarConnected.value = true;
                             googleCalendarError.value = '';
-                            if (user.value) {
-                                setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleCalendarConnected: true }, { merge: true }).catch(() => {});
+                            const uid = getActiveUid();
+                            if (uid) {
+                                enqueueConfigPatch(uid, 'gcalConnected', { googleCalendarConnected: true });
+                                flushPendingUserOps(uid);
                             }
                             fetchGoogleCalendarList();
                         },
@@ -12577,10 +12729,12 @@
                     googleCalendarConnected.value = false;
                     googleEvents.value = [];
                     googleCalendarList.value = [];
-                    if (user.value) {
-                        await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleCalendarConnected: false }, { merge: true }).catch(() => {});
-                        localStorage.removeItem(`schoolflow_google_cache_${user.value.uid}`);
-                        localStorage.removeItem(`schoolflow_google_last_silent_${user.value.uid}`);
+                    const uid = getActiveUid();
+                    if (uid) {
+                        enqueueConfigPatch(uid, 'gcalConnected', { googleCalendarConnected: false });
+                        await flushPendingUserOps(uid);
+                        localStorage.removeItem(`schoolflow_google_cache_${uid}`);
+                        localStorage.removeItem(`schoolflow_google_last_silent_${uid}`);
                     }
                 };
                 // Lädt alle Kalender, auf die der Nutzer Zugriff hat (privat, geteilt, Feiertage, ...)
@@ -12621,8 +12775,10 @@
                     }
                 };
                 const persistGoogleSelectedCalendars = () => {
-                    if (!user.value) return;
-                    setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { googleSelectedCalendarIds: googleSelectedCalendarIds.value }, { merge: true }).catch(() => {});
+                    const uid = getActiveUid();
+                    if (!uid) return;
+                    enqueueConfigPatch(uid, 'gcalIds', { googleSelectedCalendarIds: [...googleSelectedCalendarIds.value] });
+                    flushPendingUserOps(uid);
                 };
                 const toggleGoogleCalendarSelection = (calId) => {
                     const idx = googleSelectedCalendarIds.value.indexOf(calId);
@@ -12782,8 +12938,10 @@
                     scheduleWeeklyRecapAdvance();
                     // Als gesehen markieren, sobald geöffnet — der farbige Ring verschwindet direkt
                     lastWeeklyRecapViewedWeek.value = currentWeekKey.value;
-                    if (user.value) {
-                        setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { lastWeeklyRecapViewedWeek: currentWeekKey.value }, { merge: true }).catch(() => {});
+                    const uid = getActiveUid();
+                    if (uid) {
+                        enqueueConfigPatch(uid, 'weeklyRecap', { lastWeeklyRecapViewedWeek: currentWeekKey.value });
+                        flushPendingUserOps(uid);
                     }
                     refreshIcons();
                 };
@@ -13310,30 +13468,49 @@
                 };
 
                 const handleSaveTask = async () => {
-                    if (!user.value || !taskForm.value.title || !taskForm.value.subjectId) return;
+                    const uid = getActiveUid();
+                    if (!uid || !taskForm.value.title || !taskForm.value.subjectId) return;
                     const formSnapshot = { ...taskForm.value };
                     closeModal('isTaskModalOpen');
                     try {
-                        const taskData = { title: formSnapshot.title, type: formSnapshot.type, subjectId: formSnapshot.subjectId, date: formSnapshot.date, done: Boolean(formSnapshot.done), notes: formSnapshot.notes || '', studyProgress: formSnapshot.studyProgress || 0 };
+                        const taskData = sanitizeFirestoreValue({
+                            title: formSnapshot.title,
+                            type: formSnapshot.type || 'Hausaufgabe',
+                            subjectId: formSnapshot.subjectId,
+                            date: formSnapshot.date || new Date().toISOString().split('T')[0],
+                            done: Boolean(formSnapshot.done),
+                            notes: formSnapshot.notes || '',
+                            studyProgress: Number(formSnapshot.studyProgress) || 0
+                        });
                         if (formSnapshot.id) {
                             pendingTaskDoneMap.set(formSnapshot.id, { done: Boolean(taskData.done), expiresAt: Date.now() + 20000 });
-                            tasks.value = tasks.value.map(t => t.id === formSnapshot.id ? { ...t, ...taskData } : t);
-                            try { localStorage.setItem('sf_tasks_' + user.value.uid, JSON.stringify(tasks.value)); } catch (_) {}
                             if (formSnapshot.repeatGroupId && formSnapshot.applyToSeries) {
-                                // Auf diese & alle zukünftigen Wiederholungen anwenden (Datum bleibt je Instanz individuell)
                                 const seriesData = { title: taskData.title, type: taskData.type, subjectId: taskData.subjectId, notes: taskData.notes, studyProgress: taskData.studyProgress };
                                 const originalDate = formSnapshot._originalDate || formSnapshot.date;
-                                const affected = tasks.value.filter(t => t.repeatGroupId === formSnapshot.repeatGroupId && t.date >= originalDate);
-                                await Promise.all(affected.map(t => {
-                                    const isThisOne = t.id === formSnapshot.id;
-                                    return setDoc(doc(db, 'users', user.value.uid, 'tasks', t.id), isThisOne ? { ...seriesData, date: formSnapshot.date, done: taskData.done } : seriesData, { merge: true });
-                                }));
+                                const affectedIds = new Set();
+                                tasks.value = tasks.value.map(t => {
+                                    if (t.repeatGroupId === formSnapshot.repeatGroupId && t.date >= originalDate) {
+                                        affectedIds.add(t.id);
+                                        const isThisOne = t.id === formSnapshot.id;
+                                        return isThisOne ? { ...t, ...seriesData, date: formSnapshot.date, done: taskData.done } : { ...t, ...seriesData };
+                                    }
+                                    return t;
+                                });
+                                try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+                                affectedIds.forEach(tid => {
+                                    const updatedT = tasks.value.find(x => x.id === tid);
+                                    if (updatedT) {
+                                        const { id: _dropId, ...rest } = updatedT;
+                                        enqueuePendingOp(uid, { key: `task:${tid}`, opType: 'upsert_task', taskId: tid, data: rest });
+                                    }
+                                });
                             } else {
-                                await setDoc(doc(db, 'users', user.value.uid, 'tasks', formSnapshot.id), taskData, { merge: true });
+                                tasks.value = tasks.value.map(t => t.id === formSnapshot.id ? { ...t, ...taskData } : t);
+                                try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+                                enqueuePendingOp(uid, { key: `task:${formSnapshot.id}`, opType: 'upsert_task', taskId: formSnapshot.id, data: taskData });
                             }
                         } else if (formSnapshot.repeat && formSnapshot.repeat !== 'none') {
-                            // Wiederholte Aufgaben: mehrere Instanzen anlegen, verknüpft über repeatGroupId
-                            const repeatGroupId = doc(collection(db, 'users', user.value.uid, 'tasks')).id;
+                            const repeatGroupId = doc(collection(db, 'users', uid, 'tasks')).id;
                             const MAX_OCCURRENCES = 60;
                             const DEFAULT_OCCURRENCES = 10;
                             const dates = [formSnapshot.date];
@@ -13348,14 +13525,21 @@
                                 dates.push(nextDate);
                                 i++;
                             }
-                            await Promise.all(dates.map(dateStr => {
-                                const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
-                                return setDoc(taskRef, { ...taskData, date: dateStr, repeat: formSnapshot.repeat, repeatGroupId });
-                            }));
+                            const createdTasks = dates.map(dateStr => {
+                                const taskId = doc(collection(db, 'users', uid, 'tasks')).id;
+                                const payload = { ...taskData, date: dateStr, repeat: formSnapshot.repeat, repeatGroupId };
+                                enqueuePendingOp(uid, { key: `task:${taskId}`, opType: 'upsert_task', taskId, data: payload });
+                                return { id: taskId, ...payload };
+                            });
+                            tasks.value = [...(tasks.value || []), ...createdTasks];
+                            try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
                         } else {
-                            const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
-                            await setDoc(taskRef, taskData);
+                            const taskId = doc(collection(db, 'users', uid, 'tasks')).id;
+                            tasks.value = [...(tasks.value || []), { id: taskId, ...taskData }];
+                            try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+                            enqueuePendingOp(uid, { key: `task:${taskId}`, opType: 'upsert_task', taskId, data: taskData });
                         }
+                        await flushPendingUserOps(uid);
                     } catch (err) { 
                         console.error("Fehler beim Speichern der Aufgabe: ", err); 
                     }
@@ -13384,14 +13568,13 @@
                     if (target.isBulk && Array.isArray(target.ids)) {
                         const idSet = new Set(target.ids);
                         tasks.value = (tasks.value || []).filter(t => !idSet.has(t.id));
-                        const activeUid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                        const activeUid = getActiveUid();
                         if (activeUid) {
                             try { localStorage.setItem('sf_tasks_' + activeUid, JSON.stringify(tasks.value)); } catch (_) {}
-                        }
-                        if (user.value?.uid) {
-                            try {
-                                await Promise.allSettled(target.ids.filter(id => !String(id).startsWith('local_')).map(id => deleteDoc(doc(db, 'users', user.value.uid, 'tasks', id))));
-                            } catch (e) { console.error('Fehler beim Löschen der ausgewählten Aufgaben', e); }
+                            target.ids.filter(id => !String(id).startsWith('local_')).forEach(id => {
+                                enqueuePendingOp(activeUid, { key: `task:${id}`, opType: 'delete_task', taskId: id });
+                            });
+                            await flushPendingUserOps(activeUid);
                         }
                         exitTaskSelectionMode();
                     } else if (target.id) {
@@ -13402,17 +13585,14 @@
                 const handleDeleteTask = async (taskId) => {
                     if (!taskId) return;
                     tasks.value = (tasks.value || []).filter(t => t.id !== taskId);
-                    const activeUid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    const activeUid = getActiveUid();
                     if (activeUid) {
                         try { localStorage.setItem('sf_tasks_' + activeUid, JSON.stringify(tasks.value)); } catch (_) {}
                     }
                     if (isTaskModalOpen.value) closeModal('isTaskModalOpen');
-                    if (user.value?.uid && !String(taskId).startsWith('local_')) {
-                        try {
-                            await deleteDoc(doc(db, 'users', user.value.uid, 'tasks', taskId));
-                        } catch (err) {
-                            console.error("Fehler beim Löschen der Aufgabe:", err);
-                        }
+                    if (activeUid && !String(taskId).startsWith('local_')) {
+                        enqueuePendingOp(activeUid, { key: `task:${taskId}`, opType: 'delete_task', taskId });
+                        await flushPendingUserOps(activeUid);
                     }
                 };
 
@@ -13496,35 +13676,25 @@
                     bulkImportParsed.value = bulkImportParsed.value.filter((_, i) => i !== idx);
                 };
                 const handleBulkImportSave = async () => {
-                    if (!user.value) return;
+                    const uid = getActiveUid();
+                    if (!uid) return;
                     const validRows = bulkImportParsed.value.filter(r => r.date && r.subjectId);
                     if (validRows.length === 0) return;
 
-                    // allSettled statt all: ein einzelner Fehler darf nicht dazu führen, dass der
-                    // Rest der Liste stillschweigend gar nicht erst versucht/gespeichert wird.
-                    const results = await Promise.allSettled(validRows.map(r => {
-                        const taskRef = doc(collection(db, 'users', user.value.uid, 'tasks'));
-                        return setDoc(taskRef, { title: r.title || 'Klausur', type: 'Klausur', subjectId: r.subjectId, date: r.date, done: false, notes: '' });
-                    }));
-
-                    const failedRows = [];
-                    results.forEach((res, i) => {
-                        if (res.status === 'rejected') {
-                            console.error('Fehler beim Eintragen von', validRows[i].raw, res.reason);
-                            failedRows.push(validRows[i]);
-                        }
+                    const createdTasks = validRows.map(r => {
+                        const taskId = doc(collection(db, 'users', uid, 'tasks')).id;
+                        const payload = sanitizeFirestoreValue({ title: r.title || 'Klausur', type: 'Klausur', subjectId: r.subjectId, date: r.date, done: false, notes: '' });
+                        enqueuePendingOp(uid, { key: `task:${taskId}`, opType: 'upsert_task', taskId, data: payload });
+                        return { id: taskId, ...payload };
                     });
+                    tasks.value = [...(tasks.value || []), ...createdTasks];
+                    try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
 
-                    if (failedRows.length === 0) {
-                        isBulkImportOpen.value = false;
-                        bulkImportText.value = '';
-                        bulkImportParsed.value = [];
-                    } else {
-                        // Erfolgreich gespeicherte Zeilen aus der Liste entfernen, fehlgeschlagene
-                        // stehen lassen, damit man sie erneut versuchen kann.
-                        bulkImportParsed.value = bulkImportParsed.value.filter(r => failedRows.includes(r) || !(r.date && r.subjectId));
-                        alert(`${validRows.length - failedRows.length} von ${validRows.length} Terminen wurden eingetragen. ${failedRows.length} sind fehlgeschlagen (z.B. wegen Verbindungsproblemen) — bitte nochmal "Alle eintragen" drücken.`);
-                    }
+                    isBulkImportOpen.value = false;
+                    bulkImportText.value = '';
+                    bulkImportParsed.value = [];
+                    showToast(`${createdTasks.length} Termine eingetragen ✓`);
+                    flushPendingUserOps(uid);
                 };
 
                 const spawnConfetti = (btn) => {
@@ -13563,7 +13733,7 @@
                     tasks.value = (tasks.value || []).map(t => t.id === task.id ? { ...t, done: false } : t);
                     try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
 
-                    const syncPayload = {
+                    const syncPayload = sanitizeFirestoreValue({
                         title: task.title || '',
                         type: task.type || 'Hausaufgabe',
                         subjectId: task.subjectId || '',
@@ -13571,17 +13741,15 @@
                         done: false,
                         notes: task.notes || '',
                         studyProgress: task.studyProgress || 0
-                    };
-                    setDoc(doc(db, 'users', uid, 'tasks', task.id), syncPayload, { merge: true }).then(() => {
-                        pendingTaskDoneSync.delete(task.id);
-                    }).catch(() => {
-                        pendingTaskDoneSync.set(task.id, syncPayload);
                     });
+                    enqueuePendingOp(uid, { key: `task:${task.id}`, opType: 'upsert_task', taskId: task.id, data: syncPayload });
+                    pendingTaskDoneSync.delete(task.id);
+                    flushPendingUserOps(uid);
                     refreshIcons();
                 };
 
                 const toggleTaskDone = async (task, event) => {
-                    const uid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    const uid = getActiveUid();
                     if (!uid || !task || !task.id || task.isGoogleEvent) return;
                     if (animatingDoneTasks.value.has(task.id) || leavingTasks.value.has(task.id)) return;
 
@@ -13597,7 +13765,7 @@
                     try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
 
                     const existingTask = (tasks.value || []).find(t => t.id === task.id) || task;
-                    const syncPayload = {
+                    const syncPayload = sanitizeFirestoreValue({
                         title: existingTask.title || '',
                         type: existingTask.type || 'Hausaufgabe',
                         subjectId: existingTask.subjectId || '',
@@ -13605,15 +13773,12 @@
                         done: nextDone,
                         notes: existingTask.notes || '',
                         studyProgress: existingTask.studyProgress || 0
-                    };
+                    });
 
                     const persistDoneState = () => {
-                        setDoc(doc(db, 'users', uid, 'tasks', task.id), syncPayload, { merge: true }).then(() => {
-                            pendingTaskDoneSync.delete(task.id);
-                        }).catch(err => {
-                            console.warn('[GradeFlow] toggleTaskDone sync notice:', err?.code || err?.message || err);
-                            pendingTaskDoneSync.set(task.id, syncPayload);
-                        });
+                        enqueuePendingOp(uid, { key: `task:${task.id}`, opType: 'upsert_task', taskId: task.id, data: syncPayload });
+                        pendingTaskDoneSync.delete(task.id);
+                        flushPendingUserOps(uid);
                     };
 
                     if (nextDone) {
@@ -15417,7 +15582,8 @@
 
                 const handleSaveSubject = async () => {
                     const cleanName = (subjectForm.value.name || '').trim();
-                    if (!user.value || !cleanName) return;
+                    const uid = getActiveUid();
+                    if (!uid || !cleanName) return;
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                     const safeIsLK = Boolean(subjectForm.value.isLK);
                     const safeColor = subjectForm.value.color || '#6366f1';
@@ -15439,7 +15605,7 @@
                         const baseExamWeight = Number.isFinite(Number(baseSource.examWeight))
                             ? Number(baseSource.examWeight)
                             : 50;
-                        const updatePayload = {
+                        const updatePayload = sanitizeFirestoreValue({
                             name: cleanName,
                             isLK: safeIsLK,
                             color: safeColor,
@@ -15447,27 +15613,30 @@
                             icon: safeIcon,
                             examWeight: baseExamWeight,
                             examWeightByHalfYear
-                        };
+                        });
 
-                        // Sofort lokales reaktives Update & Modal schließen
+                        // Sofort lokales reaktives Update & Outbox speichern (überlebt App-Schließen sofort!)
                         selectedSubject.value = { ...(selectedSubject.value || {}), id: targetId, ...updatePayload, examWeight: safeExamWeight };
                         const sIdx = subjects.value.findIndex(s => s.id === targetId);
                         if (sIdx !== -1) {
                             subjects.value[sIdx] = { ...subjects.value[sIdx], ...updatePayload };
                             subjects.value = [...subjects.value];
                         }
-                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        enqueuePendingOp(uid, {
+                            key: `sub:${collName}:${targetId}`,
+                            opType: 'upsert_subject',
+                            collName,
+                            subjectId: targetId,
+                            data: updatePayload
+                        });
                         closeSubjectModal();
                         showToast(`Fach gespeichert (${semKey}) ✓`);
-
-                        try {
-                            await setDoc(doc(db, 'users', user.value.uid, collName, targetId), updatePayload, { merge: true });
-                        } catch (err) {
-                            console.warn('handleSaveSubject update error:', err?.message || err);
-                        }
+                        await flushPendingUserOps(uid);
                     } else {
-                        const newDocRef = doc(collection(db, 'users', user.value.uid, collName));
-                        const newPayload = {
+                        const newDocRef = doc(collection(db, 'users', uid, collName));
+                        const newId = newDocRef.id;
+                        const newPayload = sanitizeFirestoreValue({
                             name: cleanName,
                             isLK: safeIsLK,
                             color: safeColor,
@@ -15477,80 +15646,110 @@
                             grades: [],
                             reportCardGrades: {},
                             examWeightByHalfYear: {}
-                        };
+                        });
+                        subjects.value = [...(subjects.value || []), { id: newId, ...newPayload }];
+                        try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        enqueuePendingOp(uid, {
+                            key: `sub:${collName}:${newId}`,
+                            opType: 'upsert_subject',
+                            collName,
+                            subjectId: newId,
+                            data: newPayload
+                        });
                         closeSubjectModal();
                         showToast('Fach erstellt ✓');
-                        try {
-                            await setDoc(newDocRef, newPayload);
-                        } catch (err) {
-                            console.warn('handleSaveSubject create error:', err?.message || err);
-                        }
+                        await flushPendingUserOps(uid);
                     }
                 };
 
                 const handleDeleteSubject = async () => {
-                    if (user.value && selectedSubject.value) {
+                    const uid = getActiveUid();
+                    if (uid && selectedSubject.value) {
                         const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
-                        await deleteDoc(doc(db, 'users', user.value.uid, collName, selectedSubject.value.id));
-                        selectedSubject.value = null; closeSubjectModal();
+                        const targetId = selectedSubject.value.id;
+                        subjects.value = (subjects.value || []).filter(s => s.id !== targetId);
+                        try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        enqueuePendingOp(uid, {
+                            key: `sub:${collName}:${targetId}`,
+                            opType: 'delete_subject',
+                            collName,
+                            subjectId: targetId
+                        });
+                        selectedSubject.value = null;
+                        closeSubjectModal();
+                        await flushPendingUserOps(uid);
                     }
                 };
 
                 const handleSaveGrade = async () => {
-                    if (!user.value || !selectedSubject.value) return;
-                    if (!gradeForm.value.date) {
-                        gradeForm.value.date = new Date().toISOString().split('T')[0];
-                    }
+                    const uid = getActiveUid();
+                    if (!uid || !selectedSubject.value) return;
+                    const safeDate = gradeForm.value.date || new Date().toISOString().split('T')[0];
+                    gradeForm.value.date = safeDate;
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                     const subId = selectedSubject.value.id;
-                    const ref = doc(db, 'users', user.value.uid, collName, subId);
-                    
-                    const calculatedSemester = determineSemesterFromDate(gradeForm.value.date);
-                    const ng = { 
-                        ...gradeForm.value, 
-                        id: gradeForm.value.id || crypto.randomUUID(), 
-                        semester: calculatedSemester,
-                        sourceTaskId: gradeFormSourceTaskId.value || gradeForm.value.sourceTaskId || null
-                    };
+                    const sourceTaskId = gradeFormSourceTaskId.value || gradeForm.value.sourceTaskId || null;
 
-                    // 1. Sofort lokales reaktives Update durchführen (funktioniert sofort & 100% offline!)
-                    const existingGrades = [...(selectedSubject.value.grades || [])];
-                    const updatedGrades = gradeForm.value.id 
-                        ? existingGrades.map(g => g.id === ng.id ? ng : g) 
+                    const calculatedSemester = determineSemesterFromDate(safeDate);
+                    const gradeId = gradeForm.value.id || generateStableId('g');
+                    const parsedPoints = Number(gradeForm.value.points);
+                    const safePoints = Number.isFinite(parsedPoints) ? parsedPoints : (gradeSystem.value === '6' ? 3 : 10);
+                    const ng = sanitizeFirestoreValue({
+                        id: gradeId,
+                        points: safePoints,
+                        type: gradeForm.value.type || 'Klausur',
+                        label: gradeForm.value.label || '',
+                        date: safeDate,
+                        pending: Boolean(gradeForm.value.pending),
+                        semester: calculatedSemester,
+                        sourceTaskId: sourceTaskId || null,
+                        updatedAt: Date.now()
+                    });
+
+                    // 1. Sofort vom aktuellsten Fächer-Stand aus aktualisieren + in Outbox & localStorage sichern!
+                    const liveSubject = (subjects.value || []).find(s => s.id === subId) || selectedSubject.value;
+                    const existingGrades = [...(liveSubject.grades || [])];
+                    const hasExisting = Boolean(gradeForm.value.id) && existingGrades.some(g => g.id === ng.id);
+                    const updatedGrades = hasExisting
+                        ? existingGrades.map(g => g.id === ng.id ? ng : g)
                         : [...existingGrades, ng];
 
-                    selectedSubject.value.grades = updatedGrades;
+                    selectedSubject.value = { ...liveSubject, grades: updatedGrades };
                     const sIdx = subjects.value.findIndex(s => s.id === subId);
                     if (sIdx !== -1) {
-                        subjects.value[sIdx].grades = updatedGrades;
+                        subjects.value[sIdx] = { ...subjects.value[sIdx], grades: updatedGrades };
                         subjects.value = [...subjects.value];
                     }
-                    if (user.value) {
-                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
+                    try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
+
+                    enqueuePendingOp(uid, {
+                        key: `grade:${collName}:${subId}:${ng.id}`,
+                        opType: 'upsert_grade',
+                        collName,
+                        subjectId: subId,
+                        gradeId: ng.id,
+                        grade: ng
+                    });
+
+                    // Wenn die Note aus einer geplanten Klausur/Test heraus eingetragen wurde: Aufgabe lokal & per Outbox erledigen
+                    if (gradeFormSourceTaskId.value) {
+                        const tid = gradeFormSourceTaskId.value;
+                        const existingTask = (tasks.value || []).find(t => t.id === tid);
+                        if (existingTask) {
+                            const updatedTask = { ...existingTask, done: true };
+                            tasks.value = tasks.value.map(t => t.id === tid ? updatedTask : t);
+                            try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+                            const { id: _dropId, ...taskPayload } = updatedTask;
+                            enqueuePendingOp(uid, { key: `task:${tid}`, opType: 'upsert_task', taskId: tid, data: taskPayload });
+                        }
+                        gradeFormSourceTaskId.value = null;
                     }
 
                     closeModal('isGradeModalOpen');
                     await nextTick(refreshIcons);
 
-                    // 2. An Firestore senden (mit persistentLocalCache offline-sicher in IndexedDB gespeichert & synchronisiert)
-                    try {
-                        await updateDoc(ref, { grades: updatedGrades });
-
-                        // Wenn die Note aus einer geplanten Klausur/Test heraus eingetragen wurde: Aufgabe im Planer als erledigt markieren
-                        if (gradeFormSourceTaskId.value && user.value) {
-                            try {
-                                await updateDoc(doc(db, 'users', user.value.uid, 'tasks', gradeFormSourceTaskId.value), { done: true });
-                            } catch (e) { console.warn('Aufgabe konnte nicht als erledigt markiert werden', e); }
-                            gradeFormSourceTaskId.value = null;
-                        }
-                    } catch (err) {
-                        console.warn("Offline/Sync-Hinweis beim Speichern der Note:", err);
-                        try {
-                            await setDoc(ref, { grades: updatedGrades }, { merge: true });
-                        } catch (setErr) {
-                            console.error("Fehler beim lokalen Speichern der Note:", setErr);
-                        }
-                    }
+                    // 2. Atomar gegen Server-Stand mergen und hochladen (Outbox behält Note bis Server bestätigt!)
+                    await flushPendingUserOps(uid);
                 };
 
                 const pendingDeleteGrade = ref(null);
@@ -15578,6 +15777,7 @@
                 };
 
                 const handleDeleteGrade = async (gradeOrId) => {
+                    const uid = getActiveUid();
                     if (!selectedSubject.value) return;
 
                     // Unterstütze Übergabe eines Note-Objekts ODER einer ID
@@ -15605,107 +15805,106 @@
                     }
 
                     // Falls es sich um eine Planer-Klausur handelt:
-                    if (sourceTaskId && user.value) {
-                        try {
-                            await deleteDoc(doc(db, 'users', user.value.uid, 'tasks', sourceTaskId));
-                            tasks.value = tasks.value.filter(t => t.id !== sourceTaskId);
-                            try { localStorage.setItem('sf_tasks_' + user.value.uid, JSON.stringify(tasks.value)); } catch (_) {}
-                        } catch (e) {
-                            console.warn('Fehler beim Löschen der Planer-Aufgabe:', e);
-                        }
+                    if (sourceTaskId && uid) {
+                        tasks.value = (tasks.value || []).filter(t => t.id !== sourceTaskId);
+                        try { localStorage.setItem('sf_tasks_' + uid, JSON.stringify(tasks.value)); } catch (_) {}
+                        enqueuePendingOp(uid, { key: `task:${sourceTaskId}`, opType: 'delete_task', taskId: sourceTaskId });
                     }
 
                     const subId = selectedSubject.value.id;
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                    const liveSubject = (subjects.value || []).find(s => s.id === subId) || selectedSubject.value;
 
                     // 1. Sofort lokales reaktives Filtern
-                    const existingGrades = selectedSubject.value.grades || [];
+                    const existingGrades = liveSubject.grades || [];
                     let removed = false;
+                    let removedGradeId = targetId;
                     const filtered = existingGrades.filter(g => {
                         if (removed) return true; // Nur eine Note entfernen bei exakten Duplikaten
                         if (targetId && g.id && g.id === targetId) {
                             removed = true;
+                            removedGradeId = g.id;
                             return false;
                         }
-                        // Fallback-Abgleich anhand von Datum, Punkten und Typ/Label
                         const pointsMatch = Number(g.points) === Number(targetPoints);
                         const dateMatch = !targetDate || g.date === targetDate;
                         const typeMatch = !targetType || g.type === targetType;
                         const labelMatch = (g.label || '').trim() === (targetLabel || '').trim();
                         if (pointsMatch && dateMatch && (labelMatch || typeMatch)) {
                             removed = true;
+                            if (g.id) removedGradeId = g.id;
                             return false;
                         }
                         return true;
                     });
 
-                    selectedSubject.value = { ...selectedSubject.value, grades: filtered };
+                    selectedSubject.value = { ...liveSubject, grades: filtered };
                     const sIdx = subjects.value.findIndex(s => s.id === subId);
                     if (sIdx !== -1) {
                         subjects.value[sIdx] = { ...subjects.value[sIdx], grades: filtered };
                         subjects.value = [...subjects.value];
                     }
 
-                    if (user.value) {
-                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
+                    if (uid) {
+                        try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        const opKeyId = removedGradeId || `${targetDate || ''}_${targetPoints ?? ''}_${targetType || ''}`;
+                        enqueuePendingOp(uid, {
+                            key: `grade:${collName}:${subId}:${opKeyId}`,
+                            opType: 'delete_grade',
+                            collName,
+                            subjectId: subId,
+                            gradeId: removedGradeId || null,
+                            matchFallback: sanitizeFirestoreValue({
+                                id: removedGradeId || null,
+                                date: targetDate || null,
+                                points: targetPoints ?? null,
+                                label: targetLabel || '',
+                                type: targetType || null
+                            })
+                        });
                     }
 
                     closeModal('isGradeModalOpen');
                     await nextTick(refreshIcons);
 
-                    // 2. An Firestore senden
-                    try {
-                        if (user.value) {
-                            const ref = doc(db, 'users', user.value.uid, collName, subId);
-                            await updateDoc(ref, { grades: filtered });
-                        }
-                    } catch (err) {
-                        console.warn("Offline/Sync-Hinweis beim Löschen der Note:", err);
-                        try {
-                            if (user.value) {
-                                const ref = doc(db, 'users', user.value.uid, collName, subId);
-                                await setDoc(ref, { grades: filtered }, { merge: true });
-                            }
-                        } catch (e) {
-                            console.error("Fehler beim Speichern der Notenänderung:", e);
-                        }
+                    if (uid) {
+                        await flushPendingUserOps(uid);
                     }
                 };
 
                 const handleSaveReportCardGrade = async (pts) => {
-                    if (user.value && selectedSubject.value) {
+                    const uid = getActiveUid();
+                    if (uid && selectedSubject.value) {
                         const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                         const key = selectedReportCardKey.value;
                         const subId = selectedSubject.value.id;
-                        const existing = { ...(selectedSubject.value.reportCardGrades || {}) };
+                        const liveSubject = (subjects.value || []).find(s => s.id === subId) || selectedSubject.value;
+                        const existing = { ...(liveSubject.reportCardGrades || {}) };
                         if (pts === null) {
                             delete existing[key];
                         } else {
                             existing[key] = pts;
                         }
 
-                        // Sofort lokales Update
-                        selectedSubject.value.reportCardGrades = existing;
+                        // Sofort lokales Update + Outbox sichern
+                        selectedSubject.value = { ...liveSubject, reportCardGrades: existing };
                         const sIdx = subjects.value.findIndex(s => s.id === subId);
                         if (sIdx !== -1) {
-                            subjects.value[sIdx].reportCardGrades = existing;
+                            subjects.value[sIdx] = { ...subjects.value[sIdx], reportCardGrades: existing };
                             subjects.value = [...subjects.value];
                         }
-                        try { localStorage.setItem('sf_subjects_' + user.value.uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        try { localStorage.setItem('sf_subjects_' + uid, JSON.stringify(subjects.value)); } catch (_) {}
+                        enqueuePendingOp(uid, {
+                            key: `rc:${collName}:${subId}:${key}`,
+                            opType: 'set_report_card_grade',
+                            collName,
+                            subjectId: subId,
+                            halfYearKey: key,
+                            points: pts
+                        });
 
                         closeModal('isReportCardModalOpen');
-
-                        try {
-                            const subRef = doc(db, 'users', user.value.uid, collName, subId);
-                            await updateDoc(subRef, { reportCardGrades: existing });
-                        } catch (e) {
-                            try {
-                                const subRef = doc(db, 'users', user.value.uid, collName, subId);
-                                await setDoc(subRef, { reportCardGrades: existing }, { merge: true });
-                            } catch (err) {
-                                console.error('Fehler beim Speichern der Zeugnisnote:', err);
-                            }
-                        }
+                        await flushPendingUserOps(uid);
                     }
                 };
 
