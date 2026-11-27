@@ -418,7 +418,45 @@ export async function flushPendingOpsQueue(uid, deps) {
 
         do {
             pendingReflushUids.delete(uid);
-            const ops = readPendingOps(uid, storage);
+            const rawOps = readPendingOps(uid, storage);
+            if (rawOps.length === 0) break;
+
+            const validOpTypes = new Set([
+                'upsert_subject',
+                'delete_subject',
+                'upsert_grade',
+                'delete_grade',
+                'set_report_card_grade',
+                'upsert_task',
+                'delete_task',
+                'patch_config',
+                'set_exam_scores'
+            ]);
+            const invalidAck = [];
+            const ops = [];
+            for (const op of rawOps) {
+                const isSubjectOrGrade =
+                    op?.opType === 'upsert_subject' ||
+                    op?.opType === 'delete_subject' ||
+                    op?.opType === 'upsert_grade' ||
+                    op?.opType === 'delete_grade' ||
+                    op?.opType === 'set_report_card_grade';
+                const isTask = op?.opType === 'upsert_task' || op?.opType === 'delete_task';
+                const isMalformed =
+                    !op ||
+                    !op.key ||
+                    !validOpTypes.has(op.opType) ||
+                    (isSubjectOrGrade && !op.subjectId) ||
+                    (isTask && !op.taskId);
+                if (isMalformed) {
+                    if (op?.key) invalidAck.push({ key: op.key, opId: op.opId });
+                } else {
+                    ops.push(op);
+                }
+            }
+            if (invalidAck.length > 0) {
+                removePendingOpsByAck(uid, invalidAck, storage);
+            }
             if (ops.length === 0) break;
 
             const sortedOps = [...ops].sort((a, b) => (a.updatedAt || 0) - (b.updatedAt || 0));

@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v65';
+        const CURRENT_BUILD = 'schooly-v66';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v65') {
+                        if (k !== 'schooly-cache-v66') {
                             caches.delete(k);
                         }
                     });
@@ -8609,7 +8609,7 @@
     </div><!-- /#app -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+        import { initializeAuth, getAuth, setPersistence, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
         import { initializeFirestore, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
         import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
         import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp as enqueuePendingOpRaw, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout, filterIncomingFriendRequests, countNotificationBadges, detectNewFriendNotifications } from "/src/sync-engine.js";
@@ -8724,7 +8724,79 @@
             db = getFirestore(app);
         }
 
-        const auth = getAuth(app);
+        // Vorhandene Auth-Sitzung einmalig schnell aus IndexedDB nach localStorage übernehmen (max. 350ms, verhindert IDB-Hänger auf iOS/Android PWAs)
+        const migrateIdbAuthToLocalStorage = (apiKey) => new Promise((resolve) => {
+            try {
+                const authStorageKey = `firebase:authUser:${apiKey}:[DEFAULT]`;
+                if (typeof localStorage !== 'undefined' && localStorage.getItem(authStorageKey)) {
+                    return resolve();
+                }
+                if (typeof indexedDB === 'undefined') return resolve();
+                let done = false;
+                const finish = () => {
+                    if (!done) {
+                        done = true;
+                        resolve();
+                    }
+                };
+                const timer = setTimeout(finish, 350);
+                const openReq = indexedDB.open('firebaseLocalStorageDb');
+                openReq.onerror = () => { clearTimeout(timer); finish(); };
+                openReq.onblocked = () => { clearTimeout(timer); finish(); };
+                openReq.onupgradeneeded = () => {
+                    try { openReq.transaction?.abort(); } catch (_) {}
+                    clearTimeout(timer);
+                    finish();
+                };
+                openReq.onsuccess = () => {
+                    try {
+                        const idb = openReq.result;
+                        if (!idb.objectStoreNames.contains('firebaseLocalStorage')) {
+                            idb.close();
+                            clearTimeout(timer);
+                            return finish();
+                        }
+                        const tx = idb.transaction('firebaseLocalStorage', 'readonly');
+                        const getReq = tx.objectStore('firebaseLocalStorage').get(authStorageKey);
+                        getReq.onsuccess = () => {
+                            try {
+                                const rec = getReq.result;
+                                const rawVal = rec?.value;
+                                if (rawVal && typeof localStorage !== 'undefined' && !localStorage.getItem(authStorageKey)) {
+                                    localStorage.setItem(authStorageKey, typeof rawVal === 'string' ? rawVal : JSON.stringify(rawVal));
+                                }
+                            } catch (_) {}
+                            try { idb.close(); } catch (_) {}
+                            clearTimeout(timer);
+                            finish();
+                        };
+                        getReq.onerror = () => {
+                            try { idb.close(); } catch (_) {}
+                            clearTimeout(timer);
+                            finish();
+                        };
+                    } catch (_) {
+                        clearTimeout(timer);
+                        finish();
+                    }
+                };
+            } catch (_) {
+                resolve();
+            }
+        });
+
+        let auth;
+        const authBootstrapPromise = migrateIdbAuthToLocalStorage(firebaseConfig.apiKey)
+            .catch(() => {})
+            .finally(() => {
+                try {
+                    auth = initializeAuth(app, {
+                        persistence: [browserLocalPersistence, indexedDBLocalPersistence, browserSessionPersistence, inMemoryPersistence]
+                    });
+                } catch (_) {
+                    auth = getAuth(app);
+                }
+            });
 
         // PWA-Service-Worker-Registrierung für Offline App-Shell & automatische App-Updates beim Öffnen
         if ('serviceWorker' in navigator) {
@@ -10673,23 +10745,46 @@
                     const uid = getActiveUid();
                     if (fcmToken && uid) {
                         let storedTokens = [...knownFcmTokens];
+                        let lsCfg = {};
                         try {
-                            const lsCfg = JSON.parse(localStorage.getItem('sf_user_config_' + uid) || '{}');
+                            lsCfg = JSON.parse(localStorage.getItem('sf_user_config_' + uid) || '{}');
                             if (Array.isArray(lsCfg.fcmTokens)) storedTokens.push(...lsCfg.fcmTokens);
                             if (typeof lsCfg.fcmToken === 'string' && lsCfg.fcmToken) storedTokens.push(lsCfg.fcmToken);
                         } catch (_) {}
-                        const mergedTokens = Array.from(new Set([
-                            ...storedTokens.filter(t => typeof t === 'string' && t.trim()),
-                            fcmToken
-                        ])).slice(-10);
-                        knownFcmTokens = mergedTokens;
+                        const existingUnique = Array.from(new Set(storedTokens.filter(t => typeof t === 'string' && t.trim())));
+                        const alreadySynced = existingUnique.includes(fcmToken) && lsCfg.fcmToken === fcmToken;
+                        knownFcmTokens = existingUnique.includes(fcmToken)
+                            ? existingUnique.slice(-10)
+                            : [...existingUnique, fcmToken].slice(-10);
+
+                        if (alreadySynced && !interactive) {
+                            pushSetupStatus.value = 'ok';
+                            return fcmToken;
+                        }
+
                         const tokenPatch = {
                             fcmToken,
-                            fcmTokens: mergedTokens,
+                            fcmTokens: knownFcmTokens,
                             fcmTokenUpdatedAt: new Date().toISOString()
                         };
-                        enqueueConfigPatch(uid, 'fcm', tokenPatch);
-                        await setDoc(doc(db, 'users', uid, 'settings', 'config'), tokenPatch, { merge: true }).catch(() => {});
+                        try {
+                            localStorage.setItem('sf_user_config_' + uid, JSON.stringify({ ...lsCfg, ...tokenPatch }));
+                        } catch (_) {}
+
+                        if (navigator.onLine !== false && auth.currentUser?.uid === uid) {
+                            try {
+                                await withTimeout(
+                                    setDoc(doc(db, 'users', uid, 'settings', 'config'), tokenPatch, { merge: true }),
+                                    8000,
+                                    'fcm-save-timeout'
+                                );
+                                pushSetupStatus.value = 'ok';
+                                return fcmToken;
+                            } catch (_) {}
+                        }
+                        if (interactive) {
+                            enqueueConfigPatch(uid, 'fcm', tokenPatch);
+                        }
                         pushSetupStatus.value = 'ok';
                         return fcmToken;
                     }
@@ -13337,9 +13432,13 @@
                 };
 
                 const handleAuth = async () => {
-                    const cleanEmail = (email.value || '').trim();
+                    const domEmail = typeof document !== 'undefined' ? (document.getElementById('auth-email')?.value || '') : '';
+                    const domPassword = typeof document !== 'undefined' ? (document.getElementById('auth-password')?.value || '') : '';
+                    const cleanEmail = (email.value || domEmail || '').trim();
+                    const activePassword = password.value || domPassword || '';
                     email.value = cleanEmail;
-                    if (!cleanEmail || !password.value) {
+                    if (!password.value && activePassword) password.value = activePassword;
+                    if (!cleanEmail || !activePassword) {
                         authError.value = 'Bitte E-Mail-Adresse und Passwort eingeben.';
                         return;
                     }
@@ -13413,14 +13512,16 @@
                             }
 
                             if (userCredential?.user) {
-                                await activateAuthenticatedUser(userCredential.user);
+                                loading.value = false;
+                                activateAuthenticatedUser(userCredential.user);
                             }
                         } else {
                             const userCredential = await performAuthWithPersistenceFallback(() =>
-                                signInWithEmailAndPassword(auth, cleanEmail, password.value)
+                                signInWithEmailAndPassword(auth, cleanEmail, activePassword)
                             );
                             if (userCredential?.user) {
-                                await activateAuthenticatedUser(userCredential.user);
+                                loading.value = false;
+                                activateAuthenticatedUser(userCredential.user);
                             }
                         }
                     } catch (err) {
@@ -17737,7 +17838,9 @@
         vueApp.config.globalProperties.getMemberAvatar = window.getMemberAvatar;
         vueApp.config.globalProperties.resolveAvatar = window.resolveAvatar;
         vueApp.config.globalProperties.isImageAvatar = window.isImageAvatar;
-        vueApp.mount('#app');
+        authBootstrapPromise.finally(() => {
+            vueApp.mount('#app');
+        });
     </script>
 </body>
 </html>
