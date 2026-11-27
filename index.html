@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v63';
+        const CURRENT_BUILD = 'schooly-v64';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v63') {
+                        if (k !== 'schooly-cache-v64') {
                             caches.delete(k);
                         }
                     });
@@ -2502,11 +2502,15 @@
     <div id="app" v-cloak>
         <!-- OFFLINE & PENDING-SYNC BANNER -->
         <transition enter-active-class="transition duration-300 ease-out" enter-from-class="-translate-y-4 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-200 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="-translate-y-4 opacity-0">
-            <div v-if="!isOnline || pendingSyncCount > 0 || syncNeedsRelogin" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999]">
+            <div v-if="!isOnline || pendingSyncCount > 0 || (user && syncNeedsRelogin)" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999]">
                 <div v-if="!isOnline" class="px-4 py-2 bg-[#2d2926]/90 backdrop-blur-md text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/10 pointer-events-none whitespace-nowrap">
                     <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                     <span v-if="pendingSyncCount > 0">Offline &middot; {{ pendingSyncCount }} Änderung{{ pendingSyncCount === 1 ? '' : 'en' }} lokal gesichert</span>
                     <span v-else>Offline &middot; Noten werden lokal gesichert &amp; später synchronisiert</span>
+                </div>
+                <div v-else-if="!user && pendingSyncCount > 0" class="px-4 py-2 bg-[#133122]/95 backdrop-blur-md text-[#f7f2e8] text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/15 pointer-events-none whitespace-nowrap">
+                    <span class="w-2 h-2 rounded-full bg-[#ff9e2c]"></span>
+                    <span>{{ pendingSyncCount }} Offline-Änderung{{ pendingSyncCount === 1 ? '' : 'en' }} warten auf Anmeldung</span>
                 </div>
                 <button v-else-if="syncNeedsRelogin" type="button" @click="handleReloginPrompt"
                         class="px-4 py-2 bg-[#7c2d12]/95 hover:bg-[#7c2d12] backdrop-blur-md text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/15 cursor-pointer whitespace-nowrap">
@@ -8598,7 +8602,7 @@
     </div><!-- /#app -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+        import { getAuth, setPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
         import { initializeFirestore, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
         import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp as enqueuePendingOpRaw, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout, filterIncomingFriendRequests, countNotificationBadges, detectNewFriendNotifications } from "/src/sync-engine.js";
@@ -11574,7 +11578,7 @@
                             tryRecoverFirestoreQueue();
                         }
                         if (user.value && (!auth.currentUser || auth.currentUser.uid !== user.value.uid)) {
-                            const restored = await waitForFirebaseAuth(4500);
+                            const restored = await waitForFirebaseAuth(5000);
                             if (!restored || restored.uid !== user.value.uid) {
                                 const pendingCount = readPendingOps(user.value.uid).length;
                                 if (pendingCount > 0) {
@@ -11612,64 +11616,21 @@
                     });
 
                     onAuthStateChanged(auth, async (currentUser) => {
-                        // Sofort Lade-Spinner beenden & Splash verstecken (0ms Feedback!)
                         authLoading.value = false;
                         hideSplash();
 
                         if (currentUser) {
-                            syncNeedsRelogin.value = false;
-                            const prevActiveUid = user.value?.uid || lastSavedUid || '';
-                            user.value = currentUser;
-                            refreshPendingSyncCount(currentUser.uid);
-                            try {
-                                localStorage.setItem('sf_cached_user', JSON.stringify({
-                                    uid: currentUser.uid,
-                                    email: currentUser.email,
-                                    displayName: currentUser.displayName
-                                }));
-                                localStorage.setItem('sf_last_uid', currentUser.uid);
-                            } catch (_) {}
-
-                            const pendingOps = readPendingOps(currentUser.uid);
-                            // Lokale zwischengespeicherte Einstellungen sofort anwenden (gemerged mit ausstehenden Änderungen)
-                            try {
-                                const cachedConfigRaw = localStorage.getItem('sf_user_config_' + currentUser.uid);
-                                const mergedCfg = mergeConfigWithPendingOps(cachedConfigRaw ? JSON.parse(cachedConfigRaw) : {}, pendingOps);
-                                if (Object.keys(mergedCfg).length > 0) applyConfigData(mergedCfg);
-                            } catch (_) {}
-
-                            // Bei Nutzerwechsel sofort eigene lokale Fächer/Aufgaben laden (kein Daten-Leak vom vorherigen Konto)
-                            if (prevActiveUid !== currentUser.uid) {
-                                try {
-                                    const collInit = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
-                                    const sRaw = localStorage.getItem('sf_subjects_' + currentUser.uid);
-                                    subjects.value = mergeSubjectsWithPendingOps(sRaw ? JSON.parse(sRaw) : [], pendingOps, collInit);
-                                    const tRaw = localStorage.getItem('sf_tasks_' + currentUser.uid);
-                                    tasks.value = mergeTasksWithPendingOps(tRaw ? JSON.parse(tRaw) : [], pendingOps);
-                                } catch (_) {
-                                    subjects.value = [];
-                                    tasks.value = [];
-                                }
-                            }
-
-                            // Authentifizierte Echtzeit-Listener starten (ohne unnötigen Teardown laufender Listener)
-                            if (!firestoreQueueBroken) {
-                                ensureLiveListeners(currentUser.uid, { force: false });
-                            }
-                            await flushPendingTaskDoneSync(currentUser.uid);
-                            await flushPendingUserOps(currentUser.uid, { forceReset: true });
-                            loadExamScores(currentUser.uid);
-                            ensurePublicProfile(currentUser.uid);
-                            if (selectedFriend.value?.uid) {
-                                loadSelectedFriendSubjects(selectedFriend.value.uid, true);
-                            }
-
-                            // Direkter Server-Abgleich beim App-Start (flusht Outbox zuerst und merged sauber)
-                            syncAllUserDataFromServer(currentUser.uid, { force: true, checkOnboarding: true });
+                            await activateAuthenticatedUser(currentUser);
                         } else {
-                            // Wenn online und keine gültige Firebase Auth-Sitzung existiert (z.B. PWA nach Cache/Neuinstallation),
-                            // keine unauthentifizierte "Zombie-Sitzung" halten (sonst scheitern Nutzer/Freunde mit permission-denied).
-                            if (!initialCachedUser || navigator.onLine !== false) {
+                            const activeUid = user.value?.uid || initialCachedUser?.uid || '';
+                            const hasPending = activeUid ? readPendingOps(activeUid).length > 0 : false;
+                            if (hasPending && user.value) {
+                                // Offline-Änderungen niemals durch automatischen Auto-Logout verdecken;
+                                // bei bestehender Verbindung gezielt zur erneuten Anmeldung auffordern.
+                                if (navigator.onLine !== false) {
+                                    syncNeedsRelogin.value = true;
+                                }
+                            } else if (!initialCachedUser || navigator.onLine !== false) {
                                 user.value = null;
                                 isOnboarding.value = false;
                                 unsubscribeAllListeners();
@@ -11679,6 +11640,81 @@
                         refreshIcons();
                     });
                 });
+
+                let lastActivatedUid = '';
+                let activationInFlight = null;
+                const activateAuthenticatedUser = async (currentUser) => {
+                    if (!currentUser || !currentUser.uid) return;
+                    const uid = currentUser.uid;
+                    if (activationInFlight && activationInFlight.uid === uid) {
+                        return activationInFlight.promise;
+                    }
+                    const run = (async () => {
+                        authLoading.value = false;
+                        loading.value = false;
+                        authError.value = '';
+                        syncNeedsRelogin.value = false;
+                        const wasLoggedOutView = !user.value;
+                        const prevActiveUid = user.value?.uid || lastActivatedUid || lastSavedUid || '';
+                        user.value = currentUser;
+                        lastActivatedUid = uid;
+                        refreshPendingSyncCount(uid);
+                        try {
+                            localStorage.setItem('sf_cached_user', JSON.stringify({
+                                uid,
+                                email: currentUser.email,
+                                displayName: currentUser.displayName
+                            }));
+                            localStorage.setItem('sf_last_uid', uid);
+                        } catch (_) {}
+
+                        const pendingOps = readPendingOps(uid);
+                        // Lokale zwischengespeicherte Einstellungen sofort anwenden (gemerged mit ausstehenden Änderungen)
+                        try {
+                            const cachedConfigRaw = localStorage.getItem('sf_user_config_' + uid);
+                            const mergedCfg = mergeConfigWithPendingOps(cachedConfigRaw ? JSON.parse(cachedConfigRaw) : {}, pendingOps);
+                            if (Object.keys(mergedCfg).length > 0) applyConfigData(mergedCfg);
+                        } catch (_) {}
+
+                        // Bei Nutzerwechsel oder nach manuellem Logout sofort eigene lokale Fächer/Aufgaben laden (inkl. Offline-Outbox)
+                        if (prevActiveUid !== uid || wasLoggedOutView || (subjects.value || []).length === 0) {
+                            try {
+                                const collInit = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                                const sRaw = localStorage.getItem('sf_subjects_' + uid);
+                                subjects.value = mergeSubjectsWithPendingOps(sRaw ? JSON.parse(sRaw) : [], pendingOps, collInit);
+                                const tRaw = localStorage.getItem('sf_tasks_' + uid);
+                                tasks.value = mergeTasksWithPendingOps(tRaw ? JSON.parse(tRaw) : [], pendingOps);
+                            } catch (_) {
+                                subjects.value = [];
+                                tasks.value = [];
+                            }
+                        }
+
+                        // Authentifizierte Echtzeit-Listener starten (ohne unnötigen Teardown laufender Listener)
+                        if (!firestoreQueueBroken) {
+                            ensureLiveListeners(uid, { force: wasLoggedOutView });
+                        }
+                        await flushPendingTaskDoneSync(uid);
+                        await flushPendingUserOps(uid, { forceReset: true });
+                        loadExamScores(uid);
+                        ensurePublicProfile(uid);
+                        if (selectedFriend.value?.uid) {
+                            loadSelectedFriendSubjects(selectedFriend.value.uid, true);
+                        }
+
+                        // Direkter Server-Abgleich beim App-Start / Login (flusht Outbox zuerst und merged sauber)
+                        syncAllUserDataFromServer(uid, { force: true, checkOnboarding: true });
+                        refreshIcons();
+                    })();
+                    activationInFlight = { uid, promise: run };
+                    try {
+                        await run;
+                    } finally {
+                        if (activationInFlight?.promise === run) {
+                            activationInFlight = null;
+                        }
+                    }
+                };
 
                 // Onboarding-Daten abschicken
                 const submitOnboarding = async () => {
@@ -12240,7 +12276,7 @@
                     const uid = user.value?.uid || auth.currentUser?.uid || getActiveUid();
                     if (!uid) return;
                     if (!auth.currentUser || auth.currentUser.uid !== uid) {
-                        const restored = await waitForFirebaseAuth(4500);
+                        const restored = await waitForFirebaseAuth(5500);
                         if (!restored || restored.uid !== uid) {
                             syncNeedsRelogin.value = true;
                             showToast('Bitte neu anmelden, um ausstehende Änderungen hochzuladen', {
@@ -12259,12 +12295,42 @@
                     refreshSocialData({ quiet: true });
                     if ((res?.remaining || 0) === 0 && readPendingOps(uid).length === 0) {
                         showToast('Alles synchronisiert ✓');
+                    } else if (res?.hadAuthError) {
+                        syncNeedsRelogin.value = true;
+                        showToast('Sitzung abgelaufen – zum Hochladen bitte neu anmelden', {
+                            actionLabel: 'Anmelden',
+                            duration: 5000,
+                            onAction: () => handleReloginPrompt()
+                        });
                     } else {
                         showToast('Synchronisation wird im Hintergrund erneut versucht');
                     }
                 };
 
-                const handleReloginPrompt = () => {
+                const handleReloginPrompt = async () => {
+                    // Erst prüfen, ob Firebase Auth sich inzwischen doch noch wiederhergestellt hat -> dann direkt synchronisieren statt ausloggen!
+                    const activeUid = user.value?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    if (!auth.currentUser) {
+                        await waitForFirebaseAuth(1500);
+                    }
+                    if (auth.currentUser && (!activeUid || auth.currentUser.uid === activeUid)) {
+                        try {
+                            await auth.currentUser.getIdToken(true);
+                            await activateAuthenticatedUser(auth.currentUser);
+                            showToast('Sitzung wiederhergestellt – synchronisiere …');
+                            return;
+                        } catch (_) {
+                            // Token wirklich abgelaufen -> regulär zum Login wechseln
+                        }
+                    }
+                    const knownEmail = user.value?.email || initialCachedUser?.email || '';
+                    if (!email.value && knownEmail) {
+                        email.value = knownEmail;
+                    }
+                    isRegistering.value = false;
+                    authError.value = '';
+                    loading.value = false;
+                    authLoading.value = false;
                     syncNeedsRelogin.value = false;
                     unsubscribeAllListeners();
                     user.value = null;
@@ -13073,7 +13139,55 @@
                 };
                 const isToday = (dateStr) => { const d = new Date(); return dateStr === `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 
+                const performAuthWithPersistenceFallback = async (authOperation) => {
+                    try {
+                        return await withTimeout(authOperation(), 15000, 'auth-timeout');
+                    } catch (firstErr) {
+                        const code = String(firstErr?.code || '').toLowerCase();
+                        const msg = String(firstErr?.message || '').toLowerCase();
+                        const isStorageOrTimeout =
+                            code === 'deadline-exceeded' ||
+                            code.includes('internal-error') ||
+                            msg.includes('indexeddb') ||
+                            msg.includes('idb') ||
+                            msg.includes('persistence') ||
+                            msg.includes('storage');
+                        if (!isStorageOrTimeout) throw firstErr;
+
+                        // Falls IndexedDB in PWA/Safari blockiert oder hängt: auf localStorage / Session / Memory ausweichen
+                        const fallbacks = [browserLocalPersistence, browserSessionPersistence, inMemoryPersistence];
+                        let lastErr = firstErr;
+                        for (const p of fallbacks) {
+                            try {
+                                await withTimeout(setPersistence(auth, p), 4000, 'persistence-timeout');
+                                return await withTimeout(authOperation(), 15000, 'auth-retry-timeout');
+                            } catch (retryErr) {
+                                lastErr = retryErr;
+                                const retryCode = String(retryErr?.code || '').toLowerCase();
+                                if (
+                                    retryCode.includes('invalid-credential') ||
+                                    retryCode.includes('wrong-password') ||
+                                    retryCode.includes('user-not-found') ||
+                                    retryCode.includes('invalid-email') ||
+                                    retryCode.includes('email-already-in-use') ||
+                                    retryCode.includes('too-many-requests') ||
+                                    retryCode.includes('user-disabled')
+                                ) {
+                                    throw retryErr;
+                                }
+                            }
+                        }
+                        throw lastErr;
+                    }
+                };
+
                 const handleAuth = async () => {
+                    const cleanEmail = (email.value || '').trim();
+                    email.value = cleanEmail;
+                    if (!cleanEmail || !password.value) {
+                        authError.value = 'Bitte E-Mail-Adresse und Passwort eingeben.';
+                        return;
+                    }
                     authError.value = ''; loading.value = true;
                     try {
                         if (isRegistering.value) {
@@ -13089,7 +13203,9 @@
                             const isMasterCode = MASTER_ADMIN_CODES.includes(enteredCode) || enteredCode.startsWith('ADMIN-');
 
                             // Erst Nutzer erstellen (einloggen), dann Code prüfen
-                            const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+                            const userCredential = await performAuthWithPersistenceFallback(() =>
+                                createUserWithEmailAndPassword(auth, cleanEmail, password.value)
+                            );
 
                             if (!isMasterCode) {
                                 // Regulärer Code in Firestore prüfen
@@ -13106,7 +13222,7 @@
 
                                 await updateDoc(codeRef, {
                                     used: true,
-                                    usedBy: email.value,
+                                    usedBy: cleanEmail,
                                     usedAt: new Date().toISOString()
                                 });
                             } else {
@@ -13114,7 +13230,7 @@
                                 try {
                                     await setDoc(doc(db, 'users', userCredential.user.uid), {
                                         isAdmin: true,
-                                        email: email.value,
+                                        email: cleanEmail,
                                         createdAt: new Date().toISOString()
                                     }, { merge: true });
                                 } catch(e) { console.warn('Admin flag set error:', e); }
@@ -13122,7 +13238,7 @@
 
                             // Bestätigungsmail senden
                             try {
-                                await sendEmailVerification(auth.currentUser);
+                                await sendEmailVerification(auth.currentUser || userCredential.user);
                             } catch (mailErr) {
                                 console.warn('Verification email error:', mailErr);
                             }
@@ -13133,22 +13249,35 @@
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
-                                        email: email.value,
-                                        name: email.value.split('@')[0]
+                                        email: cleanEmail,
+                                        name: cleanEmail.split('@')[0]
                                     })
                                 });
                             } catch (mailErr) {
                                 console.warn('Welcome-Mail konnte nicht gesendet werden:', mailErr);
                             }
 
+                            if (userCredential?.user) {
+                                await activateAuthenticatedUser(userCredential.user);
+                            }
                         } else {
-                            await signInWithEmailAndPassword(auth, email.value, password.value);
+                            const userCredential = await performAuthWithPersistenceFallback(() =>
+                                signInWithEmailAndPassword(auth, cleanEmail, password.value)
+                            );
+                            if (userCredential?.user) {
+                                await activateAuthenticatedUser(userCredential.user);
+                            }
                         }
                     } catch (err) {
-                        if (err.code === 'auth/email-already-in-use') authError.value = 'Diese E-Mail ist bereits registriert.';
-                        else if (err.code === 'auth/weak-password') authError.value = 'Passwort muss mindestens 6 Zeichen haben.';
-                        else if (err.code === 'auth/invalid-email') authError.value = 'Ungültige E-Mail-Adresse.';
-                        else authError.value = 'Fehler bei der Anmeldung.';
+                        const code = String(err?.code || '');
+                        if (code === 'auth/email-already-in-use') authError.value = 'Diese E-Mail ist bereits registriert.';
+                        else if (code === 'auth/weak-password') authError.value = 'Passwort muss mindestens 6 Zeichen haben.';
+                        else if (code === 'auth/invalid-email') authError.value = 'Ungültige E-Mail-Adresse.';
+                        else if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') authError.value = 'E-Mail-Adresse oder Passwort ist falsch.';
+                        else if (code === 'auth/too-many-requests') authError.value = 'Zu viele Versuche. Bitte kurz warten und erneut versuchen.';
+                        else if (code === 'auth/network-request-failed' || code === 'deadline-exceeded') authError.value = 'Keine stabile Internetverbindung. Bitte Verbindung prüfen und erneut versuchen.';
+                        else if (code === 'auth/user-disabled') authError.value = 'Dieses Konto wurde deaktiviert.';
+                        else authError.value = code ? `Fehler bei der Anmeldung (${code}).` : 'Fehler bei der Anmeldung.';
                     } 
                     finally { loading.value = false; }
                 };
@@ -13158,6 +13287,8 @@
                     selectedSubject.value = null;
                     subjects.value = [];
                     tasks.value = [];
+                    lastActivatedUid = '';
+                    syncNeedsRelogin.value = false;
                     try { await signOut(auth); } catch (e) { console.warn('signOut:', e); }
                     user.value = null;
                     try {

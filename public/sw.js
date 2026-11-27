@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden, aktuelle App-Shell und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v63';
+const CACHE_NAME = 'schooly-cache-v64';
 
 const PRECACHE_URLS = [
   '/',
@@ -33,7 +33,7 @@ self.addEventListener('install', (event) => {
       for (const url of PRECACHE_URLS) {
         try {
           const isSameOrigin = url.startsWith('/');
-          const res = await fetch(url, isSameOrigin ? { cache: 'no-store' } : undefined);
+          const res = await fetch(url, isSameOrigin ? { cache: 'no-store' } : { mode: 'cors' });
           if (res && res.status === 200) {
             if (url === '/index.html') {
               try {
@@ -88,7 +88,7 @@ self.addEventListener('message', (event) => {
 
 // 3. Fetch-Strategie:
 // - Firebase & Google APIs: Direkt durchleiten (Outbox + Firestore handhaben Offline-Sync)
-// - Navigation: Network-First mit kurzem 4.5s Timeout (vermeidet langes Hängen im Standalone-Start)
+// - Navigation & /src/sync-engine.js: Network-First mit kurzem Timeout (vermeidet Versionskonflikte & Hänger)
 // - Statische Ressourcen & Module: Stale-While-Revalidate (sofortiger Start + stille Aktualisierung)
 self.addEventListener('fetch', (event) => {
   const req = event.request;
@@ -123,6 +123,34 @@ self.addEventListener('fetch', (event) => {
     url.search.includes('t=') ||
     url.pathname.includes('node_modules')
   ) {
+    return;
+  }
+
+  // A0. /src/sync-engine.js immer Network-First laden, damit index.html & sync-engine immer zusammenpassen
+  if (isSyncEngineSrc) {
+    event.respondWith(
+      (async () => {
+        try {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 3500);
+          const networkRes = await fetch('/src/sync-engine.js', {
+            cache: 'no-store',
+            credentials: 'same-origin',
+            signal: controller.signal
+          });
+          clearTimeout(timer);
+          if (networkRes && networkRes.status === 200) {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put('/src/sync-engine.js', networkRes.clone());
+            return networkRes;
+          }
+        } catch (_) {}
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match('/src/sync-engine.js') || await cache.match(req);
+        if (cached) return cached;
+        return fetch(req);
+      })()
+    );
     return;
   }
 
@@ -179,11 +207,16 @@ self.addEventListener('fetch', (event) => {
 
   // B. Statische & geladene Ressourcen (JS, CSS, Schriften, Bilder, Icons)
   const isSameOrigin = url.origin === self.location.origin;
+  const isCorsRequest = req.mode === 'cors';
   event.respondWith(
     caches.match(req).then(async (exactRes) => {
-      const cachedRes = exactRes || (!url.search.includes('html-proxy') ? await caches.match(req, { ignoreSearch: true }) : null);
+      let cachedRes = exactRes || (!url.search.includes('html-proxy') ? await caches.match(req, { ignoreSearch: true }) : null);
+      if (cachedRes && isCorsRequest && cachedRes.type === 'opaque') {
+        cachedRes = null;
+      }
       const fetchAndUpdate = fetch(req, isSameOrigin ? { cache: 'no-store' } : undefined).then((netRes) => {
-        if (netRes && (netRes.status === 200 || netRes.type === 'opaque')) {
+        const allowOpaque = !isCorsRequest && netRes.type === 'opaque';
+        if (netRes && (netRes.status === 200 || allowOpaque)) {
           const clone = netRes.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, clone)).catch(() => {});
         }
