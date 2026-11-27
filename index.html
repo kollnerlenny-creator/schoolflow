@@ -104,7 +104,7 @@
         // Globaler Failsafe: Bildschirm niemals weiß lassen & Firestore AsyncQueue Assertion-Stürme eindämmen
         const isFirestoreInternalAssertion = (val) => {
             const msg = String(val?.message || val || '');
-            return msg.includes('INTERNAL ASSERTION FAILED') || msg.includes('Unexpected state');
+            return msg.includes('INTERNAL ASSERTION FAILED') || (msg.includes('FIRESTORE') && msg.includes('Unexpected state'));
         };
         window.addEventListener('error', (e) => {
             if (isFirestoreInternalAssertion(e?.error || e?.message)) {
@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v61';
+        const CURRENT_BUILD = 'schooly-v62';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v61') {
+                        if (k !== 'schooly-cache-v62') {
                             caches.delete(k);
                         }
                     });
@@ -2986,33 +2986,45 @@
                 </div>
                 
                 <!-- Right Actions: Schlichte runde Buttons ohne äußeren Kasten -->
-                <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                     <!-- Admin Panel Button (Für Admin/Entwickler) -->
-                    <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-10 sm:h-11 shadow-2xs">
+                    <button v-if="isAdmin" @click="openAdminModal" title="Einladungscodes verwalten" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-[#2d694c]/12 hover:bg-[#2d694c]/20 border border-[#2d694c]/30 rounded-full text-[#2d694c] font-black text-xs transition-all cursor-pointer active:scale-95 h-9 sm:h-11 shadow-2xs">
                         <i data-lucide="key" class="w-4 h-4 shrink-0 text-[#2d694c]"></i>
-                        <span class="whitespace-nowrap">Admin 🔑</span>
+                        <span class="hidden sm:inline whitespace-nowrap">Admin 🔑</span>
                     </button>
-                    <button v-if="!isInstalled" @click="triggerInstall" title="App jetzt direkt installieren" class="install-btn relative flex items-center justify-center gap-1.5 h-9 sm:h-10 px-2.5 sm:px-3.5 bg-[#2d694c] hover:bg-[#23533c] rounded-full border border-[#23533c] text-white font-extrabold text-[11px] sm:text-xs transition-all cursor-pointer active:scale-95 shadow-sm">
+                    <button v-if="!isInstalled" @click="triggerInstall" title="App jetzt direkt installieren" aria-label="App installieren" class="install-btn relative flex items-center justify-center gap-1.5 h-9 sm:h-10 px-2.5 sm:px-3.5 bg-[#2d694c] hover:bg-[#23533c] rounded-full border border-[#23533c] text-white font-extrabold text-[11px] sm:text-xs transition-all cursor-pointer active:scale-95 shadow-sm">
                         <span class="relative flex h-2 w-2 shrink-0">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffe6b9] opacity-90"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-[#f3c471]"></span>
                         </span>
                         <i data-lucide="download" class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-white"></i>
-                        <span class="whitespace-nowrap">Installieren</span>
+                        <span class="hidden sm:inline whitespace-nowrap">Installieren</span>
                     </button>
                     <!-- Design-Modus Toggle Button (Light -> Abendpapier -> Dämmerung -> Dark) -->
                     <button @click="toggleDarkMode"
                             :title="colorMode === 'light' ? 'Modus: Light — Klick für Abendpapier' : (colorMode === 'evening' ? 'Modus: Abendpapier — Klick für Dämmerung' : (colorMode === 'dim' ? 'Modus: Dämmerung — Klick für Dark' : 'Modus: Dark — Klick für Light'))"
                             :aria-label="colorMode === 'light' ? 'Abendpapier aktivieren' : (colorMode === 'evening' ? 'Dämmerung aktivieren' : (colorMode === 'dim' ? 'Dark Mode aktivieren' : 'Light Mode aktivieren'))"
-                            class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
-                        <svg v-if="colorMode === 'light'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#825500]"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                        <svg v-else-if="colorMode === 'evening'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#6d4500]"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
-                        <svg v-else-if="colorMode === 'dim'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#f3c471]"><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#6ee7b7]"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
+                        <svg v-if="colorMode === 'light'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#825500]"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                        <svg v-else-if="colorMode === 'evening'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#6d4500]"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+                        <svg v-else-if="colorMode === 'dim'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#f3c471]"><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#6ee7b7]"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    </button>
+                    <!-- Benachrichtigungen Button mit Live-Badge -->
+                    <button @click="isNotificationsOpen = true; refreshSocialData({ quiet: true })"
+                            :title="notificationBadgeCount > 0 ? `${notificationBadgeCount} offene Benachrichtigung(en)` : 'Benachrichtigungen'"
+                            aria-label="Benachrichtigungen"
+                            class="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span v-if="notificationBadgeCount > 0"
+                              style="color: #ffffff"
+                              class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-[10px] font-black leading-none flex items-center justify-center border-2 border-[#f8f3eb] shadow-xs">
+                            {{ notificationBadgeCount > 9 ? '9+' : notificationBadgeCount }}
+                        </span>
                     </button>
                     <!-- Einstellungen Button (Schlicht & einheitlich ohne äußeren Kasten) -->
-                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; tempFederalState = federalState; isAppSettingsModalOpen = true" title="Einstellungen" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <button @click="tempWeeklyRecapWeekday = weeklyRecapWeekday; tempFederalState = federalState; isAppSettingsModalOpen = true" title="Einstellungen" aria-label="Einstellungen" class="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#f0e6df] border border-[#ede3d8] flex items-center justify-center text-[#1f1b16] hover:bg-[#e6dcd3] active:scale-95 transition-all cursor-pointer shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 sm:w-5 sm:h-5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
                 </div>
             </header>
@@ -6373,7 +6385,9 @@
                                         <span class="hidden xs:inline">Aktualisieren</span>
                                     </button>
                                     <button @click="isFriendsOpen = true; friendsTab = 'members'" class="text-xs font-bold text-[#2d694c] hover:underline flex items-center gap-1.5 cursor-pointer">
-                                        <i data-lucide="user-plus" class="w-4 h-4"></i> Freunde verwalten
+                                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                        <span>Freunde verwalten</span>
+                                        <span v-if="incomingFriendRequests.length > 0" style="color: #ffffff" class="px-1.5 py-0.5 rounded-full bg-rose-600 text-[10px] font-black leading-none">{{ incomingFriendRequests.length }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -6384,7 +6398,9 @@
                                 <p class="text-xs text-[#6E665E]">{{ socialLoading ? 'Einen Moment bitte, wir synchronisieren deine Freundesliste.' : 'Verbinde dich über „Freunde finden“ mit Mitschülern, um eure Schnitte zu vergleichen.' }}</p>
                                 <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
                                     <button @click="isFriendsOpen = true; friendsTab = 'members'" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2d694c] text-white rounded-full text-xs font-bold cursor-pointer hover:bg-[#23533c] transition-all">
-                                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Freunde finden
+                                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                        <span>Freunde finden</span>
+                                        <span v-if="incomingFriendRequests.length > 0" style="color: #ffffff" class="px-1.5 py-0.5 rounded-full bg-rose-600 text-[10px] font-black leading-none">{{ incomingFriendRequests.length }}</span>
                                     </button>
                                     <button type="button" @click="refreshSocialData()" :disabled="socialLoading" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-[#1f1b16] border border-[#ded5c7] rounded-full text-xs font-bold cursor-pointer hover:bg-[#faf6ef] transition-all disabled:opacity-50">
                                         <i data-lucide="refresh-cw" class="w-3.5 h-3.5" :class="socialLoading ? 'animate-spin' : ''"></i> Aktualisieren
@@ -7955,6 +7971,46 @@
                 <!-- Scrollbarer Inhalt -->
                 <div class="flex-1 overflow-y-auto no-scrollbar px-6 sm:px-8 pb-8" @touchstart="modalDragStart($event, 'isFriendsOpen')" @touchmove="modalDragMove($event)" @touchend="modalDragEnd($event)">
 
+                <!-- Eingehende Freundschaftsanfragen direkt sichtbar -->
+                <div v-if="friendsTab !== 'compare' && incomingFriendRequests && incomingFriendRequests.length > 0"
+                     class="mb-4 bg-black/20 border border-accent-border rounded-3xl p-4 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="text-xs font-black uppercase tracking-wider text-accent flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            Eingehende Anfragen ({{ incomingFriendRequests.length }})
+                        </p>
+                        <button type="button" @click="isFriendsOpen = false; isNotificationsOpen = true" class="text-[11px] font-bold text-[#6E665E] hover:text-[#1f1b16] underline cursor-pointer">
+                            Alle Hinweise
+                        </button>
+                    </div>
+                    <div class="space-y-2">
+                        <div v-for="req in incomingFriendRequests" :key="req.id"
+                             class="bg-white/60 border border-[#ded5c7] rounded-2xl p-3 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-accent-dim2 text-accent flex items-center justify-center font-black text-sm shrink-0 overflow-hidden">
+                                <img v-if="(req.fromPhotoUrl || getMemberAvatar(req.fromUid)) && isImageAvatar(req.fromPhotoUrl || getMemberAvatar(req.fromUid))" :src="req.fromPhotoUrl || getMemberAvatar(req.fromUid)" class="w-full h-full object-cover" />
+                                <span v-else-if="req.fromPhotoUrl || getMemberAvatar(req.fromUid)" class="text-lg">{{ req.fromPhotoUrl || getMemberAvatar(req.fromUid) }}</span>
+                                <span v-else>{{ req.fromName ? req.fromName[0].toUpperCase() : '?' }}</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-[#1f1b16] text-xs sm:text-sm truncate">{{ req.fromName || 'Mitschüler' }}</p>
+                                <p class="text-[11px] text-[#6E665E]">{{ req.timeAgo || 'Gerade eben' }}</p>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" @click="acceptFriendRequest(req)"
+                                        class="px-3 py-1.5 bg-[#2d694c] hover:bg-[#23533c] text-white rounded-full text-[11px] font-black cursor-pointer active:scale-95 transition-all">
+                                    Annehmen
+                                </button>
+                                <button type="button" @click="declineFriendRequest(req)"
+                                        title="Ablehnen"
+                                        aria-label="Anfrage ablehnen"
+                                        class="w-8 h-8 bg-[#efe8dc] hover:bg-[#e2d8c7] border border-[#ded5c7] text-[#524d44] rounded-full flex items-center justify-center text-xs font-bold cursor-pointer active:scale-95 transition-all">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Suchleiste für Mitglieder & Freunde -->
                 <div v-if="(friendsTab === 'members' && allMembers && allMembers.length > 0) || (friendsTab === 'friends' && friends && friends.length > 0)" class="mb-3">
                     <div class="relative flex items-center">
@@ -7998,10 +8054,19 @@
                             <p class="font-bold text-white text-sm truncate">{{ member.displayName || member.email }}</p>
                             <p class="text-xs text-slate-500">Klasse {{ member.currentClass || '?' }}</p>
                         </div>
+                        <!-- Eingehende Anfrage von diesem Mitglied -> direkt annehmen -->
+                        <button v-if="!isFriend(member.uid) && getIncomingRequestFrom(member.uid)"
+                                type="button"
+                                @click="acceptFriendRequest(getIncomingRequestFrom(member.uid))"
+                                title="Freundschaftsanfrage annehmen"
+                                class="px-3 py-2 bg-[#2d694c] hover:bg-[#23533c] text-white rounded-full text-xs font-black cursor-pointer active:scale-95 transition-all shrink-0">
+                            Annehmen
+                        </button>
                         <!-- Noch kein Kontakt: user-plus inline SVG -->
-                        <button v-if="!isFriend(member.uid) && !hasSentRequest(member.uid)"
+                        <button v-else-if="!isFriend(member.uid) && !hasSentRequest(member.uid)"
                                 @click="sendFriendRequest(member)"
                                 title="Freundschaftsanfrage senden"
+                                aria-label="Freundschaftsanfrage senden"
                                 class="w-10 h-10 toggle-accent-on text-white rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-all hover:bg-accent-dim shadow-lg shadow-black/30 shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
@@ -8011,6 +8076,7 @@
                         <button v-else-if="hasSentRequest(member.uid)"
                              @click="sendFriendRequest(member)"
                              title="Anfrage ausstehend – erneut senden"
+                             aria-label="Anfrage ausstehend – erneut senden"
                              class="w-10 h-10 bg-amber-500/15 border border-amber-500/25 text-amber-400 rounded-full flex items-center justify-center shrink-0 cursor-pointer active:scale-90 transition-all hover:bg-amber-500/25">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
@@ -8522,7 +8588,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
         import { initializeFirestore, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
-        import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout } from "/src/sync-engine.js";
+        import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout, filterIncomingFriendRequests, countNotificationBadges, detectNewFriendNotifications } from "/src/sync-engine.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
         const _origConsoleError = console.error;
@@ -9514,6 +9580,9 @@
                 ]);
 
                 const unreadNotifications = computed(() => notifications.value.filter(n => !n.read));
+                const incomingFriendRequests = computed(() => filterIncomingFriendRequests(notifications.value));
+                const notificationBadgeCount = computed(() => countNotificationBadges(notifications.value));
+                const getIncomingRequestFrom = (fromUid) => (incomingFriendRequests.value || []).find(n => n.fromUid === fromUid) || null;
 
                 const isFriend = (uid) => friends.value.some(f => f.uid === uid && !isDemoProfile(f));
                 const hasSentRequest = (uid) => sentRequests.value.includes(uid);
@@ -9590,13 +9659,17 @@
                 let unsubscribeSentRequests = null;
                 let unsubscribeDeclinedRequests = null;
                 let unsubscribeNotifications = null;
+                let activeMembersListenerUid = null;
+                let activeFriendsListenerUid = null;
+                let notificationsInitialLoadedUid = null;
+                const seenNotificationIds = new Set();
                 let firestoreQueueBroken = Boolean(window.__firestoreQueueBroken);
                 const listenerRetryTimers = new Map();
                 const listenerRetryCounts = new Map();
 
                 const isFirestoreAssertionError = (err) => {
                     const msg = String(err?.message || err || '');
-                    return msg.includes('INTERNAL ASSERTION FAILED') || msg.includes('Unexpected state');
+                    return msg.includes('INTERNAL ASSERTION FAILED') || (msg.includes('FIRESTORE') && msg.includes('Unexpected state'));
                 };
 
                 const safeUnsubscribe = (unsub) => {
@@ -9613,12 +9686,12 @@
                 const markFirestoreQueueBroken = () => {
                     firestoreQueueBroken = true;
                     window.__firestoreQueueBroken = true;
-                    ['config', 'examScores', 'subjects', 'tasks'].forEach(clearListenerRetry);
+                    ['config', 'examScores', 'subjects', 'tasks', 'members', 'friends', 'sentRequests', 'declinedRequests', 'notifications'].forEach(clearListenerRetry);
                 };
                 window.__onFirestoreAssertionCrash = markFirestoreQueueBroken;
 
                 const unsubscribeAllListeners = () => {
-                    ['config', 'examScores', 'subjects', 'tasks'].forEach(clearListenerRetry);
+                    ['config', 'examScores', 'subjects', 'tasks', 'members', 'friends', 'sentRequests', 'declinedRequests', 'notifications'].forEach(clearListenerRetry);
                     listenerRetryCounts.clear();
                     safeUnsubscribe(unsubscribeAppConfig); unsubscribeAppConfig = null;
                     if (typeof activeConfigListenerUid !== 'undefined') activeConfigListenerUid = null;
@@ -9634,10 +9707,14 @@
                     if (typeof pendingTaskDoneMap !== 'undefined') pendingTaskDoneMap.clear();
                     if (typeof pendingTaskDoneSync !== 'undefined') pendingTaskDoneSync.clear();
                     safeUnsubscribe(unsubscribeAllMembers); unsubscribeAllMembers = null;
+                    activeMembersListenerUid = null;
                     safeUnsubscribe(unsubscribeFriends); unsubscribeFriends = null;
                     safeUnsubscribe(unsubscribeSentRequests); unsubscribeSentRequests = null;
                     safeUnsubscribe(unsubscribeDeclinedRequests); unsubscribeDeclinedRequests = null;
                     safeUnsubscribe(unsubscribeNotifications); unsubscribeNotifications = null;
+                    activeFriendsListenerUid = null;
+                    notificationsInitialLoadedUid = null;
+                    seenNotificationIds.clear();
                 };
 
                 // Dedizierter Fetcher für das Detail-Profil (inkl. echtes Profilbild) eines Freundes
@@ -9776,7 +9853,7 @@
                 let friendsLoadEpoch = 0;
 
                 // Alle registrierten Nutzer laden (außer den aktuell angemeldeten Nutzer selbst)
-                const loadAllMembers = async (uid) => {
+                const loadAllMembers = async (uid, { force = false } = {}) => {
                     if (!uid && user.value && user.value.uid) uid = user.value.uid;
                     if (!uid) return;
                     const epoch = ++allMembersLoadEpoch;
@@ -9859,6 +9936,10 @@
                         // Auth erst abwarten, damit PWA/Cold-Start nie unauthentifiziert abgewiesen wird
                         await waitForFirebaseAuth();
                         if (epoch !== allMembersLoadEpoch) return;
+                        if (!auth.currentUser || auth.currentUser.uid !== uid) {
+                            socialLoading.value = false;
+                            return;
+                        }
 
                         // Versteckte UIDs parallel & nicht-blockierend laden, danach Listen nachfiltern
                         loadHiddenMemberUids().then(() => {
@@ -9867,18 +9948,24 @@
                             friends.value = (friends.value || []).filter(f => !isDemoProfile(f) && !isAdminProfile(f));
                         }).catch(() => {});
 
-                        const { onSnapshot: onSnap2, collection: col2, getDocs: getD2 } = window.__firestoreModule || {};
+                        const { onSnapshot: onSnap2, collection: col2, getDocs: getD2, getDocsFromServer: getD2Server } = window.__firestoreModule || {};
                         if (!onSnap2) {
+                            socialLoading.value = false;
                             console.warn('[GradeFlow] Firestore noch nicht geladen');
                             return;
                         }
 
-                        if (firestoreQueueBroken) return;
-                        safeUnsubscribe(unsubscribeAllMembers); unsubscribeAllMembers = null;
+                        if (firestoreQueueBroken || window.__firestoreQueueBroken) {
+                            socialLoading.value = false;
+                            return;
+                        }
 
-                        // 2. Sofortiges One-Time getDocs für schnellste Anzeige ohne Wartezeit
+                        // 2. Direkter Server-Abruf (schnell & umgeht verzögerten onSnapshot-Start)
                         if (getD2) {
-                            getD2(col2(db, 'publicProfiles')).then(snap => {
+                            const directMembersPromise = (getD2Server && navigator.onLine !== false)
+                                ? getD2Server(col2(db, 'publicProfiles')).catch(() => getD2(col2(db, 'publicProfiles')))
+                                : getD2(col2(db, 'publicProfiles'));
+                            directMembersPromise.then(snap => {
                                 if (epoch !== allMembersLoadEpoch) return;
                                 if (snap && !snap.empty) {
                                     const list = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
@@ -9888,11 +9975,23 @@
                             .finally(() => {
                                 if (epoch === allMembersLoadEpoch) socialLoading.value = false;
                             });
+                        } else {
+                            socialLoading.value = false;
                         }
+
+                        // Bestehenden gesunden Listener nicht bei jedem Fokus unnötig abreißen
+                        if (!force && unsubscribeAllMembers && activeMembersListenerUid === uid) {
+                            return;
+                        }
+
+                        clearListenerRetry('members');
+                        safeUnsubscribe(unsubscribeAllMembers); unsubscribeAllMembers = null;
+                        activeMembersListenerUid = uid;
 
                         // 3. Real-Time Snapshot Listener für Live-Updates
                         unsubscribeAllMembers = onSnap2(col2(db, 'publicProfiles'), snap => {
                             if (epoch !== allMembersLoadEpoch) return;
+                            listenerRetryCounts.set('members', 0);
                             socialLoading.value = false;
                             try {
                                 let realMembers = [];
@@ -9906,31 +10005,35 @@
                         }, err => {
                             if (epoch !== allMembersLoadEpoch) return;
                             unsubscribeAllMembers = null;
+                            activeMembersListenerUid = null;
                             socialLoading.value = false;
                             if (isFirestoreAssertionError(err)) {
-                                firestoreQueueBroken = true;
+                                markFirestoreQueueBroken();
                                 return;
                             }
                             console.info('[GradeFlow] publicProfiles listener notice:', err?.message || err);
-                            // Bei temporärem Auth/Netzwerk-Fehler in PWA automatisch einmal nachladen
-                            if (navigator.onLine && auth.currentUser) {
-                                setTimeout(() => {
-                                    if (!firestoreQueueBroken && epoch === allMembersLoadEpoch && allMembers.value.length === 0) {
-                                        loadAllMembers(uid);
+                            if (navigator.onLine !== false && auth.currentUser?.uid === uid) {
+                                const count = (listenerRetryCounts.get('members') || 0) + 1;
+                                listenerRetryCounts.set('members', count);
+                                const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                                clearListenerRetry('members');
+                                listenerRetryTimers.set('members', setTimeout(() => {
+                                    if (!firestoreQueueBroken && auth.currentUser?.uid === uid) {
+                                        loadAllMembers(uid, { force: true });
                                     }
-                                }, 2500);
+                                }, delay));
                             }
                         });
                     } catch (e) {
                         socialLoading.value = false;
-                        if (isFirestoreAssertionError(e)) firestoreQueueBroken = true;
+                        if (isFirestoreAssertionError(e)) markFirestoreQueueBroken();
                         console.warn('[GradeFlow] loadAllMembers error:', e.message);
                     }
                 };
 
                 // Schreibt/aktualisiert oeffentliches Profil bei jedem Login
                 const ensurePublicProfile = async (uid) => {
-                    if (!uid) return;
+                    if (!uid || navigator.onLine === false || !auth.currentUser || auth.currentUser.uid !== uid) return;
                     try {
                         const nameToUse = (displayName.value && displayName.value.trim()) 
                             || (user.value && user.value.displayName ? user.value.displayName : '')
@@ -9964,7 +10067,7 @@
                 };
 
                 // Freundesliste + gesendete Anfragen + Benachrichtigungen aus Firestore
-                const loadFriendsData = async (uid) => {
+                const loadFriendsData = async (uid, { force = false } = {}) => {
                     if (!uid) return;
                     const epoch = ++friendsLoadEpoch;
 
@@ -9989,15 +10092,15 @@
                     try {
                         await waitForFirebaseAuth();
                         if (epoch !== friendsLoadEpoch) return;
+                        if (!auth.currentUser || auth.currentUser.uid !== uid) return;
+                        if (firestoreQueueBroken || window.__firestoreQueueBroken) return;
 
-                        if (firestoreQueueBroken) return;
-                        safeUnsubscribe(unsubscribeFriends); unsubscribeFriends = null;
-                        safeUnsubscribe(unsubscribeSentRequests); unsubscribeSentRequests = null;
-                        safeUnsubscribe(unsubscribeDeclinedRequests); unsubscribeDeclinedRequests = null;
-                        safeUnsubscribe(unsubscribeNotifications); unsubscribeNotifications = null;
-
-                        const { onSnapshot: onSnap, collection: col, getDocs: getD, getDocsFromServer: getDServer } = window.__firestoreModule || {};
+                        const { onSnapshot: onSnap, collection: col, getDocs: getD, getDocsFromServer: getDServer, deleteDoc: delD, doc: docFn2 } = window.__firestoreModule || {};
                         if (!onSnap) return;
+
+                        if (notificationsInitialLoadedUid !== uid) {
+                            seenNotificationIds.clear();
+                        }
 
                         const applyFriendsSnapshot = async (snap) => {
                             const now = Date.now();
@@ -10047,7 +10150,6 @@
                                     fetchFriendProfileDetails(f.uid);
                                 }
                             });
-                            const { deleteDoc: delD, doc: docFn2 } = window.__firestoreModule;
                             for (const df of demoFriends) {
                                 try { localStorage.removeItem('sf_friend_avatar_' + df.uid); } catch (_) {}
                                 try { await delD(docFn2(db, 'users', uid, 'friends', df.uid)); } catch (_) {}
@@ -10060,39 +10162,121 @@
                             sentRequests.value = sentRequests.value.filter(id => !friends.value.some(f => f.uid === id));
                         };
 
-                        // Schneller Direkt-Abruf für PWA Kaltstart (umgeht verzögerten onSnapshot-Start)
-                        if (getD) {
-                            const directFetch = (getDServer && navigator.onLine)
-                                ? getDServer(col(db, 'users', uid, 'friends')).catch(() => getD(col(db, 'users', uid, 'friends')))
-                                : getD(col(db, 'users', uid, 'friends'));
-                            directFetch.then(snap => {
+                        const applyNotificationsSnapshot = (snap) => {
+                            if (!snap) return;
+                            const nextList = snap.docs
+                                .map(d => ({ id: d.id, ...d.data(), timeAgo: timeAgo(d.data().createdAt || new Date().toISOString()) }))
+                                .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+                            const isInitialLoad = notificationsInitialLoadedUid !== uid;
+                            const freshOnes = detectNewFriendNotifications(nextList, seenNotificationIds, isInitialLoad);
+                            if (freshOnes.length > 0) {
+                                const latest = freshOnes[0];
+                                if (latest.type === 'friend_request') {
+                                    showToast(`Freundschaftsanfrage von ${latest.fromName || 'Mitschüler'}`, {
+                                        actionLabel: 'Ansehen',
+                                        duration: 5000,
+                                        onAction: () => {
+                                            isFriendsOpen.value = true;
+                                            friendsTab.value = 'members';
+                                        }
+                                    });
+                                } else if (latest.type === 'friend_accepted') {
+                                    showToast(`${latest.fromName || 'Mitschüler'} ist jetzt dein Freund!`, {
+                                        actionLabel: 'Ansehen',
+                                        duration: 4500,
+                                        onAction: () => {
+                                            isFriendsOpen.value = true;
+                                            friendsTab.value = 'friends';
+                                        }
+                                    });
+                                }
+                            }
+                            notificationsInitialLoadedUid = uid;
+                            nextList.forEach(n => { if (n?.id) seenNotificationIds.add(n.id); });
+                            notifications.value = nextList;
+                            refreshIcons();
+                        };
+
+                        const runDirectSocialPull = () => {
+                            if (!getD) return;
+                            const fetchCol = (colName) => (getDServer && navigator.onLine !== false)
+                                ? getDServer(col(db, 'users', uid, colName)).catch(() => getD(col(db, 'users', uid, colName)))
+                                : getD(col(db, 'users', uid, colName));
+
+                            fetchCol('friends').then(snap => {
                                 if (epoch !== friendsLoadEpoch || !snap) return;
                                 if (!snap.empty || !snap.metadata?.fromCache) {
                                     applyFriendsSnapshot(snap);
                                 }
                             }).catch(() => {});
+
+                            fetchCol('sentRequests').then(snap => {
+                                if (epoch !== friendsLoadEpoch || !snap) return;
+                                sentRequests.value = snap.docs.map(d => d.id).filter(id => !friends.value.some(f => f.uid === id));
+                            }).catch(() => {});
+
+                            fetchCol('notifications').then(snap => {
+                                if (epoch !== friendsLoadEpoch || !snap) return;
+                                if (!snap.empty || !snap.metadata?.fromCache) {
+                                    applyNotificationsSnapshot(snap);
+                                }
+                            }).catch(() => {});
+                        };
+
+                        // Schneller Direkt-Abruf für PWA Kaltstart & Resume (umgeht verzögerten onSnapshot-Start)
+                        runDirectSocialPull();
+
+                        // Gesunde aktive Social-Listener nicht unnötig bei jedem Focus/Resume neu aufbauen
+                        if (!force && activeFriendsListenerUid === uid && unsubscribeFriends && unsubscribeSentRequests && unsubscribeDeclinedRequests && unsubscribeNotifications) {
+                            return;
                         }
 
+                        ['friends', 'sentRequests', 'declinedRequests', 'notifications'].forEach(clearListenerRetry);
+                        safeUnsubscribe(unsubscribeFriends); unsubscribeFriends = null;
+                        safeUnsubscribe(unsubscribeSentRequests); unsubscribeSentRequests = null;
+                        safeUnsubscribe(unsubscribeDeclinedRequests); unsubscribeDeclinedRequests = null;
+                        safeUnsubscribe(unsubscribeNotifications); unsubscribeNotifications = null;
+                        activeFriendsListenerUid = uid;
+
+                        const scheduleSocialRetry = (key) => {
+                            if (navigator.onLine === false || auth.currentUser?.uid !== uid || firestoreQueueBroken) return;
+                            const count = (listenerRetryCounts.get(key) || 0) + 1;
+                            listenerRetryCounts.set(key, count);
+                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                            clearListenerRetry(key);
+                            listenerRetryTimers.set(key, setTimeout(() => {
+                                if (!firestoreQueueBroken && auth.currentUser?.uid === uid) {
+                                    loadFriendsData(uid, { force: true });
+                                }
+                            }, delay));
+                        };
+
                         // Freunde – Demo-Profile sowie frisch entfernte Freunde bereinigen und sentRequests bereinigen
-                        unsubscribeFriends = onSnap(col(db, 'users', uid, 'friends'), applyFriendsSnapshot, err => {
+                        unsubscribeFriends = onSnap(col(db, 'users', uid, 'friends'), snap => {
+                            listenerRetryCounts.set('friends', 0);
+                            applyFriendsSnapshot(snap);
+                        }, err => {
                             unsubscribeFriends = null;
-                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
+                            if (isFirestoreAssertionError(err)) { markFirestoreQueueBroken(); return; }
                             if (err && err.code !== 'permission-denied') console.warn('friends listener:', err.code);
+                            scheduleSocialRetry('friends');
                         });
 
-                        // Gesendete Anfragen laden (Freunde werden gefiltered)
+                        // Gesendete Anfragen laden (Freunde werden gefiltert)
                         unsubscribeSentRequests = onSnap(col(db, 'users', uid, 'sentRequests'), snap => {
+                            listenerRetryCounts.set('sentRequests', 0);
                             sentRequests.value = snap.docs.map(d => d.id).filter(id => !friends.value.some(f => f.uid === id));
                         }, err => {
                             unsubscribeSentRequests = null;
-                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
+                            if (isFirestoreAssertionError(err)) { markFirestoreQueueBroken(); return; }
                             if (err && err.code !== 'permission-denied') console.warn('sentRequests listener:', err.code);
+                            scheduleSocialRetry('sentRequests');
                         });
 
                         // Abgelehnte Anfragen – sentRequests bereinigen und declinedRequests löschen
                         unsubscribeDeclinedRequests = onSnap(col(db, 'users', uid, 'declinedRequests'), async snap => {
+                            listenerRetryCounts.set('declinedRequests', 0);
                             if (snap.empty) return;
-                            const { deleteDoc: delD, doc: docFn2 } = window.__firestoreModule;
                             for (const d of snap.docs) {
                                 sentRequests.value = sentRequests.value.filter(id => id !== d.id);
                                 try { await delD(docFn2(db, 'users', uid, 'sentRequests', d.id)); } catch (_) {}
@@ -10100,136 +10284,247 @@
                             }
                         }, err => {
                             unsubscribeDeclinedRequests = null;
-                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
+                            if (isFirestoreAssertionError(err)) { markFirestoreQueueBroken(); return; }
                             if (err && err.code !== 'permission-denied') console.warn('declinedRequests listener:', err.code);
+                            scheduleSocialRetry('declinedRequests');
                         });
 
                         // Eingehende Benachrichtigungen
                         unsubscribeNotifications = onSnap(col(db, 'users', uid, 'notifications'), snap => {
-                            notifications.value = snap.docs
-                                .map(d => ({ id: d.id, ...d.data(), timeAgo: timeAgo(d.data().createdAt || new Date().toISOString()) }))
-                                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                            refreshIcons();
+                            listenerRetryCounts.set('notifications', 0);
+                            applyNotificationsSnapshot(snap);
                         }, err => {
                             unsubscribeNotifications = null;
-                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
+                            if (isFirestoreAssertionError(err)) { markFirestoreQueueBroken(); return; }
                             if (err && err.code !== 'permission-denied') console.warn('notifications listener:', err.code);
+                            scheduleSocialRetry('notifications');
                         });
                     } catch (e) {
-                        if (isFirestoreAssertionError(e)) firestoreQueueBroken = true;
+                        if (isFirestoreAssertionError(e)) markFirestoreQueueBroken();
                         console.warn('loadFriendsData:', e);
                     }
                 };
 
                 // Freundschaftsanfrage senden
                 const sendFriendRequest = async (targetMember) => {
-                    if (!user.value || !targetMember || isDemoProfile(targetMember)) return;
-                    try {
-                        const { setDoc: setD, deleteDoc: delD, getDoc: getD, doc: docFn } = window.__firestoreModule;
-                        // Alte abgelehnte/beantwortete Notifications auf BEIDEN Seiten bereinigen,
-                        // damit eine erneute Anfrage nach Ablehnung wieder funktioniert
-                        try { await delD(docFn(db, 'users', user.value.uid, 'notifications', `fr_${targetMember.uid}`)); } catch (_) {}
-                        try { await delD(docFn(db, 'users', targetMember.uid, 'notifications', `fr_${user.value.uid}`)); } catch (_) {}
-                        // Prüfen ob der andere uns schon eine Anfrage geschickt hat → direkt befreunden
-                        let theirRequest = null;
-                        try { theirRequest = await getD(docFn(db, 'users', user.value.uid, 'notifications', `fr_${targetMember.uid}`)); } catch (_) {}
-                        if (theirRequest && theirRequest.exists && theirRequest.exists() && !theirRequest.data().responded) {
+                    if (!targetMember || !targetMember.uid || isDemoProfile(targetMember)) return;
+                    if (navigator.onLine === false) {
+                        showToast('Offline – Anfrage kann nur mit Internet gesendet werden');
+                        return;
+                    }
+                    const authedUser = await waitForFirebaseAuth(4000);
+                    const myUid = authedUser?.uid || auth.currentUser?.uid || '';
+                    if (!myUid || (user.value?.uid && user.value.uid !== myUid)) {
+                        showToast('Bitte melde dich kurz neu an, um Anfragen zu senden');
+                        return;
+                    }
+
+                    const { setDoc: setD, deleteDoc: delD, getDoc: getD, getDocFromServer: getDServer, doc: docFn } = window.__firestoreModule || {};
+                    if (!setD || !delD || !getD || !docFn) return;
+
+                    const executeRequest = async () => {
+                        const myName = (displayName.value && displayName.value.trim()) || authedUser?.displayName || authedUser?.email || user.value?.email || 'Mitschüler';
+                        const myEmail = authedUser?.email || user.value?.email || '';
+                        const myPhoto = userAvatar.value || getMemberAvatar(myUid) || '';
+
+                        // 1. ZUERST prüfen, ob der andere uns schon eine offene Anfrage geschickt hat (BEVOR etwas gelöscht wird!)
+                        const localIncoming = (notifications.value || []).find(
+                            n => n && n.type === 'friend_request' && !n.responded && n.fromUid === targetMember.uid
+                        );
+                        let theirRequestData = localIncoming ? { ...localIncoming } : null;
+                        if (!theirRequestData) {
+                            try {
+                                const refIncoming = docFn(db, 'users', myUid, 'notifications', `fr_${targetMember.uid}`);
+                                const snapIncoming = getDServer
+                                    ? await getDServer(refIncoming).catch(() => getD(refIncoming))
+                                    : await getD(refIncoming);
+                                if (snapIncoming && snapIncoming.exists && snapIncoming.exists() && !snapIncoming.data()?.responded) {
+                                    theirRequestData = snapIncoming.data();
+                                }
+                            } catch (_) {}
+                        }
+
+                        if (theirRequestData && !theirRequestData.responded) {
                             const myProfile = {
-                                uid: user.value.uid,
-                                displayName: displayName.value || '',
-                                email: user.value.email,
+                                uid: myUid,
+                                displayName: myName,
+                                email: myEmail,
                                 currentClass: currentClass.value,
-                                photoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || ''
+                                photoUrl: myPhoto
                             };
                             const theirProfile = {
                                 uid: targetMember.uid,
-                                displayName: targetMember.displayName || '',
+                                displayName: targetMember.displayName || theirRequestData.fromName || '',
                                 email: targetMember.email || '',
                                 currentClass: targetMember.currentClass || '',
-                                photoUrl: targetMember.photoUrl || targetMember.userAvatar || getMemberAvatar(targetMember) || ''
+                                photoUrl: targetMember.photoUrl || targetMember.userAvatar || theirRequestData.fromPhotoUrl || getMemberAvatar(targetMember) || ''
                             };
-                            await setD(docFn(db, 'users', user.value.uid, 'friends', targetMember.uid), theirProfile);
-                            await setD(docFn(db, 'users', targetMember.uid, 'friends', user.value.uid), myProfile);
-                            try { await setD(docFn(db, 'users', user.value.uid, 'notifications', `fr_${targetMember.uid}`), { ...theirRequest.data(), responded: true, accepted: true, read: true }); } catch (_) {}
-                            try { await delD(docFn(db, 'users', user.value.uid, 'sentRequests', targetMember.uid)); } catch (_) {}
-                            try { await delD(docFn(db, 'users', targetMember.uid, 'sentRequests', user.value.uid)); } catch (_) {}
-                            await setD(docFn(db, 'users', targetMember.uid, 'notifications', `fa_${user.value.uid}`), {
-                                type: 'friend_accepted', fromUid: user.value.uid, fromName: displayName.value || user.value.email,
-                                fromPhotoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || '',
-                                message: `${displayName.value || user.value.email} und du seid jetzt befreundet!`,
-                                read: false, createdAt: new Date().toISOString()
-                            });
-                            showToast('Ihr seid jetzt befreundet!');
+                            pendingRemovedFriendsMap.delete(targetMember.uid);
+                            await withTimeout(setD(docFn(db, 'users', myUid, 'friends', targetMember.uid), theirProfile), 12000, 'friend-write-self');
+                            await withTimeout(setD(docFn(db, 'users', targetMember.uid, 'friends', myUid), myProfile), 12000, 'friend-write-target');
+                            try {
+                                await setD(docFn(db, 'users', myUid, 'notifications', `fr_${targetMember.uid}`), {
+                                    responded: true, accepted: true, read: true
+                                }, { merge: true });
+                            } catch (_) {}
+                            try { await delD(docFn(db, 'users', myUid, 'sentRequests', targetMember.uid)); } catch (_) {}
+                            try { await delD(docFn(db, 'users', targetMember.uid, 'sentRequests', myUid)); } catch (_) {}
+                            await withTimeout(setD(docFn(db, 'users', targetMember.uid, 'notifications', `fa_${myUid}`), {
+                                type: 'friend_accepted',
+                                fromUid: myUid,
+                                fromName: myName,
+                                fromPhotoUrl: myPhoto,
+                                message: `${myName} und du seid jetzt befreundet!`,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            }), 12000, 'friend-accepted-notif');
+
+                            if (!friends.value.some(f => f.uid === targetMember.uid)) {
+                                friends.value = [...friends.value, theirProfile];
+                                try { localStorage.setItem('sf_cached_friends_' + myUid, JSON.stringify(friends.value)); } catch (_) {}
+                            }
+                            sentRequests.value = sentRequests.value.filter(id => id !== targetMember.uid);
+                            notifications.value = (notifications.value || []).map(n =>
+                                n.id === `fr_${targetMember.uid}` ? { ...n, responded: true, accepted: true, read: true } : n
+                            );
+                            refreshIcons();
+                            showToast('Ihr seid jetzt befreundet! ✓');
                             return;
                         }
-                        // Normale Anfrage – alle alten Rückstände bereinigen
-                        try { await delD(docFn(db, 'users', user.value.uid, 'declinedRequests', targetMember.uid)); } catch (_) {}
-                        try { await delD(docFn(db, 'users', targetMember.uid, 'declinedRequests', user.value.uid)); } catch (_) {}
-                        // Alten sentRequests-Eintrag auf BEIDEN Seiten löschen (verhindert doppeltes Uhr-Symbol)
-                        try { await delD(docFn(db, 'users', user.value.uid, 'sentRequests', targetMember.uid)); } catch (_) {}
-                        try { await delD(docFn(db, 'users', targetMember.uid, 'sentRequests', user.value.uid)); } catch (_) {}
-                        await setD(docFn(db, 'users', user.value.uid, 'sentRequests', targetMember.uid), { to: targetMember.uid, sentAt: new Date().toISOString() });
-                        await setD(docFn(db, 'users', targetMember.uid, 'notifications', `fr_${user.value.uid}`), {
-                            type: 'friend_request', fromUid: user.value.uid, fromName: displayName.value || user.value.email,
-                            fromPhotoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || '',
-                            message: `${displayName.value || user.value.email} möchte dich als Freund hinzufügen.`,
-                            read: false, responded: false, accepted: false, createdAt: new Date().toISOString()
-                        });
-                        if (!sentRequests.value.includes(targetMember.uid)) sentRequests.value.push(targetMember.uid);
-                        showToast('Freundschaftsanfrage gesendet');
-                    } catch (e) { console.warn('sendFriendRequest:', e); showToast('Anfrage konnte nicht gesendet werden'); }
+
+                        // 2. Normale Anfrage: alte Rückstände bereinigen
+                        try { await delD(docFn(db, 'users', myUid, 'declinedRequests', targetMember.uid)); } catch (_) {}
+                        try { await delD(docFn(db, 'users', targetMember.uid, 'declinedRequests', myUid)); } catch (_) {}
+
+                        // 3. ZUERST Benachrichtigung beim Empfänger schreiben (schlägt fehl -> kein falsches Uhr-Symbol!)
+                        await withTimeout(setD(docFn(db, 'users', targetMember.uid, 'notifications', `fr_${myUid}`), {
+                            type: 'friend_request',
+                            fromUid: myUid,
+                            fromName: myName,
+                            fromPhotoUrl: myPhoto,
+                            message: `${myName} möchte dich als Freund hinzufügen.`,
+                            read: false,
+                            responded: false,
+                            accepted: false,
+                            createdAt: new Date().toISOString()
+                        }), 15000, 'friend-request-notif-timeout');
+
+                        // 4. DANACH eigenen sentRequests-Eintrag schreiben
+                        await withTimeout(setD(docFn(db, 'users', myUid, 'sentRequests', targetMember.uid), {
+                            to: targetMember.uid,
+                            sentAt: new Date().toISOString()
+                        }), 12000, 'friend-sent-req-timeout');
+
+                        if (!sentRequests.value.includes(targetMember.uid)) {
+                            sentRequests.value = [...sentRequests.value, targetMember.uid];
+                        }
+                        showToast('Freundschaftsanfrage gesendet ✓');
+                    };
+
+                    try {
+                        await executeRequest();
+                    } catch (e) {
+                        const code = String(e?.code || '').toLowerCase();
+                        if (code.includes('permission-denied') || code.includes('unauthenticated')) {
+                            try {
+                                await auth.currentUser?.getIdToken(true);
+                                await executeRequest();
+                                return;
+                            } catch (retryErr) {
+                                console.warn('sendFriendRequest retry failed:', retryErr);
+                            }
+                        } else {
+                            console.warn('sendFriendRequest:', e);
+                        }
+                        showToast('Anfrage konnte nicht gesendet werden');
+                    }
                 };
 
                 // Anfrage annehmen
                 const acceptFriendRequest = async (notif) => {
-                    if (!user.value) return;
+                    if (!notif || !notif.fromUid) return;
+                    if (navigator.onLine === false) {
+                        showToast('Offline – bitte Verbindung prüfen');
+                        return;
+                    }
+                    const authedUser = await waitForFirebaseAuth(4000);
+                    const myUid = authedUser?.uid || auth.currentUser?.uid || '';
+                    if (!myUid) {
+                        showToast('Bitte melde dich kurz neu an');
+                        return;
+                    }
                     try {
-                        const { setDoc: setD, updateDoc: updD, deleteDoc: delD, doc: docFn } = window.__firestoreModule;
+                        const { setDoc: setD, deleteDoc: delD, doc: docFn } = window.__firestoreModule;
+                        const myName = (displayName.value && displayName.value.trim()) || authedUser?.displayName || authedUser?.email || user.value?.email || 'Mitschüler';
+                        const memberMatch = (allMembers.value || []).find(m => m.uid === notif.fromUid);
                         const myProfile = {
-                            uid: user.value.uid,
-                            displayName: displayName.value || '',
-                            email: user.value.email,
+                            uid: myUid,
+                            displayName: myName,
+                            email: authedUser?.email || user.value?.email || '',
                             currentClass: currentClass.value,
-                            photoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || ''
+                            photoUrl: userAvatar.value || getMemberAvatar(myUid) || ''
                         };
                         const theirProfile = {
                             uid: notif.fromUid,
-                            displayName: notif.fromName || '',
-                            email: '',
-                            photoUrl: notif.fromPhotoUrl || getMemberAvatar(notif.fromUid) || ''
+                            displayName: notif.fromName || memberMatch?.displayName || '',
+                            email: memberMatch?.email || '',
+                            currentClass: memberMatch?.currentClass || '',
+                            photoUrl: notif.fromPhotoUrl || memberMatch?.photoUrl || getMemberAvatar(notif.fromUid) || ''
                         };
+                        pendingRemovedFriendsMap.delete(notif.fromUid);
                         // Gegenseitig als Freund eintragen
-                        await setD(docFn(db, 'users', user.value.uid, 'friends', notif.fromUid), theirProfile);
-                        await setD(docFn(db, 'users', notif.fromUid, 'friends', user.value.uid), myProfile);
-                        // Benachrichtigung beim Annehmer updaten
-                        await updD(docFn(db, 'users', user.value.uid, 'notifications', notif.id), { responded: true, accepted: true, read: true });
+                        await withTimeout(setD(docFn(db, 'users', myUid, 'friends', notif.fromUid), theirProfile), 12000, 'accept-friend-self');
+                        await withTimeout(setD(docFn(db, 'users', notif.fromUid, 'friends', myUid), myProfile), 12000, 'accept-friend-target');
+                        // Benachrichtigung beim Annehmer sicher aktualisieren
+                        await setD(docFn(db, 'users', myUid, 'notifications', notif.id), { responded: true, accepted: true, read: true }, { merge: true });
                         // sentRequests-Eintrag beim Anfragesteller löschen → dessen "Ausstehend" verschwindet
-                        try { await delD(docFn(db, 'users', notif.fromUid, 'sentRequests', user.value.uid)); } catch (_) {}
+                        try { await delD(docFn(db, 'users', notif.fromUid, 'sentRequests', myUid)); } catch (_) {}
+                        try { await delD(docFn(db, 'users', myUid, 'sentRequests', notif.fromUid)); } catch (_) {}
                         // Rückbenachrichtigung an Anfragesteller: Anfrage wurde angenommen
-                        await setD(docFn(db, 'users', notif.fromUid, 'notifications', `fa_${user.value.uid}`), {
+                        await setD(docFn(db, 'users', notif.fromUid, 'notifications', `fa_${myUid}`), {
                             type: 'friend_accepted',
-                            fromUid: user.value.uid,
-                            fromName: displayName.value || user.value.email,
-                            fromPhotoUrl: userAvatar.value || getMemberAvatar(user.value.uid) || '',
-                            message: `${displayName.value || user.value.email} hat deine Freundschaftsanfrage angenommen.`,
+                            fromUid: myUid,
+                            fromName: myName,
+                            fromPhotoUrl: myProfile.photoUrl,
+                            message: `${myName} hat deine Freundschaftsanfrage angenommen.`,
                             read: false,
                             createdAt: new Date().toISOString()
                         });
-                    } catch (e) { console.warn('acceptFriendRequest:', e); }
+
+                        // Sofort lokal aktualisieren
+                        if (!friends.value.some(f => f.uid === notif.fromUid)) {
+                            friends.value = [...friends.value, theirProfile];
+                            try { localStorage.setItem('sf_cached_friends_' + myUid, JSON.stringify(friends.value)); } catch (_) {}
+                        }
+                        sentRequests.value = sentRequests.value.filter(id => id !== notif.fromUid);
+                        notifications.value = (notifications.value || []).map(n =>
+                            n.id === notif.id ? { ...n, responded: true, accepted: true, read: true } : n
+                        );
+                        refreshIcons();
+                        showToast(`${theirProfile.displayName || 'Freund'} hinzugefügt ✓`);
+                    } catch (e) {
+                        console.warn('acceptFriendRequest:', e);
+                        showToast('Anfrage konnte nicht angenommen werden');
+                    }
                 };
 
                 // Anfrage ablehnen
                 const declineFriendRequest = async (notif) => {
-                    if (!user.value) return;
+                    if (!notif || !notif.fromUid) return;
+                    const authedUser = await waitForFirebaseAuth(4000);
+                    const myUid = authedUser?.uid || auth.currentUser?.uid || '';
+                    if (!myUid) return;
+                    // Sofort lokal entfernen für direktes Feedback
+                    notifications.value = (notifications.value || []).filter(n => n.id !== notif.id);
                     try {
-                        const { updateDoc: updD, deleteDoc: delD, setDoc: setD, doc: docRef } = window.__firestoreModule;
-                        // 1) Notification beim Ablehnenden sofort löschen (nicht nur markieren)
-                        //    → damit bei einer erneuten Anfrage kein veralteter "responded"-Eintrag blockiert
-                        try { await delD(docRef(db, 'users', user.value.uid, 'notifications', notif.id)); } catch (_) {}
+                        const { deleteDoc: delD, setDoc: setD, doc: docRef } = window.__firestoreModule;
+                        // 1) Notification beim Ablehnenden löschen
+                        try { await delD(docRef(db, 'users', myUid, 'notifications', notif.id)); } catch (_) {}
                         // 2) sentRequests beim Anfragesteller löschen → dessen Uhr-Symbol verschwindet
-                        try { await delD(docRef(db, 'users', notif.fromUid, 'sentRequests', user.value.uid)); } catch (_) {}
+                        try { await delD(docRef(db, 'users', notif.fromUid, 'sentRequests', myUid)); } catch (_) {}
                         // 3) declinedRequests beim Anfragesteller setzen → lokaler State wird bereinigt
-                        try { await setD(docRef(db, 'users', notif.fromUid, 'declinedRequests', user.value.uid), { by: user.value.uid, at: new Date().toISOString() }); } catch (_) {}
+                        try { await setD(docRef(db, 'users', notif.fromUid, 'declinedRequests', myUid), { by: myUid, at: new Date().toISOString() }); } catch (_) {}
+                        showToast('Anfrage abgelehnt');
                     } catch (e) { console.warn('declineFriendRequest:', e); }
                 };
 
@@ -10261,17 +10556,16 @@
                 };
 
                 const markAllNotificationsRead = async () => {
-                    if (!user.value) return;
+                    const uid = auth.currentUser?.uid || user.value?.uid;
+                    if (!uid) return;
                     try {
-                        const { updateDoc: updD, doc: docFn, writeBatch: wb } = window.__firestoreModule;
+                        const { setDoc: setD, doc: docFn } = window.__firestoreModule;
                         const unread = notifications.value.filter(n => !n.read);
                         if (!unread.length) return;
-                        // Alle auf einmal updaten
-                        await Promise.all(unread.map(n =>
-                            updD(docFn(db, 'users', user.value.uid, 'notifications', n.id), { read: true })
-                        ));
-                        // Lokal sofort updaten
                         notifications.value = notifications.value.map(n => ({ ...n, read: true }));
+                        await Promise.all(unread.map(n =>
+                            setD(docFn(db, 'users', uid, 'notifications', n.id), { read: true }, { merge: true }).catch(() => {})
+                        ));
                     } catch (e) { console.warn('markAllRead:', e); }
                 };
 
@@ -10418,8 +10712,8 @@
                 };
 
                 const refreshSocialData = async ({ quiet = false } = {}) => {
-                    const uid = user.value?.uid || auth.currentUser?.uid;
-                    if (!uid) return;
+                    const uid = auth.currentUser?.uid || user.value?.uid;
+                    if (!uid || navigator.onLine === false || !auth.currentUser || auth.currentUser.uid !== uid) return;
                     if (!quiet) socialLoading.value = true;
                     try {
                         await ensurePublicProfile(uid);
@@ -11074,10 +11368,17 @@
                     let lastHiddenAt = document.hidden ? Date.now() : 0;
                     const ensureLiveListeners = (uid, { force = false } = {}) => {
                         if (!uid || !auth.currentUser || auth.currentUser.uid !== uid) return;
+                        if (firestoreQueueBroken || window.__firestoreQueueBroken) return;
                         listenToAppConfig(uid, { force });
                         listenToSubjects(uid, { force });
                         listenToTasks(uid, { force });
                         listenToExamScores(uid, { force });
+                        if (force || !unsubscribeAllMembers || activeMembersListenerUid !== uid) {
+                            loadAllMembers(uid, { force });
+                        }
+                        if (force || !unsubscribeFriends || !unsubscribeSentRequests || !unsubscribeDeclinedRequests || !unsubscribeNotifications || activeFriendsListenerUid !== uid) {
+                            loadFriendsData(uid, { force });
+                        }
                     };
 
                     const handleAppResumeSync = async (force = false) => {
@@ -11087,7 +11388,7 @@
                         }
                         const uid = user.value?.uid || auth.currentUser?.uid;
                         if (uid && navigator.onLine !== false) {
-                            if (!firestoreQueueBroken && !window.__firestoreQueueBroken && (!unsubscribeAppConfig || !unsubscribeSubjects || !unsubscribeTasks || !unsubscribeExamScores)) {
+                            if (!firestoreQueueBroken && !window.__firestoreQueueBroken) {
                                 ensureLiveListeners(uid, { force: false });
                             }
                             await flushPendingUserOps(uid);
@@ -11139,7 +11440,7 @@
                             }
                         });
                     }
-                    // Aktiver Sync-Heartbeat (alle 10s solange Tab sichtbar & online — Outbox + Server-Pull)
+                    // Aktiver Sync-Heartbeat (alle 10s solange Tab sichtbar & online — Outbox + Listener-Heilung + Server-Pull)
                     setInterval(() => {
                         const uid = user.value?.uid;
                         if (!document.hidden && navigator.onLine !== false && uid) {
@@ -11147,6 +11448,7 @@
                                 flushPendingUserOps(uid);
                             }
                             if (auth.currentUser?.uid === uid) {
+                                ensureLiveListeners(uid, { force: false });
                                 syncAllUserDataFromServer(uid, { force: false });
                             }
                         }
@@ -11201,6 +11503,17 @@
                     // Online/Offline-Status überwachen & Cloud-Daten sowie Offline-Outbox bei Reconnect sofort synchronisieren
                     window.addEventListener('online', async () => {
                         isOnline.value = true;
+                        if (user.value && (!auth.currentUser || auth.currentUser.uid !== user.value.uid)) {
+                            const restored = await waitForFirebaseAuth(4000);
+                            if (!restored || restored.uid !== user.value.uid) {
+                                user.value = null;
+                                isOnboarding.value = false;
+                                unsubscribeAllListeners();
+                                try { localStorage.removeItem('sf_cached_user'); } catch (_) {}
+                                showToast('Sitzung abgelaufen – bitte neu anmelden');
+                                return;
+                            }
+                        }
                         const uid = user.value?.uid || auth.currentUser?.uid;
                         if (uid) {
                             pendingOpsRetryCounts.delete(uid);
@@ -11789,7 +12102,7 @@
 
                     const hadDeferredOps = opsBefore.some((op) => (Date.now() - (op.updatedAt || Date.now())) > 2000);
 
-                    const res = await flushPendingOpsQueue(uid, {
+                    const flushDeps = {
                         db,
                         doc,
                         setDoc,
@@ -11797,15 +12110,20 @@
                         deleteDoc,
                         getDoc,
                         getDocFromServer,
-                        readTimeoutMs: 8000,
-                        writeTimeoutMs: 12000,
+                        readTimeoutMs: 15000,
+                        writeTimeoutMs: 15000,
                         isOnline: () => navigator.onLine !== false,
                         getCurrentUid: () => auth.currentUser?.uid || null,
                         getLocalSubjectFallback: (subId) => (subjects.value || []).find((s) => s && s.id === subId) || null
-                    });
+                    };
 
-                    if (res?.hadAuthError && auth.currentUser?.uid === uid) {
-                        try { await auth.currentUser.getIdToken(true); } catch (_) {}
+                    let res = await flushPendingOpsQueue(uid, flushDeps);
+
+                    if (res?.hadAuthError && auth.currentUser?.uid === uid && (res?.remaining || 0) > 0) {
+                        try {
+                            await auth.currentUser.getIdToken(true);
+                            res = await flushPendingOpsQueue(uid, flushDeps);
+                        } catch (_) {}
                     }
 
                     if ((res?.remaining || 0) > 0) {
@@ -12074,7 +12392,7 @@
                         try {
                             await Promise.race([
                                 auth.authStateReady(),
-                                new Promise((resolve) => setTimeout(resolve, 2000))
+                                new Promise((resolve) => setTimeout(resolve, 2500))
                             ]);
                         } catch (_) {}
                     }
@@ -12093,41 +12411,65 @@
                                 await withTimeout(waitForPendingWrites(db), 2500, 'pending-writes-timeout');
                             } catch (_) {}
 
-                            // 1. Settings / Stundenplan / Design / Klasse vom Server ziehen (+ lokale Outbox mergen)
+                            let tokenRefreshed = false;
+                            const pullWithTokenRefresh = async (fn, label) => {
+                                try {
+                                    return await withTimeout(fn(), 15000, label);
+                                } catch (err) {
+                                    const code = String(err?.code || '').toLowerCase();
+                                    if (!tokenRefreshed && (code.includes('permission-denied') || code.includes('unauthenticated')) && auth.currentUser?.uid === uid) {
+                                        tokenRefreshed = true;
+                                        await auth.currentUser.getIdToken(true);
+                                        return await withTimeout(fn(), 15000, label);
+                                    }
+                                    throw err;
+                                }
+                            };
+
+                            const initialCollName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                             const configRef = doc(db, 'users', uid, 'settings', 'config');
-                            try {
-                                const configSnap = await withTimeout(getDocFromServer(configRef), 8000, 'config-sync-timeout');
+
+                            // Alle 4 Nutzerbereiche parallel vom Server laden (15s Timeout passend zu AutoDetectLongPolling)
+                            const [cfgRes, subRes, taskRes, abiRes] = await Promise.allSettled([
+                                pullWithTokenRefresh(() => getDocFromServer(configRef), 'config-sync-timeout'),
+                                pullWithTokenRefresh(() => getDocsFromServer(collection(db, 'users', uid, initialCollName)), 'subjects-sync-timeout'),
+                                pullWithTokenRefresh(() => getDocsFromServer(collection(db, 'users', uid, 'tasks')), 'tasks-sync-timeout'),
+                                pullWithTokenRefresh(() => getDocFromServer(doc(db, 'users', uid, 'abitur', 'scores')), 'abi-sync-timeout')
+                            ]);
+
+                            if (cfgRes.status === 'fulfilled') {
+                                const configSnap = cfgRes.value;
                                 if (configSnap.exists()) {
                                     isOnboarding.value = false;
                                     applyLoadedConfigSnap(uid, configSnap);
-                                    await ensurePublicProfile(uid);
+                                    ensurePublicProfile(uid);
                                 } else if (checkOnboarding && !localStorage.getItem('sf_user_config_' + uid)) {
                                     isOnboarding.value = true;
                                 }
-                            } catch (_) {}
+                            }
 
-                            // 2. Fächer & Noten vom Server ziehen (Outbox-Merge schützt ungesicherte lokale Noten vor Überschreiben!)
-                            const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
-                            try {
-                                const subSnap = await withTimeout(getDocsFromServer(collection(db, 'users', uid, collName)), 8000, 'subjects-sync-timeout');
-                                const incomingSubs = subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                            const effectiveCollName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                            if (effectiveCollName !== initialCollName) {
+                                try {
+                                    const swappedSnap = await pullWithTokenRefresh(
+                                        () => getDocsFromServer(collection(db, 'users', uid, effectiveCollName)),
+                                        'subjects-swap-sync-timeout'
+                                    );
+                                    applySubjectsSnapshotDocs(uid, swappedSnap.docs.map(d => ({ id: d.id, ...d.data() })), false);
+                                } catch (_) {}
+                            } else if (subRes.status === 'fulfilled') {
+                                const incomingSubs = subRes.value.docs.map(d => ({ id: d.id, ...d.data() }));
                                 applySubjectsSnapshotDocs(uid, incomingSubs, false);
-                            } catch (_) {}
+                            }
 
-                            // 3. Aufgaben & Kalendertermine vom Server ziehen (+ lokale Outbox mergen)
-                            try {
-                                const taskSnap = await withTimeout(getDocsFromServer(collection(db, 'users', uid, 'tasks')), 8000, 'tasks-sync-timeout');
-                                const incomingTasks = taskSnap.docs.map(d => ({ ...d.data(), id: d.id }));
+                            if (taskRes.status === 'fulfilled') {
+                                const incomingTasks = taskRes.value.docs.map(d => ({ ...d.data(), id: d.id }));
                                 applyTasksSnapshotDocs(uid, incomingTasks, false, true);
-                            } catch (_) {}
+                            }
 
-                            // 4. Abitur- & Notentabellen-Simulation vom Server ziehen
-                            try {
-                                const abiSnap = await withTimeout(getDocFromServer(doc(db, 'users', uid, 'abitur', 'scores')), 8000, 'abi-sync-timeout');
-                                if (abiSnap.exists()) {
-                                    applyExamScoresData(uid, abiSnap.data());
-                                }
-                            } catch (_) {}
+                            if (abiRes.status === 'fulfilled' && abiRes.value.exists()) {
+                                applyExamScoresData(uid, abiRes.value.data());
+                            }
                         } catch (syncErr) {
                             console.warn('[Schooly Server-Sync] Hinweis:', syncErr?.message || syncErr);
                         } finally {
@@ -16946,7 +17288,7 @@
                     isNotificationsOpen, friendsTab, allMembers, friends, socialLoading, sentRequests, notifications,
                     toastState, triggerToastAction, dismissToast,
                     examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
-                    selectedFriend, pushNotificationSettings, unreadNotifications, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
+                    selectedFriend, pushNotificationSettings, unreadNotifications, incomingFriendRequests, notificationBadgeCount, getIncomingRequestFrom, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     colorMode, setColorMode, isDarkMode, toggleDarkMode, GERMAN_STATES, federalState, tempFederalState, setFederalState, selectedDayHolidayInfo,
                     isCalendarStateDropdownOpen, isSettingsStateDropdownOpen, isSettingsRecapDropdownOpen, WEEKDAY_OPTIONS, getFederalStateName, getWeekdayName,
                     activeCustomDropdown, toggleCustomDropdown, REMINDER_DAY_OPTIONS, getReminderDayLabel,

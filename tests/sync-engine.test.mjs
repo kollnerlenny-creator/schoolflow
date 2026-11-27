@@ -13,7 +13,10 @@ import {
     mergeTasksWithPendingOps,
     mergeConfigWithPendingOps,
     mergeExamScoresWithPendingOps,
-    flushPendingOpsQueue
+    flushPendingOpsQueue,
+    filterIncomingFriendRequests,
+    countNotificationBadges,
+    detectNewFriendNotifications
 } from '../src/sync-engine.js';
 
 function createMemoryStorage() {
@@ -573,4 +576,28 @@ test('flushPendingOpsQueue flags auth errors distinctly so caller can force-refr
     assert.equal(res.hadAuthError, true);
     assert.equal(res.hadNetworkError, false);
 });
+
+test('filterIncomingFriendRequests, countNotificationBadges, and detectNewFriendNotifications work deterministically', () => {
+    const sample = [
+        { id: 'fr_a', type: 'friend_request', fromUid: 'a', fromName: 'Alice', responded: false, read: false, createdAt: '2026-11-27T08:00:00.000Z' },
+        { id: 'fr_b', type: 'friend_request', fromUid: 'b', fromName: 'Bob', responded: true, read: true, createdAt: '2026-11-27T07:00:00.000Z' },
+        { id: 'fr_c', type: 'friend_request', fromUid: 'c', fromName: 'Clara', responded: false, read: true, createdAt: '2026-11-27T09:00:00.000Z' },
+        { id: 'fa_d', type: 'friend_accepted', fromUid: 'd', fromName: 'Dan', read: false, createdAt: '2026-11-27T08:30:00.000Z' }
+    ];
+
+    const incoming = filterIncomingFriendRequests(sample);
+    assert.deepEqual(incoming.map((n) => n.id), ['fr_c', 'fr_a']);
+
+    // fr_a (unread + unresponded), fr_c (read but still unresponded request!), fa_d (unread) => 3 badges
+    assert.equal(countNotificationBadges(sample), 3);
+
+    // Initial load never fires toast bursts
+    assert.deepEqual(detectNewFriendNotifications(sample, new Set(), true), []);
+
+    // Subsequent live update detects only newly arrived unresponded requests or unread acceptances
+    const seen = new Set(['fr_a', 'fr_b', 'fa_d']);
+    const fresh = detectNewFriendNotifications(sample, seen, false);
+    assert.deepEqual(fresh.map((n) => n.id), ['fr_c']);
+});
+
 

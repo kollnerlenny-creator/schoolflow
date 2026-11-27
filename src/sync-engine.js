@@ -394,8 +394,8 @@ export async function flushPendingOpsQueue(uid, deps) {
         return activeFlushPromises.get(uid);
     }
 
-    const readTimeoutMs = typeof deps.readTimeoutMs === 'number' ? deps.readTimeoutMs : 8000;
-    const writeTimeoutMs = typeof deps.writeTimeoutMs === 'number' ? deps.writeTimeoutMs : 12000;
+    const readTimeoutMs = typeof deps.readTimeoutMs === 'number' ? deps.readTimeoutMs : 15000;
+    const writeTimeoutMs = typeof deps.writeTimeoutMs === 'number' ? deps.writeTimeoutMs : 15000;
 
     const runner = (async () => {
         let totalFlushed = 0;
@@ -581,3 +581,37 @@ export async function flushPendingOpsQueue(uid, deps) {
         activeFlushPromises.delete(uid);
     }
 }
+
+export function filterIncomingFriendRequests(notifications = []) {
+    if (!Array.isArray(notifications)) return [];
+    return notifications
+        .filter((n) => n && n.type === 'friend_request' && !n.responded)
+        .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+}
+
+export function countNotificationBadges(notifications = []) {
+    if (!Array.isArray(notifications)) return 0;
+    const ids = new Set();
+    for (const n of notifications) {
+        if (!n || !n.id) continue;
+        if (!n.read || (n.type === 'friend_request' && !n.responded)) {
+            ids.add(n.id);
+        }
+    }
+    return ids.size;
+}
+
+export function detectNewFriendNotifications(nextList = [], seenIds = new Set(), isInitialLoad = false) {
+    if (!Array.isArray(nextList) || isInitialLoad) return [];
+    const out = [];
+    for (const n of nextList) {
+        if (!n || !n.id || seenIds.has(n.id)) continue;
+        if (n.type === 'friend_request' && !n.responded) {
+            out.push(n);
+        } else if (n.type === 'friend_accepted' && !n.read) {
+            out.push(n);
+        }
+    }
+    return out;
+}
+
