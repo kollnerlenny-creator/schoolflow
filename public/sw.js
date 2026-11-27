@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden, aktuelle App-Shell und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v62';
+const CACHE_NAME = 'schooly-cache-v63';
 
 const PRECACHE_URLS = [
   '/',
@@ -10,6 +10,7 @@ const PRECACHE_URLS = [
   '/vue.global.prod.js',
   '/lucide.min.js',
   '/tailwindcss.js',
+  '/src/sync-engine.js',
   'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js',
   'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js',
   'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js',
@@ -23,20 +24,40 @@ const PRECACHE_URLS = [
   '/icon-maskable-512.png'
 ];
 
-// 1. Installation: Sofort aktivieren und aktuelle Ressourcen vorab cachen (ohne HTTP-Cache)
+// 1. Installation: Sofort aktivieren, App-Shell + gebündelte /assets/*.js sofort vorab cachen
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
+      const discoveredAssetUrls = new Set();
       for (const url of PRECACHE_URLS) {
         try {
           const isSameOrigin = url.startsWith('/');
           const res = await fetch(url, isSameOrigin ? { cache: 'no-store' } : undefined);
           if (res && res.status === 200) {
+            if (url === '/index.html') {
+              try {
+                const htmlText = await res.clone().text();
+                const assetMatches = htmlText.matchAll(/(?:src|href)="(\/assets\/[^"?#]+\.(?:js|css)|\/src\/sync-engine\.js)"/g);
+                for (const m of assetMatches) {
+                  if (m && m[1]) discoveredAssetUrls.add(m[1]);
+                }
+              } catch (_) {}
+            }
             await cache.put(url, res);
           }
         } catch (e) {
           console.warn('[SW] Vorab-Cache für', url, 'fehlgeschlagen:', e.message);
+        }
+      }
+      for (const assetUrl of discoveredAssetUrls) {
+        try {
+          const assetRes = await fetch(assetUrl, { cache: 'no-store' });
+          if (assetRes && assetRes.status === 200) {
+            await cache.put(assetUrl, assetRes);
+          }
+        } catch (e) {
+          console.warn('[SW] Bundle-Cache für', assetUrl, 'fehlgeschlagen:', e.message);
         }
       }
     })
@@ -59,10 +80,16 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+self.addEventListener('message', (event) => {
+  if (event?.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // 3. Fetch-Strategie:
-// - Firebase & Google APIs: Direkt durchleiten (Firestore IndexedDB übernimmt Offline-Sync)
-// - Navigation: Network-First über saubere URL-Anfrage (vermeidet WebKit/PWA navigate-Request-Fehler)
-// - Statische Ressourcen: Stale-While-Revalidate (sofortiger Start + stille Aktualisierung im Hintergrund)
+// - Firebase & Google APIs: Direkt durchleiten (Outbox + Firestore handhaben Offline-Sync)
+// - Navigation: Network-First mit kurzem 4.5s Timeout (vermeidet langes Hängen im Standalone-Start)
+// - Statische Ressourcen & Module: Stale-While-Revalidate (sofortiger Start + stille Aktualisierung)
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -70,7 +97,7 @@ self.addEventListener('fetch', (event) => {
   // Nicht-HTTP oder Nicht-GET Anfragen ignorieren
   if (!url.protocol.startsWith('http') || req.method !== 'GET') return;
 
-  // Firebase Firestore/Auth/Google APIs direkt durchleiten (wird von IndexedDB gehandhabt)
+  // Firebase Firestore/Auth/Google APIs direkt durchleiten
   if (
     url.hostname.includes('firestore.googleapis.com') ||
     url.hostname.includes('identitytoolkit.googleapis.com') ||
@@ -83,14 +110,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Landing, Pitchdeck, Social-Studio, API- & Vite-Dev-Interna niemals durch SW abfangen/cachen
+  // Landing, Pitchdeck, Social-Studio, API- & Vite-Dev-Interna (außer /src/sync-engine.js) niemals durch SW abfangen/cachen
+  const isSyncEngineSrc = url.pathname === '/src/sync-engine.js';
   if (
     url.pathname.startsWith('/landing') ||
     url.pathname.startsWith('/pitchdeck') ||
     url.pathname.startsWith('/social') ||
     url.pathname.startsWith('/api/') ||
     url.pathname.startsWith('/@') ||
-    url.pathname.startsWith('/src/') ||
+    (url.pathname.startsWith('/src/') && !isSyncEngineSrc) ||
     url.search.includes('html-proxy') ||
     url.search.includes('t=') ||
     url.pathname.includes('node_modules')
@@ -105,7 +133,7 @@ self.addEventListener('fetch', (event) => {
         try {
           // Sauberen URL-Fetch statt fetch(navigateReq, init) verwenden (verhindert TypeError auf iOS Safari & Standalone-PWA)
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 12000);
+          const timer = setTimeout(() => controller.abort(), 4500);
           const fetchTarget = (url.pathname === '/' || url.pathname === '/index.html')
             ? '/index.html'
             : (url.pathname + url.search);

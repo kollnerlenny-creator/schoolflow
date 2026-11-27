@@ -365,7 +365,13 @@ export function withTimeout(promise, timeoutMs, label = 'sync-timeout') {
 function classifySyncError(err) {
     const code = String(err?.code || '').toLowerCase();
     const msg = String(err?.message || '').toLowerCase();
-    const isAuth = code.includes('unauthenticated') || code.includes('permission-denied') || msg.includes('token');
+    const isAuth =
+        code.includes('unauthenticated') ||
+        code.includes('permission-denied') ||
+        msg.includes('permission') ||
+        msg.includes('token') ||
+        msg.includes('credential') ||
+        msg.includes('auth');
     const isNetwork = !isAuth && (
         code.includes('unavailable') ||
         code.includes('deadline-exceeded') ||
@@ -374,7 +380,8 @@ function classifySyncError(err) {
         msg.includes('offline') ||
         msg.includes('network') ||
         msg.includes('timeout') ||
-        msg.includes('failed to get document')
+        msg.includes('failed to get document') ||
+        msg.includes('fetch')
     );
     return { isAuth, isNetwork };
 }
@@ -389,14 +396,20 @@ export async function flushPendingOpsQueue(uid, deps) {
         return { flushed: 0, remaining: readPendingOps(uid, storage).length, deferred: readPendingOps(uid, storage).length, hadAuthError: true, hadNetworkError: false };
     }
 
-    if (activeFlushPromises.has(uid)) {
-        pendingReflushUids.add(uid);
-        return activeFlushPromises.get(uid);
+    const maxFlushAgeMs = typeof deps.maxFlushAgeMs === 'number' ? deps.maxFlushAgeMs : 20000;
+    const existingFlush = activeFlushPromises.get(uid);
+    if (existingFlush) {
+        const ageMs = Date.now() - existingFlush.startedAt;
+        if (!deps.forceReset && ageMs < maxFlushAgeMs) {
+            pendingReflushUids.add(uid);
+            return existingFlush.promise;
+        }
     }
 
     const readTimeoutMs = typeof deps.readTimeoutMs === 'number' ? deps.readTimeoutMs : 15000;
     const writeTimeoutMs = typeof deps.writeTimeoutMs === 'number' ? deps.writeTimeoutMs : 15000;
 
+    let runnerRef = null;
     const runner = (async () => {
         let totalFlushed = 0;
         let deferredCount = 0;
@@ -574,11 +587,14 @@ export async function flushPendingOpsQueue(uid, deps) {
         };
     })();
 
-    activeFlushPromises.set(uid, runner);
+    runnerRef = { promise: runner, startedAt: Date.now() };
+    activeFlushPromises.set(uid, runnerRef);
     try {
         return await runner;
     } finally {
-        activeFlushPromises.delete(uid);
+        if (activeFlushPromises.get(uid) === runnerRef) {
+            activeFlushPromises.delete(uid);
+        }
     }
 }
 

@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v62';
+        const CURRENT_BUILD = 'schooly-v63';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v62') {
+                        if (k !== 'schooly-cache-v63') {
                             caches.delete(k);
                         }
                     });
@@ -2500,11 +2500,24 @@
     </script>
 
     <div id="app" v-cloak>
-        <!-- OFFLINE STATUS BANNER (Dezenter Hinweis, wenn das Gerät offline ist) -->
+        <!-- OFFLINE & PENDING-SYNC BANNER -->
         <transition enter-active-class="transition duration-300 ease-out" enter-from-class="-translate-y-4 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-200 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="-translate-y-4 opacity-0">
-            <div v-if="!isOnline" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2 bg-[#2d2926]/90 backdrop-blur-md text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/10 pointer-events-none">
-                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                <span>Offline &middot; Noten werden lokal gesichert &amp; später synchronisiert</span>
+            <div v-if="!isOnline || pendingSyncCount > 0 || syncNeedsRelogin" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999]">
+                <div v-if="!isOnline" class="px-4 py-2 bg-[#2d2926]/90 backdrop-blur-md text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/10 pointer-events-none whitespace-nowrap">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span v-if="pendingSyncCount > 0">Offline &middot; {{ pendingSyncCount }} Änderung{{ pendingSyncCount === 1 ? '' : 'en' }} lokal gesichert</span>
+                    <span v-else>Offline &middot; Noten werden lokal gesichert &amp; später synchronisiert</span>
+                </div>
+                <button v-else-if="syncNeedsRelogin" type="button" @click="handleReloginPrompt"
+                        class="px-4 py-2 bg-[#7c2d12]/95 hover:bg-[#7c2d12] backdrop-blur-md text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/15 cursor-pointer whitespace-nowrap">
+                    <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                    <span>Sitzung abgelaufen &middot; Zum Sync neu anmelden</span>
+                </button>
+                <button v-else type="button" @click="manualSyncNow"
+                        class="px-4 py-2 bg-[#1f2937]/92 hover:bg-[#111827] backdrop-blur-md text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-2 border border-white/15 cursor-pointer whitespace-nowrap">
+                    <span class="w-2 h-2 rounded-full" :class="syncingNow ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'"></span>
+                    <span>{{ syncingNow ? 'Synchronisiere …' : (pendingSyncCount + ' Änderung' + (pendingSyncCount === 1 ? '' : 'en') + ' ausstehend · Tippen zum Syncen') }}</span>
+                </button>
             </div>
         </transition>
 
@@ -8588,7 +8601,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
         import { initializeFirestore, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
         import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
-        import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout, filterIncomingFriendRequests, countNotificationBadges, detectNewFriendNotifications } from "/src/sync-engine.js";
+        import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp as enqueuePendingOpRaw, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout, filterIncomingFriendRequests, countNotificationBadges, detectNewFriendNotifications } from "/src/sync-engine.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
         const _origConsoleError = console.error;
@@ -8687,14 +8700,14 @@
 
         const app = initializeApp(firebaseConfig);
         
-        // Firestore mit stabilem Memory-Cache + AutoDetect (Offline-Boot & Outbox-Persistenz laufen deterministisch über sync-engine + localStorage)
+        // Firestore mit stabilem Memory-Cache + ForceLongPolling (vermeidet WebChannel-Hänger nach App-Sleep & in mobilen PWAs)
         let db;
         try {
             db = initializeFirestore(app, {
                 localCache: memoryLocalCache(),
-                experimentalAutoDetectLongPolling: true
+                experimentalForceLongPolling: true
             });
-            console.log("Firebase Firestore: Memory-Cache & AutoDetect initialisiert.");
+            console.log("Firebase Firestore: Memory-Cache & LongPolling initialisiert.");
         } catch (err) {
             console.warn("Fallback zu Standard-Firestore:", err);
             db = getFirestore(app);
@@ -8775,6 +8788,18 @@
 
                 const user = ref(initialCachedUser);
                 const isOnline = ref(typeof navigator !== 'undefined' ? navigator.onLine : true);
+                const pendingSyncCount = ref(initialCachedUser?.uid ? readPendingOps(initialCachedUser.uid).length : 0);
+                const syncingNow = ref(false);
+                const syncNeedsRelogin = ref(false);
+                const refreshPendingSyncCount = (targetUid) => {
+                    const checkUid = targetUid || user.value?.uid || auth.currentUser?.uid || initialCachedUser?.uid || localStorage.getItem('sf_last_uid') || '';
+                    pendingSyncCount.value = checkUid ? readPendingOps(checkUid).length : 0;
+                };
+                const enqueuePendingOp = (uid, op) => {
+                    const res = enqueuePendingOpRaw(uid, op);
+                    refreshPendingSyncCount(uid);
+                    return res;
+                };
                 const authLoading = ref(false);
                 const isRegistering = ref(false);
                 const email = ref('');
@@ -9664,6 +9689,7 @@
                 let notificationsInitialLoadedUid = null;
                 const seenNotificationIds = new Set();
                 let firestoreQueueBroken = Boolean(window.__firestoreQueueBroken);
+                let firestoreQueueBrokenAt = firestoreQueueBroken ? Date.now() : 0;
                 const listenerRetryTimers = new Map();
                 const listenerRetryCounts = new Map();
 
@@ -9685,8 +9711,17 @@
 
                 const markFirestoreQueueBroken = () => {
                     firestoreQueueBroken = true;
+                    firestoreQueueBrokenAt = Date.now();
                     window.__firestoreQueueBroken = true;
                     ['config', 'examScores', 'subjects', 'tasks', 'members', 'friends', 'sentRequests', 'declinedRequests', 'notifications'].forEach(clearListenerRetry);
+                };
+                const tryRecoverFirestoreQueue = () => {
+                    if (!firestoreQueueBroken && !window.__firestoreQueueBroken) return true;
+                    if (Date.now() - firestoreQueueBrokenAt < 15000) return false;
+                    firestoreQueueBroken = false;
+                    firestoreQueueBrokenAt = 0;
+                    window.__firestoreQueueBroken = false;
+                    return true;
                 };
                 window.__onFirestoreAssertionCrash = markFirestoreQueueBroken;
 
@@ -11366,9 +11401,13 @@
                     window.addEventListener('resize', updatePlannerIndicator);
 
                     let lastHiddenAt = document.hidden ? Date.now() : 0;
+                    let lastListenerRefreshAt = 0;
                     const ensureLiveListeners = (uid, { force = false } = {}) => {
                         if (!uid || !auth.currentUser || auth.currentUser.uid !== uid) return;
-                        if (firestoreQueueBroken || window.__firestoreQueueBroken) return;
+                        if (firestoreQueueBroken || window.__firestoreQueueBroken) {
+                            if (!tryRecoverFirestoreQueue()) return;
+                        }
+                        if (force) lastListenerRefreshAt = Date.now();
                         listenToAppConfig(uid, { force });
                         listenToSubjects(uid, { force });
                         listenToTasks(uid, { force });
@@ -11387,12 +11426,18 @@
                             window.__checkSchoolySwUpdate(force);
                         }
                         const uid = user.value?.uid || auth.currentUser?.uid;
+                        refreshPendingSyncCount(uid);
                         if (uid && navigator.onLine !== false) {
-                            if (!firestoreQueueBroken && !window.__firestoreQueueBroken) {
-                                ensureLiveListeners(uid, { force: false });
+                            if (firestoreQueueBroken || window.__firestoreQueueBroken) {
+                                tryRecoverFirestoreQueue();
                             }
-                            await flushPendingUserOps(uid);
-                            syncAllUserDataFromServer(uid, { force });
+                            if (!auth.currentUser || auth.currentUser.uid !== uid) {
+                                await waitForFirebaseAuth(4500);
+                            }
+                            const shouldForceListeners = force && (Date.now() - lastListenerRefreshAt > 3000);
+                            ensureLiveListeners(uid, { force: shouldForceListeners });
+                            await flushPendingUserOps(uid, { forceReset: force });
+                            await syncAllUserDataFromServer(uid, { force });
                             refreshSocialData({ quiet: true });
                         }
                     };
@@ -11424,8 +11469,29 @@
                     // Beim Schließen/Hintergrund-Wechsel ausstehende Schreibvorgänge sofort anstoßen
                     window.addEventListener('pagehide', () => {
                         const uid = user.value?.uid || auth.currentUser?.uid;
-                        if (uid && navigator.onLine !== false) {
+                        if (uid && navigator.onLine !== false && readPendingOps(uid).length > 0) {
                             flushPendingUserOps(uid);
+                        }
+                    });
+                    // Synchronisation zwischen mehreren Fenstern/Tabs desselben Geräts
+                    window.addEventListener('storage', (ev) => {
+                        const uid = user.value?.uid || auth.currentUser?.uid;
+                        if (!uid || !ev?.key) return;
+                        if (ev.key === 'sf_pending_ops_' + uid) {
+                            refreshPendingSyncCount(uid);
+                            const collInit = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                            const sRaw = localStorage.getItem('sf_subjects_' + uid);
+                            const pending = readPendingOps(uid);
+                            if (sRaw) {
+                                try {
+                                    subjects.value = mergeSubjectsWithPendingOps(JSON.parse(sRaw), pending, collInit);
+                                } catch (_) {}
+                            }
+                        } else if (ev.key === 'sf_subjects_' + uid && ev.newValue) {
+                            try {
+                                const collInit = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
+                                subjects.value = mergeSubjectsWithPendingOps(JSON.parse(ev.newValue), readPendingOps(uid), collInit);
+                            } catch (_) {}
                         }
                     });
                     // Service-Worker Background Sync Wake-Up
@@ -11435,14 +11501,15 @@
                                 const uid = user.value?.uid || auth.currentUser?.uid;
                                 if (uid && navigator.onLine !== false) {
                                     pendingOpsRetryCounts.delete(uid);
-                                    flushPendingUserOps(uid).then(() => syncAllUserDataFromServer(uid, { force: true }));
+                                    flushPendingUserOps(uid, { forceReset: true }).then(() => syncAllUserDataFromServer(uid, { force: true }));
                                 }
                             }
                         });
                     }
-                    // Aktiver Sync-Heartbeat (alle 10s solange Tab sichtbar & online — Outbox + Listener-Heilung + Server-Pull)
+                    // Aktiver Sync-Heartbeat (alle 10s solange App sichtbar & online — Outbox + Listener-Heilung + Server-Pull)
                     setInterval(() => {
                         const uid = user.value?.uid;
+                        refreshPendingSyncCount(uid);
                         if (!document.hidden && navigator.onLine !== false && uid) {
                             if (readPendingOps(uid).length > 0) {
                                 flushPendingUserOps(uid);
@@ -11503,9 +11570,23 @@
                     // Online/Offline-Status überwachen & Cloud-Daten sowie Offline-Outbox bei Reconnect sofort synchronisieren
                     window.addEventListener('online', async () => {
                         isOnline.value = true;
+                        if (firestoreQueueBroken || window.__firestoreQueueBroken) {
+                            tryRecoverFirestoreQueue();
+                        }
                         if (user.value && (!auth.currentUser || auth.currentUser.uid !== user.value.uid)) {
-                            const restored = await waitForFirebaseAuth(4000);
+                            const restored = await waitForFirebaseAuth(4500);
                             if (!restored || restored.uid !== user.value.uid) {
+                                const pendingCount = readPendingOps(user.value.uid).length;
+                                if (pendingCount > 0) {
+                                    // Offline-Noten in sf_pending_ops_<uid> bewahren & Nutzer gezielt zum Neuanmelden auffordern
+                                    syncNeedsRelogin.value = true;
+                                    showToast(`${pendingCount} Offline-Änderung(en) warten – bitte neu anmelden`, {
+                                        actionLabel: 'Anmelden',
+                                        duration: 6000,
+                                        onAction: () => handleReloginPrompt()
+                                    });
+                                    return;
+                                }
                                 user.value = null;
                                 isOnboarding.value = false;
                                 unsubscribeAllListeners();
@@ -11514,10 +11595,12 @@
                                 return;
                             }
                         }
+                        syncNeedsRelogin.value = false;
                         const uid = user.value?.uid || auth.currentUser?.uid;
                         if (uid) {
                             pendingOpsRetryCounts.delete(uid);
                             clearPendingOpsRetry(uid);
+                            try { await auth.currentUser?.getIdToken(false); } catch (_) {}
                         }
                         await handleAppResumeSync(true);
                         if (uid && readPendingOps(uid).length > 0) {
@@ -11534,8 +11617,10 @@
                         hideSplash();
 
                         if (currentUser) {
+                            syncNeedsRelogin.value = false;
                             const prevActiveUid = user.value?.uid || lastSavedUid || '';
                             user.value = currentUser;
+                            refreshPendingSyncCount(currentUser.uid);
                             try {
                                 localStorage.setItem('sf_cached_user', JSON.stringify({
                                     uid: currentUser.uid,
@@ -11569,16 +11654,11 @@
 
                             // Authentifizierte Echtzeit-Listener starten (ohne unnötigen Teardown laufender Listener)
                             if (!firestoreQueueBroken) {
-                                listenToAppConfig(currentUser.uid);
-                                listenToSubjects(currentUser.uid);
-                                listenToTasks(currentUser.uid);
-                                listenToExamScores(currentUser.uid);
+                                ensureLiveListeners(currentUser.uid, { force: false });
                             }
                             await flushPendingTaskDoneSync(currentUser.uid);
-                            await flushPendingUserOps(currentUser.uid);
+                            await flushPendingUserOps(currentUser.uid, { forceReset: true });
                             loadExamScores(currentUser.uid);
-                            loadAllMembers(currentUser.uid);
-                            loadFriendsData(currentUser.uid);
                             ensurePublicProfile(currentUser.uid);
                             if (selectedFriend.value?.uid) {
                                 loadSelectedFriendSubjects(selectedFriend.value.uid, true);
@@ -12065,9 +12145,10 @@
                     }, delay));
                 };
 
-                const flushPendingUserOps = async (uid, { fromServerSync = false } = {}) => {
+                const flushPendingUserOps = async (uid, { fromServerSync = false, forceReset = false } = {}) => {
                     if (!uid) return { flushed: 0, remaining: 0 };
                     const opsBefore = readPendingOps(uid);
+                    refreshPendingSyncCount(uid);
                     if (opsBefore.length === 0) {
                         clearPendingOpsRetry(uid);
                         pendingOpsRetryCounts.delete(uid);
@@ -12081,65 +12162,114 @@
                     }
 
                     if (firestoreQueueBroken || window.__firestoreQueueBroken) {
-                        return { flushed: 0, remaining: opsBefore.length, deferred: opsBefore.length };
+                        if (!tryRecoverFirestoreQueue()) {
+                            return { flushed: 0, remaining: opsBefore.length, deferred: opsBefore.length };
+                        }
                     }
 
-                    // Bei Kaltstart / Offline-Aufwachen warten bis Firebase Auth IndexedDB-Session geladen hat
-                    if (!auth.currentUser && typeof auth.authStateReady === 'function') {
-                        try {
-                            await Promise.race([
-                                auth.authStateReady(),
-                                new Promise((resolve) => setTimeout(resolve, 2500))
-                            ]);
-                        } catch (_) {}
+                    // Bei Kaltstart / Offline-Aufwachen sauber warten bis Firebase Auth IndexedDB-Session geladen hat
+                    if (!auth.currentUser || auth.currentUser.uid !== uid) {
+                        await waitForFirebaseAuth(4500);
                     }
 
                     if (auth.currentUser?.uid !== uid) {
                         registerBackgroundSyncIfSupported();
                         schedulePendingOpsRetry(uid, 1500);
-                        return { flushed: 0, remaining: opsBefore.length, deferred: opsBefore.length };
+                        return { flushed: 0, remaining: opsBefore.length, deferred: opsBefore.length, hadAuthError: true };
                     }
 
+                    syncNeedsRelogin.value = false;
                     const hadDeferredOps = opsBefore.some((op) => (Date.now() - (op.updatedAt || Date.now())) > 2000);
+                    syncingNow.value = true;
 
-                    const flushDeps = {
-                        db,
-                        doc,
-                        setDoc,
-                        updateDoc,
-                        deleteDoc,
-                        getDoc,
-                        getDocFromServer,
-                        readTimeoutMs: 15000,
-                        writeTimeoutMs: 15000,
-                        isOnline: () => navigator.onLine !== false,
-                        getCurrentUid: () => auth.currentUser?.uid || null,
-                        getLocalSubjectFallback: (subId) => (subjects.value || []).find((s) => s && s.id === subId) || null
-                    };
+                    try {
+                        if (hadDeferredOps || forceReset) {
+                            try { await auth.currentUser.getIdToken(false); } catch (_) {}
+                        }
 
-                    let res = await flushPendingOpsQueue(uid, flushDeps);
+                        const flushDeps = {
+                            db,
+                            doc,
+                            setDoc,
+                            updateDoc,
+                            deleteDoc,
+                            getDoc,
+                            getDocFromServer,
+                            forceReset,
+                            readTimeoutMs: 15000,
+                            writeTimeoutMs: 15000,
+                            isOnline: () => navigator.onLine !== false,
+                            getCurrentUid: () => auth.currentUser?.uid || null,
+                            getLocalSubjectFallback: (subId) => (subjects.value || []).find((s) => s && s.id === subId) || null
+                        };
 
-                    if (res?.hadAuthError && auth.currentUser?.uid === uid && (res?.remaining || 0) > 0) {
-                        try {
-                            await auth.currentUser.getIdToken(true);
-                            res = await flushPendingOpsQueue(uid, flushDeps);
-                        } catch (_) {}
-                    }
+                        let res = await flushPendingOpsQueue(uid, flushDeps);
 
-                    if ((res?.remaining || 0) > 0) {
-                        registerBackgroundSyncIfSupported();
-                        schedulePendingOpsRetry(uid);
-                    } else {
-                        clearPendingOpsRetry(uid);
-                        pendingOpsRetryCounts.delete(uid);
-                        if ((res?.flushed || 0) > 0 && hadDeferredOps) {
-                            showToast('Offline-Änderungen synchronisiert ✓');
-                            if (!fromServerSync) {
-                                syncAllUserDataFromServer(uid, { force: true });
+                        if ((res?.hadAuthError || res?.hadNetworkError) && auth.currentUser?.uid === uid && (res?.remaining || 0) > 0) {
+                            try {
+                                await auth.currentUser.getIdToken(true);
+                                res = await flushPendingOpsQueue(uid, { ...flushDeps, forceReset: true });
+                            } catch (_) {}
+                        }
+
+                        if ((res?.remaining || 0) > 0) {
+                            registerBackgroundSyncIfSupported();
+                            schedulePendingOpsRetry(uid);
+                        } else {
+                            clearPendingOpsRetry(uid);
+                            pendingOpsRetryCounts.delete(uid);
+                            if ((res?.flushed || 0) > 0 && hadDeferredOps) {
+                                showToast('Offline-Änderungen synchronisiert ✓');
+                                if (!fromServerSync) {
+                                    syncAllUserDataFromServer(uid, { force: true });
+                                }
                             }
                         }
+                        return res;
+                    } finally {
+                        syncingNow.value = false;
+                        refreshPendingSyncCount(uid);
                     }
-                    return res;
+                };
+
+                const manualSyncNow = async () => {
+                    if (navigator.onLine === false) {
+                        showToast('Aktuell offline – Änderungen sind lokal gesichert');
+                        return;
+                    }
+                    const uid = user.value?.uid || auth.currentUser?.uid || getActiveUid();
+                    if (!uid) return;
+                    if (!auth.currentUser || auth.currentUser.uid !== uid) {
+                        const restored = await waitForFirebaseAuth(4500);
+                        if (!restored || restored.uid !== uid) {
+                            syncNeedsRelogin.value = true;
+                            showToast('Bitte neu anmelden, um ausstehende Änderungen hochzuladen', {
+                                actionLabel: 'Anmelden',
+                                duration: 5000,
+                                onAction: () => handleReloginPrompt()
+                            });
+                            return;
+                        }
+                    }
+                    syncNeedsRelogin.value = false;
+                    pendingOpsRetryCounts.delete(uid);
+                    clearPendingOpsRetry(uid);
+                    const res = await flushPendingUserOps(uid, { forceReset: true });
+                    await syncAllUserDataFromServer(uid, { force: true });
+                    refreshSocialData({ quiet: true });
+                    if ((res?.remaining || 0) === 0 && readPendingOps(uid).length === 0) {
+                        showToast('Alles synchronisiert ✓');
+                    } else {
+                        showToast('Synchronisation wird im Hintergrund erneut versucht');
+                    }
+                };
+
+                const handleReloginPrompt = () => {
+                    syncNeedsRelogin.value = false;
+                    unsubscribeAllListeners();
+                    user.value = null;
+                    isOnboarding.value = false;
+                    try { localStorage.removeItem('sf_cached_user'); } catch (_) {}
                 };
 
                 const applySubjectsSnapshotDocs = (uid, incoming, fromCache) => {
@@ -12386,30 +12516,36 @@
 
                 let lastServerSyncAt = 0;
                 let activeServerSyncPromise = null;
+                let activeServerSyncStartedAt = 0;
                 const syncAllUserDataFromServer = async (uid, { force = false, checkOnboarding = false } = {}) => {
-                    if (!uid || navigator.onLine === false || firestoreQueueBroken || window.__firestoreQueueBroken) return;
-                    if (!auth.currentUser && typeof auth.authStateReady === 'function') {
-                        try {
-                            await Promise.race([
-                                auth.authStateReady(),
-                                new Promise((resolve) => setTimeout(resolve, 2500))
-                            ]);
-                        } catch (_) {}
+                    if (!uid || navigator.onLine === false) return;
+                    if (firestoreQueueBroken || window.__firestoreQueueBroken) {
+                        if (!tryRecoverFirestoreQueue()) return;
+                    }
+                    if (!auth.currentUser || auth.currentUser.uid !== uid) {
+                        await waitForFirebaseAuth(4500);
                     }
                     if (!auth.currentUser || auth.currentUser.uid !== uid) return;
                     const now = Date.now();
                     if (!force && now - lastServerSyncAt < 1500) return;
-                    if (activeServerSyncPromise) return activeServerSyncPromise;
+                    if (activeServerSyncPromise) {
+                        const ageMs = now - activeServerSyncStartedAt;
+                        if (!force || ageMs < 4000) {
+                            return activeServerSyncPromise;
+                        }
+                    }
 
                     lastServerSyncAt = now;
-                    activeServerSyncPromise = (async () => {
+                    activeServerSyncStartedAt = now;
+                    const syncRunPromise = (async () => {
                         try {
                             await flushPendingTaskDoneSync(uid);
-                            await flushPendingUserOps(uid, { fromServerSync: true });
-                            // Warte kurz auf ausstehende Writes vor dem Server-Pull
-                            try {
-                                await withTimeout(waitForPendingWrites(db), 2500, 'pending-writes-timeout');
-                            } catch (_) {}
+                            await flushPendingUserOps(uid, { fromServerSync: true, forceReset: force });
+                            if (readPendingOps(uid).length === 0) {
+                                try {
+                                    await withTimeout(waitForPendingWrites(db), 400, 'pending-writes-timeout');
+                                } catch (_) {}
+                            }
 
                             let tokenRefreshed = false;
                             const pullWithTokenRefresh = async (fn, label) => {
@@ -12429,7 +12565,7 @@
                             const initialCollName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                             const configRef = doc(db, 'users', uid, 'settings', 'config');
 
-                            // Alle 4 Nutzerbereiche parallel vom Server laden (15s Timeout passend zu AutoDetectLongPolling)
+                            // Alle 4 Nutzerbereiche parallel vom Server laden
                             const [cfgRes, subRes, taskRes, abiRes] = await Promise.allSettled([
                                 pullWithTokenRefresh(() => getDocFromServer(configRef), 'config-sync-timeout'),
                                 pullWithTokenRefresh(() => getDocsFromServer(collection(db, 'users', uid, initialCollName)), 'subjects-sync-timeout'),
@@ -12446,6 +12582,8 @@
                                 } else if (checkOnboarding && !localStorage.getItem('sf_user_config_' + uid)) {
                                     isOnboarding.value = true;
                                 }
+                            } else {
+                                console.warn('[Schooly Server-Sync] config pull:', cfgRes.reason?.code || cfgRes.reason?.message || cfgRes.reason);
                             }
 
                             const effectiveCollName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
@@ -12456,15 +12594,21 @@
                                         'subjects-swap-sync-timeout'
                                     );
                                     applySubjectsSnapshotDocs(uid, swappedSnap.docs.map(d => ({ id: d.id, ...d.data() })), false);
-                                } catch (_) {}
+                                } catch (e) {
+                                    console.warn('[Schooly Server-Sync] subjects swap pull:', e?.code || e?.message || e);
+                                }
                             } else if (subRes.status === 'fulfilled') {
                                 const incomingSubs = subRes.value.docs.map(d => ({ id: d.id, ...d.data() }));
                                 applySubjectsSnapshotDocs(uid, incomingSubs, false);
+                            } else {
+                                console.warn('[Schooly Server-Sync] subjects pull:', subRes.reason?.code || subRes.reason?.message || subRes.reason);
                             }
 
                             if (taskRes.status === 'fulfilled') {
                                 const incomingTasks = taskRes.value.docs.map(d => ({ ...d.data(), id: d.id }));
                                 applyTasksSnapshotDocs(uid, incomingTasks, false, true);
+                            } else {
+                                console.warn('[Schooly Server-Sync] tasks pull:', taskRes.reason?.code || taskRes.reason?.message || taskRes.reason);
                             }
 
                             if (abiRes.status === 'fulfilled' && abiRes.value.exists()) {
@@ -12473,10 +12617,14 @@
                         } catch (syncErr) {
                             console.warn('[Schooly Server-Sync] Hinweis:', syncErr?.message || syncErr);
                         } finally {
-                            activeServerSyncPromise = null;
+                            if (activeServerSyncPromise === syncRunPromise) {
+                                activeServerSyncPromise = null;
+                            }
+                            refreshPendingSyncCount(uid);
                         }
                     })();
-                    return activeServerSyncPromise;
+                    activeServerSyncPromise = syncRunPromise;
+                    return syncRunPromise;
                 };
 
                 const saveExamScores = async () => {
@@ -17253,7 +17401,7 @@
                     getSimulatedExamScore, autoProjectExamScores, setExamScoreToSimulation,
                     statsTab, activeStatsTabNavIndex, insightsSubTab, activeInsightsSubNavIndex, statsStreichungenFilter, statsMobileViewMode, isCoursePrognose, getCourseSubjectColor, allAnalyzedCourses, filteredAnalyzedCourses, coursesGroupedBySubject, getSubjectFourSemesterAverage, getSemesterOverallAverage, getFourSemesterGrandAverage,
 
-                    halfYears, colorOptions, subjectIcons, user, isOnline, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
+                    halfYears, colorOptions, subjectIcons, user, isOnline, pendingSyncCount, syncingNow, syncNeedsRelogin, manualSyncNow, handleReloginPrompt, authLoading, isRegistering, email, password, inviteCode, authError, loading, showPassword, togglePasswordVisibility,
                     isOnboarding, onboardingName, onboardingStartYear, onboardingCurrentClass, onboardingGradeSystem, onboardingError, submitOnboarding,
                     currentTab, plannerTab, plannerFilter, toggleFilterType, selectedHalfYear, setHalfYear, selectedSubject, openSubject, closeSubject, onSubjectMorphEnter, onSubjectMorphLeave, lkBonusActive, subjectFilter, activeSubjectFilterIndex, activePlannerSubNavIndex, activeFriendsSubNavIndex, isLKSubject,
                     isSubjectModalOpen, isSettingsModalOpen, isGradeModalOpen, isReportCardModalOpen, isTaskModalOpen,

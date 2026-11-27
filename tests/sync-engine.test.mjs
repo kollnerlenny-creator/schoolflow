@@ -600,4 +600,72 @@ test('filterIncomingFriendRequests, countNotificationBadges, and detectNewFriend
     assert.deepEqual(fresh.map((n) => n.id), ['fr_c']);
 });
 
+test('flushPendingOpsQueue bypasses a hung pre-sleep flush when forceReset or maxFlushAgeMs is triggered', async () => {
+    const storage = createMemoryStorage();
+    const uid = 'uid-pwa-sleep';
+    const serverStore = new Map([
+        ['users/uid-pwa-sleep/subjects/sub-1', {
+            name: 'Physik',
+            grades: []
+        }]
+    ]);
+
+    enqueuePendingOp(uid, {
+        key: 'grade:subjects:sub-1:g-sleep',
+        opType: 'upsert_grade',
+        collName: 'subjects',
+        subjectId: 'sub-1',
+        gradeId: 'g-sleep',
+        grade: { id: 'g-sleep', points: 14, date: '2026-11-27' },
+        updatedAt: 100
+    }, storage);
+
+    // Simulate a pre-sleep flush frozen mid-network with a long timeout (still active!)
+    const hungFlush = flushPendingOpsQueue(uid, {
+        db: {},
+        doc: (_db, ...segments) => segments.join('/'),
+        getDocFromServer: () => new Promise(() => {}),
+        setDoc: async () => {},
+        deleteDoc: async () => {},
+        readTimeoutMs: 5000,
+        writeTimeoutMs: 5000,
+        storage,
+        isOnline: () => true,
+        getCurrentUid: () => uid
+    });
+
+    // When PWA wakes up / reconnects and calls forceReset: true, it must NOT wait on the frozen flush
+    const resumedRes = await flushPendingOpsQueue(uid, {
+        db: {},
+        doc: (_db, ...segments) => segments.join('/'),
+        forceReset: true,
+        getDocFromServer: async (ref) => ({
+            exists: () => serverStore.has(ref),
+            data: () => serverStore.get(ref)
+        }),
+        setDoc: async (ref, data) => {
+            const prev = serverStore.get(ref) || {};
+            serverStore.set(ref, { ...prev, ...data });
+        },
+        deleteDoc: async () => {},
+        readTimeoutMs: 1000,
+        writeTimeoutMs: 1000,
+        storage,
+        isOnline: () => true,
+        getCurrentUid: () => uid
+    });
+
+    assert.equal(resumedRes.flushed, 1);
+    assert.equal(resumedRes.remaining, 0);
+    assert.deepEqual(
+        serverStore.get('users/uid-pwa-sleep/subjects/sub-1').grades.map((g) => g.id),
+        ['g-sleep']
+    );
+
+    // Wait for the old hung flush timeout only to ensure clean process exit without dangling timers
+    const oldRes = await hungFlush;
+    assert.equal(oldRes.flushed, 0);
+});
+
+
 
