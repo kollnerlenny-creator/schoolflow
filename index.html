@@ -10742,7 +10742,12 @@
                         if (res.ok && data.ok) {
                             showToast('Test-Push gesendet! Prüf deinen Sperrbildschirm 🔔');
                         } else if (data.error === 'PUSH_SERVER_NOT_CONFIGURED') {
-                            showToast('Server noch nicht verknüpft (FIREBASE_SERVICE_ACCOUNT_JSON fehlt in Vercel)');
+                            const isPreviewHost = /\.run\.app$/i.test(window.location.hostname);
+                            showToast(
+                                isPreviewHost
+                                    ? 'Vorschau-Server hat keinen Firebase-Key — bitte nach Deployment direkt auf deiner Vercel-App testen'
+                                    : 'FIREBASE_SERVICE_ACCOUNT_JSON fehlt auf Vercel (oder nach dem Eintragen noch Redeploy ausführen)'
+                            );
                         } else {
                             showToast(data.message || 'Test-Push fehlgeschlagen');
                         }

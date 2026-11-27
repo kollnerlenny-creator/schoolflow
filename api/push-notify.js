@@ -1,4 +1,5 @@
 import {
+  hasServiceAccountEnv,
   parseServiceAccount,
   getGoogleAccessToken,
   verifyFirebaseIdToken,
@@ -15,6 +16,12 @@ export default async function handler(req, res) {
 
   const sa = parseServiceAccount();
   if (!sa) {
+    if (hasServiceAccountEnv()) {
+      return res.status(503).json({
+        error: 'PUSH_SERVER_INVALID_JSON',
+        message: 'FIREBASE_SERVICE_ACCOUNT_JSON ist gesetzt, aber ungültig. Bitte kompletten Inhalt der Firebase-.json-Datei unverändert einfügen.',
+      });
+    }
     return res.status(503).json({
       error: 'PUSH_SERVER_NOT_CONFIGURED',
       message: 'FIREBASE_SERVICE_ACCOUNT_JSON fehlt noch in den Server-Umgebungsvariablen.',

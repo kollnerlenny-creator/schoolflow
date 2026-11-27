@@ -3,28 +3,54 @@ import crypto from 'node:crypto';
 let cachedOAuth = { token: '', expiresAt: 0, clientEmail: '' };
 let cachedCerts = { map: null, expiresAt: 0 };
 
+export function hasServiceAccountEnv() {
+  return Boolean((process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim());
+}
+
 export function parseServiceAccount() {
-  const raw = (process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
+  let raw = (process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
   if (!raw) return null;
 
-  const tryParse = (str) => {
-    const obj = JSON.parse(str);
+  // Strip accidental outer single/double quotes when copied from .env / UI inputs
+  if (
+    (raw.startsWith("'") && raw.endsWith("'") && raw.length > 2) ||
+    (raw.startsWith('"') && raw.endsWith('"') && raw.length > 2 && !raw.startsWith('{"'))
+  ) {
+    raw = raw.slice(1, -1).trim();
+  }
+
+  const normalizeObj = (obj) => {
     if (!obj || !obj.project_id || !obj.client_email || !obj.private_key) return null;
     if (typeof obj.private_key === 'string') {
-      obj.private_key = obj.private_key.replace(/\\n/g, '\n');
+      obj.private_key = obj.private_key.replace(/\\n/g, '\n').trim();
     }
     return obj;
   };
 
-  try {
-    return tryParse(raw);
-  } catch (_) {
+  const tryParse = (str) => {
     try {
-      const decoded = Buffer.from(raw, 'base64').toString('utf8');
-      return tryParse(decoded);
+      return normalizeObj(JSON.parse(str));
     } catch (_) {
-      return null;
+      try {
+        // Fallback only if private_key PEM contains literal newlines inside quotes
+        const repaired = str.replace(/"-----BEGIN[\s\S]*?END[^"]*-----\\?n?"/g, (m) =>
+          m.replace(/\r?\n/g, '\\n')
+        );
+        return normalizeObj(JSON.parse(repaired));
+      } catch (_) {
+        return null;
+      }
     }
+  };
+
+  const direct = tryParse(raw);
+  if (direct) return direct;
+
+  try {
+    const decoded = Buffer.from(raw, 'base64').toString('utf8');
+    return tryParse(decoded);
+  } catch (_) {
+    return null;
   }
 }
 

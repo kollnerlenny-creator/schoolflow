@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import {
+  hasServiceAccountEnv,
   parseServiceAccount,
   getGoogleAccessToken,
   firestoreGetDoc,
@@ -67,6 +68,12 @@ export default async function handler(req, res) {
 
   const sa = parseServiceAccount();
   if (!sa) {
+    if (hasServiceAccountEnv()) {
+      return res.status(503).json({
+        error: 'FIREBASE_SERVICE_ACCOUNT_INVALID',
+        message: 'FIREBASE_SERVICE_ACCOUNT_JSON ist gesetzt, aber kein gültiges Firebase-Dienstkonto-JSON.',
+      });
+    }
     return res.status(503).json({
       error: 'FIREBASE_SERVICE_ACCOUNT_MISSING',
       message: 'Bitte FIREBASE_SERVICE_ACCOUNT_JSON in den Server-Umgebungsvariablen hinterlegen.',
