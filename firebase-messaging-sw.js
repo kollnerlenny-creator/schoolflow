@@ -1,46 +1,54 @@
 // firebase-messaging-sw.js
 // Dieser Service Worker läuft im Hintergrund und zeigt eingehende Push-Benachrichtigungen
-// von Firebase Cloud Messaging an — auch wenn SchoolFlow gerade nicht geöffnet ist.
-//
-// WICHTIG: Diese Datei muss im selben Verzeichnis liegen wie index.html
-// (also direkt neben manifest.json, icon-192.png usw.), NICHT in einem Unterordner.
+// von Firebase Cloud Messaging an — auch auf dem Sperrbildschirm und bei geschlossener App.
 
 importScripts('https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging-compat.js');
 
-// Muss exakt mit der firebaseConfig in index.html übereinstimmen
 firebase.initializeApp({
   apiKey: "AIzaSyDD-CByKnBFcCnHpG94VibtXrjVcmgGj8A",
   authDomain: "gradeflow-637b7.firebaseapp.com",
   projectId: "gradeflow-637b7",
-  messagingSenderId: "968757647135", // gleicher Wert wie in index.html
-  appId: "1:968757647135:web:512a6e1ebd4e9189a8822a" // gleicher Wert wie in index.html
+  messagingSenderId: "968757647135",
+  appId: "1:968757647135:web:512a6e1ebd4e9189a8822a"
+});
+
+self.addEventListener('install', () => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
 const messaging = firebase.messaging();
 
-// Wird aufgerufen, wenn ein Push ankommt, während die App im Hintergrund/geschlossen ist
+// Wird aufgerufen, wenn eine reine Data-Nachricht im Hintergrund ankommt.
+// Bei Nachrichten mit `webpush.notification` zeigt der Browser das System-Banner automatisch an.
 messaging.onBackgroundMessage((payload) => {
-  const title = payload.notification?.title || 'SchoolFlow';
+  if (payload?.notification) return;
+  const data = payload?.data || {};
+  const title = data.title || 'Schooly';
   const options = {
-    body: payload.notification?.body || '',
-    icon: './icon-192.png',
-    badge: './icon-192.png',
-    tag: payload.data?.tag || 'schoolflow-reminder',
-    data: payload.data || {}
+    body: data.body || '',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: data.tag || 'schooly-reminder',
+    data
   };
-  self.registration.showNotification(title, options);
+  return self.registration.showNotification(title, options);
 });
 
-// Klick auf die Benachrichtigung öffnet die App
+// Klick auf die Benachrichtigung fokussiert oder öffnet die App
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const targetUrl = event.notification?.data?.link || '/';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
         if ('focus' in client) return client.focus();
       }
-      if (clients.openWindow) return clients.openWindow('./');
+      if (clients.openWindow) return clients.openWindow(targetUrl);
     })
   );
 });

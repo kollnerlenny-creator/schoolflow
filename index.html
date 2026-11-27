@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v64';
+        const CURRENT_BUILD = 'schooly-v65';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v64') {
+                        if (k !== 'schooly-cache-v65') {
                             caches.delete(k);
                         }
                     });
@@ -7853,17 +7853,20 @@
                 </h2>
                 <p class="text-xs text-slate-500 mb-6">Aktivitäten und Freundschaftsanfragen</p>
 
-                <!-- Klausur-Erinnerungen -->
+                <!-- Klausur-Erinnerungen & Sperrbildschirm-Push -->
                 <div class="bg-black/20 border border-white/5 rounded-3xl p-5 mb-6 space-y-4">
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-center gap-3">
                         <div>
                             <p class="font-black text-white text-sm">Klausur-Erinnerungen</p>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Benachrichtigung, wenn die App offen ist</p>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Sperrbildschirm- &amp; In-App-Benachrichtigungen</p>
                         </div>
                         <button type="button" @click="examRemindersEnabled ? (examRemindersEnabled = false, saveReminderSettings()) : requestPushPermission()" :class="examRemindersEnabled ? 'bg-accent' : 'bg-slate-700'" class="relative inline-flex h-8 w-14 rounded-full transition-all cursor-pointer shrink-0">
                             <span :class="examRemindersEnabled ? 'translate-x-7' : 'translate-x-1'" class="inline-block h-6 w-6 transform rounded-full bg-white mt-1 shadow-md" style="transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);"></span>
                         </button>
                     </div>
+                    <p v-if="isIOS && !isInstalled" class="text-[11px] text-amber-300/90 leading-snug">
+                        Hinweis für iPhone/iPad: Für Sperrbildschirm-Push erst in Safari über Teilen → „Zum Home-Bildschirm“ installieren und dort öffnen.
+                    </p>
                     <div v-if="examRemindersEnabled" class="flex items-center gap-2 flex-wrap">
                         <span class="text-xs text-slate-400">Erinnere mich</span>
                         <div class="relative">
@@ -7886,6 +7889,10 @@
                         </div>
                         <span class="text-xs text-slate-400">um</span>
                         <input type="time" v-model="examReminderTime" @change="saveReminderSettings" class="bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white px-3 py-1.5 outline-none" />
+                        <button type="button" @click="sendTestPushNotification" :disabled="testPushSending"
+                                class="ml-auto bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold text-white px-3.5 py-1.5 transition-colors cursor-pointer disabled:opacity-50">
+                            {{ testPushSending ? 'Sende…' : 'Test-Push senden' }}
+                        </button>
                     </div>
                 </div>
 
@@ -8604,7 +8611,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
         import { initializeFirestore, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-        import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
+        import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
         import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp as enqueuePendingOpRaw, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout, filterIncomingFriendRequests, countNotificationBadges, detectNewFriendNotifications } from "/src/sync-engine.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
@@ -10417,6 +10424,7 @@
                                 read: false,
                                 createdAt: new Date().toISOString()
                             }), 12000, 'friend-accepted-notif');
+                            triggerRemoteFriendPush(targetMember.uid, 'friend_accepted');
 
                             if (!friends.value.some(f => f.uid === targetMember.uid)) {
                                 friends.value = [...friends.value, theirProfile];
@@ -10453,6 +10461,8 @@
                             to: targetMember.uid,
                             sentAt: new Date().toISOString()
                         }), 12000, 'friend-sent-req-timeout');
+
+                        triggerRemoteFriendPush(targetMember.uid, 'friend_request');
 
                         if (!sentRequests.value.includes(targetMember.uid)) {
                             sentRequests.value = [...sentRequests.value, targetMember.uid];
@@ -10529,6 +10539,7 @@
                             read: false,
                             createdAt: new Date().toISOString()
                         });
+                        triggerRemoteFriendPush(notif.fromUid, 'friend_accepted');
 
                         // Sofort lokal aktualisieren
                         if (!friends.value.some(f => f.uid === notif.fromUid)) {
@@ -10608,44 +10619,172 @@
                     } catch (e) { console.warn('markAllRead:', e); }
                 };
 
-                // Push-Benachrichtigungen aktivieren
+                // Push-Benachrichtigungen (Sperrbildschirm via Web Push / FCM HTTP v1)
                 const pushSetupStatus = ref(''); // '' | 'requesting' | 'ok' | 'unsupported' | 'error'
+                const testPushSending = ref(false);
+                let knownFcmTokens = [];
+                let foregroundMessagingBound = false;
+
+                const waitForSwActive = (reg) => new Promise((resolve) => {
+                    if (!reg) return resolve(null);
+                    if (reg.active) return resolve(reg);
+                    const sw = reg.installing || reg.waiting;
+                    if (!sw) return resolve(reg);
+                    const timer = setTimeout(() => resolve(reg), 4000);
+                    sw.addEventListener('statechange', () => {
+                        if (sw.state === 'activated') {
+                            clearTimeout(timer);
+                            resolve(reg);
+                        }
+                    });
+                });
+
+                const attachForegroundMessaging = (messaging) => {
+                    if (foregroundMessagingBound || typeof onMessage !== 'function') return;
+                    foregroundMessagingBound = true;
+                    try {
+                        onMessage(messaging, (payload) => {
+                            const title = payload?.notification?.title || payload?.data?.title || '';
+                            const body = payload?.notification?.body || payload?.data?.body || '';
+                            const msg = [title, body].filter(Boolean).join(': ');
+                            if (msg) showToast(msg);
+                        });
+                    } catch (_) {}
+                };
+
+                const registerOrRefreshPushToken = async ({ interactive = false } = {}) => {
+                    if (!('Notification' in window) || Notification.permission !== 'granted') return null;
+                    if (!('serviceWorker' in navigator)) return null;
+                    const supported = await isMessagingSupported().catch(() => false);
+                    if (!supported || !firebaseConfig.messagingSenderId || firebaseConfig.messagingSenderId.startsWith('REPLACE_ME')) {
+                        if (interactive) pushSetupStatus.value = 'unsupported';
+                        return null;
+                    }
+                    const messaging = getMessaging(app);
+                    attachForegroundMessaging(messaging);
+                    const rawReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+                        scope: '/firebase-cloud-messaging-push-scope'
+                    });
+                    const swReg = await waitForSwActive(rawReg);
+                    const fcmToken = await getToken(messaging, {
+                        vapidKey: FCM_VAPID_KEY,
+                        serviceWorkerRegistration: swReg || rawReg
+                    });
+                    const uid = getActiveUid();
+                    if (fcmToken && uid) {
+                        let storedTokens = [...knownFcmTokens];
+                        try {
+                            const lsCfg = JSON.parse(localStorage.getItem('sf_user_config_' + uid) || '{}');
+                            if (Array.isArray(lsCfg.fcmTokens)) storedTokens.push(...lsCfg.fcmTokens);
+                            if (typeof lsCfg.fcmToken === 'string' && lsCfg.fcmToken) storedTokens.push(lsCfg.fcmToken);
+                        } catch (_) {}
+                        const mergedTokens = Array.from(new Set([
+                            ...storedTokens.filter(t => typeof t === 'string' && t.trim()),
+                            fcmToken
+                        ])).slice(-10);
+                        knownFcmTokens = mergedTokens;
+                        const tokenPatch = {
+                            fcmToken,
+                            fcmTokens: mergedTokens,
+                            fcmTokenUpdatedAt: new Date().toISOString()
+                        };
+                        enqueueConfigPatch(uid, 'fcm', tokenPatch);
+                        await setDoc(doc(db, 'users', uid, 'settings', 'config'), tokenPatch, { merge: true }).catch(() => {});
+                        pushSetupStatus.value = 'ok';
+                        return fcmToken;
+                    }
+                    return null;
+                };
+
+                const triggerRemoteFriendPush = async (targetUid, eventType) => {
+                    try {
+                        if (!targetUid || !auth.currentUser || navigator.onLine === false) return;
+                        const idToken = await auth.currentUser.getIdToken();
+                        if (!idToken) return;
+                        fetch('/api/push-notify', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${idToken}`
+                            },
+                            body: JSON.stringify({ action: 'friend_event', targetUid, eventType })
+                        }).catch(() => {});
+                    } catch (_) {}
+                };
+
+                const sendTestPushNotification = async () => {
+                    if (testPushSending.value) return;
+                    if (navigator.onLine === false) {
+                        showToast('Offline – Test-Push benötigt Internet');
+                        return;
+                    }
+                    testPushSending.value = true;
+                    try {
+                        if (!auth.currentUser) {
+                            showToast('Bitte erst anmelden');
+                            return;
+                        }
+                        if (!('Notification' in window) || Notification.permission !== 'granted') {
+                            await requestPushPermission();
+                        } else {
+                            await registerOrRefreshPushToken({ interactive: true });
+                        }
+                        const idToken = await auth.currentUser.getIdToken();
+                        const res = await fetch('/api/push-notify', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${idToken}`
+                            },
+                            body: JSON.stringify({ action: 'test' })
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (res.ok && data.ok) {
+                            showToast('Test-Push gesendet! Prüf deinen Sperrbildschirm 🔔');
+                        } else if (data.error === 'PUSH_SERVER_NOT_CONFIGURED') {
+                            showToast('Server noch nicht verknüpft (FIREBASE_SERVICE_ACCOUNT_JSON fehlt in Vercel)');
+                        } else {
+                            showToast(data.message || 'Test-Push fehlgeschlagen');
+                        }
+                    } catch (e) {
+                        console.warn('sendTestPushNotification:', e);
+                        showToast('Test-Push konnte nicht gesendet werden');
+                    } finally {
+                        testPushSending.value = false;
+                    }
+                };
+
                 const requestPushPermission = async () => {
-                    if (!('Notification' in window)) { alert('Dein Browser unterstützt keine Push-Benachrichtigungen.'); return; }
+                    if (!('Notification' in window)) {
+                        if (isIOS.value && !isInstalled.value) {
+                            showToast('Auf dem iPhone bitte erst über Teilen → „Zum Home-Bildschirm“ installieren');
+                        } else {
+                            showToast('Dieser Browser unterstützt keine Push-Benachrichtigungen');
+                        }
+                        return;
+                    }
                     const permission = await Notification.requestPermission();
                     if (permission !== 'granted') {
-                        alert('Push-Benachrichtigungen wurden nicht erlaubt. Du kannst dies in deinen Browser-Einstellungen ändern.');
+                        showToast('Push-Benachrichtigungen wurden im Browser blockiert');
                         return;
                     }
                     examRemindersEnabled.value = true;
                     saveReminderSettings();
                     checkExamReminders();
 
-                    // Echte Push-Benachrichtigungen (auch bei geschlossener App) über Firebase Cloud Messaging einrichten.
-                    // Voraussetzung: firebaseConfig.messagingSenderId/appId + FCM_VAPID_KEY sind ausgefüllt,
-                    // firebase-messaging-sw.js liegt im App-Verzeichnis, und die Cloud Function ist deployed.
                     try {
                         pushSetupStatus.value = 'requesting';
-                        const supported = await isMessagingSupported();
-                        if (!supported || firebaseConfig.messagingSenderId.startsWith('REPLACE_ME')) {
-                            pushSetupStatus.value = 'unsupported';
-                            alert('Klausur-Erinnerungen sind aktiv, solange die App geöffnet ist. Für Benachrichtigungen bei geschlossener App muss noch die Cloud-Messaging-Einrichtung abgeschlossen werden (siehe Anleitung).');
-                            return;
-                        }
-                        const messaging = getMessaging(app);
-                        const swReg = await navigator.serviceWorker.register('./firebase-messaging-sw.js', { scope: './firebase-cloud-messaging-push-scope' });
-                        const fcmToken = await getToken(messaging, { vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: swReg });
-                        if (fcmToken && user.value) {
-                            await setDoc(doc(db, 'users', user.value.uid, 'settings', 'config'), { fcmToken, fcmTokenUpdatedAt: new Date().toISOString() }, { merge: true });
-                            pushSetupStatus.value = 'ok';
-                            alert('Klausur-Erinnerungen wurden aktiviert! 🔔 Du bekommst jetzt auch Benachrichtigungen, wenn die App geschlossen ist.');
+                        const tok = await registerOrRefreshPushToken({ interactive: true });
+                        if (tok) {
+                            showToast('Sperrbildschirm-Push aktiviert ✓');
                         } else {
-                            pushSetupStatus.value = 'error';
+                            pushSetupStatus.value = pushSetupStatus.value || 'unsupported';
+                            showToast('Erinnerungen aktiv (In-App) — Push-Token nicht unterstützt');
                         }
                     } catch (e) {
                         console.error('FCM-Einrichtung fehlgeschlagen', e);
                         pushSetupStatus.value = 'error';
-                        alert('Klausur-Erinnerungen sind aktiv, solange die App geöffnet ist. Die Einrichtung für Benachrichtigungen bei geschlossener App ist fehlgeschlagen — siehe Anleitung.');
+                        showToast('In-App-Erinnerungen aktiv – Push-Registrierung fehlgeschlagen');
                     }
                 };
 
@@ -11706,6 +11845,9 @@
 
                         // Direkter Server-Abgleich beim App-Start / Login (flusht Outbox zuerst und merged sauber)
                         syncAllUserDataFromServer(uid, { force: true, checkOnboarding: true });
+                        if (examRemindersEnabled.value && 'Notification' in window && Notification.permission === 'granted') {
+                            registerOrRefreshPushToken({ interactive: false }).catch(() => {});
+                        }
                         refreshIcons();
                     })();
                     activationInFlight = { uid, promise: run };
@@ -11825,6 +11967,12 @@
                     if (typeof data.examRemindersEnabled === 'boolean') examRemindersEnabled.value = data.examRemindersEnabled;
                     if (typeof data.examReminderDays === 'number') examReminderDays.value = data.examReminderDays;
                     if (typeof data.examReminderTime === 'string') examReminderTime.value = data.examReminderTime;
+                    if (Array.isArray(data.fcmTokens) || data.fcmToken) {
+                        knownFcmTokens = Array.from(new Set([
+                            ...(Array.isArray(data.fcmTokens) ? data.fcmTokens : []),
+                            ...(typeof data.fcmToken === 'string' && data.fcmToken ? [data.fcmToken] : [])
+                        ].filter(t => typeof t === 'string' && t.trim())));
+                    }
                     if (typeof data.weeklyRecapWeekday === 'number') {
                         weeklyRecapWeekday.value = data.weeklyRecapWeekday;
                         tempWeeklyRecapWeekday.value = data.weeklyRecapWeekday;
@@ -17568,7 +17716,7 @@
                     isFriendsOpen, confirmingRemoveFriendUid, memberSearchQuery, filteredAllMembers, filteredFriends,
                     isNotificationsOpen, friendsTab, allMembers, friends, socialLoading, sentRequests, notifications,
                     toastState, triggerToastAction, dismissToast,
-                    examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus,
+                    examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus, sendTestPushNotification, testPushSending,
                     selectedFriend, pushNotificationSettings, unreadNotifications, incomingFriendRequests, notificationBadgeCount, getIncomingRequestFrom, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     colorMode, setColorMode, isDarkMode, toggleDarkMode, GERMAN_STATES, federalState, tempFederalState, setFederalState, selectedDayHolidayInfo,
                     isCalendarStateDropdownOpen, isSettingsStateDropdownOpen, isSettingsRecapDropdownOpen, WEEKDAY_OPTIONS, getFederalStateName, getWeekdayName,
