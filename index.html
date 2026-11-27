@@ -11374,16 +11374,36 @@
                     return user.value ? user.value.email.split('@')[0] : 'Benutzer';
                 });
 
+                const hideSplash = () => {
+                    const splash = document.getElementById("splash");
+                    if (splash) {
+                        splash.style.opacity = "0";
+                        splash.style.pointerEvents = "none";
+                        setTimeout(() => splash.remove(), 350);
+                    }
+                };
+
+                let lastListenerRefreshAt = 0;
+                const ensureLiveListeners = (uid, { force = false } = {}) => {
+                    if (!uid || !auth.currentUser || auth.currentUser.uid !== uid) return;
+                    if (firestoreQueueBroken || window.__firestoreQueueBroken) {
+                        if (!tryRecoverFirestoreQueue()) return;
+                    }
+                    if (force) lastListenerRefreshAt = Date.now();
+                    listenToAppConfig(uid, { force });
+                    listenToSubjects(uid, { force });
+                    listenToTasks(uid, { force });
+                    listenToExamScores(uid, { force });
+                    if (force || !unsubscribeAllMembers || activeMembersListenerUid !== uid) {
+                        loadAllMembers(uid, { force });
+                    }
+                    if (force || !unsubscribeFriends || !unsubscribeSentRequests || !unsubscribeDeclinedRequests || !unsubscribeNotifications || activeFriendsListenerUid !== uid) {
+                        loadFriendsData(uid, { force });
+                    }
+                };
+
                 onMounted(() => {
                     window.__schoolyMounted = true;
-                    const hideSplash = () => {
-                        const splash = document.getElementById("splash");
-                        if (splash) {
-                            splash.style.opacity = "0";
-                            splash.style.pointerEvents = "none";
-                            setTimeout(() => splash.remove(), 350);
-                        }
-                    };
                     // Splash Screen nach maximal 150ms sanft ausblenden
                     setTimeout(hideSplash, 150);
 
@@ -11405,24 +11425,6 @@
                     window.addEventListener('resize', updatePlannerIndicator);
 
                     let lastHiddenAt = document.hidden ? Date.now() : 0;
-                    let lastListenerRefreshAt = 0;
-                    const ensureLiveListeners = (uid, { force = false } = {}) => {
-                        if (!uid || !auth.currentUser || auth.currentUser.uid !== uid) return;
-                        if (firestoreQueueBroken || window.__firestoreQueueBroken) {
-                            if (!tryRecoverFirestoreQueue()) return;
-                        }
-                        if (force) lastListenerRefreshAt = Date.now();
-                        listenToAppConfig(uid, { force });
-                        listenToSubjects(uid, { force });
-                        listenToTasks(uid, { force });
-                        listenToExamScores(uid, { force });
-                        if (force || !unsubscribeAllMembers || activeMembersListenerUid !== uid) {
-                            loadAllMembers(uid, { force });
-                        }
-                        if (force || !unsubscribeFriends || !unsubscribeSentRequests || !unsubscribeDeclinedRequests || !unsubscribeNotifications || activeFriendsListenerUid !== uid) {
-                            loadFriendsData(uid, { force });
-                        }
-                    };
 
                     const handleAppResumeSync = async (force = false) => {
                         checkExamReminders();
