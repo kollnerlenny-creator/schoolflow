@@ -101,18 +101,36 @@
             }
         });
 
-        // Globaler Failsafe: Bildschirm niemals weiß lassen!
+        // Globaler Failsafe: Bildschirm niemals weiß lassen & Firestore AsyncQueue Assertion-Stürme eindämmen
+        const isFirestoreInternalAssertion = (val) => {
+            const msg = String(val?.message || val || '');
+            return msg.includes('INTERNAL ASSERTION FAILED') || msg.includes('Unexpected state');
+        };
         window.addEventListener('error', (e) => {
+            if (isFirestoreInternalAssertion(e?.error || e?.message)) {
+                e.preventDefault();
+                window.__firestoreQueueBroken = true;
+                try { window.__onFirestoreAssertionCrash?.(); } catch (_) {}
+                console.warn('[Schooly Failsafe] Firestore Assertion abgefangen:', e.message);
+                return;
+            }
             console.warn('[Schooly Failsafe] Fehler abgefangen:', e.message);
             document.getElementById('app')?.removeAttribute('v-cloak');
         });
         window.addEventListener('unhandledrejection', (e) => {
+            if (isFirestoreInternalAssertion(e?.reason)) {
+                e.preventDefault();
+                window.__firestoreQueueBroken = true;
+                try { window.__onFirestoreAssertionCrash?.(); } catch (_) {}
+                console.warn('[Schooly Failsafe] Firestore Rejection abgefangen:', e.reason?.message || e.reason);
+                return;
+            }
             console.warn('[Schooly Failsafe] Promise Rejection abgefangen:', e.reason);
             document.getElementById('app')?.removeAttribute('v-cloak');
         });
 
-        // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build
-        const CURRENT_BUILD = 'schooly-v57';
+        // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
+        const CURRENT_BUILD = 'schooly-v61';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -124,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v57') {
+                        if (k !== 'schooly-cache-v61') {
                             caches.delete(k);
                         }
                     });
@@ -8500,11 +8518,11 @@
         </div>
     </div><!-- /#app -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, persistentSingleTabManager, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
-        import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue } from "/src/sync-engine.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+        import { initializeFirestore, memoryLocalCache, getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc, getDoc, getDocFromServer, getDocs, getDocsFromServer, waitForPendingWrites, setLogLevel } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+        import { getMessaging, getToken, isSupported as isMessagingSupported } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js";
+        import { generateStableId, sanitizeFirestoreValue, readPendingOps, enqueuePendingOp, mergeSubjectsWithPendingOps, mergeTasksWithPendingOps, mergeConfigWithPendingOps, mergeExamScoresWithPendingOps, flushPendingOpsQueue, withTimeout } from "/src/sync-engine.js";
         // Stille Behandlung von Firestore-Verbindungsverzögerungen (verhindert irreführende Fehlermeldungen bei Offline-Caching)
         try { setLogLevel('silent'); } catch (_) {}
         const _origConsoleError = console.error;
@@ -8603,35 +8621,17 @@
 
         const app = initializeApp(firebaseConfig);
         
-        // Firestore mit Multi-Tab IndexedDB-Persistenz (verhindert Konflikte zwischen Browser-Tab und installierter PWA!) + AutoDetect
+        // Firestore mit stabilem Memory-Cache + AutoDetect (Offline-Boot & Outbox-Persistenz laufen deterministisch über sync-engine + localStorage)
         let db;
         try {
             db = initializeFirestore(app, {
-                localCache: persistentLocalCache({
-                    tabManager: persistentMultipleTabManager()
-                }),
+                localCache: memoryLocalCache(),
                 experimentalAutoDetectLongPolling: true
             });
-            console.log("Firebase Firestore: Multi-Tab IndexedDB-Cache & AutoDetect initialisiert.");
+            console.log("Firebase Firestore: Memory-Cache & AutoDetect initialisiert.");
         } catch (err) {
-            console.warn("Fallback zu Single-Tab / Memory-Firestore:", err);
-            try {
-                db = initializeFirestore(app, {
-                    localCache: persistentLocalCache({
-                        tabManager: persistentSingleTabManager({ forceOwnership: true })
-                    }),
-                    experimentalAutoDetectLongPolling: true
-                });
-            } catch (_) {
-                try {
-                    db = initializeFirestore(app, {
-                        localCache: memoryLocalCache(),
-                        experimentalAutoDetectLongPolling: true
-                    });
-                } catch (__) {
-                    db = getFirestore(app);
-                }
-            }
+            console.warn("Fallback zu Standard-Firestore:", err);
+            db = getFirestore(app);
         }
 
         const auth = getAuth(app);
@@ -9590,35 +9590,54 @@
                 let unsubscribeSentRequests = null;
                 let unsubscribeDeclinedRequests = null;
                 let unsubscribeNotifications = null;
+                let firestoreQueueBroken = Boolean(window.__firestoreQueueBroken);
                 const listenerRetryTimers = new Map();
                 const listenerRetryCounts = new Map();
+
+                const isFirestoreAssertionError = (err) => {
+                    const msg = String(err?.message || err || '');
+                    return msg.includes('INTERNAL ASSERTION FAILED') || msg.includes('Unexpected state');
+                };
+
+                const safeUnsubscribe = (unsub) => {
+                    try {
+                        if (typeof unsub === 'function') unsub();
+                    } catch (_) {}
+                };
 
                 const clearListenerRetry = (name) => {
                     const t = listenerRetryTimers.get(name);
                     if (t) { clearTimeout(t); listenerRetryTimers.delete(name); }
                 };
 
+                const markFirestoreQueueBroken = () => {
+                    firestoreQueueBroken = true;
+                    window.__firestoreQueueBroken = true;
+                    ['config', 'examScores', 'subjects', 'tasks'].forEach(clearListenerRetry);
+                };
+                window.__onFirestoreAssertionCrash = markFirestoreQueueBroken;
+
                 const unsubscribeAllListeners = () => {
                     ['config', 'examScores', 'subjects', 'tasks'].forEach(clearListenerRetry);
                     listenerRetryCounts.clear();
-                    if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                    safeUnsubscribe(unsubscribeAppConfig); unsubscribeAppConfig = null;
                     if (typeof activeConfigListenerUid !== 'undefined') activeConfigListenerUid = null;
-                    if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
+                    safeUnsubscribe(unsubscribeExamScores); unsubscribeExamScores = null;
                     if (typeof activeExamScoresListenerUid !== 'undefined') activeExamScoresListenerUid = null;
-                    if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
+                    safeUnsubscribe(unsubscribeSubjects); unsubscribeSubjects = null;
                     if (typeof activeSubjectsListenerUid !== 'undefined') activeSubjectsListenerUid = null;
                     if (typeof activeSubjectsCollection !== 'undefined') activeSubjectsCollection = null;
                     if (typeof subjectsListenerHasAuth !== 'undefined') subjectsListenerHasAuth = false;
-                    if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
+                    safeUnsubscribe(unsubscribeTasks); unsubscribeTasks = null;
                     if (typeof activeTasksListenerUid !== 'undefined') activeTasksListenerUid = null;
                     if (typeof tasksListenerHasAuth !== 'undefined') tasksListenerHasAuth = false;
                     if (typeof pendingTaskDoneMap !== 'undefined') pendingTaskDoneMap.clear();
                     if (typeof pendingTaskDoneSync !== 'undefined') pendingTaskDoneSync.clear();
-                    if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
-                    if (unsubscribeFriends) { unsubscribeFriends(); unsubscribeFriends = null; }
-                    if (unsubscribeSentRequests) { unsubscribeSentRequests(); unsubscribeSentRequests = null; }
-                    if (unsubscribeDeclinedRequests) { unsubscribeDeclinedRequests(); unsubscribeDeclinedRequests = null; }
-                    if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
+                    safeUnsubscribe(unsubscribeAllMembers); unsubscribeAllMembers = null;
+                    safeUnsubscribe(unsubscribeFriends); unsubscribeFriends = null;
+                    safeUnsubscribe(unsubscribeSentRequests); unsubscribeSentRequests = null;
+                    safeUnsubscribe(unsubscribeDeclinedRequests); unsubscribeDeclinedRequests = null;
+                    safeUnsubscribe(unsubscribeNotifications); unsubscribeNotifications = null;
                 };
 
                 // Dedizierter Fetcher für das Detail-Profil (inkl. echtes Profilbild) eines Freundes
@@ -9854,7 +9873,8 @@
                             return;
                         }
 
-                        if (unsubscribeAllMembers) { unsubscribeAllMembers(); unsubscribeAllMembers = null; }
+                        if (firestoreQueueBroken) return;
+                        safeUnsubscribe(unsubscribeAllMembers); unsubscribeAllMembers = null;
 
                         // 2. Sofortiges One-Time getDocs für schnellste Anzeige ohne Wartezeit
                         if (getD2) {
@@ -9885,12 +9905,17 @@
                             }
                         }, err => {
                             if (epoch !== allMembersLoadEpoch) return;
+                            unsubscribeAllMembers = null;
                             socialLoading.value = false;
+                            if (isFirestoreAssertionError(err)) {
+                                firestoreQueueBroken = true;
+                                return;
+                            }
                             console.info('[GradeFlow] publicProfiles listener notice:', err?.message || err);
                             // Bei temporärem Auth/Netzwerk-Fehler in PWA automatisch einmal nachladen
                             if (navigator.onLine && auth.currentUser) {
                                 setTimeout(() => {
-                                    if (epoch === allMembersLoadEpoch && allMembers.value.length === 0) {
+                                    if (!firestoreQueueBroken && epoch === allMembersLoadEpoch && allMembers.value.length === 0) {
                                         loadAllMembers(uid);
                                     }
                                 }, 2500);
@@ -9898,6 +9923,7 @@
                         });
                     } catch (e) {
                         socialLoading.value = false;
+                        if (isFirestoreAssertionError(e)) firestoreQueueBroken = true;
                         console.warn('[GradeFlow] loadAllMembers error:', e.message);
                     }
                 };
@@ -9964,10 +9990,11 @@
                         await waitForFirebaseAuth();
                         if (epoch !== friendsLoadEpoch) return;
 
-                        if (unsubscribeFriends) { unsubscribeFriends(); unsubscribeFriends = null; }
-                        if (unsubscribeSentRequests) { unsubscribeSentRequests(); unsubscribeSentRequests = null; }
-                        if (unsubscribeDeclinedRequests) { unsubscribeDeclinedRequests(); unsubscribeDeclinedRequests = null; }
-                        if (unsubscribeNotifications) { unsubscribeNotifications(); unsubscribeNotifications = null; }
+                        if (firestoreQueueBroken) return;
+                        safeUnsubscribe(unsubscribeFriends); unsubscribeFriends = null;
+                        safeUnsubscribe(unsubscribeSentRequests); unsubscribeSentRequests = null;
+                        safeUnsubscribe(unsubscribeDeclinedRequests); unsubscribeDeclinedRequests = null;
+                        safeUnsubscribe(unsubscribeNotifications); unsubscribeNotifications = null;
 
                         const { onSnapshot: onSnap, collection: col, getDocs: getD, getDocsFromServer: getDServer } = window.__firestoreModule || {};
                         if (!onSnap) return;
@@ -10048,6 +10075,8 @@
 
                         // Freunde – Demo-Profile sowie frisch entfernte Freunde bereinigen und sentRequests bereinigen
                         unsubscribeFriends = onSnap(col(db, 'users', uid, 'friends'), applyFriendsSnapshot, err => {
+                            unsubscribeFriends = null;
+                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
                             if (err && err.code !== 'permission-denied') console.warn('friends listener:', err.code);
                         });
 
@@ -10055,6 +10084,8 @@
                         unsubscribeSentRequests = onSnap(col(db, 'users', uid, 'sentRequests'), snap => {
                             sentRequests.value = snap.docs.map(d => d.id).filter(id => !friends.value.some(f => f.uid === id));
                         }, err => {
+                            unsubscribeSentRequests = null;
+                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
                             if (err && err.code !== 'permission-denied') console.warn('sentRequests listener:', err.code);
                         });
 
@@ -10068,6 +10099,8 @@
                                 try { await delD(docFn2(db, 'users', uid, 'declinedRequests', d.id)); } catch (_) {}
                             }
                         }, err => {
+                            unsubscribeDeclinedRequests = null;
+                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
                             if (err && err.code !== 'permission-denied') console.warn('declinedRequests listener:', err.code);
                         });
 
@@ -10078,9 +10111,14 @@
                                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                             refreshIcons();
                         }, err => {
+                            unsubscribeNotifications = null;
+                            if (isFirestoreAssertionError(err)) { firestoreQueueBroken = true; return; }
                             if (err && err.code !== 'permission-denied') console.warn('notifications listener:', err.code);
                         });
-                    } catch (e) { console.warn('loadFriendsData:', e); }
+                    } catch (e) {
+                        if (isFirestoreAssertionError(e)) firestoreQueueBroken = true;
+                        console.warn('loadFriendsData:', e);
+                    }
                 };
 
                 // Freundschaftsanfrage senden
@@ -11042,16 +11080,17 @@
                         listenToExamScores(uid, { force });
                     };
 
-                    const handleAppResumeSync = (force = false, { reconnectListeners = false } = {}) => {
+                    const handleAppResumeSync = async (force = false) => {
                         checkExamReminders();
                         if (typeof window.__checkSchoolySwUpdate === 'function') {
                             window.__checkSchoolySwUpdate(force);
                         }
-                        const uid = user.value?.uid;
+                        const uid = user.value?.uid || auth.currentUser?.uid;
                         if (uid && navigator.onLine !== false) {
-                            if (reconnectListeners || !unsubscribeAppConfig || !unsubscribeSubjects || !unsubscribeTasks || !unsubscribeExamScores) {
-                                ensureLiveListeners(uid, { force: reconnectListeners });
+                            if (!firestoreQueueBroken && !window.__firestoreQueueBroken && (!unsubscribeAppConfig || !unsubscribeSubjects || !unsubscribeTasks || !unsubscribeExamScores)) {
+                                ensureLiveListeners(uid, { force: false });
                             }
+                            await flushPendingUserOps(uid);
                             syncAllUserDataFromServer(uid, { force });
                             refreshSocialData({ quiet: true });
                         }
@@ -11062,17 +11101,22 @@
                             lastHiddenAt = Date.now();
                         } else {
                             const hiddenDuration = lastHiddenAt ? (Date.now() - lastHiddenAt) : 0;
-                            const longPause = hiddenDuration >= 10000;
-                            handleAppResumeSync(hiddenDuration >= 2500, { reconnectListeners: longPause });
+                            const uid = user.value?.uid || auth.currentUser?.uid;
+                            if (uid) pendingOpsRetryCounts.delete(uid);
+                            handleAppResumeSync(hiddenDuration >= 800);
                         }
                     });
                     window.addEventListener('pageshow', (e) => {
                         if (e.persisted || !document.hidden) {
-                            handleAppResumeSync(Boolean(e.persisted), { reconnectListeners: Boolean(e.persisted) });
+                            const uid = user.value?.uid || auth.currentUser?.uid;
+                            if (uid) pendingOpsRetryCounts.delete(uid);
+                            handleAppResumeSync(Boolean(e.persisted));
                         }
                     });
                     window.addEventListener('focus', () => {
                         if (!document.hidden) {
+                            const uid = user.value?.uid || auth.currentUser?.uid;
+                            if (uid) pendingOpsRetryCounts.delete(uid);
                             handleAppResumeSync(false);
                         }
                     });
@@ -11083,12 +11127,30 @@
                             flushPendingUserOps(uid);
                         }
                     });
-                    // Aktiver Sync-Heartbeat (alle 20s solange Tab sichtbar & online — Sicherheitsnetz falls Mobile-Browser WebChannel pausiert)
+                    // Service-Worker Background Sync Wake-Up
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.addEventListener('message', (event) => {
+                            if (event?.data?.type === 'SCHOOLY_TRIGGER_SYNC') {
+                                const uid = user.value?.uid || auth.currentUser?.uid;
+                                if (uid && navigator.onLine !== false) {
+                                    pendingOpsRetryCounts.delete(uid);
+                                    flushPendingUserOps(uid).then(() => syncAllUserDataFromServer(uid, { force: true }));
+                                }
+                            }
+                        });
+                    }
+                    // Aktiver Sync-Heartbeat (alle 10s solange Tab sichtbar & online — Outbox + Server-Pull)
                     setInterval(() => {
-                        if (!document.hidden && navigator.onLine !== false && user.value?.uid && auth.currentUser?.uid === user.value.uid) {
-                            syncAllUserDataFromServer(user.value.uid, { force: false });
+                        const uid = user.value?.uid;
+                        if (!document.hidden && navigator.onLine !== false && uid) {
+                            if (readPendingOps(uid).length > 0) {
+                                flushPendingUserOps(uid);
+                            }
+                            if (auth.currentUser?.uid === uid) {
+                                syncAllUserDataFromServer(uid, { force: false });
+                            }
                         }
-                    }, 20000);
+                    }, 10000);
                     // Übertrage ein eventuell bereits gefangenes Event aus dem globalen Scope
                     if (window.earlyDeferredPrompt) {
                         rawDeferredPrompt = window.earlyDeferredPrompt;
@@ -11136,10 +11198,18 @@
                         }).catch(() => {});
                     }
 
-                    // Online/Offline-Status überwachen & Cloud-Daten sowie Sozialdaten bei Reconnect sofort synchronisieren
-                    window.addEventListener('online', () => {
+                    // Online/Offline-Status überwachen & Cloud-Daten sowie Offline-Outbox bei Reconnect sofort synchronisieren
+                    window.addEventListener('online', async () => {
                         isOnline.value = true;
-                        handleAppResumeSync(true, { reconnectListeners: true });
+                        const uid = user.value?.uid || auth.currentUser?.uid;
+                        if (uid) {
+                            pendingOpsRetryCounts.delete(uid);
+                            clearPendingOpsRetry(uid);
+                        }
+                        await handleAppResumeSync(true);
+                        if (uid && readPendingOps(uid).length > 0) {
+                            schedulePendingOpsRetry(uid, 900);
+                        }
                     });
                     window.addEventListener('offline', () => {
                         isOnline.value = false;
@@ -11184,11 +11254,13 @@
                                 }
                             }
 
-                            // Authentifizierte Echtzeit-Listener starten
-                            listenToAppConfig(currentUser.uid, { force: true });
-                            listenToSubjects(currentUser.uid, { force: true });
-                            listenToTasks(currentUser.uid, { force: true });
-                            listenToExamScores(currentUser.uid, { force: true });
+                            // Authentifizierte Echtzeit-Listener starten (ohne unnötigen Teardown laufender Listener)
+                            if (!firestoreQueueBroken) {
+                                listenToAppConfig(currentUser.uid);
+                                listenToSubjects(currentUser.uid);
+                                listenToTasks(currentUser.uid);
+                                listenToExamScores(currentUser.uid);
+                            }
                             await flushPendingTaskDoneSync(currentUser.uid);
                             await flushPendingUserOps(currentUser.uid);
                             loadExamScores(currentUser.uid);
@@ -11424,34 +11496,46 @@
 
                 let activeConfigListenerUid = null;
                 const listenToAppConfig = (uid, { force = false } = {}) => {
-                    if (!uid) return;
+                    if (!uid || firestoreQueueBroken) return;
                     if (!force && unsubscribeAppConfig && activeConfigListenerUid === uid) return;
                     clearListenerRetry('config');
-                    if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                    if (unsubscribeAppConfig) { safeUnsubscribe(unsubscribeAppConfig); unsubscribeAppConfig = null; }
                     activeConfigListenerUid = uid;
                     const configRef = doc(db, 'users', uid, 'settings', 'config');
-                    unsubscribeAppConfig = onSnapshot(configRef, { includeMetadataChanges: true }, (snap) => {
-                        listenerRetryCounts.set('config', 0);
-                        if (!snap.exists()) return;
-                        if (snap.metadata?.fromCache && localStorage.getItem('sf_user_config_' + uid)) {
-                            if (!navigator.onLine) return;
-                        }
-                        isOnboarding.value = false;
-                        applyLoadedConfigSnap(uid, snap);
-                    }, (err) => {
-                        if (unsubscribeAppConfig) { unsubscribeAppConfig(); unsubscribeAppConfig = null; }
+                    try {
+                        unsubscribeAppConfig = onSnapshot(configRef, { includeMetadataChanges: true }, (snap) => {
+                            listenerRetryCounts.set('config', 0);
+                            if (!snap.exists()) return;
+                            if (snap.metadata?.fromCache && localStorage.getItem('sf_user_config_' + uid)) {
+                                if (!navigator.onLine) return;
+                            }
+                            isOnboarding.value = false;
+                            applyLoadedConfigSnap(uid, snap);
+                        }, (err) => {
+                            // Im Error-Callback hat Firestore den Listener bereits beendet — NICHT unsubscribe() aufrufen!
+                            unsubscribeAppConfig = null;
+                            activeConfigListenerUid = null;
+                            if (isFirestoreAssertionError(err)) {
+                                firestoreQueueBroken = true;
+                                clearListenerRetry('config');
+                                return;
+                            }
+                            if (err?.code !== 'permission-denied') console.warn('config listener:', err?.code || err?.message);
+                            if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                                const count = (listenerRetryCounts.get('config') || 0) + 1;
+                                listenerRetryCounts.set('config', count);
+                                const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                                clearListenerRetry('config');
+                                listenerRetryTimers.set('config', setTimeout(() => {
+                                    if (!firestoreQueueBroken && auth.currentUser?.uid === uid) listenToAppConfig(uid);
+                                }, delay));
+                            }
+                        });
+                    } catch (err) {
+                        unsubscribeAppConfig = null;
                         activeConfigListenerUid = null;
-                        if (err.code !== 'permission-denied') console.warn('config listener:', err.code);
-                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
-                            const count = (listenerRetryCounts.get('config') || 0) + 1;
-                            listenerRetryCounts.set('config', count);
-                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
-                            clearListenerRetry('config');
-                            listenerRetryTimers.set('config', setTimeout(() => {
-                                if (auth.currentUser?.uid === uid) listenToAppConfig(uid, { force: true });
-                            }, delay));
-                        }
-                    });
+                        if (isFirestoreAssertionError(err)) firestoreQueueBroken = true;
+                    }
                 };
 
                 // ── THEMES ──
@@ -11610,7 +11694,7 @@
                     try {
                         const uid = user.value.uid;
                         // Firestore-Daten löschen
-                        const { collection: col, getDocs: gd, deleteDoc: dd } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+                        const { collection: col, getDocs: gd, deleteDoc: dd } = await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
                         // Firebase Auth User löschen
                         await deleteUser(auth.currentUser);
                         alert('Dein Konto wurde erfolgreich gelöscht.');
@@ -11628,10 +11712,84 @@
                 let activeSubjectsCollection = null;
                 let subjectsListenerHasAuth = false;
                 let hasPendingSubjectWrites = false;
+                const pendingOpsRetryTimers = new Map();
+                const pendingOpsRetryCounts = new Map();
 
-                const flushPendingUserOps = async (uid) => {
+                const clearPendingOpsRetry = (uid) => {
+                    if (!uid) return;
+                    const t = pendingOpsRetryTimers.get(uid);
+                    if (t) {
+                        clearTimeout(t);
+                        pendingOpsRetryTimers.delete(uid);
+                    }
+                };
+
+                const registerBackgroundSyncIfSupported = () => {
+                    try {
+                        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                            navigator.serviceWorker.ready
+                                .then((reg) => reg?.sync?.register?.('schooly-sync-pending'))
+                                .catch(() => {});
+                        }
+                    } catch (_) {}
+                };
+
+                const schedulePendingOpsRetry = (uid, customDelayMs) => {
+                    if (!uid || readPendingOps(uid).length === 0) return;
+                    clearPendingOpsRetry(uid);
+                    const attempt = (pendingOpsRetryCounts.get(uid) || 0) + 1;
+                    pendingOpsRetryCounts.set(uid, attempt);
+                    const delay = typeof customDelayMs === 'number'
+                        ? customDelayMs
+                        : (navigator.onLine === false
+                            ? 5000
+                            : Math.min(15000, 900 * Math.pow(2, Math.min(attempt - 1, 4))));
+                    pendingOpsRetryTimers.set(uid, setTimeout(async () => {
+                        pendingOpsRetryTimers.delete(uid);
+                        if ((user.value?.uid || auth.currentUser?.uid) !== uid) return;
+                        if (readPendingOps(uid).length === 0) return;
+                        await flushPendingUserOps(uid);
+                    }, delay));
+                };
+
+                const flushPendingUserOps = async (uid, { fromServerSync = false } = {}) => {
                     if (!uid) return { flushed: 0, remaining: 0 };
-                    return flushPendingOpsQueue(uid, {
+                    const opsBefore = readPendingOps(uid);
+                    if (opsBefore.length === 0) {
+                        clearPendingOpsRetry(uid);
+                        pendingOpsRetryCounts.delete(uid);
+                        return { flushed: 0, remaining: 0 };
+                    }
+
+                    if (navigator.onLine === false) {
+                        registerBackgroundSyncIfSupported();
+                        schedulePendingOpsRetry(uid, 5000);
+                        return { flushed: 0, remaining: opsBefore.length, deferred: opsBefore.length };
+                    }
+
+                    if (firestoreQueueBroken || window.__firestoreQueueBroken) {
+                        return { flushed: 0, remaining: opsBefore.length, deferred: opsBefore.length };
+                    }
+
+                    // Bei Kaltstart / Offline-Aufwachen warten bis Firebase Auth IndexedDB-Session geladen hat
+                    if (!auth.currentUser && typeof auth.authStateReady === 'function') {
+                        try {
+                            await Promise.race([
+                                auth.authStateReady(),
+                                new Promise((resolve) => setTimeout(resolve, 2500))
+                            ]);
+                        } catch (_) {}
+                    }
+
+                    if (auth.currentUser?.uid !== uid) {
+                        registerBackgroundSyncIfSupported();
+                        schedulePendingOpsRetry(uid, 1500);
+                        return { flushed: 0, remaining: opsBefore.length, deferred: opsBefore.length };
+                    }
+
+                    const hadDeferredOps = opsBefore.some((op) => (Date.now() - (op.updatedAt || Date.now())) > 2000);
+
+                    const res = await flushPendingOpsQueue(uid, {
                         db,
                         doc,
                         setDoc,
@@ -11639,16 +11797,37 @@
                         deleteDoc,
                         getDoc,
                         getDocFromServer,
+                        readTimeoutMs: 8000,
+                        writeTimeoutMs: 12000,
                         isOnline: () => navigator.onLine !== false,
                         getCurrentUid: () => auth.currentUser?.uid || null,
                         getLocalSubjectFallback: (subId) => (subjects.value || []).find((s) => s && s.id === subId) || null
                     });
+
+                    if (res?.hadAuthError && auth.currentUser?.uid === uid) {
+                        try { await auth.currentUser.getIdToken(true); } catch (_) {}
+                    }
+
+                    if ((res?.remaining || 0) > 0) {
+                        registerBackgroundSyncIfSupported();
+                        schedulePendingOpsRetry(uid);
+                    } else {
+                        clearPendingOpsRetry(uid);
+                        pendingOpsRetryCounts.delete(uid);
+                        if ((res?.flushed || 0) > 0 && hadDeferredOps) {
+                            showToast('Offline-Änderungen synchronisiert ✓');
+                            if (!fromServerSync) {
+                                syncAllUserDataFromServer(uid, { force: true });
+                            }
+                        }
+                    }
+                    return res;
                 };
 
                 const applySubjectsSnapshotDocs = (uid, incoming, fromCache) => {
                     const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                     const pendingOps = readPendingOps(uid);
-                    if (incoming.length === 0 && fromCache && (subjects.value || []).length > 0 && pendingOps.length === 0) {
+                    if (incoming.length === 0 && fromCache && (subjects.value || []).length > 0) {
                         return;
                     }
                     const merged = mergeSubjectsWithPendingOps(incoming, pendingOps, collName);
@@ -11667,37 +11846,48 @@
                 };
 
                 const listenToSubjects = (uid, { force = false } = {}) => {
-                    if (!uid) return;
+                    if (!uid || firestoreQueueBroken) return;
                     const collectionName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                     const isAuthedNow = Boolean(auth.currentUser && auth.currentUser.uid === uid);
                     if (!force && unsubscribeSubjects && activeSubjectsListenerUid === uid && activeSubjectsCollection === collectionName && (subjectsListenerHasAuth || !isAuthedNow)) {
                         return;
                     }
                     clearListenerRetry('subjects');
-                    if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
+                    if (unsubscribeSubjects) { safeUnsubscribe(unsubscribeSubjects); unsubscribeSubjects = null; }
                     activeSubjectsListenerUid = uid;
                     activeSubjectsCollection = collectionName;
                     subjectsListenerHasAuth = isAuthedNow;
                     const q = collection(db, 'users', uid, collectionName);
-                    unsubscribeSubjects = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
-                        listenerRetryCounts.set('subjects', 0);
-                        hasPendingSubjectWrites = Boolean(snapshot.metadata?.hasPendingWrites);
-                        const incoming = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-                        applySubjectsSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache));
-                    }, (err) => {
-                        if (unsubscribeSubjects) { unsubscribeSubjects(); unsubscribeSubjects = null; }
+                    try {
+                        unsubscribeSubjects = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
+                            listenerRetryCounts.set('subjects', 0);
+                            hasPendingSubjectWrites = Boolean(snapshot.metadata?.hasPendingWrites);
+                            const incoming = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                            applySubjectsSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache));
+                        }, (err) => {
+                            unsubscribeSubjects = null;
+                            activeSubjectsListenerUid = null;
+                            if (isFirestoreAssertionError(err)) {
+                                firestoreQueueBroken = true;
+                                clearListenerRetry('subjects');
+                                return;
+                            }
+                            if (err?.code !== 'permission-denied') console.warn('subjects listener:', err?.code || err?.message);
+                            if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                                const count = (listenerRetryCounts.get('subjects') || 0) + 1;
+                                listenerRetryCounts.set('subjects', count);
+                                const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                                clearListenerRetry('subjects');
+                                listenerRetryTimers.set('subjects', setTimeout(() => {
+                                    if (!firestoreQueueBroken && auth.currentUser?.uid === uid) listenToSubjects(uid);
+                                }, delay));
+                            }
+                        });
+                    } catch (err) {
+                        unsubscribeSubjects = null;
                         activeSubjectsListenerUid = null;
-                        if (err.code !== 'permission-denied') console.warn('subjects listener:', err.code);
-                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
-                            const count = (listenerRetryCounts.get('subjects') || 0) + 1;
-                            listenerRetryCounts.set('subjects', count);
-                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
-                            clearListenerRetry('subjects');
-                            listenerRetryTimers.set('subjects', setTimeout(() => {
-                                if (auth.currentUser?.uid === uid) listenToSubjects(uid, { force: true });
-                            }, delay));
-                        }
-                    });
+                        if (isFirestoreAssertionError(err)) firestoreQueueBroken = true;
+                    }
                 };
 
                 const animatingDoneTasks = ref(new Set()); 
@@ -11706,13 +11896,14 @@
                 const pendingTaskDoneSync = new Map();
 
                 const flushPendingTaskDoneSync = async (uid) => {
-                    if (!uid || pendingTaskDoneSync.size === 0) return;
+                    if (!uid || pendingTaskDoneSync.size === 0 || firestoreQueueBroken) return;
                     const entries = Array.from(pendingTaskDoneSync.entries());
                     for (const [taskId, payload] of entries) {
                         try {
                             await setDoc(doc(db, 'users', uid, 'tasks', taskId), sanitizeFirestoreValue(payload), { merge: true });
                             pendingTaskDoneSync.delete(taskId);
                         } catch (e) {
+                            if (isFirestoreAssertionError(e)) { firestoreQueueBroken = true; break; }
                             console.warn('[GradeFlow] retry task sync notice:', e?.code || e?.message || e);
                         }
                     }
@@ -11725,7 +11916,7 @@
 
                 const applyTasksSnapshotDocs = (uid, incoming, fromCache, fromServerConfirmed) => {
                     const pendingOps = readPendingOps(uid);
-                    if (incoming.length === 0 && fromCache && (tasks.value || []).length > 0 && pendingOps.length === 0) {
+                    if (incoming.length === 0 && fromCache && (tasks.value || []).length > 0) {
                         return;
                     }
                     const mergedIncoming = mergeTasksWithPendingOps(incoming, pendingOps);
@@ -11750,34 +11941,45 @@
                 };
 
                 const listenToTasks = (uid, { force = false } = {}) => {
-                    if (!uid) return;
+                    if (!uid || firestoreQueueBroken) return;
                     const isAuthedNow = Boolean(auth.currentUser && auth.currentUser.uid === uid);
                     if (!force && unsubscribeTasks && activeTasksListenerUid === uid && (tasksListenerHasAuth || !isAuthedNow)) return;
                     clearListenerRetry('tasks');
-                    if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
+                    if (unsubscribeTasks) { safeUnsubscribe(unsubscribeTasks); unsubscribeTasks = null; }
                     activeTasksListenerUid = uid;
                     tasksListenerHasAuth = isAuthedNow;
                     const q = collection(db, 'users', uid, 'tasks');
-                    unsubscribeTasks = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
-                        listenerRetryCounts.set('tasks', 0);
-                        hasPendingTaskWrites = Boolean(snapshot.metadata?.hasPendingWrites);
-                        const fromServerConfirmed = !snapshot.metadata?.fromCache && !snapshot.metadata?.hasPendingWrites;
-                        const incoming = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
-                        applyTasksSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache), fromServerConfirmed);
-                    }, (err) => {
-                        if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
+                    try {
+                        unsubscribeTasks = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
+                            listenerRetryCounts.set('tasks', 0);
+                            hasPendingTaskWrites = Boolean(snapshot.metadata?.hasPendingWrites);
+                            const fromServerConfirmed = !snapshot.metadata?.fromCache && !snapshot.metadata?.hasPendingWrites;
+                            const incoming = snapshot.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }));
+                            applyTasksSnapshotDocs(uid, incoming, Boolean(snapshot.metadata?.fromCache), fromServerConfirmed);
+                        }, (err) => {
+                            unsubscribeTasks = null;
+                            activeTasksListenerUid = null;
+                            if (isFirestoreAssertionError(err)) {
+                                firestoreQueueBroken = true;
+                                clearListenerRetry('tasks');
+                                return;
+                            }
+                            if (err?.code !== 'permission-denied') console.warn('tasks listener:', err?.code || err?.message);
+                            if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                                const count = (listenerRetryCounts.get('tasks') || 0) + 1;
+                                listenerRetryCounts.set('tasks', count);
+                                const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                                clearListenerRetry('tasks');
+                                listenerRetryTimers.set('tasks', setTimeout(() => {
+                                    if (!firestoreQueueBroken && auth.currentUser?.uid === uid) listenToTasks(uid);
+                                }, delay));
+                            }
+                        });
+                    } catch (err) {
+                        unsubscribeTasks = null;
                         activeTasksListenerUid = null;
-                        if (err.code !== 'permission-denied') console.warn('tasks listener:', err.code);
-                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
-                            const count = (listenerRetryCounts.get('tasks') || 0) + 1;
-                            listenerRetryCounts.set('tasks', count);
-                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
-                            clearListenerRetry('tasks');
-                            listenerRetryTimers.set('tasks', setTimeout(() => {
-                                if (auth.currentUser?.uid === uid) listenToTasks(uid, { force: true });
-                            }, delay));
-                        }
-                    });
+                        if (isFirestoreAssertionError(err)) firestoreQueueBroken = true;
+                    }
                 };
 
                 const applyExamScoresData = (uid, rawD) => {
@@ -11805,31 +12007,42 @@
 
                 let activeExamScoresListenerUid = null;
                 const listenToExamScores = (uid, { force = false } = {}) => {
-                    if (!uid) return;
+                    if (!uid || firestoreQueueBroken) return;
                     if (!force && unsubscribeExamScores && activeExamScoresListenerUid === uid) return;
                     clearListenerRetry('examScores');
-                    if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
+                    if (unsubscribeExamScores) { safeUnsubscribe(unsubscribeExamScores); unsubscribeExamScores = null; }
                     activeExamScoresListenerUid = uid;
                     const scoresRef = doc(db, 'users', uid, 'abitur', 'scores');
-                    unsubscribeExamScores = onSnapshot(scoresRef, { includeMetadataChanges: true }, (snap) => {
-                        listenerRetryCounts.set('examScores', 0);
-                        if (snap.exists()) {
-                            applyExamScoresData(uid, snap.data());
-                        }
-                    }, (err) => {
-                        if (unsubscribeExamScores) { unsubscribeExamScores(); unsubscribeExamScores = null; }
+                    try {
+                        unsubscribeExamScores = onSnapshot(scoresRef, { includeMetadataChanges: true }, (snap) => {
+                            listenerRetryCounts.set('examScores', 0);
+                            if (snap.exists()) {
+                                applyExamScoresData(uid, snap.data());
+                            }
+                        }, (err) => {
+                            unsubscribeExamScores = null;
+                            activeExamScoresListenerUid = null;
+                            if (isFirestoreAssertionError(err)) {
+                                firestoreQueueBroken = true;
+                                clearListenerRetry('examScores');
+                                return;
+                            }
+                            if (err?.code !== 'permission-denied') console.warn('examScores listener:', err?.code || err?.message);
+                            if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
+                                const count = (listenerRetryCounts.get('examScores') || 0) + 1;
+                                listenerRetryCounts.set('examScores', count);
+                                const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
+                                clearListenerRetry('examScores');
+                                listenerRetryTimers.set('examScores', setTimeout(() => {
+                                    if (!firestoreQueueBroken && auth.currentUser?.uid === uid) listenToExamScores(uid);
+                                }, delay));
+                            }
+                        });
+                    } catch (err) {
+                        unsubscribeExamScores = null;
                         activeExamScoresListenerUid = null;
-                        if (err.code !== 'permission-denied') console.warn('examScores listener:', err.code);
-                        if (auth.currentUser?.uid === uid && navigator.onLine !== false) {
-                            const count = (listenerRetryCounts.get('examScores') || 0) + 1;
-                            listenerRetryCounts.set('examScores', count);
-                            const delay = Math.min(15000, 1500 * Math.pow(2, Math.min(count - 1, 3)));
-                            clearListenerRetry('examScores');
-                            listenerRetryTimers.set('examScores', setTimeout(() => {
-                                if (auth.currentUser?.uid === uid) listenToExamScores(uid, { force: true });
-                            }, delay));
-                        }
-                    });
+                        if (isFirestoreAssertionError(err)) firestoreQueueBroken = true;
+                    }
                 };
 
                 const loadExamScores = async (uid) => {
@@ -11856,7 +12069,15 @@
                 let lastServerSyncAt = 0;
                 let activeServerSyncPromise = null;
                 const syncAllUserDataFromServer = async (uid, { force = false, checkOnboarding = false } = {}) => {
-                    if (!uid || navigator.onLine === false) return;
+                    if (!uid || navigator.onLine === false || firestoreQueueBroken || window.__firestoreQueueBroken) return;
+                    if (!auth.currentUser && typeof auth.authStateReady === 'function') {
+                        try {
+                            await Promise.race([
+                                auth.authStateReady(),
+                                new Promise((resolve) => setTimeout(resolve, 2000))
+                            ]);
+                        } catch (_) {}
+                    }
                     if (!auth.currentUser || auth.currentUser.uid !== uid) return;
                     const now = Date.now();
                     if (!force && now - lastServerSyncAt < 1500) return;
@@ -11866,19 +12087,16 @@
                     activeServerSyncPromise = (async () => {
                         try {
                             await flushPendingTaskDoneSync(uid);
-                            await flushPendingUserOps(uid);
-                            // Warte kurz auf Firestore IndexedDB-Writes vor dem Server-Pull
+                            await flushPendingUserOps(uid, { fromServerSync: true });
+                            // Warte kurz auf ausstehende Writes vor dem Server-Pull
                             try {
-                                await Promise.race([
-                                    waitForPendingWrites(db),
-                                    new Promise((resolve) => setTimeout(resolve, 2500))
-                                ]);
+                                await withTimeout(waitForPendingWrites(db), 2500, 'pending-writes-timeout');
                             } catch (_) {}
 
                             // 1. Settings / Stundenplan / Design / Klasse vom Server ziehen (+ lokale Outbox mergen)
                             const configRef = doc(db, 'users', uid, 'settings', 'config');
                             try {
-                                const configSnap = await getDocFromServer(configRef);
+                                const configSnap = await withTimeout(getDocFromServer(configRef), 8000, 'config-sync-timeout');
                                 if (configSnap.exists()) {
                                     isOnboarding.value = false;
                                     applyLoadedConfigSnap(uid, configSnap);
@@ -11891,21 +12109,21 @@
                             // 2. Fächer & Noten vom Server ziehen (Outbox-Merge schützt ungesicherte lokale Noten vor Überschreiben!)
                             const collName = currentClass.value >= 11 ? 'subjects' : 'subjects_lower';
                             try {
-                                const subSnap = await getDocsFromServer(collection(db, 'users', uid, collName));
+                                const subSnap = await withTimeout(getDocsFromServer(collection(db, 'users', uid, collName)), 8000, 'subjects-sync-timeout');
                                 const incomingSubs = subSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                                 applySubjectsSnapshotDocs(uid, incomingSubs, false);
                             } catch (_) {}
 
                             // 3. Aufgaben & Kalendertermine vom Server ziehen (+ lokale Outbox mergen)
                             try {
-                                const taskSnap = await getDocsFromServer(collection(db, 'users', uid, 'tasks'));
+                                const taskSnap = await withTimeout(getDocsFromServer(collection(db, 'users', uid, 'tasks')), 8000, 'tasks-sync-timeout');
                                 const incomingTasks = taskSnap.docs.map(d => ({ ...d.data(), id: d.id }));
                                 applyTasksSnapshotDocs(uid, incomingTasks, false, true);
                             } catch (_) {}
 
                             // 4. Abitur- & Notentabellen-Simulation vom Server ziehen
                             try {
-                                const abiSnap = await getDocFromServer(doc(db, 'users', uid, 'abitur', 'scores'));
+                                const abiSnap = await withTimeout(getDocFromServer(doc(db, 'users', uid, 'abitur', 'scores')), 8000, 'abi-sync-timeout');
                                 if (abiSnap.exists()) {
                                     applyExamScoresData(uid, abiSnap.data());
                                 }

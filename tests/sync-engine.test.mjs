@@ -476,3 +476,101 @@ test('flushPendingOpsQueue preserves mid-flight concurrent edits and keeps pendi
     writePendingOps(uid, [], storage);
     assert.deepEqual(readPendingOps(uid, storage), []);
 });
+
+test('flushPendingOpsQueue times out stalled reads/writes cleanly without deadlocking future flushes', async () => {
+    const storage = createMemoryStorage();
+    const uid = 'uid-timeout';
+    const serverStore = new Map([
+        ['users/uid-timeout/subjects/sub-1', {
+            name: 'Bio',
+            grades: [{ id: 'g-existing', points: 11 }]
+        }]
+    ]);
+
+    enqueuePendingOp(uid, {
+        key: 'grade:subjects:sub-1:g-offline',
+        opType: 'upsert_grade',
+        collName: 'subjects',
+        subjectId: 'sub-1',
+        gradeId: 'g-offline',
+        grade: { id: 'g-offline', points: 15 },
+        updatedAt: 100
+    }, storage);
+
+    // 1st attempt: stalled socket (promise never resolves) -> must timeout & release lock!
+    const stalledRes = await flushPendingOpsQueue(uid, {
+        db: {},
+        doc: (_db, ...segments) => segments.join('/'),
+        getDocFromServer: () => new Promise(() => {}),
+        setDoc: async () => {},
+        deleteDoc: async () => {},
+        readTimeoutMs: 25,
+        writeTimeoutMs: 25,
+        storage,
+        isOnline: () => true,
+        getCurrentUid: () => uid
+    });
+
+    assert.equal(stalledRes.flushed, 0);
+    assert.equal(stalledRes.remaining, 1);
+    assert.equal(stalledRes.hadNetworkError, true);
+    assert.equal(readPendingOps(uid, storage).length, 1);
+
+    // 2nd attempt immediately after: network recovered -> succeeds cleanly (not deadlocked!)
+    const recoveredRes = await flushPendingOpsQueue(uid, {
+        db: {},
+        doc: (_db, ...segments) => segments.join('/'),
+        getDocFromServer: async (ref) => ({
+            exists: () => serverStore.has(ref),
+            data: () => serverStore.get(ref)
+        }),
+        setDoc: async (ref, data) => {
+            const prev = serverStore.get(ref) || {};
+            serverStore.set(ref, { ...prev, ...data });
+        },
+        deleteDoc: async () => {},
+        readTimeoutMs: 1000,
+        writeTimeoutMs: 1000,
+        storage,
+        isOnline: () => true,
+        getCurrentUid: () => uid
+    });
+
+    assert.equal(recoveredRes.flushed, 1);
+    assert.equal(recoveredRes.remaining, 0);
+    assert.deepEqual(
+        serverStore.get('users/uid-timeout/subjects/sub-1').grades.map((g) => g.id),
+        ['g-existing', 'g-offline']
+    );
+});
+
+test('flushPendingOpsQueue flags auth errors distinctly so caller can force-refresh token', async () => {
+    const storage = createMemoryStorage();
+    const uid = 'uid-auth-err';
+    enqueuePendingOp(uid, {
+        key: 'task:t-auth',
+        opType: 'upsert_task',
+        taskId: 't-auth',
+        data: { title: 'Test' },
+        updatedAt: 100
+    }, storage);
+
+    const err = new Error('auth expired');
+    err.code = 'permission-denied';
+
+    const res = await flushPendingOpsQueue(uid, {
+        db: {},
+        doc: (_db, ...segments) => segments.join('/'),
+        setDoc: async () => { throw err; },
+        deleteDoc: async () => {},
+        storage,
+        isOnline: () => true,
+        getCurrentUid: () => uid
+    });
+
+    assert.equal(res.flushed, 0);
+    assert.equal(res.remaining, 1);
+    assert.equal(res.hadAuthError, true);
+    assert.equal(res.hadNetworkError, false);
+});
+

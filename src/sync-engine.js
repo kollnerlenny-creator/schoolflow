@@ -329,13 +329,64 @@ export function mergeExamScoresWithPendingOps(incomingScores = {}, pendingOps = 
 const activeFlushPromises = new Map();
 const pendingReflushUids = new Set();
 
+export function withTimeout(promise, timeoutMs, label = 'sync-timeout') {
+    if (!timeoutMs || timeoutMs <= 0 || !promise || typeof promise.then !== 'function') {
+        return Promise.resolve(promise);
+    }
+    return new Promise((resolve, reject) => {
+        let settled = false;
+        const timer = setTimeout(() => {
+            if (!settled) {
+                settled = true;
+                const err = new Error(label);
+                err.code = 'deadline-exceeded';
+                reject(err);
+            }
+        }, timeoutMs);
+        Promise.resolve(promise).then(
+            (val) => {
+                if (!settled) {
+                    settled = true;
+                    clearTimeout(timer);
+                    resolve(val);
+                }
+            },
+            (err) => {
+                if (!settled) {
+                    settled = true;
+                    clearTimeout(timer);
+                    reject(err);
+                }
+            }
+        );
+    });
+}
+
+function classifySyncError(err) {
+    const code = String(err?.code || '').toLowerCase();
+    const msg = String(err?.message || '').toLowerCase();
+    const isAuth = code.includes('unauthenticated') || code.includes('permission-denied') || msg.includes('token');
+    const isNetwork = !isAuth && (
+        code.includes('unavailable') ||
+        code.includes('deadline-exceeded') ||
+        code.includes('aborted') ||
+        code.includes('cancelled') ||
+        msg.includes('offline') ||
+        msg.includes('network') ||
+        msg.includes('timeout') ||
+        msg.includes('failed to get document')
+    );
+    return { isAuth, isNetwork };
+}
+
 export async function flushPendingOpsQueue(uid, deps) {
-    if (!uid || !deps) return { flushed: 0, remaining: readPendingOps(uid, deps.storage).length };
+    if (!uid || !deps) return { flushed: 0, remaining: readPendingOps(uid, deps?.storage).length, deferred: 0, hadAuthError: false, hadNetworkError: false };
+    const storage = deps.storage || getDefaultStorage();
     if (deps.isOnline && !deps.isOnline()) {
-        return { flushed: 0, remaining: readPendingOps(uid, deps.storage).length };
+        return { flushed: 0, remaining: readPendingOps(uid, storage).length, deferred: readPendingOps(uid, storage).length, hadAuthError: false, hadNetworkError: true };
     }
     if (deps.getCurrentUid && deps.getCurrentUid() !== uid) {
-        return { flushed: 0, remaining: readPendingOps(uid, deps.storage).length };
+        return { flushed: 0, remaining: readPendingOps(uid, storage).length, deferred: readPendingOps(uid, storage).length, hadAuthError: true, hadNetworkError: false };
     }
 
     if (activeFlushPromises.has(uid)) {
@@ -343,9 +394,14 @@ export async function flushPendingOpsQueue(uid, deps) {
         return activeFlushPromises.get(uid);
     }
 
+    const readTimeoutMs = typeof deps.readTimeoutMs === 'number' ? deps.readTimeoutMs : 8000;
+    const writeTimeoutMs = typeof deps.writeTimeoutMs === 'number' ? deps.writeTimeoutMs : 12000;
+
     const runner = (async () => {
         let totalFlushed = 0;
-        const storage = deps.storage || getDefaultStorage();
+        let deferredCount = 0;
+        let hadAuthError = false;
+        let hadNetworkError = false;
 
         do {
             pendingReflushUids.delete(uid);
@@ -362,13 +418,17 @@ export async function flushPendingOpsQueue(uid, deps) {
                 const ref = doc(db, 'users', uid, op.collName || 'subjects', op.subjectId);
                 try {
                     if (op.opType === 'upsert_subject') {
-                        await setDoc(ref, sanitizeFirestoreValue(op.data), { merge: true });
+                        await withTimeout(setDoc(ref, sanitizeFirestoreValue(op.data), { merge: true }), writeTimeoutMs, 'subject-write-timeout');
                     } else {
-                        await deleteDoc(ref);
+                        await withTimeout(deleteDoc(ref), writeTimeoutMs, 'subject-delete-timeout');
                     }
                     removePendingOpsByAck(uid, [{ key: op.key, opId: op.opId }], storage);
                     totalFlushed++;
                 } catch (err) {
+                    deferredCount++;
+                    const cls = classifySyncError(err);
+                    if (cls.isAuth) hadAuthError = true;
+                    if (cls.isNetwork) hadNetworkError = true;
                     console.warn('[Schooly Sync] subject op deferred:', op.opType, err?.code || err?.message || err);
                 }
             }
@@ -395,9 +455,9 @@ export async function flushPendingOpsQueue(uid, deps) {
                     let serverData = {};
                     let snap = null;
                     if (getDocFromServer) {
-                        snap = await getDocFromServer(ref);
+                        snap = await withTimeout(getDocFromServer(ref), readTimeoutMs, 'subject-read-timeout');
                     } else if (getDoc) {
-                        snap = await getDoc(ref);
+                        snap = await withTimeout(getDoc(ref), readTimeoutMs, 'subject-read-timeout');
                     }
                     if (snap && snap.exists && snap.exists()) {
                         serverData = snap.data() || {};
@@ -423,13 +483,19 @@ export async function flushPendingOpsQueue(uid, deps) {
                         if (typeof serverData.isLK === 'boolean') payload.isLK = serverData.isLK;
                         if (serverData.color) payload.color = serverData.color;
                         if (typeof serverData.examWeight === 'number') payload.examWeight = serverData.examWeight;
+                        if (serverData.abiType) payload.abiType = serverData.abiType;
                         if (serverData.icon) payload.icon = serverData.icon;
+                        if (serverData.examWeightByHalfYear) payload.examWeightByHalfYear = serverData.examWeightByHalfYear;
                     }
 
-                    await setDoc(ref, sanitizeFirestoreValue(payload), { merge: true });
+                    await withTimeout(setDoc(ref, sanitizeFirestoreValue(payload), { merge: true }), writeTimeoutMs, 'grade-write-timeout');
                     removePendingOpsByAck(uid, groupOps.map((o) => ({ key: o.key, opId: o.opId })), storage);
                     totalFlushed += groupOps.length;
                 } catch (err) {
+                    deferredCount += groupOps.length;
+                    const cls = classifySyncError(err);
+                    if (cls.isAuth) hadAuthError = true;
+                    if (cls.isNetwork) hadNetworkError = true;
                     console.warn('[Schooly Sync] grade/rc group deferred:', subjectId, err?.code || err?.message || err);
                 }
             }
@@ -441,13 +507,17 @@ export async function flushPendingOpsQueue(uid, deps) {
                 const ref = doc(db, 'users', uid, 'tasks', op.taskId);
                 try {
                     if (op.opType === 'upsert_task') {
-                        await setDoc(ref, sanitizeFirestoreValue(op.data), { merge: true });
+                        await withTimeout(setDoc(ref, sanitizeFirestoreValue(op.data), { merge: true }), writeTimeoutMs, 'task-write-timeout');
                     } else {
-                        await deleteDoc(ref);
+                        await withTimeout(deleteDoc(ref), writeTimeoutMs, 'task-delete-timeout');
                     }
                     removePendingOpsByAck(uid, [{ key: op.key, opId: op.opId }], storage);
                     totalFlushed++;
                 } catch (err) {
+                    deferredCount++;
+                    const cls = classifySyncError(err);
+                    if (cls.isAuth) hadAuthError = true;
+                    if (cls.isNetwork) hadNetworkError = true;
                     console.warn('[Schooly Sync] task op deferred:', op.taskId, err?.code || err?.message || err);
                 }
             }
@@ -465,10 +535,14 @@ export async function flushPendingOpsQueue(uid, deps) {
                         }
                         Object.assign(mergedPatch, patch);
                     }
-                    await setDoc(doc(db, 'users', uid, 'settings', 'config'), sanitizeFirestoreValue(mergedPatch), { merge: true });
+                    await withTimeout(setDoc(doc(db, 'users', uid, 'settings', 'config'), sanitizeFirestoreValue(mergedPatch), { merge: true }), writeTimeoutMs, 'config-write-timeout');
                     removePendingOpsByAck(uid, configOps.map((o) => ({ key: o.key, opId: o.opId })), storage);
                     totalFlushed += configOps.length;
                 } catch (err) {
+                    deferredCount += configOps.length;
+                    const cls = classifySyncError(err);
+                    if (cls.isAuth) hadAuthError = true;
+                    if (cls.isNetwork) hadNetworkError = true;
                     console.warn('[Schooly Sync] config patch deferred:', err?.code || err?.message || err);
                 }
             }
@@ -478,16 +552,26 @@ export async function flushPendingOpsQueue(uid, deps) {
             if (examOps.length > 0 && (!deps.getCurrentUid || deps.getCurrentUid() === uid)) {
                 try {
                     const latestExamOp = examOps[examOps.length - 1];
-                    await setDoc(doc(db, 'users', uid, 'abitur', 'scores'), sanitizeFirestoreValue(latestExamOp.data), { merge: true });
+                    await withTimeout(setDoc(doc(db, 'users', uid, 'abitur', 'scores'), sanitizeFirestoreValue(latestExamOp.data), { merge: true }), writeTimeoutMs, 'exam-write-timeout');
                     removePendingOpsByAck(uid, examOps.map((o) => ({ key: o.key, opId: o.opId })), storage);
                     totalFlushed += examOps.length;
                 } catch (err) {
+                    deferredCount += examOps.length;
+                    const cls = classifySyncError(err);
+                    if (cls.isAuth) hadAuthError = true;
+                    if (cls.isNetwork) hadNetworkError = true;
                     console.warn('[Schooly Sync] exam scores deferred:', err?.code || err?.message || err);
                 }
             }
         } while (pendingReflushUids.has(uid));
 
-        return { flushed: totalFlushed, remaining: readPendingOps(uid, storage).length };
+        return {
+            flushed: totalFlushed,
+            remaining: readPendingOps(uid, storage).length,
+            deferred: deferredCount,
+            hadAuthError,
+            hadNetworkError
+        };
     })();
 
     activeFlushPromises.set(uid, runner);

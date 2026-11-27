@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden, aktuelle App-Shell und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v57';
+const CACHE_NAME = 'schooly-cache-v61';
 
 const PRECACHE_URLS = [
   '/',
@@ -10,10 +10,10 @@ const PRECACHE_URLS = [
   '/vue.global.prod.js',
   '/lucide.min.js',
   '/tailwindcss.js',
-  'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js',
-  'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js',
-  'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js',
-  'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js',
+  'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js',
+  'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js',
+  'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js',
+  'https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js',
   '/assets/schooly_logo_transparent.png',
   '/assets/schooly_logo.png',
   '/assets/aistudio/schooly_app_icon_7d45ac62.svg',
@@ -174,4 +174,17 @@ self.addEventListener('fetch', (event) => {
       }
     })
   );
+});
+
+// 4. Background Sync: Sobald Chrome/Android nach Offline-Phase wieder Netz hat, offene Clients zum Outbox-Flush anstoßen
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'schooly-sync-pending') {
+    event.waitUntil(
+      self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+        for (const client of clients) {
+          client.postMessage({ type: 'SCHOOLY_TRIGGER_SYNC' });
+        }
+      }).catch(() => {})
+    );
+  }
 });
