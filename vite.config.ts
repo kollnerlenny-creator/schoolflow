@@ -325,6 +325,61 @@ export default defineConfig({
           }
         });
 
+        server.middlewares.use('/api/widget-summary', async (req, res) => {
+          res.setHeader('Content-Type', 'application/json');
+          if (req.method !== 'GET' && req.method !== 'POST') {
+            res.statusCode = 405;
+            res.end(JSON.stringify({ error: 'Method not allowed' }));
+            return;
+          }
+
+          let parsedBody = {};
+          if (req.method === 'POST') {
+            let rawBody = '';
+            let totalBytes = 0;
+            const MAX_BYTES = 128 * 1024;
+            for await (const chunk of req) {
+              const str = Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
+              totalBytes += Buffer.byteLength(str);
+              if (totalBytes > MAX_BYTES) {
+                res.statusCode = 413;
+                res.end(JSON.stringify({ error: 'Payload too large' }));
+                return;
+              }
+              rawBody += str;
+            }
+            try {
+              parsedBody = rawBody ? JSON.parse(rawBody) : {};
+            } catch {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ error: 'Invalid JSON body' }));
+              return;
+            }
+          }
+
+          try {
+            const { default: handler } = await import('./api/widget-summary.js');
+            const mockReq = { method: req.method, headers: req.headers, body: parsedBody };
+            const mockRes = {
+              setHeader(name: string, value: string) {
+                res.setHeader(name, value);
+              },
+              status(code: number) {
+                res.statusCode = code;
+                return this;
+              },
+              json(payload: unknown) {
+                res.end(JSON.stringify(payload));
+                return this;
+              },
+            };
+            await handler(mockReq, mockRes);
+          } catch (err: any) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: err?.message || 'Internal error' }));
+          }
+        });
+
         server.middlewares.use('/api/instagram-status', (req, res) => {
           res.setHeader('Content-Type', 'application/json');
           if (req.method !== 'GET') {

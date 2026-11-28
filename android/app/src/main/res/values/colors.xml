@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="schooly_bg">#F2ECE1</color>
+    <color name="schooly_card">#FFFDF9</color>
+    <color name="schooly_surface_soft">#EBE3D5</color>
+    <color name="schooly_border">#DDD4C3</color>
+    <color name="schooly_text_primary">#26231E</color>
+    <color name="schooly_text_muted">#6E665E</color>
+    <color name="schooly_accent">#2D694C</color>
+    <color name="schooly_accent_soft">#1E2D694C</color>
+    <color name="schooly_peach_soft">#FED8B1</color>
+    <color name="schooly_peach_text">#7A4E00</color>
+    <color name="schooly_urgent">#B91C1C</color>
+</resources>

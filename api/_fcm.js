@@ -273,6 +273,43 @@ export async function firestorePatchFields(projectId, accessToken, docPath, patc
   }
 }
 
+export async function firestoreSetDoc(projectId, accessToken, docPath, docObj) {
+  const fields = {};
+  for (const [k, v] of Object.entries(docObj || {})) {
+    if (v !== undefined) fields[k] = encodeFirestoreValue(v);
+  }
+  const url = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/(default)/documents/${docPath}`;
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ fields }),
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Firestore SET ${docPath} failed (${res.status}): ${text}`);
+  }
+}
+
+export async function firestoreDeleteDoc(projectId, accessToken, docPath) {
+  const url = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/(default)/documents/${docPath}`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (res.status === 404) return;
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Firestore DELETE ${docPath} failed (${res.status}): ${text}`);
+  }
+}
+
 export function extractTokensFromConfig(config) {
   const set = new Set();
   if (Array.isArray(config?.fcmTokens)) {

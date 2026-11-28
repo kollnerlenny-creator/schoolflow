@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Schooly</string>
+    <string name="widget_average_name">Schooly · Notendurchschnitt</string>
+    <string name="widget_average_desc">Zeigt deinen aktuellen Notenschnitt auf dem Startbildschirm.</string>
+    <string name="widget_exam_name">Schooly · Klausur-Countdown</string>
+    <string name="widget_exam_desc">Zählt die Tage bis zur nächsten Klausur oder dem nächsten Test.</string>
+    <string name="widget_tasks_name">Schooly · Offene Aufgaben</string>
+    <string name="widget_tasks_desc">Zeigt offene Hausaufgaben, Aufgaben und Tests auf einen Blick.</string>
+    <string name="widget_login_hint">In Schooly anmelden</string>
+    <string name="widget_refresh_cd">Aktualisieren</string>
+    <string name="widget_add_task_cd">Aufgabe hinzufügen</string>
+</resources>

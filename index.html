@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v68';
+        const CURRENT_BUILD = 'schooly-v69';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v68') {
+                        if (k !== 'schooly-cache-v69') {
                             caches.delete(k);
                         }
                     });
@@ -7645,6 +7645,28 @@
                         <p v-if="googleCalendarError" class="text-xs text-rose-600 font-semibold">{{ googleCalendarError }}</p>
                     </div>
 
+                    <!-- 8b. Android Homescreen-Widgets -->
+                    <div class="bg-white p-5 rounded-2xl border border-[#ede3d8] shadow-2xs space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4.5 h-4.5 text-[#2d694c] shrink-0"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg>
+                                <label class="text-xs font-black uppercase tracking-wider text-[#6E665E]">Android-Widgets</label>
+                            </div>
+                            <span v-if="isNativeAndroidWidgetApp" class="text-[11px] font-bold text-[#2d694c]">Android-App aktiv</span>
+                        </div>
+                        <p class="text-xs text-[#857e72] leading-normal">Verbindet deinen Account automatisch mit den 3 Homescreen-Widgets (Klausur-Countdown, Offene Aufgaben &amp; Notendurchschnitt) in der kostenlosen Android-App.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" @click="syncAndroidWidgetsNow(true)" :disabled="widgetSyncBusy"
+                                    class="flex-1 min-w-[140px] bg-[#f4ede4] hover:bg-[#eae0d5] text-[#1f1b16] font-bold text-xs py-3 px-3 rounded-2xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50 min-h-[44px]">
+                                <span>{{ widgetSyncBusy ? 'Synchronisiere…' : 'Widgets aktualisieren' }}</span>
+                            </button>
+                            <button type="button" @click="rotateWidgetToken" :disabled="widgetSyncBusy"
+                                    class="bg-[#f4ede4] hover:bg-[#eae0d5] text-[#6E665E] font-bold text-xs py-3 px-3.5 rounded-2xl flex items-center justify-center cursor-pointer transition-colors disabled:opacity-50 min-h-[44px]">
+                                Schlüssel erneuern
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Admin Konsole (für Admin-Konten) -->
                     <div v-if="isAdmin" class="bg-[#2d694c]/10 border border-[#2d694c]/20 p-5 rounded-2xl shadow-2xs space-y-2">
                         <label class="text-xs font-black uppercase tracking-wider text-[#2d694c] block">Admin-Verwaltung 🔑</label>
@@ -8901,7 +8923,14 @@
                 const onboardingError = ref('');
 
                 // TABS & STATE (5 Haupt-Tabs: Dashboard, Fächer, Kalender, Insights, Noten)
-                const currentTab = ref('home');
+                const initialUrlTab = (() => {
+                    try { return new URLSearchParams(window.location.search).get('tab') || ''; } catch (_) { return ''; }
+                })();
+                const resolvedInitialTab = ['home', 'subjects', 'planner', 'stats', 'abitur'].includes(initialUrlTab)
+                    ? initialUrlTab
+                    : (initialUrlTab === 'tasks' || initialUrlTab === 'add-task' ? 'planner' : 'home');
+                let pendingOpenTaskFromWidget = initialUrlTab === 'add-task';
+                const currentTab = ref(resolvedInitialTab);
                 const activeNavIndex = computed(() => {
                     if (currentTab.value === 'home') return 0;
                     if (currentTab.value === 'subjects') return 1;
@@ -10931,6 +10960,174 @@
                     }
                 };
 
+                // ── ANDROID HOMESCREEN-WIDGETS BRIDGE ──
+                const isNativeAndroidWidgetApp = typeof window !== 'undefined' && typeof window.SchoolyAndroidWidget !== 'undefined';
+                const widgetSyncBusy = ref(false);
+                let widgetWatchTimer = null;
+
+                const buildLocalWidgetSummary = () => {
+                    const avgNum = Number(processedData.value?.overallAvg || 0);
+                    const avgGrade = processedData.value?.avgGrade;
+                    const activeSubjs = (processedData.value?.semesterSubjects || []).filter((s) => s.finalPoints !== null || s.reportCardGrade !== null);
+                    const hasGrades = activeSubjs.length > 0;
+                    const sys = gradeSystem.value === '6' ? '6' : '15';
+
+                    const fmtShortDate = (ymd) => {
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(ymd || ''))) return '';
+                        const parts = String(ymd).split('-');
+                        return `${parts[2]}.${parts[1]}.`;
+                    };
+                    const fmtCountdown = (days) => {
+                        if (days <= 0) return 'Heute';
+                        if (days === 1) return 'Morgen';
+                        return `in ${days} Tagen`;
+                    };
+
+                    const nextEx = nextExamCountdown.value;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const openUpcoming = (upcomingTasks.value || []).filter((t) => t && !t.done);
+                    const nowHm = new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
+
+                    return {
+                        average: {
+                            hasGrades,
+                            value: hasGrades ? Number(avgNum.toFixed(2)) : 0,
+                            displayValue: hasGrades ? avgNum.toFixed(1).replace('.', ',') : '–',
+                            unitLabel: sys === '6' ? 'Schnitt' : 'Pkt.',
+                            secondaryLabel: (hasGrades && sys !== '6' && avgGrade)
+                                ? `≈ ${Number(avgGrade).toFixed(1).replace('.', ',')} Note`
+                                : `${activeSubjs.length} ${activeSubjs.length === 1 ? 'Fach' : 'Fächer'}`,
+                            gradeSystem: sys,
+                            halfYear: selectedHalfYear.value || '',
+                            activeSubjectsCount: activeSubjs.length,
+                        },
+                        nextExam: nextEx
+                            ? {
+                                id: String(nextEx.id || ''),
+                                type: String(nextEx.type || 'Klausur'),
+                                title: String(nextEx.title || nextEx.type || 'Klausur'),
+                                subjectName: String(nextEx.subject?.name || nextEx.type || ''),
+                                date: String(nextEx.date || ''),
+                                dateFormatted: fmtShortDate(nextEx.date),
+                                daysUntil: Number(nextEx.daysUntil || 0),
+                                countdownLabel: fmtCountdown(Number(nextEx.daysUntil || 0)),
+                            }
+                            : null,
+                        tasks: {
+                            openCount: openUpcoming.length,
+                            items: openUpcoming.slice(0, 4).map((t) => {
+                                const tDate = new Date(String(t.date || '') + 'T00:00:00');
+                                const days = Number.isNaN(tDate.getTime()) ? 0 : Math.round((tDate - today) / 86400000);
+                                return {
+                                    id: String(t.id || ''),
+                                    title: String(t.title || t.type || 'Aufgabe'),
+                                    type: String(t.type || 'Aufgabe'),
+                                    subjectName: String(t.subject?.name || ''),
+                                    dateFormatted: fmtShortDate(t.date),
+                                    dueLabel: fmtCountdown(days),
+                                };
+                            }),
+                        },
+                        updatedAt: new Date().toISOString(),
+                        updatedHm: nowHm,
+                    };
+                };
+
+                const pushSummaryToAndroidBridge = () => {
+                    if (!isNativeAndroidWidgetApp || !user.value) return;
+                    try {
+                        const summary = buildLocalWidgetSummary();
+                        window.SchoolyAndroidWidget.updateSummary(JSON.stringify(summary));
+                    } catch (_) {}
+                };
+
+                const provisionWidgetToken = async ({ forceRotate = false } = {}) => {
+                    const currentUser = auth.currentUser || user.value;
+                    const uid = currentUser?.uid;
+                    if (!uid || typeof currentUser.getIdToken !== 'function') return null;
+
+                    const lsKey = `sf_widget_token_${uid}`;
+                    let existingToken = '';
+                    try { existingToken = localStorage.getItem(lsKey) || ''; } catch (_) {}
+
+                    const idToken = await currentUser.getIdToken();
+                    const res = await fetch('/api/widget-summary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${idToken}`,
+                        },
+                        body: JSON.stringify({
+                            action: forceRotate ? 'rotate' : 'provision',
+                            existingToken: forceRotate ? '' : existingToken,
+                        }),
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok || !data?.token) {
+                        throw new Error(data?.message || data?.error || 'Widget-Verknüpfung fehlgeschlagen');
+                    }
+                    try { localStorage.setItem(lsKey, data.token); } catch (_) {}
+                    return data;
+                };
+
+                const syncAndroidWidgetsNow = async (interactive = false) => {
+                    if (widgetSyncBusy.value) return;
+                    widgetSyncBusy.value = true;
+                    try {
+                        const summary = buildLocalWidgetSummary();
+                        if (isNativeAndroidWidgetApp) {
+                            try { window.SchoolyAndroidWidget.updateSummary(JSON.stringify(summary)); } catch (_) {}
+                        }
+                        const data = await provisionWidgetToken({ forceRotate: false });
+                        if (isNativeAndroidWidgetApp && data?.token) {
+                            window.SchoolyAndroidWidget.syncWidgetData(JSON.stringify({
+                                apiUrl: `${window.location.origin}/api/widget-summary`,
+                                token: data.token,
+                                summary: summary || data.summary,
+                            }));
+                        }
+                        if (interactive) {
+                            showToast(isNativeAndroidWidgetApp
+                                ? 'Homescreen-Widgets aktualisiert ✓'
+                                : 'Widget-Daten synchronisiert ✓ (in der Android-App aktiv)');
+                        }
+                    } catch (e) {
+                        if (interactive) showToast(e?.message || 'Widget-Sync fehlgeschlagen');
+                    } finally {
+                        widgetSyncBusy.value = false;
+                    }
+                };
+
+                const rotateWidgetToken = async () => {
+                    if (widgetSyncBusy.value) return;
+                    widgetSyncBusy.value = true;
+                    try {
+                        const data = await provisionWidgetToken({ forceRotate: true });
+                        const summary = buildLocalWidgetSummary();
+                        if (isNativeAndroidWidgetApp && data?.token) {
+                            window.SchoolyAndroidWidget.syncWidgetData(JSON.stringify({
+                                apiUrl: `${window.location.origin}/api/widget-summary`,
+                                token: data.token,
+                                summary,
+                            }));
+                        }
+                        showToast('Neuer Widget-Schlüssel erstellt ✓');
+                    } catch (e) {
+                        showToast(e?.message || 'Schlüssel konnte nicht erneuert werden');
+                    } finally {
+                        widgetSyncBusy.value = false;
+                    }
+                };
+
+                if (isNativeAndroidWidgetApp) {
+                    watch([processedData, nextExamCountdown, upcomingTasks, gradeSystem, selectedHalfYear], () => {
+                        if (!user.value) return;
+                        if (widgetWatchTimer) clearTimeout(widgetWatchTimer);
+                        widgetWatchTimer = setTimeout(pushSummaryToAndroidBridge, 350);
+                    });
+                }
+
                 // Geladene Fächer des ausgewählten Freundes
                 const friendSubjectsLoaded = ref([]);
                 const friendSubjectsLoading = ref(false);
@@ -11990,6 +12187,13 @@
                         syncAllUserDataFromServer(uid, { force: true, checkOnboarding: true });
                         if (examRemindersEnabled.value && 'Notification' in window && Notification.permission === 'granted') {
                             registerOrRefreshPushToken({ interactive: false }).catch(() => {});
+                        }
+                        if (isNativeAndroidWidgetApp) {
+                            syncAndroidWidgetsNow(false).catch(() => {});
+                        }
+                        if (pendingOpenTaskFromWidget) {
+                            pendingOpenTaskFromWidget = false;
+                            setTimeout(() => { try { openTaskModal(); } catch (_) {} }, 250);
                         }
                         refreshIcons();
                     })();
@@ -13590,6 +13794,9 @@
                     syncNeedsRelogin.value = false;
                     try { await signOut(auth); } catch (e) { console.warn('signOut:', e); }
                     user.value = null;
+                    if (isNativeAndroidWidgetApp) {
+                        try { window.SchoolyAndroidWidget.clearWidgetData(); } catch (_) {}
+                    }
                     try {
                         localStorage.removeItem('sf_cached_user');
                         localStorage.removeItem('sf_last_uid');
@@ -17866,6 +18073,7 @@
                     isNotificationsOpen, friendsTab, allMembers, friends, socialLoading, sentRequests, notifications,
                     toastState, triggerToastAction, dismissToast,
                     examRemindersEnabled, examReminderDays, examReminderTime, saveReminderSettings, requestPushPermission, pushSetupStatus, sendTestPushNotification, testPushSending,
+                    isNativeAndroidWidgetApp, widgetSyncBusy, syncAndroidWidgetsNow, rotateWidgetToken,
                     selectedFriend, pushNotificationSettings, unreadNotifications, incomingFriendRequests, notificationBadgeCount, getIncomingRequestFrom, isFriend, hasSentRequest, availableThemes, activeTheme, setTheme,
                     colorMode, setColorMode, isDarkMode, toggleDarkMode, GERMAN_STATES, federalState, tempFederalState, setFederalState, selectedDayHolidayInfo,
                     isCalendarStateDropdownOpen, isSettingsStateDropdownOpen, isSettingsRecapDropdownOpen, WEEKDAY_OPTIONS, getFederalStateName, getWeekdayName,

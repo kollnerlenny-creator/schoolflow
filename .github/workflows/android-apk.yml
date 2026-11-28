@@ -1,0 +1,70 @@
+name: Build Schooly Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: "Schooly Live-URL (z. B. https://schooly26.vercel.app)"
+        required: false
+        default: "https://schooly26.vercel.app"
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "android/**"
+      - ".github/workflows/android-apk.yml"
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Java 17 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Android SDK einrichten
+        uses: android-actions/setup-android@v3
+
+      - name: Konsistenten Debug-Keystore zwischenspeichern
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: schooly-android-debug-keystore-v1
+
+      - name: Gradle 8.9 einrichten
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Ziel-URL bestimmen
+        id: url
+        shell: bash
+        run: |
+          RAW_URL="${{ inputs.app_url }}"
+          if [ -z "$RAW_URL" ]; then
+            RAW_URL="${{ vars.SCHOOLY_APP_URL }}"
+          fi
+          if [ -z "$RAW_URL" ]; then
+            RAW_URL="https://schooly26.vercel.app"
+          fi
+          CLEAN_URL="${RAW_URL%/}"
+          echo "app_url=$CLEAN_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Android APK kompilieren
+        run: |
+          gradle -p android assembleDebug --no-daemon -PschoolyAppUrl="${{ steps.url.outputs.app_url }}"
+          cp android/app/build/outputs/apk/debug/app-debug.apk Schooly-Android.apk
+
+      - name: Fertige Schooly-Android.apk hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: Schooly-Android-APK
+          path: Schooly-Android.apk
+          retention-days: 30
