@@ -2488,10 +2488,10 @@
             }
         }, 3500);
 
-        // Failsafe 3: Splash spätestens nach 4.5s ausblenden
+        // Failsafe 3: Splash nur ausblenden, wenn Vue tatsächlich gemountet wurde (sonst Reload-Button sichtbar lassen)
         setTimeout(function() {
             var sp = document.getElementById("splash");
-            if (sp && (window.__schoolyMounted || !document.getElementById("app")?.hasAttribute("v-cloak"))) {
+            if (sp && window.__schoolyMounted) {
                 sp.style.opacity = "0";
                 sp.style.pointerEvents = "none";
                 setTimeout(function() { sp.remove(); }, 400);
@@ -11120,13 +11120,7 @@
                     }
                 };
 
-                if (isNativeAndroidWidgetApp) {
-                    watch([processedData, nextExamCountdown, upcomingTasks, gradeSystem, selectedHalfYear], () => {
-                        if (!user.value) return;
-                        if (widgetWatchTimer) clearTimeout(widgetWatchTimer);
-                        widgetWatchTimer = setTimeout(pushSummaryToAndroidBridge, 350);
-                    });
-                }
+                // (Android-Widget-Watcher wird weiter unten nach processedData / upcomingTasks registriert)
 
                 // Geladene Fächer des ausgewählten Freundes
                 const friendSubjectsLoaded = ref([]);
@@ -17587,6 +17581,17 @@
                 });
                 watch(plannerTab, () => nextTick(refreshIcons));
                 watch(calendarViewMode, () => nextTick(refreshIcons));
+
+                if (isNativeAndroidWidgetApp) {
+                    watch([processedData, nextExamCountdown, upcomingTasks, gradeSystem, selectedHalfYear], () => {
+                        if (!user.value) return;
+                        if (widgetWatchTimer) clearTimeout(widgetWatchTimer);
+                        widgetWatchTimer = setTimeout(pushSummaryToAndroidBridge, 350);
+                    });
+                    if (user.value) {
+                        setTimeout(pushSummaryToAndroidBridge, 120);
+                    }
+                }
 
                 const lowerSchoolClasses = computed(() => {
                     const c = currentClass.value;
