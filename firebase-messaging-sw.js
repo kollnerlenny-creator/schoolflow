@@ -32,7 +32,7 @@ messaging.onBackgroundMessage((payload) => {
   const options = {
     body: data.body || '',
     icon: '/icon-192.png',
-    badge: '/icon-192.png',
+    badge: '/badge-96.png',
     tag: data.tag || 'schooly-reminder',
     data
   };

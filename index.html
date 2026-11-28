@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v67';
+        const CURRENT_BUILD = 'schooly-v68';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v67') {
+                        if (k !== 'schooly-cache-v68') {
                             caches.delete(k);
                         }
                     });
@@ -9500,7 +9500,8 @@
                             try {
                                 new Notification(`${t.type}: ${subject?.name || ''}`, {
                                     body: `${t.title} — ${dayLabel}`,
-                                    icon: './icon-192.png',
+                                    icon: '/icon-192.png',
+                                    badge: '/badge-96.png',
                                     tag: 'sf-exam-' + t.id
                                 });
                             } catch (e) { /* Notification API kann in manchen Kontexten (z.B. iOS Safari) fehlschlagen */ }
@@ -10726,7 +10727,7 @@
                                         return reg.showNotification(title, {
                                             body,
                                             icon: '/icon-192.png',
-                                            badge: '/icon-192.png',
+                                            badge: '/badge-96.png',
                                             tag: payload?.data?.tag || 'schooly-fg-' + Date.now()
                                         });
                                     }

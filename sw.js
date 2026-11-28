@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden, aktuelle App-Shell und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v67';
+const CACHE_NAME = 'schooly-cache-v68';
 
 const PRECACHE_URLS = [
   '/',
@@ -19,6 +19,7 @@ const PRECACHE_URLS = [
   '/assets/schooly_logo.png',
   '/assets/aistudio/schooly_app_icon_7d45ac62.svg',
   '/icon-192.png',
+  '/badge-96.png',
   '/icon-512.png',
   '/icon-maskable-192.png',
   '/icon-maskable-512.png'

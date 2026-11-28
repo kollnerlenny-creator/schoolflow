@@ -306,7 +306,7 @@ export async function sendFcmWebPush(projectId, accessToken, token, { title, bod
       title: safeTitle,
       body: safeBody,
       icon: '/icon-192.png',
-      badge: '/icon-192.png',
+      badge: '/badge-96.png',
       tag: String(tag || 'schooly-notification'),
       renotify: true,
     },
