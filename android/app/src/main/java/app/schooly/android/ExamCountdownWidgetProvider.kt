@@ -21,16 +21,29 @@ class ExamCountdownWidgetProvider : AppWidgetProvider() {
     companion object {
         fun updateWidgets(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
             val data = WidgetDataStore.loadSummary(context)
+            val theme = WidgetTheme.forMode(context, data.colorMode)
             val openPlanner = WidgetDataStore.openTabPendingIntent(context, "planner", 102)
             val refreshPi = WidgetDataStore.refreshPendingIntent(context, 202)
 
             for (appWidgetId in appWidgetIds) {
                 val views = RemoteViews(context.packageName, R.layout.widget_exam_countdown)
 
+                // Dynamic Schooly theme (light / evening / dim / dark)
+                views.setInt(R.id.widget_exam_root, "setBackgroundResource", theme.cardBgRes)
+                views.setInt(R.id.exam_badge_text, "setBackgroundResource", theme.peachBadgeRes)
+                views.setInt(R.id.exam_info_box, "setBackgroundResource", theme.rowBgRes)
+                views.setInt(R.id.exam_refresh_btn, "setColorFilter", theme.textMuted)
+
+                views.setTextColor(R.id.exam_badge_text, theme.peachText)
+                views.setTextColor(R.id.exam_days_text, theme.accent)
+                views.setTextColor(R.id.exam_countdown_sub, theme.textMuted)
+                views.setTextColor(R.id.exam_title_text, theme.textPrimary)
+                views.setTextColor(R.id.exam_meta_text, theme.accent)
+
                 if (!data.isSignedIn) {
                     views.setTextViewText(R.id.exam_badge_text, "Klausur")
                     views.setTextViewText(R.id.exam_days_text, "–")
-                    views.setTextViewText(R.id.exam_countdown_sub, "Noch nicht verknüpft")
+                    views.setTextViewText(R.id.exam_countdown_sub, "Nicht verknüpft")
                     views.setTextViewText(R.id.exam_title_text, context.getString(R.string.widget_login_hint))
                     views.setTextViewText(R.id.exam_meta_text, "Tippen zum Anmelden")
                 } else {
@@ -47,6 +60,9 @@ class ExamCountdownWidgetProvider : AppWidgetProvider() {
                             exam.daysUntil <= 0 -> "Heute fällig"
                             exam.daysUntil == 1 -> "Tag übrig"
                             else -> "Tage übrig"
+                        }
+                        if (exam.daysUntil <= 1) {
+                            views.setTextColor(R.id.exam_days_text, theme.urgent)
                         }
                         val subjLabel = exam.subjectName.ifBlank { exam.type }
                         val meta = listOf(subjLabel, exam.dateFormatted).filter { it.isNotBlank() }.joinToString(" · ")

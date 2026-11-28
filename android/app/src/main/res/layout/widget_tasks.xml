@@ -3,7 +3,7 @@
     android:id="@+id/widget_tasks_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_card_bg"
+    android:background="@drawable/widget_card_bg_light"
     android:orientation="vertical"
     android:padding="14dp">
 
@@ -14,34 +14,35 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_schooly_mark" />
 
         <TextView
+            android:id="@+id/tasks_header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="8dp"
             android:text="Aufgaben"
-            android:textColor="@color/schooly_text_primary"
-            android:textSize="14sp"
+            android:textColor="#26231E"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tasks_count_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/widget_accent_badge"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/widget_accent_badge_light"
             android:fontFeatureSettings="tnum"
-            android:paddingStart="8dp"
+            android:paddingStart="9dp"
             android:paddingTop="2dp"
-            android:paddingEnd="8dp"
+            android:paddingEnd="9dp"
             android:paddingBottom="2dp"
             android:text="0"
-            android:textColor="@color/schooly_accent"
-            android:textSize="11sp"
+            android:textColor="#2D694C"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -51,17 +52,17 @@
 
         <ImageView
             android:id="@+id/tasks_add_btn"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_marginEnd="4dp"
             android:contentDescription="@string/widget_add_task_cd"
-            android:padding="3dp"
+            android:padding="4dp"
             android:src="@drawable/ic_widget_add" />
 
         <ImageView
             android:id="@+id/tasks_refresh_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:contentDescription="@string/widget_refresh_cd"
             android:padding="3dp"
             android:src="@drawable/ic_widget_refresh" />
@@ -74,29 +75,40 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="Keine offenen Aufgaben"
-        android:textColor="@color/schooly_text_muted"
-        android:textSize="13sp"
+        android:textColor="#6E665E"
+        android:textSize="15sp"
+        android:textStyle="bold"
         android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/tasks_list_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="1"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/task_row_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_row_bg"
+            android:minHeight="34dp"
+            android:background="@drawable/widget_row_bg_light"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="10dp"
+            android:paddingStart="11dp"
             android:paddingTop="6dp"
-            android:paddingEnd="10dp"
+            android:paddingEnd="9dp"
             android:paddingBottom="6dp">
+
+            <ImageView
+                android:id="@+id/task_dot_1"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="9dp"
+                android:contentDescription="@null"
+                android:src="@drawable/widget_dot_light" />
 
             <TextView
                 android:id="@+id/task_title_1"
@@ -106,8 +118,8 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="In Schooly anmelden"
-                android:textColor="@color/schooly_text_primary"
-                android:textSize="12sp"
+                android:textColor="#26231E"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -115,10 +127,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:background="@drawable/widget_accent_badge_light"
                 android:maxLines="1"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
                 android:text="–"
-                android:textColor="@color/schooly_accent"
-                android:textSize="11sp"
+                android:textColor="#2D694C"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -126,15 +143,24 @@
             android:id="@+id/task_row_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/widget_row_bg"
+            android:minHeight="34dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/widget_row_bg_light"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="10dp"
+            android:paddingStart="11dp"
             android:paddingTop="6dp"
-            android:paddingEnd="10dp"
+            android:paddingEnd="9dp"
             android:paddingBottom="6dp"
             android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/task_dot_2"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="9dp"
+                android:contentDescription="@null"
+                android:src="@drawable/widget_dot_light" />
 
             <TextView
                 android:id="@+id/task_title_2"
@@ -143,8 +169,8 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/schooly_text_primary"
-                android:textSize="12sp"
+                android:textColor="#26231E"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -152,9 +178,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:background="@drawable/widget_accent_badge_light"
                 android:maxLines="1"
-                android:textColor="@color/schooly_accent"
-                android:textSize="11sp"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
+                android:textColor="#2D694C"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -162,15 +193,24 @@
             android:id="@+id/task_row_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/widget_row_bg"
+            android:minHeight="34dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/widget_row_bg_light"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="10dp"
+            android:paddingStart="11dp"
             android:paddingTop="6dp"
-            android:paddingEnd="10dp"
+            android:paddingEnd="9dp"
             android:paddingBottom="6dp"
             android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/task_dot_3"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="9dp"
+                android:contentDescription="@null"
+                android:src="@drawable/widget_dot_light" />
 
             <TextView
                 android:id="@+id/task_title_3"
@@ -179,8 +219,8 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/schooly_text_primary"
-                android:textSize="12sp"
+                android:textColor="#26231E"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -188,9 +228,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:background="@drawable/widget_accent_badge_light"
                 android:maxLines="1"
-                android:textColor="@color/schooly_accent"
-                android:textSize="11sp"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
+                android:textColor="#2D694C"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -198,15 +243,24 @@
             android:id="@+id/task_row_4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/widget_row_bg"
+            android:minHeight="34dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/widget_row_bg_light"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="10dp"
+            android:paddingStart="11dp"
             android:paddingTop="6dp"
-            android:paddingEnd="10dp"
+            android:paddingEnd="9dp"
             android:paddingBottom="6dp"
             android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/task_dot_4"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="9dp"
+                android:contentDescription="@null"
+                android:src="@drawable/widget_dot_light" />
 
             <TextView
                 android:id="@+id/task_title_4"
@@ -215,8 +269,8 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/schooly_text_primary"
-                android:textSize="12sp"
+                android:textColor="#26231E"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -224,9 +278,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:background="@drawable/widget_accent_badge_light"
                 android:maxLines="1"
-                android:textColor="@color/schooly_accent"
-                android:textSize="11sp"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
+                android:textColor="#2D694C"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

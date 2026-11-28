@@ -59,6 +59,10 @@ class WidgetSyncWorker(
             val summary = json.optJSONObject("summary")
             if (summary != null) {
                 WidgetDataStore.saveSummaryOnly(applicationContext, summary.toString())
+                NotificationHelper.maybeTriggerDueReminders(
+                    applicationContext,
+                    WidgetDataStore.loadSummary(applicationContext)
+                )
             }
             Result.success()
         } catch (_: Exception) {

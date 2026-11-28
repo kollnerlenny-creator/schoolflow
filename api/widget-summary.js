@@ -186,8 +186,12 @@ async function buildWidgetSummaryForUser(projectId, accessToken, uid) {
     .sort((a, b) => a.date.localeCompare(b.date));
 
   const nextExam = upcomingOpenTasks.find((t) => t.type === 'Klausur' || t.type === 'Test') || null;
+  const resolvedColorMode = (config.colorMode === 'light' || config.colorMode === 'evening' || config.colorMode === 'dim' || config.colorMode === 'dark')
+    ? config.colorMode
+    : (config.darkMode ? 'dark' : 'light');
 
   return {
+    colorMode: resolvedColorMode,
     average: {
       hasGrades,
       value: hasGrades ? Number(avgValue.toFixed(2)) : 0,
@@ -218,8 +222,14 @@ async function buildWidgetSummaryForUser(projectId, accessToken, uid) {
         type: t.type,
         subjectName: t.subjectName,
         dateFormatted: t.dateFormatted,
+        daysUntil: t.daysUntil,
         dueLabel: t.dueLabel,
       })),
+    },
+    reminders: {
+      enabled: config.examRemindersEnabled === true,
+      daysBefore: Number.isFinite(Number(config.examReminderDays)) ? Number(config.examReminderDays) : 1,
+      time: typeof config.examReminderTime === 'string' && /^\d{2}:\d{2}$/.test(config.examReminderTime) ? config.examReminderTime : '18:00',
     },
     updatedAt: new Date().toISOString(),
     updatedHm: getBerlinTimeHm(),

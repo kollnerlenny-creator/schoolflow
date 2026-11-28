@@ -21,17 +21,37 @@ class TasksWidgetProvider : AppWidgetProvider() {
 
     companion object {
         private val ROW_IDS = intArrayOf(R.id.task_row_1, R.id.task_row_2, R.id.task_row_3, R.id.task_row_4)
+        private val DOT_IDS = intArrayOf(R.id.task_dot_1, R.id.task_dot_2, R.id.task_dot_3, R.id.task_dot_4)
         private val TITLE_IDS = intArrayOf(R.id.task_title_1, R.id.task_title_2, R.id.task_title_3, R.id.task_title_4)
         private val DUE_IDS = intArrayOf(R.id.task_due_1, R.id.task_due_2, R.id.task_due_3, R.id.task_due_4)
 
         fun updateWidgets(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
             val data = WidgetDataStore.loadSummary(context)
+            val theme = WidgetTheme.forMode(context, data.colorMode)
             val openTasks = WidgetDataStore.openTabPendingIntent(context, "tasks", 103)
             val addTaskPi = WidgetDataStore.openTabPendingIntent(context, "add-task", 104)
             val refreshPi = WidgetDataStore.refreshPendingIntent(context, 203)
 
             for (appWidgetId in appWidgetIds) {
                 val views = RemoteViews(context.packageName, R.layout.widget_tasks)
+
+                // Dynamic Schooly theme (light / evening / dim / dark)
+                views.setInt(R.id.widget_tasks_root, "setBackgroundResource", theme.cardBgRes)
+                views.setInt(R.id.tasks_count_badge, "setBackgroundResource", theme.accentBadgeRes)
+                views.setInt(R.id.tasks_add_btn, "setColorFilter", theme.accent)
+                views.setInt(R.id.tasks_refresh_btn, "setColorFilter", theme.textMuted)
+
+                views.setTextColor(R.id.tasks_header_title, theme.textPrimary)
+                views.setTextColor(R.id.tasks_count_badge, theme.accent)
+                views.setTextColor(R.id.tasks_empty_text, theme.textMuted)
+
+                for (i in ROW_IDS.indices) {
+                    views.setInt(ROW_IDS[i], "setBackgroundResource", theme.rowBgRes)
+                    views.setImageViewResource(DOT_IDS[i], theme.dotRes)
+                    views.setInt(DUE_IDS[i], "setBackgroundResource", theme.accentBadgeRes)
+                    views.setTextColor(TITLE_IDS[i], theme.textPrimary)
+                    views.setTextColor(DUE_IDS[i], theme.accent)
+                }
 
                 if (!data.isSignedIn) {
                     views.setTextViewText(R.id.tasks_count_badge, "–")
@@ -66,6 +86,9 @@ class TasksWidgetProvider : AppWidgetProvider() {
                                 views.setViewVisibility(ROW_IDS[i], View.VISIBLE)
                                 views.setTextViewText(TITLE_IDS[i], label)
                                 views.setTextViewText(DUE_IDS[i], due)
+                                if (item.daysUntil <= 1) {
+                                    views.setTextColor(DUE_IDS[i], theme.urgent)
+                                }
                             } else {
                                 views.setViewVisibility(ROW_IDS[i], View.GONE)
                             }

@@ -12,10 +12,12 @@ data class AverageWidgetData(
     val displayValue: String = "–",
     val unitLabel: String = "Pkt.",
     val secondaryLabel: String = "Schooly",
-    val halfYear: String = ""
+    val halfYear: String = "",
+    val activeSubjectsCount: Int = 0
 )
 
 data class ExamWidgetData(
+    val id: String = "",
     val title: String = "",
     val type: String = "Klausur",
     val subjectName: String = "",
@@ -25,10 +27,13 @@ data class ExamWidgetData(
 )
 
 data class TaskRowData(
+    val id: String = "",
     val title: String = "",
+    val type: String = "Aufgabe",
     val subjectName: String = "",
     val dueLabel: String = "",
-    val dateFormatted: String = ""
+    val dateFormatted: String = "",
+    val daysUntil: Int = 0
 )
 
 data class TasksWidgetData(
@@ -36,11 +41,19 @@ data class TasksWidgetData(
     val items: List<TaskRowData> = emptyList()
 )
 
+data class ReminderSettingsData(
+    val enabled: Boolean = false,
+    val daysBefore: Int = 1,
+    val time: String = "18:00"
+)
+
 data class SchoolyWidgetSummary(
     val isSignedIn: Boolean = false,
+    val colorMode: String? = null,
     val average: AverageWidgetData = AverageWidgetData(),
     val nextExam: ExamWidgetData? = null,
     val tasks: TasksWidgetData = TasksWidgetData(),
+    val reminders: ReminderSettingsData = ReminderSettingsData(),
     val updatedHm: String = ""
 )
 
@@ -50,9 +63,24 @@ object WidgetDataStore {
     private const val KEY_TOKEN = "widget_token"
     private const val KEY_SUMMARY_JSON = "summary_json"
     private const val KEY_SIGNED_IN = "signed_in"
+    private const val KEY_COLOR_MODE = "color_mode"
 
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    fun saveColorMode(context: Context, rawMode: String?, refreshWidgets: Boolean = true) {
+        val normalized = WidgetTheme.normalizeMode(rawMode) ?: return
+        val current = prefs(context).getString(KEY_COLOR_MODE, null)
+        if (current != normalized) {
+            prefs(context).edit().putString(KEY_COLOR_MODE, normalized).apply()
+            if (refreshWidgets) {
+                updateAllWidgets(context)
+            }
+        }
+    }
+
+    fun getColorMode(context: Context): String? =
+        WidgetTheme.normalizeMode(prefs(context).getString(KEY_COLOR_MODE, null))
 
     fun saveFullBridgePayload(context: Context, rawPayloadJson: String) {
         try {
@@ -70,6 +98,9 @@ object WidgetDataStore {
             }
             if (summaryObj != null) {
                 editor.putString(KEY_SUMMARY_JSON, summaryObj.toString())
+                WidgetTheme.normalizeMode(summaryObj.optString("colorMode", ""))?.let {
+                    editor.putString(KEY_COLOR_MODE, it)
+                }
             }
             editor.putBoolean(KEY_SIGNED_IN, true)
             editor.apply()
@@ -82,11 +113,14 @@ object WidgetDataStore {
     fun saveSummaryOnly(context: Context, summaryJson: String) {
         if (summaryJson.isBlank()) return
         try {
-            val validated = JSONObject(summaryJson).toString()
-            prefs(context).edit()
-                .putString(KEY_SUMMARY_JSON, validated)
+            val parsed = JSONObject(summaryJson)
+            val editor = prefs(context).edit()
+                .putString(KEY_SUMMARY_JSON, parsed.toString())
                 .putBoolean(KEY_SIGNED_IN, true)
-                .apply()
+            WidgetTheme.normalizeMode(parsed.optString("colorMode", ""))?.let {
+                editor.putString(KEY_COLOR_MODE, it)
+            }
+            editor.apply()
             updateAllWidgets(context)
         } catch (_: Exception) {
         }
@@ -117,14 +151,17 @@ object WidgetDataStore {
 
     fun loadSummary(context: Context): SchoolyWidgetSummary {
         val p = prefs(context)
+        val storedColorMode = WidgetTheme.normalizeMode(p.getString(KEY_COLOR_MODE, null))
         val signedIn = p.getBoolean(KEY_SIGNED_IN, false)
         val rawJson = p.getString(KEY_SUMMARY_JSON, "") ?: ""
         if (!signedIn || rawJson.isBlank()) {
-            return SchoolyWidgetSummary(isSignedIn = false)
+            return SchoolyWidgetSummary(isSignedIn = false, colorMode = storedColorMode)
         }
 
         return try {
             val root = JSONObject(rawJson)
+            val resolvedColorMode = WidgetTheme.normalizeMode(root.optString("colorMode", "")) ?: storedColorMode
+
             val avgObj = root.optJSONObject("average")
             val average = if (avgObj != null) {
                 AverageWidgetData(
@@ -132,7 +169,8 @@ object WidgetDataStore {
                     displayValue = avgObj.optString("displayValue", "–"),
                     unitLabel = avgObj.optString("unitLabel", "Pkt."),
                     secondaryLabel = avgObj.optString("secondaryLabel", "Schooly"),
-                    halfYear = avgObj.optString("halfYear", "")
+                    halfYear = avgObj.optString("halfYear", ""),
+                    activeSubjectsCount = avgObj.optInt("activeSubjectsCount", 0)
                 )
             } else {
                 AverageWidgetData()
@@ -141,6 +179,7 @@ object WidgetDataStore {
             val examObj = root.optJSONObject("nextExam")
             val nextExam = if (examObj != null && !root.isNull("nextExam")) {
                 ExamWidgetData(
+                    id = examObj.optString("id", ""),
                     title = examObj.optString("title", "Klausur"),
                     type = examObj.optString("type", "Klausur"),
                     subjectName = examObj.optString("subjectName", ""),
@@ -161,10 +200,13 @@ object WidgetDataStore {
                         val item = arr.optJSONObject(i) ?: continue
                         taskItems.add(
                             TaskRowData(
+                                id = item.optString("id", ""),
                                 title = item.optString("title", "Aufgabe"),
+                                type = item.optString("type", "Aufgabe"),
                                 subjectName = item.optString("subjectName", ""),
                                 dueLabel = item.optString("dueLabel", ""),
-                                dateFormatted = item.optString("dateFormatted", "")
+                                dateFormatted = item.optString("dateFormatted", ""),
+                                daysUntil = item.optInt("daysUntil", 0)
                             )
                         )
                     }
@@ -175,15 +217,28 @@ object WidgetDataStore {
                 items = taskItems
             )
 
+            val remObj = root.optJSONObject("reminders")
+            val reminders = if (remObj != null) {
+                ReminderSettingsData(
+                    enabled = remObj.optBoolean("enabled", false),
+                    daysBefore = remObj.optInt("daysBefore", 1),
+                    time = remObj.optString("time", "18:00")
+                )
+            } else {
+                ReminderSettingsData()
+            }
+
             SchoolyWidgetSummary(
                 isSignedIn = true,
+                colorMode = resolvedColorMode,
                 average = average,
                 nextExam = nextExam,
                 tasks = tasks,
+                reminders = reminders,
                 updatedHm = root.optString("updatedHm", "")
             )
         } catch (_: Exception) {
-            SchoolyWidgetSummary(isSignedIn = signedIn)
+            SchoolyWidgetSummary(isSignedIn = signedIn, colorMode = storedColorMode)
         }
     }
 

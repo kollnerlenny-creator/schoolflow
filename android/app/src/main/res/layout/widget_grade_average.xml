@@ -3,9 +3,9 @@
     android:id="@+id/widget_avg_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_card_bg"
+    android:background="@drawable/widget_card_bg_light"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="14dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,28 +14,50 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_schooly_mark" />
 
         <TextView
             android:id="@+id/avg_header_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_weight="1"
+            android:layout_marginStart="7dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Schnitt"
-            android:textColor="@color/schooly_text_muted"
-            android:textSize="11sp"
+            android:textColor="#26231E"
+            android:textSize="14sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/avg_halfyear_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/widget_accent_badge_light"
+            android:fontFeatureSettings="tnum"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
+            android:text="12/1"
+            android:textColor="#2D694C"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/avg_refresh_btn"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:contentDescription="@string/widget_refresh_cd"
             android:padding="3dp"
             android:src="@drawable/ic_widget_refresh" />
@@ -45,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="bottom"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
@@ -54,35 +76,61 @@
             android:layout_height="wrap_content"
             android:fontFeatureSettings="tnum"
             android:includeFontPadding="false"
+            android:maxLines="1"
             android:text="–"
-            android:textColor="@color/schooly_accent"
-            android:textSize="28sp"
+            android:textColor="#2D694C"
+            android:textSize="42sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/avg_unit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:maxLines="1"
             android:text="Pkt."
-            android:textColor="@color/schooly_text_muted"
-            android:textSize="12sp"
+            android:textColor="#6E665E"
+            android:textSize="16sp"
             android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/avg_footer_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget_row_bg_light"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/avg_secondary_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginBottom="3dp"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:gravity="end"
+            android:fontFeatureSettings="tnum"
             android:maxLines="1"
             android:text="Schooly"
-            android:textColor="@color/schooly_text_muted"
-            android:textSize="11sp" />
+            android:textColor="#26231E"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/avg_subjects_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:fontFeatureSettings="tnum"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="#2D694C"
+            android:textSize="12sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>
