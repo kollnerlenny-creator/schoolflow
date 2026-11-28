@@ -221,6 +221,18 @@
             border-color: rgba(255, 158, 44, 0.42);
             transform: translateY(-1px);
         }
+        .btn-install-method {
+            background-color: rgba(247, 242, 232, 0.06);
+            border: 1px solid rgba(247, 242, 232, 0.18);
+            color: #f7f2e8;
+            transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease;
+        }
+        .btn-install-method:hover {
+            background-color: rgba(255, 158, 44, 0.14);
+            border-color: rgba(255, 158, 44, 0.65);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.45);
+        }
 
         /* Unified Gallery Card Surface */
         .gallery-bay {
@@ -437,16 +449,45 @@
                         Noten mit exakter Gewichtung, Wunschnoten-Rechner, Stundenplan, Aufgaben, Google-Kalender-Sync und Abitur-Check — synchron auf <strong class="text-[#f7f2e8] font-bold">Smartphone &amp; Laptop</strong>.
                     </p>
 
-                    <div class="hero-enter flex flex-row items-center gap-3 pt-1">
-                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-amber flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-[13.5px] sm:text-[15px] whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
-                            <span class="sm:hidden">App öffnen</span>
-                            <span class="hidden sm:inline">schooly26.vercel.app öffnen</span>
-                            <span aria-hidden="true">→</span>
+                    <div class="hero-enter grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-install-method flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl min-h-[54px] text-left">
+                            <span class="w-8 h-8 rounded-lg bg-[#ff9e2c]/15 text-[#ff9e2c] inline-flex items-center justify-center shrink-0" aria-hidden="true">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M3.6 9h16.8M3.6 15h16.8" />
+                                    <path d="M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18" />
+                                </svg>
+                            </span>
+                            <span class="min-w-0 leading-tight">
+                                <span class="block text-[13px] font-extrabold text-[#f7f2e8] truncate">Web-App</span>
+                                <span class="block text-[11px] font-semibold text-[#f7f2e8]/65 truncate">Browser &amp; PC</span>
+                            </span>
                         </a>
-                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="btn-surface shrink-0 inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-[13px] sm:text-[15px] whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
-                            <span>@schooly.app</span>
-                            <span aria-hidden="true">↗</span>
+                        <a href="https://github.com/kollnerlenny-creator/schoolflow/releases/latest/download/Schooly-Android.apk" target="_blank" rel="noopener noreferrer" download="Schooly-Android.apk" class="btn-install-method flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl min-h-[54px] text-left">
+                            <span class="w-8 h-8 rounded-lg bg-[#ff9e2c]/15 text-[#ff9e2c] inline-flex items-center justify-center shrink-0" aria-hidden="true">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 3v12" />
+                                    <path d="m7 11 5 5 5-5" />
+                                    <path d="M5 20h14" />
+                                </svg>
+                            </span>
+                            <span class="min-w-0 leading-tight">
+                                <span class="block text-[13px] font-extrabold text-[#f7f2e8] truncate">Android APK</span>
+                                <span class="block text-[11px] font-semibold text-[#f7f2e8]/65 truncate">Mit Widgets</span>
+                            </span>
                         </a>
+                        <button type="button" data-open-ios-install class="btn-install-method flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl min-h-[54px] text-left cursor-pointer">
+                            <span class="w-8 h-8 rounded-lg bg-[#ff9e2c]/15 text-[#ff9e2c] inline-flex items-center justify-center shrink-0" aria-hidden="true">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="7" y="2.5" width="10" height="19" rx="2.2" />
+                                    <path d="M11 18h2" />
+                                </svg>
+                            </span>
+                            <span class="min-w-0 leading-tight">
+                                <span class="block text-[13px] font-extrabold text-[#f7f2e8] truncate">iPhone &amp; iPad</span>
+                                <span class="block text-[11px] font-semibold text-[#f7f2e8]/65 truncate">Home-Bildschirm</span>
+                            </span>
+                        </button>
                     </div>
 
                     <div class="hero-enter pt-4 border-t border-white/12 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-xs sm:text-[13px] font-semibold text-[#f7f2e8]/75">
@@ -454,7 +495,7 @@
                         <span aria-hidden="true">·</span>
                         <span class="whitespace-nowrap">Noten 1–6 &amp; 0–15 Pkt.</span>
                         <span aria-hidden="true">·</span>
-                        <a href="https://github.com/kollnerlenny-creator/schoolflow/releases/latest/download/Schooly-Android.apk" download="Schooly-Android.apk" class="whitespace-nowrap text-[#f7f2e8] hover:text-[#ff9e2c] underline decoration-[#ff9e2c]/60 underline-offset-4 transition-colors">Android APK (Widgets) ↓</a>
+                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="whitespace-nowrap text-[#f7f2e8] hover:text-[#ff9e2c] transition-colors">@schooly.app ↗</a>
                     </div>
                 </div>
 
@@ -1011,27 +1052,48 @@
                         Kostenlos starten — <span class="text-[#ff9e2c]">auf Handy und Laptop.</span>
                     </h2>
                     <p class="text-[14.5px] sm:text-base text-[#f7f2e8]/80 leading-relaxed font-medium max-w-xl">
-                        Öffne <strong class="text-[#f7f2e8] font-bold">schooly26.vercel.app</strong> direkt im Browser, installiere schooly als Web-App oder lade dir die kostenlose <strong class="text-[#f7f2e8] font-bold">Android APK inklusive Homescreen-Widgets</strong> herunter.
+                        Wähle einfach deine Plattform: Direkt im Browser starten, als <strong class="text-[#f7f2e8] font-bold">Android APK inklusive Homescreen-Widgets</strong> laden oder unter iOS auf den Home-Bildschirm legen.
                     </p>
 
-                    <div class="flex flex-wrap items-center gap-3 pt-1">
-                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-amber flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-[13.5px] sm:text-[15px] whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
-                            <span class="sm:hidden">Jetzt starten</span>
-                            <span class="hidden sm:inline">schooly26.vercel.app öffnen</span>
-                            <span aria-hidden="true">→</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-install-method flex items-center gap-3 px-4 py-3 rounded-xl min-h-[58px] text-left">
+                            <span class="w-9 h-9 rounded-lg bg-[#ff9e2c]/15 text-[#ff9e2c] inline-flex items-center justify-center shrink-0" aria-hidden="true">
+                                <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M3.6 9h16.8M3.6 15h16.8" />
+                                    <path d="M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18" />
+                                </svg>
+                            </span>
+                            <span class="min-w-0 leading-tight">
+                                <span class="block text-[13.5px] font-extrabold text-[#f7f2e8] truncate">Web-App</span>
+                                <span class="block text-[11.5px] font-semibold text-[#f7f2e8]/65 truncate">Browser &amp; PC</span>
+                            </span>
                         </a>
-                        <a href="https://github.com/kollnerlenny-creator/schoolflow/releases/latest/download/Schooly-Android.apk" download="Schooly-Android.apk" class="btn-surface inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-[13px] sm:text-[15px] whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
-                            <svg class="w-4 h-4 text-[#ff9e2c] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 3v12" />
-                                <path d="m7 11 5 5 5-5" />
-                                <path d="M5 20h14" />
-                            </svg>
-                            <span>Android APK</span>
+                        <a href="https://github.com/kollnerlenny-creator/schoolflow/releases/latest/download/Schooly-Android.apk" target="_blank" rel="noopener noreferrer" download="Schooly-Android.apk" class="btn-install-method flex items-center gap-3 px-4 py-3 rounded-xl min-h-[58px] text-left">
+                            <span class="w-9 h-9 rounded-lg bg-[#ff9e2c]/15 text-[#ff9e2c] inline-flex items-center justify-center shrink-0" aria-hidden="true">
+                                <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 3v12" />
+                                    <path d="m7 11 5 5 5-5" />
+                                    <path d="M5 20h14" />
+                                </svg>
+                            </span>
+                            <span class="min-w-0 leading-tight">
+                                <span class="block text-[13.5px] font-extrabold text-[#f7f2e8] truncate">Android APK</span>
+                                <span class="block text-[11.5px] font-semibold text-[#f7f2e8]/65 truncate">Mit Widgets</span>
+                            </span>
                         </a>
-                        <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="btn-surface shrink-0 inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-[13px] sm:text-[15px] whitespace-nowrap min-h-[46px] sm:min-h-[48px]">
-                            <span>@schooly.app</span>
-                            <span aria-hidden="true">↗</span>
-                        </a>
+                        <button type="button" data-open-ios-install class="btn-install-method flex items-center gap-3 px-4 py-3 rounded-xl min-h-[58px] text-left cursor-pointer">
+                            <span class="w-9 h-9 rounded-lg bg-[#ff9e2c]/15 text-[#ff9e2c] inline-flex items-center justify-center shrink-0" aria-hidden="true">
+                                <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="7" y="2.5" width="10" height="19" rx="2.2" />
+                                    <path d="M11 18h2" />
+                                </svg>
+                            </span>
+                            <span class="min-w-0 leading-tight">
+                                <span class="block text-[13.5px] font-extrabold text-[#f7f2e8] truncate">iPhone &amp; iPad</span>
+                                <span class="block text-[11.5px] font-semibold text-[#f7f2e8]/65 truncate">Home-Bildschirm</span>
+                            </span>
+                        </button>
                     </div>
                 </div>
 
@@ -1058,11 +1120,35 @@
             </div>
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold">
                 <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="text-[#ff9e2c] font-bold hover:underline">schooly26.vercel.app</a>
-                <a href="https://github.com/kollnerlenny-creator/schoolflow/releases/latest/download/Schooly-Android.apk" download="Schooly-Android.apk" class="text-[#f7f2e8]/80 hover:text-[#ff9e2c] hover:underline">Android APK laden</a>
+                <a href="https://github.com/kollnerlenny-creator/schoolflow/releases/latest/download/Schooly-Android.apk" target="_blank" rel="noopener noreferrer" download="Schooly-Android.apk" class="text-[#f7f2e8]/80 hover:text-[#ff9e2c] hover:underline">Android APK laden</a>
                 <a href="https://www.instagram.com/schooly.app/" target="_blank" rel="noopener noreferrer" class="text-[#f7f2e8]/80 hover:text-[#ff9e2c] hover:underline">Instagram @schooly.app</a>
             </div>
         </div>
     </footer>
+
+    <!-- IOS HOME-SCREEN INSTALL MODAL -->
+    <div id="iosInstallModal" class="hidden fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="iosInstallTitle">
+        <div class="w-full max-w-md rounded-2xl bg-[#133122] border border-white/16 text-[#f7f2e8] p-6 shadow-2xl space-y-4">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <div class="text-xs font-bold text-[#ff9e2c]">iPhone &amp; iPad</div>
+                    <h3 id="iosInstallTitle" class="font-epilogue font-black text-xl text-[#f7f2e8] mt-0.5">Auf dem Home-Bildschirm installieren</h3>
+                </div>
+                <button type="button" id="closeIosInstallBtn" aria-label="Schließen" class="w-9 h-9 rounded-full bg-white/[0.08] hover:bg-white/[0.14] text-[#f7f2e8] inline-flex items-center justify-center cursor-pointer">✕</button>
+            </div>
+            <ol class="space-y-2.5 text-sm text-[#f7f2e8]/85 leading-relaxed">
+                <li class="flex gap-2.5"><span class="font-extrabold text-[#ff9e2c]">1.</span><span>Öffne <strong class="text-[#f7f2e8]">schooly26.vercel.app</strong> in Safari.</span></li>
+                <li class="flex gap-2.5"><span class="font-extrabold text-[#ff9e2c]">2.</span><span>Tippe unten auf das <strong class="text-[#f7f2e8]">Teilen-Symbol</strong> und wähle <strong class="text-[#f7f2e8]">„Zum Home-Bildschirm“</strong>.</span></li>
+            </ol>
+            <div class="pt-1 flex items-center gap-3">
+                <a href="https://schooly26.vercel.app" target="_blank" rel="noopener noreferrer" class="btn-amber flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm">
+                    <span>In Safari öffnen</span>
+                    <span aria-hidden="true">→</span>
+                </a>
+                <button type="button" id="closeIosInstallFooterBtn" class="btn-surface px-4 py-3 rounded-xl font-bold text-sm cursor-pointer">Fertig</button>
+            </div>
+        </div>
+    </div>
 
     <!-- SITE-WIDE SCROLL CHOREOGRAPHY SCRIPT -->
     <script type="module">
@@ -1900,6 +1986,23 @@
                 };
                 window.addEventListener('scroll', syncNavByScroll, { passive: true });
             }
+
+            const iosModal = document.getElementById('iosInstallModal');
+            const closeIosModal = () => iosModal && iosModal.classList.add('hidden');
+            const openIosModal = () => iosModal && iosModal.classList.remove('hidden');
+            document.querySelectorAll('[data-open-ios-install]').forEach((btn) => {
+                btn.addEventListener('click', openIosModal);
+            });
+            document.getElementById('closeIosInstallBtn')?.addEventListener('click', closeIosModal);
+            document.getElementById('closeIosInstallFooterBtn')?.addEventListener('click', closeIosModal);
+            iosModal?.addEventListener('click', (e) => {
+                if (e.target === iosModal) closeIosModal();
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && iosModal && !iosModal.classList.contains('hidden')) {
+                    closeIosModal();
+                }
+            });
         })();
     </script>
 </body>
