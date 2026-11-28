@@ -130,7 +130,7 @@
         });
 
         // Automatische Cache- & Service-Worker-Bereinigung bei neuem Build (ohne IndexedDB-Löschung, um onversionchange-Konflikte in anderen Tabs zu vermeiden)
-        const CURRENT_BUILD = 'schooly-v66';
+        const CURRENT_BUILD = 'schooly-v67';
         if (localStorage.getItem('sf_build_id') !== CURRENT_BUILD) {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then((regs) => {
@@ -142,7 +142,7 @@
             if ('caches' in window) {
                 caches.keys().then((keys) => {
                     keys.forEach((k) => {
-                        if (k !== 'schooly-cache-v66') {
+                        if (k !== 'schooly-cache-v67') {
                             caches.delete(k);
                         }
                     });
@@ -10716,10 +10716,22 @@
                     foregroundMessagingBound = true;
                     try {
                         onMessage(messaging, (payload) => {
-                            const title = payload?.notification?.title || payload?.data?.title || '';
+                            const title = payload?.notification?.title || payload?.data?.title || 'Schooly';
                             const body = payload?.notification?.body || payload?.data?.body || '';
                             const msg = [title, body].filter(Boolean).join(': ');
                             if (msg) showToast(msg);
+                            if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
+                                navigator.serviceWorker.getRegistration('/firebase-cloud-messaging-push-scope').then((reg) => {
+                                    if (reg && typeof reg.showNotification === 'function') {
+                                        return reg.showNotification(title, {
+                                            body,
+                                            icon: '/icon-192.png',
+                                            badge: '/icon-192.png',
+                                            tag: payload?.data?.tag || 'schooly-fg-' + Date.now()
+                                        });
+                                    }
+                                }).catch(() => {});
+                            }
                         });
                     } catch (_) {}
                 };
@@ -10819,11 +10831,37 @@
                             showToast('Bitte erst anmelden');
                             return;
                         }
-                        if (!('Notification' in window) || Notification.permission !== 'granted') {
-                            await requestPushPermission();
-                        } else {
-                            await registerOrRefreshPushToken({ interactive: true });
+                        if (!('Notification' in window)) {
+                            showToast(
+                                (isIOS.value && !isInstalled.value)
+                                    ? 'Auf dem iPhone zuerst über Teilen → „Zum Home-Bildschirm“ installieren'
+                                    : 'Dieser Browser unterstützt keine Push-Benachrichtigungen'
+                            );
+                            return;
                         }
+                        if (Notification.permission === 'denied') {
+                            showToast('Mitteilungen sind blockiert – bitte in den Handy-/Browser-Einstellungen erlauben');
+                            return;
+                        }
+                        if (Notification.permission !== 'granted') {
+                            const perm = await Notification.requestPermission();
+                            if (perm !== 'granted') {
+                                showToast('Bitte Push-Berechtigung erlauben');
+                                return;
+                            }
+                        }
+
+                        const deviceToken = await registerOrRefreshPushToken({ interactive: true });
+                        if (!deviceToken) {
+                            showToast(
+                                (isIOS.value && !isInstalled.value)
+                                    ? 'Auf dem iPhone bitte die installierte App vom Home-Bildschirm öffnen'
+                                    : 'Dieses Gerät hat keinen Push-Token erhalten (Mitteilungen in den Einstellungen prüfen)'
+                            );
+                            return;
+                        }
+
+                        showToast('Test-Push kommt in 5 Sek. — Handy jetzt sperren! 🔒', { duration: 5500 });
                         const idToken = await auth.currentUser.getIdToken();
                         const res = await fetch('/api/push-notify', {
                             method: 'POST',
@@ -10831,17 +10869,21 @@
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${idToken}`
                             },
-                            body: JSON.stringify({ action: 'test' })
+                            body: JSON.stringify({
+                                action: 'test',
+                                targetToken: deviceToken,
+                                delayMs: 5000
+                            })
                         });
                         const data = await res.json().catch(() => ({}));
                         if (res.ok && data.ok) {
-                            showToast('Test-Push gesendet! Prüf deinen Sperrbildschirm 🔔');
+                            showToast('Test-Push an dieses Gerät gesendet 🔔');
                         } else if (data.error === 'PUSH_SERVER_NOT_CONFIGURED') {
                             const isPreviewHost = /\.run\.app$/i.test(window.location.hostname);
                             showToast(
                                 isPreviewHost
-                                    ? 'Vorschau-Server hat keinen Firebase-Key — bitte nach Deployment direkt auf deiner Vercel-App testen'
-                                    : 'FIREBASE_SERVICE_ACCOUNT_JSON fehlt auf Vercel (oder nach dem Eintragen noch Redeploy ausführen)'
+                                    ? 'Vorschau-Server hat keinen Firebase-Key — bitte direkt auf deiner Vercel-App testen'
+                                    : 'FIREBASE_SERVICE_ACCOUNT_JSON fehlt auf Vercel (oder Redeploy nötig)'
                             );
                         } else {
                             showToast(data.message || 'Test-Push fehlgeschlagen');

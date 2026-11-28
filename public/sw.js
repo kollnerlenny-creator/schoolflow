@@ -1,6 +1,6 @@
 // sw.js — Hochperformanter Offline & Turbo-Cache Service Worker für Schooly
 // Garantiert sofortiges Laden, aktuelle App-Shell und vollständige Offline-Nutzung
-const CACHE_NAME = 'schooly-cache-v66';
+const CACHE_NAME = 'schooly-cache-v67';
 
 const PRECACHE_URLS = [
   '/',
@@ -113,6 +113,8 @@ self.addEventListener('fetch', (event) => {
   // Landing, Pitchdeck, Social-Studio, API- & Vite-Dev-Interna (außer /src/sync-engine.js) niemals durch SW abfangen/cachen
   const isSyncEngineSrc = url.pathname === '/src/sync-engine.js';
   if (
+    url.pathname === '/sw.js' ||
+    url.pathname === '/firebase-messaging-sw.js' ||
     url.pathname.startsWith('/landing') ||
     url.pathname.startsWith('/pitchdeck') ||
     url.pathname.startsWith('/social') ||

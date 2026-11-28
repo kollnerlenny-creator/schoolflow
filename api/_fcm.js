@@ -291,27 +291,33 @@ export async function sendFcmWebPush(projectId, accessToken, token, { title, bod
   for (const [k, v] of Object.entries(data || {})) {
     if (v !== undefined && v !== null) stringData[k] = String(v);
   }
+  const safeTitle = String(title || 'Schooly');
+  const safeBody = String(body || '');
+  stringData.title = safeTitle;
+  stringData.body = safeBody;
   if (tag) stringData.tag = String(tag);
   if (link) stringData.link = String(link);
 
+  const webpush = {
+    headers: {
+      Urgency: 'high',
+    },
+    notification: {
+      title: safeTitle,
+      body: safeBody,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: String(tag || 'schooly-notification'),
+      renotify: true,
+    },
+  };
+  if (typeof link === 'string' && /^https:\/\//i.test(link)) {
+    webpush.fcm_options = { link };
+  }
+
   const message = {
     token,
-    webpush: {
-      headers: {
-        Urgency: 'high',
-      },
-      notification: {
-        title: String(title || 'Schooly'),
-        body: String(body || ''),
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
-        tag: String(tag || 'schooly-notification'),
-        renotify: true,
-      },
-      fcm_options: {
-        link: String(link || '/'),
-      },
-    },
+    webpush,
     data: stringData,
   };
 

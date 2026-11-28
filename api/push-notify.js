@@ -5,6 +5,7 @@ import {
   verifyFirebaseIdToken,
   firestoreGetDoc,
   extractTokensFromConfig,
+  sendFcmWebPush,
   sendPushToUserConfig,
 } from './_fcm.js';
 
@@ -43,28 +44,54 @@ export default async function handler(req, res) {
 
   const body = req.body && typeof req.body === 'object' ? req.body : {};
   const action = String(body.action || '');
+  const reqHost = String(req.headers?.['x-forwarded-host'] || req.headers?.host || '').split(',')[0].trim();
+  const safeOriginLink = reqHost && !/localhost|127\.0\.0\.1/i.test(reqHost) ? `https://${reqHost}/` : '/';
 
   try {
     const accessToken = await getGoogleAccessToken(sa);
     const projectId = sa.project_id;
 
     if (action === 'test') {
+      const targetToken = typeof body.targetToken === 'string' ? body.targetToken.trim() : '';
+      const rawDelay = Number(body.delayMs || 0);
+      const delayMs = Number.isFinite(rawDelay) ? Math.max(0, Math.min(6000, Math.round(rawDelay))) : 0;
+
       const config = await firestoreGetDoc(projectId, accessToken, `users/${caller.uid}/settings/config`);
-      if (!config || extractTokensFromConfig(config).length === 0) {
+      const savedTokens = extractTokensFromConfig(config);
+      if (!targetToken && savedTokens.length === 0) {
         return res.status(400).json({
           error: 'NO_DEVICE_TOKEN',
           message: 'Kein Push-Token für dieses Gerät gespeichert.',
         });
       }
 
-      const pushRes = await sendPushToUserConfig(projectId, accessToken, caller.uid, config, {
+      if (delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+
+      const payload = {
         title: 'Schooly Sperrbildschirm-Push aktiv',
         body: 'Benachrichtigungen funktionieren auch bei geschlossener App.',
         tag: `sf-test-${Date.now()}`,
-        link: '/',
+        link: safeOriginLink,
         data: { type: 'test_push' },
-      });
+      };
 
+      if (targetToken) {
+        if (targetToken.length > 4096) {
+          return res.status(400).json({ error: 'INVALID_TOKEN_FORMAT' });
+        }
+        const singleRes = await sendFcmWebPush(projectId, accessToken, targetToken, payload);
+        if (!singleRes.ok) {
+          return res.status(502).json({
+            error: 'PUSH_DELIVERY_FAILED',
+            message: `Zustellung an dieses Gerät fehlgeschlagen (${singleRes.error || 'unbekannt'}). Bitte Push aus- und wieder einschalten.`,
+          });
+        }
+        return res.status(200).json({ ok: true, sent: 1, deviceTargeted: true });
+      }
+
+      const pushRes = await sendPushToUserConfig(projectId, accessToken, caller.uid, config, payload);
       if (pushRes.sent === 0) {
         return res.status(502).json({
           error: 'PUSH_DELIVERY_FAILED',
@@ -105,14 +132,14 @@ export default async function handler(req, res) {
             title: 'Neue Freundschaftsanfrage',
             body: `${senderName} möchte dich auf Schooly hinzufügen.`,
             tag: `sf-fr-${caller.uid}`,
-            link: '/',
+            link: safeOriginLink,
             data: { type: 'friend_request', fromUid: caller.uid },
           }
         : {
             title: 'Freundschaftsanfrage angenommen',
             body: `${senderName} und du seid jetzt auf Schooly befreundet.`,
             tag: `sf-fa-${caller.uid}`,
-            link: '/',
+            link: safeOriginLink,
             data: { type: 'friend_accepted', fromUid: caller.uid },
           };
 
