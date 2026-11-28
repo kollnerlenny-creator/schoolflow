@@ -1643,6 +1643,7 @@
             background-color: #eadcc7 !important;
             background-image: radial-gradient(circle at 50% 0%, #eee2cf 0%, #e6d6be 78%) !important;
         }
+
         html:not(.dark) .bg-white,
         html:not(.dark) .bg-white\/95,
         html:not(.dark) .bg-white\/90,
@@ -1940,10 +1941,7 @@
             background-image: radial-gradient(circle at 50% 0%, var(--sf-bg-glow) 0%, var(--sf-bg) 68%) !important;
             color: var(--sf-text) !important;
         }
-        html.dark #splash {
-            background-color: var(--sf-bg) !important;
-            color: var(--sf-text) !important;
-        }
+
         html.dark img[src*="schooly_logo_transparent"] {
             filter: brightness(1.85) saturate(1.1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
         }
@@ -2509,6 +2507,12 @@
                 setTimeout(function() { sp.remove(); }, 400);
             }
         }, 4500);
+    </script>
+    <script>
+        setTimeout(function() {
+            var appEl = document.getElementById("app");
+            if (appEl) appEl.removeAttribute("v-cloak");
+        }, 150);
     </script>
 
     <div id="app" v-cloak>
