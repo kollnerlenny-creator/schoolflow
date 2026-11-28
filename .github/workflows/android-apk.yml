@@ -18,6 +18,8 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Repository auschecken
@@ -86,3 +88,21 @@ jobs:
           name: Schooly-Android-APK
           path: Schooly-Android.apk
           retention-days: 30
+
+      - name: Als direktes GitHub Release veröffentlichen
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="android-latest"
+          NOTES="Aktuelle Schooly Android-APK inklusive nativer Homescreen-Widgets (Klausur-Countdown, Offene Aufgaben & Notendurchschnitt). Lädt automatisch die Live-Web-App."
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" Schooly-Android.apk --clobber
+            gh release edit "$TAG" --title "Schooly Android APK" --notes "$NOTES" --latest
+          else
+            gh release create "$TAG" Schooly-Android.apk \
+              --title "Schooly Android APK" \
+              --notes "$NOTES" \
+              --latest
+          fi
