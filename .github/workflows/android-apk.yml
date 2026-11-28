@@ -24,13 +24,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Java 17 einrichten
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Android SDK einrichten
-        uses: android-actions/setup-android@v3
+        shell: bash
+        run: |
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SDKMANAGER="$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1)"
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager not found under $SDK_ROOT" >&2
+            exit 1
+          fi
+          RUN_AS=""
+          if [ ! -w "$SDK_ROOT" ]; then
+            RUN_AS="sudo"
+          fi
+          set +o pipefail
+          yes | $RUN_AS "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses >/dev/null || true
+          set -o pipefail
+          $RUN_AS "$SDKMANAGER" --sdk_root="$SDK_ROOT" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          echo "sdk.dir=$SDK_ROOT" > android/local.properties
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
 
       - name: Konsistenten Debug-Keystore zwischenspeichern
         uses: actions/cache@v4
